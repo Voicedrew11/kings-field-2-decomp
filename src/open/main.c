@@ -32,8 +32,6 @@ enum {
 
 DATA(0x8003e714, 0x4, ".sdata")
 u8 *overlay_next_request = (u8 *)0x800102f0;
-DATA(0x8003db8c, 0x5, ".sdata")
-char opening_data_file[5] = "OP.D";
 
 DATA(0x800a6fa8, 0x4, ".bss")
 u8 *opening_data;
@@ -186,7 +184,7 @@ void opening_load_data(void)
 
     opening_data = (u8 *)malloc(OPENING_DATA_BYTES);
     for (attempt = OPENING_LOAD_ATTEMPTS - 1; attempt != -1; attempt--) {
-        if (cd_file_load_into((u_long *)opening_data, opening_data_file) == KF_CD_LOADED) {
+        if (cd_file_load_into((u_long *)opening_data, "OPU.D") == KF_CD_LOADED) {
             break;
         }
     }

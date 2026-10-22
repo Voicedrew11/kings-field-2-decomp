@@ -47,7 +47,6 @@ enum {
 };
 
 extern u8 *opening_data;
-extern char opening_data_file[5];
 extern u_long *audio_title_sequence_data;
 extern u_long *audio_movie_sequence_data;
 extern short audio_title_sequence_id;

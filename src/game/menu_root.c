@@ -183,6 +183,12 @@ s32 menu_run_root_controller(void)
     return result;
 }
 
+/* TODO(us-port): US-only function, not in the JP build; not reconstructed. */
+ADDRESS(0x80018e80, 0x2ac)
+void func_80018e80(void)
+{
+}
+
 ADDRESS(0x8001912c, 0xd8)
 void menu_draw_location_number(void)
 {
@@ -351,6 +357,12 @@ s32 menu_collect_available_item_rows(const u8 *mask, KfMenuGlyphRow *rows,
         index++;
     }
     return count;
+}
+
+/* TODO(us-port): US-only function, not in the JP build; not reconstructed. */
+ADDRESS(0x800196c8, 0x10c)
+void func_800196c8(void)
+{
 }
 
 ADDRESS(0x800197d4, 0x2b4)

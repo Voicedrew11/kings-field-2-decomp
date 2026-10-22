@@ -3,12 +3,7 @@
 #include <kf/lib/types.h>
 #include <sys/types.h>
 
-/* END.EXE: loads ED.D, opens its music and plays the ending movie. */
-extern u8 *ending_data;
-extern char ending_data_file[5];
-
-void ending_load_data(void);
-void ending_open_audio(void);
-void ending_play_movie(void);
+/* US END.EXE: plays the two ending movies, ED0.S and ED1.S. */
+void ending_play_movie(s32 movie);
 
 #endif

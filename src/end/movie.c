@@ -19,25 +19,18 @@ enum {
 
 RODATA(0x80011000, 0x1f)
 
-/* The tutorial's anim() as adapted for END.EXE: decode the ending movie while
- * fading the music, then stop the drive and wait forever. */
+/* TODO(us-port): not yet matched against US END; JP body with the sequence
+ * audio removed, as US END links no LIBSND sequence player. */
 ADDRESS(0x80011cc4, 0x1dc)
-void ending_play_movie(void)
+void ending_play_movie(s32 movie)
 {
     CdlFILE file;
     u_char mode;
-    int volume = ENDING_SEQUENCE_VOLUME;
 
-    SsSetMVol(ENDING_MASTER_VOLUME, ENDING_MASTER_VOLUME);
-    SsSeqSetVol(audio_sequence_id, ENDING_SEQUENCE_VOLUME, ENDING_SEQUENCE_VOLUME);
-    SsSeqPlay(audio_sequence_id, SSPLAY_PLAY, 1);
-    if (CdSearchFile(&file, "\\OP\\ED.S;1") == NULL) {
+    if (CdSearchFile(&file, movie == 0 ? "\\OP\\ED0.S;1" : "\\OP\\ED1.S;1") == NULL) {
         printf("\n__ file not found");
         return;
     }
-    SsSetMVol(ENDING_MASTER_VOLUME, ENDING_MASTER_VOLUME);
-    SsSeqSetVol(audio_sequence_id, ENDING_SEQUENCE_VOLUME, ENDING_SEQUENCE_VOLUME);
-    SsSeqPlay(audio_sequence_id, SSPLAY_PLAY, SSPLAY_INFINITY);
     strSetDefDecEnv();
     strInit(&file.pos);
     strNextVlc();
@@ -51,15 +44,6 @@ void ending_play_movie(void)
         display_present_frame();
         if (Rewind_Switch == KF_TRUE) {
             break;
-        }
-        if (StrFrame >= ENDING_FADE_FRAME && volume > 0) {
-            volume--;
-            SsSeqSetVol(audio_sequence_id, volume, volume);
-            if (volume == 0) {
-                SsSeqStop(audio_sequence_id);
-                SsSeqSetVol(audio_sequence_id, ENDING_SEQUENCE_VOLUME, ENDING_SEQUENCE_VOLUME);
-                SsSeqPlay(audio_sequence_id, SSPLAY_PLAY, 1);
-            }
         }
     } while (StrFrame < ENDING_LAST_FRAME);
     CdStop();
@@ -79,7 +63,6 @@ void ending_play_movie(void)
     SetDefDispEnv(&display_buffers[0].disp, 0, KF_DISPLAY_HEIGHT, 320, KF_DISPLAY_HEIGHT);
     SetDefDispEnv(&display_buffers[1].disp, 0, 0, 320, KF_DISPLAY_HEIGHT);
     display_current = &display_buffers[0];
-    SsSeqStop(audio_sequence_id);
 }
 
 #include "../lib/movie_stream.inc"

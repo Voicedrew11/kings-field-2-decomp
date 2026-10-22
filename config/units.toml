@@ -300,12 +300,6 @@ source = "src/lib/audio_init.c"
 profile = "probe-gcc257-o2-plain"
 defines = ["KF_END"]
 
-[[unit]]
-unit = "end.audio"
-image = "END.EXE"
-source = "src/end/audio.c"
-profile = "probe-gcc257-o2-plain"
-defines = ["KF_END"]
 
 [[unit]]
 unit = "end.display_frame"
@@ -314,12 +308,6 @@ source = "src/lib/display_frame.c"
 profile = "probe-gcc257-o2-plain"
 defines = ["KF_END"]
 
-[[unit]]
-unit = "end.cd_file"
-image = "END.EXE"
-source = "src/lib/cd_file.c"
-profile = "probe-gcc257-o2-plain-g8"
-defines = ["KF_END"]
 
 [[unit]]
 unit = "end.movie"
