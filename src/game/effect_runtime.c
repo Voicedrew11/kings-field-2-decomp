@@ -11,22 +11,22 @@
 #include <kf/game/asset.h>
 
 
-DATA(0x8006d704, 0x4, ".sdata")
+DATA(0x8006e638, 0x4, ".sdata")
 u32 effect_trail_next_slot = 0;
 
-DATA(0x8006d708, 0x8, ".sdata")
+DATA(0x8006e63c, 0x8, ".sdata")
 static SVECTOR effect_zero_direction = {0, 0, 0, 0};
 
-DATA(0x8009a5a8, 0x4, ".bss")
+DATA(0x8009b4ec, 0x4, ".bss")
 s32 effect_kind102_sound_cooldown_frame;
 
-DATA(0x8019b6a8, 0x2a8c, ".bss")
+DATA(0x8019c5ec, 0x2a8c, ".bss")
 KfEffectState effect_state;
 
-DATA(0x801c7068, 0x8, ".bss")
+DATA(0x801c7fac, 0x8, ".bss")
 SVECTOR effect_collision_motion_step;
 
-DATA(0x801d9628, 0x900, ".bss")
+DATA(0x801da56c, 0x900, ".bss")
 KfEffectTrailRow effect_trail_rows[4][24];
 
 RODATA(0x8001249c, 0x3f4)
@@ -39,7 +39,7 @@ enum {
     EFFECT_ANIMATION_PHASE_MASK = KF_FIXED12_ONE - 1
 };
 
-ADDRESS(0x8003fa2c, 0x3c)
+ADDRESS(0x80040764, 0x3c)
 KfAudioPlaybackResult effect_play_spatial_sound(
     KfEffectRecord *effect, s32 sound)
 {
@@ -48,7 +48,7 @@ KfAudioPlaybackResult effect_play_spatial_sound(
         EFFECT_SPATIAL_ATTENUATION_DISTANCE, 0);
 }
 
-ADDRESS(0x8003fa68, 0x12c)
+ADDRESS(0x800407a0, 0x12c)
 KF_ENUM_PARAM(KfCollisionHitFlags, s32) effect_probe_collision_by_type(const VECTOR *position, s32 radius,
     s32 height_flags)
 {
@@ -83,7 +83,7 @@ KF_ENUM_PARAM(KfCollisionHitFlags, s32) effect_probe_collision_by_type(const VEC
 
 enum { EFFECT_FIXED_MAGIC_POWER = 5 };
 
-ADDRESS(0x8003fb94, 0x218)
+ADDRESS(0x800408cc, 0x218)
 void effect_dispatch_magic_impact(KF_ENUM_PARAM(KfCollisionHitFlags, s32) kind,
                                   KF_ENUM_PARAM(KfActorDamageFlags, s32) source_flags,
                    s32 radius, u16 power,
@@ -128,7 +128,7 @@ void effect_dispatch_magic_impact(KF_ENUM_PARAM(KfCollisionHitFlags, s32) kind,
     }
 }
 
-ADDRESS(0x8003fdac, 0x24)
+ADDRESS(0x80040ae4, 0x24)
 int effect_magic_power(KfEffectRecord *effect)
 {
     if ((effect->type & KF_EFFECT_USE_PLAYER_MAGIC) != KF_EFFECT_TYPE_NONE) {
@@ -138,7 +138,7 @@ int effect_magic_power(KfEffectRecord *effect)
 }
 
 
-ADDRESS(0x8003fdd0, 0xe0)
+ADDRESS(0x80040b08, 0xe0)
 void effect_apply_current_magic(KF_ENUM_PARAM(KfCollisionHitFlags, s32) kind, s32 radius,
                                 const VECTOR *position)
 {
@@ -156,7 +156,7 @@ void effect_apply_current_magic(KF_ENUM_PARAM(KfCollisionHitFlags, s32) kind, s3
                   position);
 }
 
-ADDRESS(0x8003feb0, 0x68)
+ADDRESS(0x80040be8, 0x68)
 void effect_apply_current_magic_backstep(KF_ENUM_PARAM(KfCollisionHitFlags, s32) kind)
 {
     const KfEffectRecord *record = effect_state.current_record;
@@ -169,7 +169,7 @@ void effect_apply_current_magic_backstep(KF_ENUM_PARAM(KfCollisionHitFlags, s32)
 }
 
 
-ADDRESS(0x8003ff18, 0x1a8)
+ADDRESS(0x80040c50, 0x1a8)
 void effect_apply_radial_magic_damage(VECTOR *position, s32 start, s32 end,
                                       s32 mode, s32 falloff, s32 scale_and_flags)
 {
@@ -196,7 +196,7 @@ void effect_apply_radial_magic_damage(VECTOR *position, s32 start, s32 end,
 }
 
 
-ADDRESS(0x800400c0, 0xf4)
+ADDRESS(0x80040df8, 0xf4)
 void effect_sample_rotated_vertex(KfEffectRecord *record, s32 mode, VECTOR *output, const SVECTOR *scale)
 {
     struct KfEulerAngles angles;
@@ -214,7 +214,7 @@ void effect_sample_rotated_vertex(KfEffectRecord *record, s32 mode, VECTOR *outp
     vector_rotate_yxz(&angles, &offset, output);
 }
 
-ADDRESS(0x800401b4, 0x6c)
+ADDRESS(0x80040eec, 0x6c)
 void effect_sample_world_vertex(KfEffectRecord *record, s32 mode, VECTOR *position, const SVECTOR *scale)
 {
     effect_sample_rotated_vertex(record, mode, position, scale);
@@ -222,7 +222,7 @@ void effect_sample_world_vertex(KfEffectRecord *record, s32 mode, VECTOR *positi
 }
 
 
-ADDRESS(0x80040220, 0x44)
+ADDRESS(0x80040f58, 0x44)
 KfEffectRecord *effect_pool_find_free(void)
 {
     KfEffectRecord *record = effect_state.records;
@@ -237,7 +237,7 @@ KfEffectRecord *effect_pool_find_free(void)
     return NULL;
 }
 
-ADDRESS(0x80040264, 0x40)
+ADDRESS(0x80040f9c, 0x40)
 void effect_pool_initialize_scaled(KfEffectRecord *record, KfEffectRenderId render_id, u16 scale)
 {
     record->render_flags = KF_EFFECT_RENDER_VISIBLE | KF_EFFECT_RENDER_IDENTITY_TRANSFORM;
@@ -252,7 +252,7 @@ void effect_pool_initialize_scaled(KfEffectRecord *record, KfEffectRenderId rend
     record->scale_x = scale;
 }
 
-ADDRESS(0x800402a4, 0x64)
+ADDRESS(0x80040fdc, 0x64)
 void effect_pool_initialize_fixed(KfEffectRecord *record, KfEffectRenderId render_id)
 {
     record->render_flags = KF_EFFECT_RENDER_ALWAYS_VISIBLE | KF_EFFECT_RENDER_SCREEN_SPACE;
@@ -273,7 +273,7 @@ void effect_pool_initialize_fixed(KfEffectRecord *record, KfEffectRenderId rende
     record->position.vz = 0;
 }
 
-ADDRESS(0x80040308, 0x13e4)
+ADDRESS(0x80041040, 0x13e4)
 KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectType type, KfEffectKind kind,
                               const VECTOR *position,
                               const SVECTOR *direction, ...)
@@ -1053,7 +1053,7 @@ finish:
     return record;
 }
 
-ADDRESS(0x800416ec, 0x90)
+ADDRESS(0x80042424, 0x90)
 void effect_rotate_scale_offset_y(const SVECTOR *offset, VECTOR *output, s16 angle, s32 scale)
 {
     SVECTOR scaled;
@@ -1069,7 +1069,7 @@ void effect_rotate_scale_offset_y(const SVECTOR *offset, VECTOR *output, s16 ang
     ApplyMatrix(&matrix, &scaled, output);
 }
 
-ADDRESS(0x8004177c, 0x1e0)
+ADDRESS(0x800424b4, 0x1e0)
 KF_ENUM_PARAM(KfEffectMotionResult, s32) effect_move_probe(s32 scale, s32 max_length, s32 probe_radius,
                       s32 probe_height_flags, SVECTOR *motion)
 {
@@ -1096,7 +1096,7 @@ KF_ENUM_PARAM(KfEffectMotionResult, s32) effect_move_probe(s32 scale, s32 max_le
                                                                                probe_height_flags)));
 }
 
-ADDRESS(0x8004195c, 0x1b8)
+ADDRESS(0x80042694, 0x1b8)
 KF_ENUM_PARAM(KfEffectMotionResult, s32) effect_aim_and_move(s32 max_length, s32 scale, s32 turn_step,
                         s32 probe_radius, s32 probe_height_flags, s32 proximity,
                         s32 close_scale, s32 target_filter)
@@ -1151,7 +1151,7 @@ move:
     return effect_move_probe(scale, max_length, probe_radius, probe_height_flags, &motion);
 }
 
-ADDRESS(0x80041b14, 0x1bc)
+ADDRESS(0x8004284c, 0x1bc)
 KF_ENUM_PARAM(KfEffectMotionResult, s32) effect_target_motion(const VECTOR *target, s32 max_length, s32 scale,
                          s32 settle_distance, s32 min_distance, s32 probe_radius,
                          s32 probe_height_flags)
@@ -1179,7 +1179,7 @@ KF_ENUM_PARAM(KfEffectMotionResult, s32) effect_target_motion(const VECTOR *targ
     return effect_move_probe(scale, max_length, probe_radius, probe_height_flags, &motion);
 }
 
-ADDRESS(0x80041cd0, 0xac)
+ADDRESS(0x80042a08, 0xac)
 void effect_scale_step(s32 multiplier, s32 limit, s32 increment, s32 arg3, s32 arg5)
 {
     KfEffectRecord *record = effect_state.current_record;
@@ -1195,7 +1195,7 @@ void effect_scale_step(s32 multiplier, s32 limit, s32 increment, s32 arg3, s32 a
     }
 }
 
-ADDRESS(0x80041d7c, 0x90)
+ADDRESS(0x80042ab4, 0x90)
 void effect_spawn_zero_direction(KfEffectRecord *record, s32 mode)
 {
     VECTOR position;
@@ -1213,7 +1213,7 @@ void effect_spawn_zero_direction(KfEffectRecord *record, s32 mode)
     }
 }
 
-ADDRESS(0x80041e0c, 0x88)
+ADDRESS(0x80042b44, 0x88)
 b32 effect_spawn_at_lower_bound(const VECTOR *position, s32 arg1, s32 arg2,
                                 s32 vertical_window)
 {
@@ -1236,7 +1236,7 @@ b32 effect_spawn_at_lower_bound(const VECTOR *position, s32 arg1, s32 arg2,
     return KF_TRUE;
 }
 
-ADDRESS(0x80041e94, 0x298)
+ADDRESS(0x80042bcc, 0x298)
 void effect_spawn_motion(KfEffectRecord *record, s32 position_mode,
                    s32 motion_mode, s32 arg3, s32 arg4, s32 arg5,
                    s32 arg6, s32 arg7, ...)
@@ -1291,7 +1291,7 @@ spawn:
                   arg3, arg4, arg5, arg6, arg7);
 }
 
-ADDRESS(0x8004212c, 0x16c)
+ADDRESS(0x80042e64, 0x16c)
 b32 effect_scatter_lower_bound(const VECTOR *origin, s32 count, s32 spread,
                   s32 scale_x, s32 scale_z, s32 variation)
 {
@@ -1328,7 +1328,7 @@ b32 effect_scatter_lower_bound(const VECTOR *origin, s32 count, s32 spread,
     return KF_FALSE;
 }
 
-ADDRESS(0x80042298, 0x18c)
+ADDRESS(0x80042fd0, 0x18c)
 KF_ENUM_PARAM(KfCollisionHitFlags, s32) effect_collision_step(s32 radius, s32 angle, s32 step)
 {
     KfEffectRecord *record = effect_state.current_record;
@@ -1361,7 +1361,7 @@ KF_ENUM_PARAM(KfCollisionHitFlags, s32) effect_collision_step(s32 radius, s32 an
     return result;
 }
 
-ADDRESS(0x80042424, 0xcc)
+ADDRESS(0x8004315c, 0xcc)
 void effect_collision_backtrack(void)
 {
     KfEffectRecord *record = effect_state.current_record;
@@ -1380,7 +1380,7 @@ void effect_collision_backtrack(void)
     record->position.vz -= record->direction.vz;
 }
 
-ADDRESS(0x800424f0, 0x160)
+ADDRESS(0x80043228, 0x160)
 void effect_spawn_radial_ring(s32 count, s32 radius, s32 vertical_angle, s32 arg3)
 {
     KfEffectRecord *record = effect_state.current_record;
@@ -1405,7 +1405,7 @@ void effect_spawn_radial_ring(s32 count, s32 radius, s32 vertical_angle, s32 arg
     }
 }
 
-ADDRESS(0x80042650, 0x3670)
+ADDRESS(0x80043388, 0x367c)
 void effect_update_dispatch(void)
 {
     KfEffectRecord *record = effect_state.current_record;
@@ -3069,7 +3069,7 @@ void effect_update_dispatch(void)
 
 }
 
-ADDRESS(0x80045cc0, 0x30)
+ADDRESS(0x80046a04, 0x30)
 void effect_pool_reset(void)
 {
     KfEffectRecord *record = effect_state.records;
@@ -3081,7 +3081,7 @@ void effect_pool_reset(void)
     }
 }
 
-ADDRESS(0x80045cf0, 0x2c)
+ADDRESS(0x80046a34, 0x2c)
 void magic_load_records(const KfMagicRecord *records)
 {
     const u32 *source = (const u32 *)records;
@@ -3094,7 +3094,7 @@ void magic_load_records(const KfMagicRecord *records)
 }
 
 
-ADDRESS(0x80045d1c, 0xfc)
+ADDRESS(0x80046a60, 0xfc)
 void effect_pool_sweep(void)
 {
     KfEffectRecord *record = effect_state.records;

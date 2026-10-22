@@ -1,21 +1,21 @@
 image	va	name	size	class	evidence
-GAME.EXE	0x8006d9e0	current_poly_ft4	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
-GAME.EXE	0x8006d9e8	menu_saved_music_enabled	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
-GAME.EXE	0x8006d9f0	menu_frame_upload_pixels	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
-GAME.EXE	0x8006d9f8	menu_frame_upload_rect	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
-GAME.EXE	0x8006da00	menu_item_preview_translation	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
-GAME.EXE	0x8006da08	menu_item_preview_rotation	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
-GAME.EXE	0x8006da10	menu_item_preview_rotation_step	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
-GAME.EXE	0x8006da18	memory_card_io_end_event	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
-GAME.EXE	0x8006da20	memory_card_timeout_event	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
-GAME.EXE	0x8006da28	memory_card_new_device_event	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
-GAME.EXE	0x8006da30	memory_card_error_event	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
-GAME.EXE	0x8006da38	memory_card_unreferenced_word_0	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
-GAME.EXE	0x8006da40	memory_card_unreferenced_word_1	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
-GAME.EXE	0x8006da48	memory_card_unreferenced_word_2	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
-GAME.EXE	0x8006da50	memory_card_unreferenced_word_3	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
-GAME.EXE	0x8006da58	memory_card_buffer	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
-OPEN.EXE	0x8003dec0	Rewind_Switch	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
-OPEN.EXE	0x8003dec8	StrFrame	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
-END.EXE	0x8003ace0	Rewind_Switch	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
-END.EXE	0x8003ace8	StrFrame	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
+GAME.EXE	0x8006e914	current_poly_ft4	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
+GAME.EXE	0x8006e91c	menu_saved_music_enabled	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
+GAME.EXE	0x8006e924	menu_frame_upload_pixels	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
+GAME.EXE	0x8006e92c	menu_frame_upload_rect	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
+GAME.EXE	0x8006e934	menu_item_preview_translation	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
+GAME.EXE	0x8006e93c	menu_item_preview_rotation	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
+GAME.EXE	0x8006e944	menu_item_preview_rotation_step	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
+GAME.EXE	0x8006e94c	memory_card_io_end_event	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
+GAME.EXE	0x8006e954	memory_card_timeout_event	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
+GAME.EXE	0x8006e95c	memory_card_new_device_event	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
+GAME.EXE	0x8006e964	memory_card_error_event	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
+GAME.EXE	0x8006e96c	memory_card_unreferenced_word_0	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
+GAME.EXE	0x8006e974	memory_card_unreferenced_word_1	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
+GAME.EXE	0x8006e97c	memory_card_unreferenced_word_2	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
+GAME.EXE	0x8006e984	memory_card_unreferenced_word_3	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the static to an eight-byte .lcomm request;retail eight-byte stride
+GAME.EXE	0x8006e98c	memory_card_buffer	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
+OPEN.EXE	0x8003ea50	Rewind_Switch	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
+OPEN.EXE	0x8003ea58	StrFrame	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
+END.EXE	0x800399f4	Rewind_Switch	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
+END.EXE	0x800399fc	StrFrame	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride

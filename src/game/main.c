@@ -29,12 +29,12 @@ KF_ENUM_END(KfGameMainState)
 /* Twelve zero bytes open the game .sdata at the gp anchor, where OPEN's and
    END's main units keep their mailbox pointer and data-file name. Nothing in
    any GAME build reads them; their types are unresolved byte views. */
-DATA(0x8006d674, 0x4, ".sdata")
+DATA(0x8006e560, 0x4, ".sdata")
 static u32 main_unreferenced_sdata_word = 0;
-DATA(0x8006d678, 0x8, ".sdata")
+DATA(0x8006e564, 0x4, ".sdata")
 static u8 main_unreferenced_sdata_bytes[8] = {0};
 
-DATA(0x80198630, 0x4, ".bss")
+DATA(0x80199574, 0x4, ".bss")
 KfGameMainState game_main_exit_flag;
 
 enum { GAME_INITIAL_MASTER_VOLUME = 0x7f };
@@ -56,7 +56,7 @@ void main(void)
     game_main_loop();
 }
 
-ADDRESS(0x8001369c, 0x2f0)
+ADDRESS(0x8001369c, 0x36c)
 void game_main_loop(void)
 {
     VECTOR camera_position;
@@ -135,7 +135,7 @@ void game_main_loop(void)
     *(u8 *)0x800102f0 = KF_OVERLAY_END;
 }
 
-ADDRESS(0x8001398c, 0x38)
+ADDRESS(0x80013a08, 0x38)
 void game_shutdown(void)
 {
     audio_shutdown();

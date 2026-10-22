@@ -48,7 +48,7 @@ enum {
 #define DISPLAY game_graphics_runtime.display_state
 
 
-DATA(0x80066808, 0x7e, ".data")
+DATA(0x800676f4, 0x7e, ".data")
 KfNotificationQuad notification_quads[7] = {
     {KF_SPRITE_HIDDEN, 0, 0, 127, 14, 96, 203, 127, 14, 0x7f24, 0x1b},
     {KF_SPRITE_HIDDEN, 0, 0, 127, 14, 110, 203, 127, 14, 0x7f24, 0x1b},
@@ -59,7 +59,7 @@ KfNotificationQuad notification_quads[7] = {
     {KF_SPRITE_END, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
-DATA(0x80066888, 0x21c, ".data")
+DATA(0x80067774, 0x21c, ".data")
 KfRenderModelRow render_model_rows[KF_RENDER_MODEL_ROW_COUNT] = {
     {KF_SPRITE_VISIBLE, 0, KF_LIGHTING_HUD_COMPASS,  0, 0, { 85,  85, 85, 0}, {290, 32, 50, 0}, {0}, NULL},
     {KF_SPRITE_VISIBLE, 0, KF_LIGHTING_HUD,  1, 0, {256, 256,256, 0}, { 28, 25, 32, 0}, {0}, NULL},
@@ -80,13 +80,13 @@ KfRenderModelRow render_model_rows[KF_RENDER_MODEL_ROW_COUNT] = {
 
 /* KF1's renderer setup passes the same two CLUT rows to GetClut; nothing in
    any King's Field II build reads them. */
-DATA(0x80066aa4, 0x10, ".data")
+DATA(0x80067990, 0x10, ".data")
 static RECT render_palette_rects[2] = {{0, 500, 16, 1}, {0, 499, 16, 1}};
 
 /* Startup may replace this load-image table from the archive. The retail
    .data run places it after the renderer tables above, not with its
    collision consumers, which precede this unit in the link. */
-DATA(0x80066ab4, 0xdc0, ".data")
+DATA(0x800679a0, 0xdc0, ".data")
 KfCollisionDefaultRow collision_default_rows[KF_COLLISION_ROW_COUNT] = {
     {0},
     {0},
@@ -170,7 +170,7 @@ KfCollisionDefaultRow collision_default_rows[KF_COLLISION_ROW_COUNT] = {
     {0},
 };
 
-DATA(0x80067874, 0x1c, ".data")
+DATA(0x80068760, 0x1c, ".data")
 KfMapMaskShapePair map_mask_pitch_shape_pairs[7] = {
     {0x0500, 0x0000},
     {(s16)0xf720, (s16)0xfb20},
@@ -181,40 +181,40 @@ KfMapMaskShapePair map_mask_pitch_shape_pairs[7] = {
     {(s16)0xff80, (s16)0xfb80},
 };
 
-DATA(0x8006d6d0, 0x4, ".sdata")
+DATA(0x8006e604, 0x4, ".sdata")
 CVECTOR map_textured_primitive_color = {128, 128, 128, 0};
 
-DATA(0x8006d6d4, 0x4, ".sdata")
+DATA(0x8006e608, 0x4, ".sdata")
 s32 render_model_yaw_smoothing_accumulator = 0;
 
 /* Unreferenced in every retail build; owner and type unresolved. */
-DATA(0x8006d6d8, 0x4, ".sdata")
+DATA(0x8006e60c, 0x4, ".sdata")
 static s32 display_unreferenced_sdata_word = 0;
 
-DATA(0x8006d6dc, 0x8, ".sdata")
+DATA(0x8006e610, 0x8, ".sdata")
 RECT menu_transition_rect = {KF_DISPLAY_WIDTH, 0, KF_DISPLAY_WIDTH, KF_DISPLAY_HEIGHT};
 
-DATA(0x800fba58, 0x32000, ".bss")
+DATA(0x800fc99c, 0x32000, ".bss")
 u8 display_primitive_memory[KF_DISPLAY_BUFFER_COUNT * KF_GAME_PRIMITIVE_BUFFER_BYTES];
 
-DATA(0x8017d140, 0x17cf0, ".bss")
+DATA(0x8017e084, 0x17cf0, ".bss")
 KfGraphicsRuntimeGame game_graphics_runtime;
 
-DATA(0x801d9610, 0x4, ".bss")
+DATA(0x801da554, 0x4, ".bss")
 s32 display_frame_cleared_word;
 
 enum { KF_TMD_DEPTH_SHIFT = 2 };
 
 RODATA(0x80011410, 0x74)
 
-ADDRESS(0x8002d0a4, 0x30)
+ADDRESS(0x8002dddc, 0x30)
 void fog_set_near(s32 distance)
 {
     GRAPHICS.render_grid.fog_near_distance = distance;
     SetFogNear((distance & KF_FOG_DISTANCE_MASK) >> 1, KF_PROJECTION_DISTANCE);
 }
 
-ADDRESS(0x8002d0d4, 0x174)
+ADDRESS(0x8002de0c, 0x174)
 void display_initialize(void)
 {
     ResetGraph(KF_GPU_RESET_KEEP_DISPLAY);
@@ -240,7 +240,7 @@ void display_initialize(void)
     display_reset();
 }
 
-ADDRESS(0x8002d248, 0xe4)
+ADDRESS(0x8002df80, 0xe4)
 void display_reset(void)
 {
     u8 *memory;
@@ -274,7 +274,7 @@ void display_reset(void)
     pool_reset();
 }
 
-ADDRESS(0x8002d32c, 0x98)
+ADDRESS(0x8002e064, 0x98)
 void display_begin_frame(void)
 {
     DISPLAY.buffer_index = display_next_buffer(DISPLAY.buffer_index);
@@ -287,7 +287,7 @@ void display_begin_frame(void)
     GRAPHICS.frame_counter_a = 0;
 }
 
-ADDRESS(0x8002d3c4, 0x94)
+ADDRESS(0x8002e0fc, 0x94)
 void display_present_frame(void)
 {
     DrawSync(0);
@@ -297,32 +297,32 @@ void display_present_frame(void)
     DrawOTag(DISPLAY.ordering_table + (KF_GAME_ORDERING_TABLE_LENGTH - 1));
 }
 
-ADDRESS(0x8002d458, 0x2c)
+ADDRESS(0x8002e190, 0x2c)
 void tmd_select(u16 slot)
 {
     GRAPHICS.tmd_state.current_asset = GRAPHICS.tmd_state.slots[slot];
 }
 
-ADDRESS(0x8002d484, 0x24)
+ADDRESS(0x8002e1bc, 0x24)
 KfTmdObject *tmd_get_object(u16 index)
 {
     return TMD_OBJECTS(GRAPHICS.tmd_state.current_asset) + index;
 }
 
-ADDRESS(0x8002d4a8, 0x10)
+ADDRESS(0x8002e1e0, 0x10)
 void tmd_set_current_vertices(SVECTOR *vertices)
 {
     GRAPHICS.current_tmd_vertices = vertices;
 }
 
-ADDRESS(0x8002d4b8, 0x3c)
+ADDRESS(0x8002e1f0, 0x3c)
 void tmd_select_object_vertices(u16 index)
 {
     GRAPHICS.current_tmd_vertices =
         TMD_OBJECT_VERTICES(GRAPHICS.tmd_state.current_asset, tmd_get_object(index));
 }
 
-ADDRESS(0x8002d4f4, 0xe8)
+ADDRESS(0x8002e22c, 0xe8)
 void display_set_view_transform(const VECTOR *position, const SVECTOR *rotation)
 {
     struct KfEulerAngles angles;
@@ -345,7 +345,7 @@ void display_set_view_transform(const VECTOR *position, const SVECTOR *rotation)
     matrix_set_rotation_x(angles.x, &GRAPHICS.render_state.pitch_matrix);
 }
 
-ADDRESS(0x8002d5dc, 0x2d4)
+ADDRESS(0x8002e314, 0x2d4)
 void tmd_prepare_primitive_indices(KfTmdHeader *tmd)
 {
     KfTmdObject *object;
@@ -441,26 +441,26 @@ void tmd_prepare_primitive_indices(KfTmdHeader *tmd)
     }
 }
 
-ADDRESS(0x8002d8b0, 0x40)
+ADDRESS(0x8002e5e8, 0x40)
 void tmd_register(u16 slot, KfTmdHeader *tmd)
 {
     game_graphics_runtime.tmd_state.current_asset = game_graphics_runtime.tmd_state.slots[slot] = tmd;
     tmd_prepare_primitive_indices(tmd);
 }
 
-ADDRESS(0x8002d8f0, 0x20)
+ADDRESS(0x8002e628, 0x20)
 void tmd_set_slot(u16 slot, KfTmdHeader *tmd)
 {
     game_graphics_runtime.tmd_state.slots[slot] = tmd;
 }
 
 /* Left empty in retail. */
-ADDRESS(0x8002d910, 0x8)
+ADDRESS(0x8002e648, 0x8)
 void tmd_release_slot(void)
 {
 }
 
-ADDRESS(0x8002d918, 0x17c)
+ADDRESS(0x8002e650, 0x17c)
 void tmd_project_vertices_with_fog(s32 count)
 {
     KfScreenVertex *projected;
@@ -506,7 +506,7 @@ void tmd_project_vertices_with_fog(s32 count)
     }
 }
 
-ADDRESS(0x8002da94, 0x144)
+ADDRESS(0x8002e7cc, 0x144)
 void tmd_project_vertices_mark_clipped(s32 count)
 {
     KfScreenVertex *projected;
@@ -546,7 +546,7 @@ void tmd_project_vertices_mark_clipped(s32 count)
     }
 }
 
-ADDRESS(0x8002dbd8, 0xa8)
+ADDRESS(0x8002e910, 0xa8)
 void tmd_transform_vertices(s32 count)
 {
     KfScreenVertex *projected;
@@ -568,7 +568,7 @@ void tmd_transform_vertices(s32 count)
     }
 }
 
-ADDRESS(0x8002dc80, 0xa8)
+ADDRESS(0x8002e9b8, 0xa8)
 void tmd_transform_vertices_depth(s32 count, s16 depth)
 {
     KfScreenVertex *projected;
@@ -590,7 +590,7 @@ void tmd_transform_vertices_depth(s32 count, s16 depth)
     }
 }
 
-ADDRESS(0x8002dd28, 0x8c)
+ADDRESS(0x8002ea60, 0x8c)
 void tmd_project_vertices(s32 count)
 {
     KfScreenVertex *projected;
@@ -615,7 +615,7 @@ void tmd_project_vertices(s32 count)
 #define TMD_VECTOR(base, offset) ((SVECTOR *)((u8 *)(base) + (offset)))
 #define TMD_XY(vertex) (*(long *)(vertex))
 
-ADDRESS(0x8002ddb4, 0x728)
+ADDRESS(0x8002eaec, 0x728)
 void render_enqueue_blended_tmd(u16 object_index, s32 depth_bias,
                    KF_ENUM_PARAM(KfRenderQueueMode, s32) render_mode)
 {
@@ -820,7 +820,7 @@ void render_enqueue_blended_tmd(u16 object_index, s32 depth_bias,
     }
 }
 
-ADDRESS(0x8002e4dc, 0x704)
+ADDRESS(0x8002f214, 0x704)
 void render_enqueue_textured_tmd(u16 object_index, s32 depth_bias)
 {
     KfTmdObject *object;
@@ -1023,7 +1023,7 @@ void render_enqueue_textured_tmd(u16 object_index, s32 depth_bias)
     }
 }
 
-ADDRESS(0x8002ebe0, 0x5b4)
+ADDRESS(0x8002f918, 0x5b4)
 void render_enqueue_tmd_fixed_depth(u16 object_index, s32 blend_mode, s32 fixed_depth)
 {
     KfTmdObject *object;
@@ -1210,7 +1210,7 @@ void render_enqueue_tmd_fixed_depth(u16 object_index, s32 blend_mode, s32 fixed_
     }
 }
 
-ADDRESS(0x8002f194, 0x41c)
+ADDRESS(0x8002fecc, 0x41c)
 void render_enqueue_map(u16 object_index)
 {
     KfTmdObject *object;
@@ -1328,7 +1328,7 @@ void render_enqueue_map(u16 object_index)
     (game_graphics_runtime.clip_result_vertices[index])
 #define CLIPPED_MAP_XY(vertex) (*(long *)&(vertex)->sxy)
 
-ADDRESS(0x8002f5b0, 0x258)
+ADDRESS(0x800302e8, 0x258)
 void render_enqueue_clipped_tmd_polygon(s32 vertex_count, SVECTOR *normal, u16 clut, u16 tpage,
                    u32 mode, s32 depth_bias)
 {
@@ -1399,7 +1399,7 @@ void render_enqueue_clipped_tmd_polygon(s32 vertex_count, SVECTOR *normal, u16 c
 #define FT4_FACE ((KfTmdFt4 *)packet)
 #define FT3_FACE ((KfTmdFt3 *)packet)
 
-ADDRESS(0x8002f808, 0x754)
+ADDRESS(0x80030540, 0x754)
 void render_enqueue_tmd_with_clipping(u16 object_index, s32 depth_bias,
                    KfTmdPreparedAsset *prepared_asset)
 {
@@ -1648,7 +1648,7 @@ void render_enqueue_tmd_with_clipping(u16 object_index, s32 depth_bias,
     packet += (WORD_BYTE(1) + 1) * KF_TMD_WORD_BYTES; \
 } while (0)
 
-ADDRESS(0x8002ff5c, 0xcbc)
+ADDRESS(0x80030c94, 0xcbc)
 void tmd_prepare_subdivided_object(KfTmdHeader *asset, s32 object_index, u8 *out)
 {
     SVECTOR corners[4];
@@ -1815,7 +1815,7 @@ void tmd_prepare_subdivided_object(KfTmdHeader *asset, s32 object_index, u8 *out
 #undef SUBDIVIDE_WRITE_INDEX_WORD
 #undef SUBDIVIDE_NEXT_PACKET
 
-ADDRESS(0x80030c18, 0x1cc)
+ADDRESS(0x80031950, 0x1cc)
 void render_map_cell_object(const KfMapCellShape *shape, SVECTOR *position,
                             KfMapLayerMask flags)
 {
@@ -1874,7 +1874,7 @@ enum {
     KF_MAP_GRID_ELEVATION_LENGTH = 1 << KF_MAP_CELL_ELEVATION_SHIFT
 };
 
-ADDRESS(0x80030de4, 0x178)
+ADDRESS(0x80031b1c, 0x178)
 void render_map_cell_layers(s32 x, s32 z, KfMapLayerMask flags)
 {
     KfMapOccupancyCell *cell = &bss_801c7540.map_cells[z][x];
@@ -1917,7 +1917,7 @@ void render_map_cell_layers(s32 x, s32 z, KfMapLayerMask flags)
     }
 }
 
-ADDRESS(0x80030f5c, 0xc8)
+ADDRESS(0x80031c94, 0xc8)
 void render_map_cell_window(void)
 {
     s32 row;
@@ -1952,7 +1952,7 @@ void render_map_cell_window(void)
     }
 }
 
-ADDRESS(0x80031024, 0x18c)
+ADDRESS(0x80031d5c, 0x18c)
 void render_active_model_rows(void)
 {
     KfRenderModelRow *entry;
@@ -1998,7 +1998,7 @@ void render_active_model_rows(void)
     } while (entry->state != KF_SPRITE_END);
 }
 
-ADDRESS(0x800311b0, 0x144)
+ADDRESS(0x80031ee8, 0x144)
 void render_textured_quad(s32 x, s32 y, s32 right, s32 bottom,
                    u8 texture_u, u8 texture_v, u8 texture_width,
                    u8 texture_height, u8 semitrans, u16 tpage,
@@ -2037,7 +2037,7 @@ void render_textured_quad(s32 x, s32 y, s32 right, s32 bottom,
     }
 }
 
-ADDRESS(0x800312f4, 0x90)
+ADDRESS(0x8003202c, 0x90)
 void render_sliding_panel_primary(void)
 {
     s32 y = player_state.collision_lower_clearance;
@@ -2052,7 +2052,7 @@ void render_sliding_panel_primary(void)
     }
 }
 
-ADDRESS(0x80031384, 0x90)
+ADDRESS(0x800320bc, 0x90)
 void render_sliding_panel_secondary(void)
 {
     s32 y = player_state.collision_upper_clearance;
@@ -2067,7 +2067,7 @@ void render_sliding_panel_secondary(void)
     }
 }
 
-ADDRESS(0x80031414, 0xc0)
+ADDRESS(0x8003214c, 0xc0)
 void render_color_overlay(void)
 {
     if (game_graphics_runtime.color_overlay_control != KF_COLOR_OVERLAY_OFF) {
@@ -2084,7 +2084,7 @@ void render_color_overlay(void)
     }
 }
 
-ADDRESS(0x800314d4, 0x28)
+ADDRESS(0x8003220c, 0x28)
 void render_set_color_overlay(KfColorOverlayControl control, u8 red, u8 green, u8 blue)
 {
     game_graphics_runtime.color_overlay_control = control;
@@ -2093,7 +2093,7 @@ void render_set_color_overlay(KfColorOverlayControl control, u8 red, u8 green, u
     game_graphics_runtime.color_overlay_rgb[2] = blue;
 }
 
-ADDRESS(0x800314fc, 0x138)
+ADDRESS(0x80032234, 0x138)
 void render_accumulated_color_overlay(void)
 {
     if (game_graphics_runtime.color_overlay_sample_count != 0) {
@@ -2109,7 +2109,7 @@ void render_accumulated_color_overlay(void)
     }
 }
 
-ADDRESS(0x80031634, 0x94)
+ADDRESS(0x8003236c, 0x94)
 void accumulate_color_overlay(s32 first, s32 second, s32 third, s32 scale)
 {
     game_graphics_runtime.color_overlay_sample_count++;
@@ -2118,7 +2118,7 @@ void accumulate_color_overlay(s32 first, s32 second, s32 third, s32 scale)
     game_graphics_runtime.color_overlay_blue_sum += (third * scale) >> KF_FIXED12_BITS;
 }
 
-ADDRESS(0x800316c8, 0x188)
+ADDRESS(0x80032400, 0x188)
 void render_player_weapon(void)
 {
     s32 cell_x;
@@ -2164,7 +2164,7 @@ void render_player_weapon(void)
     }
 }
 
-ADDRESS(0x80031850, 0x53c)
+ADDRESS(0x80032588, 0x53c)
 void render_world_model(KfMapLayerMask map_layer, u16 asset_index, const VECTOR *position,
                    const struct KfEulerAngles *rotation, const SVECTOR *scale,
                    KfPoolRecord **cache, MATRIX *world_matrix, KF_ENUM_PARAM(KfAnimationClip, u16) clip,
@@ -2311,7 +2311,7 @@ void render_world_model(KfMapLayerMask map_layer, u16 asset_index, const VECTOR 
     }
 }
 
-ADDRESS(0x80031d8c, 0x214)
+ADDRESS(0x80032ac4, 0x214)
 void render_animated_object(u16 asset_index, const struct KfEulerAngles *rotation,
                    KfPoolRecord **cache, KF_ENUM_PARAM(KfAnimationClip, u16) clip, u16 phase,
                    s32 blend_mode, s32 lighting_flags, s16 depth)
@@ -2363,7 +2363,7 @@ void render_animated_object(u16 asset_index, const struct KfEulerAngles *rotatio
     }
 }
 
-ADDRESS(0x80031fa0, 0x68)
+ADDRESS(0x80032cd8, 0x68)
 KfAssetHeader *resource_registry_get(u16 index)
 {
     KfAssetHeader *asset = game_graphics_runtime.asset_registry_entries[index];
@@ -2378,7 +2378,7 @@ KfAssetHeader *resource_registry_get(u16 index)
     return NULL;
 }
 
-ADDRESS(0x80032008, 0x38)
+ADDRESS(0x80032d40, 0x38)
 void resource_tmd_read_complete(u8 *data)
 {
     KfAssetHeader *asset = (KfAssetHeader *)data;
@@ -2387,7 +2387,7 @@ void resource_tmd_read_complete(u8 *data)
     memory_block_set_kind(data, KF_MEMORY_BLOCK_OWNED);
 }
 
-ADDRESS(0x80032040, 0x70)
+ADDRESS(0x80032d78, 0x70)
 KF_ENUM_PARAM(KfMapLayerMask, u32) map_cell_layer_mask(const VECTOR *position)
 {
     s32 z = (position->vz >> KF_MAP_CELL_POSITION_SHIFT) + game_graphics_runtime.render_state.cell_origin_z;
@@ -2403,7 +2403,7 @@ KF_ENUM_PARAM(KfMapLayerMask, u32) map_cell_layer_mask(const VECTOR *position)
     return game_graphics_runtime.render_grid.map_cell_layer_masks[z][x];
 }
 
-ADDRESS(0x800320b0, 0xc4)
+ADDRESS(0x80032de8, 0xc4)
 KF_ENUM_PARAM(KfMapLayerMask, u32) map_cell_layer_mask_radius(
     const VECTOR *position, s32 radius)
 {
@@ -2434,7 +2434,7 @@ KF_ENUM_PARAM(KfMapLayerMask, u32) map_cell_layer_mask_radius(
     return mask;
 }
 
-ADDRESS(0x80032174, 0x64)
+ADDRESS(0x80032eac, 0x64)
 b32 map_cell_visible(const VECTOR *position, s32 radius_x, s32 radius_z)
 {
     s32 z = position->vz >> KF_MAP_CELL_POSITION_SHIFT;
@@ -2451,7 +2451,7 @@ b32 map_cell_visible(const VECTOR *position, s32 radius_x, s32 radius_z)
     return KF_FALSE;
 }
 
-ADDRESS(0x800321d8, 0x9c)
+ADDRESS(0x80032f10, 0x9c)
 void resource_tmd_queue_read(s32 archive_slot, s32 entry, s32 registry_index)
 {
     u32 size = cd_archive_entry_size(archive_slot, entry);
@@ -2468,7 +2468,7 @@ void resource_tmd_queue_read(s32 archive_slot, s32 entry, s32 registry_index)
     }
 }
 
-ADDRESS(0x80032274, 0xf0)
+ADDRESS(0x80032fac, 0xf0)
 void resource_vab_update_range(s32 archive_slot, s32 entry, s32 vab_slot,
     s32 count, b8 *flags)
 {
@@ -2492,7 +2492,7 @@ void resource_vab_update_range(s32 archive_slot, s32 entry, s32 vab_slot,
     }
 }
 
-ADDRESS(0x80032364, 0x118)
+ADDRESS(0x8003309c, 0x118)
 void resource_tmd_update_range(s32 archive_slot, s32 entry, s32 registry_index,
     s32 count, b8 *flags)
 {
@@ -2519,7 +2519,7 @@ void resource_tmd_update_range(s32 archive_slot, s32 entry, s32 registry_index,
     }
 }
 /* The two flag ranges are consumed as byte arrays by the resource updaters. */
-ADDRESS(0x8003247c, 0xb70)
+ADDRESS(0x800331b4, 0xb70)
 void render_scene_and_update_resources(void)
 {
     struct KfEulerAngles rotation;
@@ -2830,7 +2830,7 @@ map_radius_check:
     game_graphics_runtime.map_placed_frame_counter++;
 }
 
-ADDRESS(0x80032fec, 0x154)
+ADDRESS(0x80033d24, 0x154)
 void notification_draw_quad(const KfNotificationQuad *source, u16 tpage_flags, const u8 *color)
 {
     POLY_FT4 *quad = (POLY_FT4 *)game_graphics_runtime.display_state.primitive_buffer->cursor;
@@ -2857,7 +2857,7 @@ void notification_draw_quad(const KfNotificationQuad *source, u16 tpage_flags, c
     AddPrim((void *)(game_graphics_runtime.display_state.ordering_table + 1), (void *)quad);
 }
 
-ADDRESS(0x80033140, 0x90)
+ADDRESS(0x80033e78, 0x90)
 void notification_draw(void)
 {
     KfNotificationQuad *quad = notification_quads;
@@ -2876,7 +2876,7 @@ void notification_draw(void)
     } while (quad->kind != KF_SPRITE_END);
 }
 
-ADDRESS(0x800331d0, 0xa4)
+ADDRESS(0x80033f08, 0xa4)
 void notify_enqueue(KF_ENUM_PARAM(KfNotificationId, s32) message_id, ...)
 {
     u8 *head;
@@ -2897,7 +2897,7 @@ void notify_enqueue(KF_ENUM_PARAM(KfNotificationId, s32) message_id, ...)
     }
 }
 
-ADDRESS(0x80033274, 0x10)
+ADDRESS(0x80033fac, 0x10)
 void notification_digit_set_v(KfNotificationDigitSprite *sprite, s32 digit)
 {
     sprite->texture_v = digit * 15;
@@ -2920,7 +2920,7 @@ static inline void notification_dequeue_group(void)
     control->effect_phase = KF_NOTIFICATION_IDLE;
 }
 
-ADDRESS(0x80033284, 0x300)
+ADDRESS(0x80033fbc, 0x300)
 void notification_update(void)
 {
     switch (game_graphics_runtime.notification_control.effect_phase) {
@@ -2992,14 +2992,14 @@ void notification_update(void)
     }
 }
 
-ADDRESS(0x80033584, 0x1c)
+ADDRESS(0x800342bc, 0x1c)
 void display_toggle_buffer_index(void)
 {
     game_graphics_runtime.display_state.buffer_index =
         display_next_buffer(game_graphics_runtime.display_state.buffer_index);
 }
 
-ADDRESS(0x800335a0, 0x3f4)
+ADDRESS(0x800342d8, 0x3f4)
 void render_game_frame(const VECTOR *position, const SVECTOR *rotation)
 {
     s32 remainder;
@@ -3092,7 +3092,7 @@ enum {
     KF_MENU_MODEL_FOG_NEAR = 0x59d8
 };
 
-ADDRESS(0x80033994, 0x68)
+ADDRESS(0x800346cc, 0x68)
 void menu_render_item_model(void)
 {
     SetBackColor(KF_MENU_MODEL_BACK_COLOR, KF_MENU_MODEL_BACK_COLOR, KF_MENU_MODEL_BACK_COLOR);
@@ -3104,7 +3104,7 @@ void menu_render_item_model(void)
     render_enqueue_textured_tmd(0, 0);
 }
 
-ADDRESS(0x800339fc, 0xb8)
+ADDRESS(0x80034734, 0xb8)
 void asset_registry_load_tmd_archive(u16 first_asset_id, u8 *archive)
 {
     u16 count = *(u16 *)archive;
@@ -3124,7 +3124,7 @@ void asset_registry_load_tmd_archive(u16 first_asset_id, u8 *archive)
     }
 }
 
-ADDRESS(0x80033ab4, 0x48)
+ADDRESS(0x800347ec, 0x48)
 void asset_registry_set(u16 index, KfAssetHeader *asset)
 {
     game_graphics_runtime.asset_registry_entries[index] = asset;
@@ -3132,7 +3132,7 @@ void asset_registry_set(u16 index, KfAssetHeader *asset)
     tmd_prepare_primitive_indices(game_graphics_runtime.tmd_state.current_asset);
 }
 
-ADDRESS(0x80033afc, 0x38)
+ADDRESS(0x80034834, 0x38)
 void asset_registry_select(u16 index)
 {
     KfAssetHeader *asset = game_graphics_runtime.asset_registry_entries[index];
@@ -3142,7 +3142,7 @@ void asset_registry_select(u16 index)
 
 enum { KF_ANIMATION_BLEND_ONE = 0x1000, KF_ANIMATION_BLEND_SHIFT = 12 };
 
-ADDRESS(0x80033b34, 0xc8)
+ADDRESS(0x8003486c, 0xc8)
 KfAnimKeyframe *animation_select_keyframe(KfAssetHeader *asset,
     KF_ENUM_PARAM(KfAnimationClip, s32) clip_index, s32 phase, s32 *keyframe_index,
     u32 *blend_fraction)
@@ -3183,7 +3183,7 @@ selected:
 
 enum { KF_ANIMATION_SPARSE_SKIP = -32768 };
 
-ADDRESS(0x80033bfc, 0xc4)
+ADDRESS(0x80034934, 0xc4)
 void animation_expand_sparse_vertices(SVECTOR *vertices, const SVECTOR *base,
                                       const s16 *encoded)
 {
@@ -3210,7 +3210,7 @@ void animation_expand_sparse_vertices(SVECTOR *vertices, const SVECTOR *base,
     }
 }
 
-ADDRESS(0x80033cc0, 0x7c)
+ADDRESS(0x800349f8, 0x7c)
 void animation_decode_sparse_vertices(SVECTOR *vertices, const s16 *encoded)
 {
     s32 remaining = *encoded++;
@@ -3229,7 +3229,7 @@ void animation_decode_sparse_vertices(SVECTOR *vertices, const s16 *encoded)
     }
 }
 
-ADDRESS(0x80033d3c, 0x2b8)
+ADDRESS(0x80034a74, 0x2b8)
 void animation_apply_sparse_morph(SVECTOR *vertices, const s16 *encoded, s32 blend_fraction)
 {
     MATRIX deltas;
@@ -3310,7 +3310,7 @@ void animation_apply_sparse_morph(SVECTOR *vertices, const s16 *encoded, s32 ble
     }
 }
 
-ADDRESS(0x80033ff4, 0x7c)
+ADDRESS(0x80034d2c, 0x7c)
 const s16 *animation_find_sparse_vertex(const s16 *encoded, s32 vertex_index)
 {
     s32 remaining = *encoded;
@@ -3338,7 +3338,7 @@ const s16 *animation_find_sparse_vertex(const s16 *encoded, s32 vertex_index)
 }
 
 
-ADDRESS(0x80034070, 0x2d4)
+ADDRESS(0x80034da8, 0x2d4)
 s32 animation_prepare_asset_vertices(KfPoolRecord **owner_slot, s32 asset_index,
                   KF_ENUM_PARAM(KfAnimationClip, s32) clip,
                   s32 phase, s32 vertex_count)
@@ -3432,7 +3432,7 @@ allocate_vertices:
     return (s32)record;
 }
 
-ADDRESS(0x80034344, 0x2a0)
+ADDRESS(0x8003507c, 0x2a0)
 b32 animation_sample_vertex(s32 asset_index, KF_ENUM_PARAM(KfAnimationClip, s32) clip, s32 phase,
                             s32 vertex_index,
                   SVECTOR *output)
@@ -3499,7 +3499,7 @@ finished:
     return KF_FALSE;
 }
 
-ADDRESS(0x800345e4, 0x60)
+ADDRESS(0x8003531c, 0x60)
 u32 asset_vertex_count(s32 asset_index, KF_ENUM_PARAM(KfAnimationClip, s32) clip)
 {
     KfAssetHeader *asset = game_graphics_runtime.asset_registry_entries[asset_index];
@@ -3520,7 +3520,7 @@ u32 asset_vertex_count(s32 asset_index, KF_ENUM_PARAM(KfAnimationClip, s32) clip
  * frames. Records advance free -> live and are marked stale each frame so the
  * render pass can revalidate them before pool_release_stale frees the rest.
  */
-ADDRESS(0x80034644, 0x30)
+ADDRESS(0x8003537c, 0x30)
 void pool_reset(void)
 {
     KfPoolRecord *record = game_graphics_runtime.pool_records;
@@ -3533,7 +3533,7 @@ void pool_reset(void)
     } while (--records_left != 0);
 }
 
-ADDRESS(0x80034674, 0x3c)
+ADDRESS(0x800353ac, 0x3c)
 void pool_mark_allocated(void)
 {
     KfPoolRecord *record = game_graphics_runtime.pool_records;
@@ -3547,7 +3547,7 @@ void pool_mark_allocated(void)
     } while (--records_left != 0);
 }
 
-ADDRESS(0x800346b0, 0x48)
+ADDRESS(0x800353e8, 0x48)
 void pool_record_release(KfPoolRecord *record)
 {
     record->state = KF_ANIMATION_CACHE_FREE;
@@ -3558,7 +3558,7 @@ void pool_record_release(KfPoolRecord *record)
     }
 }
 
-ADDRESS(0x800346f8, 0x6c)
+ADDRESS(0x80035430, 0x6c)
 void pool_release_all(void)
 {
     KfPoolRecord *record = game_graphics_runtime.pool_records;
@@ -3572,7 +3572,7 @@ void pool_release_all(void)
     }
 }
 
-ADDRESS(0x80034764, 0x6c)
+ADDRESS(0x8003549c, 0x6c)
 void pool_release_stale(void)
 {
     KfPoolRecord *record = game_graphics_runtime.pool_records;
@@ -3586,7 +3586,7 @@ void pool_release_stale(void)
     } while (--records_left != 0);
 }
 
-ADDRESS(0x800347d0, 0x48)
+ADDRESS(0x80035508, 0x48)
 KfPoolRecord *pool_allocate(void)
 {
     KfPoolRecord *record = game_graphics_runtime.pool_records;
@@ -3604,7 +3604,7 @@ KfPoolRecord *pool_allocate(void)
 
 enum { KF_MAP_PLACED_RANDOM_SHIFT = 15 };
 
-ADDRESS(0x80034818, 0x134)
+ADDRESS(0x80035550, 0x134)
 void map_placed_expand_sources(const KfMapPlacedSource *sources)
 {
     KfMapPlacedEntry *entry = game_graphics_runtime.map_placed_entries;
@@ -3629,7 +3629,7 @@ void map_placed_expand_sources(const KfMapPlacedSource *sources)
     }
 }
 
-ADDRESS(0x8003494c, 0x70)
+ADDRESS(0x80035684, 0x70)
 void tim_upload_images(u8 *tim_data)
 {
     TIM_IMAGE image;
@@ -3660,7 +3660,7 @@ enum {
     KF_MENU_FADE_FIRST_VRAM_SLICE_WIDTH = 192
 };
 
-ADDRESS(0x800349bc, 0x454)
+ADDRESS(0x800356f4, 0x454)
 s32 menu_fade_transition(s32 level, s32 step)
 {
     POLY_FT4 *quad;
@@ -3740,7 +3740,7 @@ enum {
          KF_MENU_TRANSITION_IMAGE_BYTES) / KF_DISPLAY_BUFFER_COUNT
 };
 
-ADDRESS(0x80034e10, 0x180)
+ADDRESS(0x80035b48, 0x180)
 void menu_show_transition_image(u16 archive_slot, u16 archive_entry)
 {
     s32 frame;

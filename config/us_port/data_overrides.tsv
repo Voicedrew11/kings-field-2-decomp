@@ -1,0 +1,23 @@
+# Hand-placed data the map could not translate. us_va empty: absent from the US build.
+image	jp_va	jp_size	us_va	us_size	evidence
+GAME.EXE	0x80064910	0xdc	0x80065674	0x108	US menu label rows are 0x18 wide (JP 0x14); first table reached from the US menu code
+GAME.EXE	0x800649ec	0x14	0x8006577c	0x18	one 0x18 row after the 11 category rows
+GAME.EXE	0x80064a00	0xf0	0x80065794	0x120	12 rows of 0x18, each row referenced by the US menu code
+GAME.EXE	0x80064af0	0x140	0x800658b4	0x270	rows of 0x18 up to menu_glyph_rows at 0x80065b24
+GAME.EXE	0x8006d678	0x8	0x8006e564	0x4	provisional: US keeps 4 zero bytes here, then a new 0x4c-byte table
+OPEN.EXE	0x8003db8c	0x5			US OPEN names its file "OPU.D" as a .rdata literal at 0x80011000
+END.EXE	0x8003aa38	0x5			US END loads no data file
+END.EXE	0x8003aa40	0x5			US END paths are .rdata literals ("\OP\ED0.S;1", "\OP\ED1.S;1")
+END.EXE	0x8003aa48	0x3			as above
+END.EXE	0x800a2888	0x4			US END has no sequence audio
+END.EXE	0x800a2988	0x2			US END has no sequence audio
+END.EXE	0x800a2998	0x8			LIBSND member not linked in US END
+END.EXE	0x800a29a8	0x800			LIBSND member not linked in US END
+END.EXE	0x800a31a8	0x4			US END has no sequence audio
+END.EXE	0x800a31b0	0x2			US END has no sequence audio
+END.EXE	0x800a31f0	0x4			US END loads no data file
+END.EXE	0x800a93f0	0x8			LIBSND member not linked in US END
+END.EXE	0x800a93f8	0x158			US END has no sequence audio
+END.EXE	0x800a9550	0x80			LIBSND member not linked in US END
+GAME.EXE	0x800667e8	0x14	0x800676dc	0xc	US keeps the 12 magic IDs; the 8 bytes of attack masks that follow in JP are gone
+END.EXE	0x8003aa3d	0x3			census fragment of the JP "ED.D" .sdata, absent in US

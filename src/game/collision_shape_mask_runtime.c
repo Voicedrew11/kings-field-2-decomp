@@ -21,7 +21,7 @@
 
 RODATA(0x8001134c, 0xc4)
 
-ADDRESS(0x8002aaa4, 0xb60)
+ADDRESS(0x8002b7d0, 0xb60)
 KF_ENUM_PARAM(KfCollisionHitFlags, s32) collision_evaluate_shape_records(s32 x, s32 y, s32 z,
                                                                    s32 radius, s32 height)
 {
@@ -393,7 +393,7 @@ next_layer:
     return flags;
 }
 
-ADDRESS(0x8002b604, 0x78)
+ADDRESS(0x8002c330, 0x78)
 s32 collision_probe_floor_height(s32 x, s32 y, s32 z, s32 radius, s32 height)
 {
     collision_sample_map_cell_layer(x, y - 1280, z);
@@ -401,7 +401,7 @@ s32 collision_probe_floor_height(s32 x, s32 y, s32 z, s32 radius, s32 height)
     return KF_COLLISION_CACHE_RESULT;
 }
 
-ADDRESS(0x8002b67c, 0xc0)
+ADDRESS(0x8002c3a8, 0xc0)
 s32 collision_sample_map_layer_height(KfMapLayerMask layer, s32 x, s32 z, s32 radius, s32 height)
 {
     KfMapOccupancyCell *cell = &bss_801c7540.map_cells
@@ -421,7 +421,7 @@ s32 collision_sample_map_layer_height(KfMapLayerMask layer, s32 x, s32 z, s32 ra
     return KF_COLLISION_CACHE_RESULT;
 }
 
-ADDRESS(0x8002b73c, 0xbc)
+ADDRESS(0x8002c468, 0xbc)
 void map_cell_add_layer_occupancy(s32 x, s32 z, s32 radius, s32 amount)
 {
     s32 expanded = radius + (1 << KF_MAP_CELL_POSITION_SHIFT);
@@ -457,7 +457,7 @@ void map_cell_add_layer_occupancy(s32 x, s32 z, s32 radius, s32 amount)
     } while (height != -1);
 }
 
-ADDRESS(0x8002b7f8, 0x7c)
+ADDRESS(0x8002c524, 0x7c)
 KF_ENUM_PARAM(KfCollisionHitFlags, s32) collision_query_shapes_with_layer_sample(s32 x, s32 y, s32 z,
                                                                            s32 radius, s32 height)
 {
@@ -465,7 +465,7 @@ KF_ENUM_PARAM(KfCollisionHitFlags, s32) collision_query_shapes_with_layer_sample
     return collision_evaluate_shape_records(x, y, z, radius, height);
 }
 
-ADDRESS(0x8002b874, 0x160)
+ADDRESS(0x8002c5a0, 0x160)
 void collision_cache_load_hit_bounds(void)
 {
     if ((KF_COLLISION_CACHE_FLAGS & KF_COLLISION_HIT_PLAYER) != KF_COLLISION_HIT_NONE) {
@@ -492,7 +492,7 @@ void collision_cache_load_hit_bounds(void)
     }
 }
 
-ADDRESS(0x8002b9d4, 0x244)
+ADDRESS(0x8002c700, 0x244)
 KF_ENUM_PARAM(KfCollisionHitFlags, s32) collision_query_world(s32 x, s32 y, s32 z, s32 radius,
                                                               s32 height,
                                                               KF_ENUM_PARAM(KfCollisionQuery, u8) mode)
@@ -550,7 +550,7 @@ KF_ENUM_PARAM(KfCollisionHitFlags, s32) collision_query_world(s32 x, s32 y, s32 
     return result;
 }
 
-ADDRESS(0x8002bc18, 0x124)
+ADDRESS(0x8002c944, 0x130)
 void reset_collision_rows_and_overlay(void)
 {
     KfCollisionDefaultRow *defaults = collision_default_rows;
@@ -574,7 +574,7 @@ void reset_collision_rows_and_overlay(void)
     game_graphics_runtime.color_overlay_red_sum = 0;
 }
 
-ADDRESS(0x8002bd3c, 0x80)
+ADDRESS(0x8002ca74, 0x80)
 void refresh_collision_row_rotations(void)
 {
     KfCollisionRow *row;
@@ -596,7 +596,7 @@ void refresh_collision_row_rotations(void)
     }
 }
 
-ADDRESS(0x8002bdbc, 0xe0)
+ADDRESS(0x8002caf4, 0xe0)
 void interpolate_collision_row_fields(KF_ENUM_PARAM(KfCollisionRowFields, s32) flags,
     const KfCollisionFilterPayload *payload,
                    KfCollisionRow *row, s32 amount)
@@ -622,7 +622,7 @@ void interpolate_collision_row_fields(KF_ENUM_PARAM(KfCollisionRowFields, s32) f
     }
 }
 
-ADDRESS(0x8002be9c, 0x9c)
+ADDRESS(0x8002cbd4, 0x9c)
 void interpolate_collision_rows(KF_ENUM_PARAM(KfCollisionRowFields, s32) flags,
     const KfCollisionFilterPayload *payload, s32 amount)
 {
@@ -639,7 +639,7 @@ void interpolate_collision_rows(KF_ENUM_PARAM(KfCollisionRowFields, s32) flags,
     }
 }
 
-ADDRESS(0x8002bf38, 0x74)
+ADDRESS(0x8002cc70, 0x74)
 void interpolate_collision_filter_rows(u8 type0, u8 type1, u8 type2, s32 angle, u16 amount)
 {
     KfCollisionFilterPayload payload;
@@ -658,7 +658,7 @@ void interpolate_collision_filter_rows(u8 type0, u8 type1, u8 type2, s32 angle, 
     interpolate_collision_rows(flags, &payload, (s16)amount);
 }
 
-ADDRESS(0x8002bfac, 0x28)
+ADDRESS(0x8002cce4, 0x28)
 void clear_map_cell_layer_masks(void)
 {
     u32 *mask = (u32 *)game_graphics_runtime.render_grid.map_cell_layer_masks;
@@ -671,7 +671,7 @@ void clear_map_cell_layer_masks(void)
     } while (index != -1);
 }
 
-ADDRESS(0x8002bfd4, 0x19c)
+ADDRESS(0x8002cd0c, 0x19c)
 void rasterize_map_cell_layer_mask_line(const KfCollisionMaskPoint *start,
                    const KfCollisionMaskPoint *end, KfMapLayerMask value)
 {
@@ -730,7 +730,7 @@ void rasterize_map_cell_layer_mask_line(const KfCollisionMaskPoint *start,
     }
 }
 
-ADDRESS(0x8002c170, 0x64)
+ADDRESS(0x8002cea8, 0x64)
 s32 find_map_cell_layer_mask_run_boundary(const KfMapLayerMask *row, s32 index, s32 step,
                    KfMapLayerMask value)
 {
@@ -758,7 +758,7 @@ s32 find_map_cell_layer_mask_run_boundary(const KfMapLayerMask *row, s32 index, 
     }
 }
 
-ADDRESS(0x8002c1d4, 0xbc)
+ADDRESS(0x8002cf0c, 0xbc)
 void fill_map_cell_layer_mask_interior(KfMapLayerMask value)
 {
     KfMapLayerMask *row = &game_graphics_runtime.render_grid.map_cell_layer_masks[0][0];
@@ -782,7 +782,7 @@ void fill_map_cell_layer_mask_interior(KfMapLayerMask value)
     } while (row_index != -1);
 }
 
-ADDRESS(0x8002c290, 0x194)
+ADDRESS(0x8002cfc8, 0x194)
 void update_current_map_cell_layer_mask(s32 cursor_offset)
 {
     KfMapOccupancyCell *cell;
@@ -836,7 +836,7 @@ check_second_layer:
     *render_mask_scan_state.mask_cursor = KF_MAP_LAYER_NONE;
 }
 
-ADDRESS(0x8002c424, 0x24c)
+ADDRESS(0x8002d15c, 0x24c)
 void sweep_map_cell_layer_mask_line(s32 first_offset, s32 second_offset, s32 map_step,
                    s8 window_step, s32 mask_stride, s32 count)
 {
@@ -919,7 +919,7 @@ void sweep_map_cell_layer_mask_line(s32 first_offset, s32 second_offset, s32 map
     render_mask_scan_state.window_z += (dz), \
     render_mask_scan_state.mask_cursor += (dz) * KF_MAP_CELL_GRID_SIDE + (dx))
 
-ADDRESS(0x8002c670, 0x7bc)
+ADDRESS(0x8002d3a8, 0x7bc)
 void build_camera_map_cell_layer_masks(void)
 {
     s16 shape[7];
@@ -1056,5 +1056,5 @@ void build_camera_map_cell_layer_masks(void)
     mask[25] |= KF_MAP_LAYER_NEAR_CLIPPED;
 }
 
-DATA(0x801b5a70, 0x20, ".bss")
+DATA(0x801b69b4, 0x20, ".bss")
 KfRenderMaskScanState render_mask_scan_state;

@@ -12,7 +12,7 @@
 
 RODATA(0x80011104, 0x22)
 
-DATA(0x80066670, 0x10, ".data")
+DATA(0x80067564, 0x10, ".data")
 char memory_card_file_prefix[16] = "BISLPS-00069";
 
 enum {
@@ -38,7 +38,7 @@ enum {
     CARD_ICON_VRAM_HEIGHT = 16
 };
 
-DATA(0x80066680, 0x120, ".data")
+DATA(0x80067574, 0x120, ".data")
 KfCardAssets memory_card_assets = {
     "\202j\202h\202m\202f\201f\202r\201@\202e"
     "\202h\202d\202k\202c\201@\202Q\201|\201@"
@@ -62,36 +62,36 @@ KfCardAssets memory_card_assets = {
     }
 };
 
-DATA(0x8006d6a0, 0x1, ".sdata")
+DATA(0x8006e5d4, 0x1, ".sdata")
 u8 memory_card_loaded_slot = 0;
 
-SDATA(0x8006d6a4, 0xb)
+SDATA(0x8006e5d8, 0xb)
 
-DATA(0x8006da18, 0x4, ".sbss")
+DATA(0x8006e94c, 0x4, ".sbss")
 static long memory_card_io_end_event;
-DATA(0x8006da20, 0x4, ".sbss")
+DATA(0x8006e954, 0x4, ".sbss")
 static long memory_card_timeout_event;
-DATA(0x8006da28, 0x4, ".sbss")
+DATA(0x8006e95c, 0x4, ".sbss")
 static long memory_card_new_device_event;
-DATA(0x8006da30, 0x4, ".sbss")
+DATA(0x8006e964, 0x4, ".sbss")
 static long memory_card_error_event;
 /* Four more private small-BSS slots that no retail code reads or writes;
    their types and roles are unresolved. */
-DATA(0x8006da38, 0x4, ".sbss")
+DATA(0x8006e96c, 0x4, ".sbss")
 static long memory_card_unreferenced_word_0;
-DATA(0x8006da40, 0x4, ".sbss")
+DATA(0x8006e974, 0x4, ".sbss")
 static long memory_card_unreferenced_word_1;
-DATA(0x8006da48, 0x4, ".sbss")
+DATA(0x8006e97c, 0x4, ".sbss")
 static long memory_card_unreferenced_word_2;
-DATA(0x8006da50, 0x4, ".sbss")
+DATA(0x8006e984, 0x4, ".sbss")
 static long memory_card_unreferenced_word_3;
-DATA(0x8006da58, 0x4, ".sbss")
+DATA(0x8006e98c, 0x4, ".sbss")
 static u8 *memory_card_buffer;
 
 /* Retail reserves 0x3f00 bytes: LIBCD's ISO9660 statics start right after
-   them at 0x80071b00, so each KF_CARD_BLOCK_BYTES transfer through
+   them at 0x80072a3c, so each KF_CARD_BLOCK_BYTES transfer through
    memory_card_buffer runs 0x100 bytes into that library scratch. */
-DATA(0x8006dc00, 0x3f00, ".bss")
+DATA(0x8006eb3c, 0x3f00, ".bss")
 static u8 memory_card_buffer_storage[0x3f00];
 /* LIBAPI's HwCARD, EvSpIOE, EvSpTIMOUT, EvSpNEW, EvSpERROR and EvMdNOINTR,
  * which the Psy-Q 3.0 kit's headers do not define. */
@@ -108,7 +108,7 @@ enum {
     CARD_READ_MAX_RETRIES = 2
 };
 
-ADDRESS(0x80022438, 0x30)
+ADDRESS(0x80022efc, 0x30)
 void input_wait_release(void)
 {
     input_press_pending = KF_FALSE;
@@ -116,7 +116,7 @@ void input_wait_release(void)
     }
 }
 
-ADDRESS(0x80022468, 0xe8)
+ADDRESS(0x80022f2c, 0xe8)
 void memory_card_initialize(void)
 {
     memory_card_io_end_event = OpenEvent(CARD_EVENT_CLASS, CARD_EVENT_SPEC_IO_END,
@@ -134,7 +134,7 @@ void memory_card_initialize(void)
     memory_card_buffer = memory_card_buffer_storage;
 }
 
-ADDRESS(0x80022550, 0x60)
+ADDRESS(0x80023014, 0x60)
 void memory_card_shutdown_events(void)
 {
     CloseEvent(memory_card_io_end_event);
@@ -144,21 +144,21 @@ void memory_card_shutdown_events(void)
     StopCARD();
 }
 
-ADDRESS(0x800225b0, 0x28)
+ADDRESS(0x80023074, 0x28)
 void memory_card_start(void)
 {
     StartCARD();
     _bu_init();
 }
 
-ADDRESS(0x800225d8, 0x28)
+ADDRESS(0x8002309c, 0x28)
 void memory_card_stop(void)
 {
     StopCARD();
     PadInit(0);
 }
 
-ADDRESS(0x80022600, 0xec)
+ADDRESS(0x800230c4, 0xec)
 s32 memory_card_probe_temporary_file(void)
 {
     char path[26] = "bu00:BISLPS-00069TEMP    ";
@@ -176,7 +176,7 @@ s32 memory_card_probe_temporary_file(void)
     bios_delete(path);
     return handle == -1 ? KF_CARD_PROBE_CREATE_FAILED : KF_CARD_PROBE_OK;
 }
-ADDRESS(0x800226ec, 0x1dc)
+ADDRESS(0x800231b0, 0x1dc)
 b32 memory_card_scan_save_entries(struct DIRENTRY *entries, s32 *matching_count)
 {
     struct DIRENTRY ordered[KF_CARD_DIRECTORY_CAPACITY];
@@ -213,7 +213,7 @@ b32 memory_card_scan_save_entries(struct DIRENTRY *entries, s32 *matching_count)
     return total_size > CARD_USED_BYTES_LIMIT_FOR_NEW_FILE;
 }
 
-ADDRESS(0x800228c8, 0x280)
+ADDRESS(0x8002338c, 0x280)
 b32 memory_card_read_slot_summary(const char *filename, s32 *experience, s32 *level,
     s32 *slot)
 {
@@ -262,13 +262,13 @@ b32 memory_card_read_slot_summary(const char *filename, s32 *experience, s32 *le
     return KF_FALSE;
 }
 
-ADDRESS(0x80022b48, 0x2c)
+ADDRESS(0x8002360c, 0x2c)
 b32 memory_card_format(void)
 {
     return format("bu00:") != 1;
 }
 
-ADDRESS(0x80022b74, 0x12c)
+ADDRESS(0x80023638, 0x12c)
 s32 memory_card_read_slot(s32 slot)
 {
     char path[40] = "bu00:";
@@ -305,7 +305,7 @@ retry:
     return status;
 }
 
-ADDRESS(0x80022ca0, 0x4d8)
+ADDRESS(0x80023764, 0x55c)
 s32 memory_card_write_slot(s32 slot)
 {
     struct DIRENTRY entries[KF_CARD_DIRECTORY_CAPACITY];
@@ -396,7 +396,7 @@ s32 memory_card_write_slot(s32 slot)
     return KF_CARD_WRITE_OK;
 }
 
-ADDRESS(0x80023178, 0x110)
+ADDRESS(0x80023cc0, 0x110)
 void memory_card_write_title_stats(KfCardHeader *header, s32 slot_glyph)
 {
     s32 experience = player_state.experience;
@@ -428,7 +428,7 @@ void memory_card_write_title_stats(KfCardHeader *header, s32 slot_glyph)
     }
 }
 
-ADDRESS(0x80023288, 0x24)
+ADDRESS(0x80023dd0, 0x24)
 u32 memory_card_payload_byte_sum(const u8 *payload)
 {
     u32 sum = 0;
@@ -440,7 +440,7 @@ u32 memory_card_payload_byte_sum(const u8 *payload)
     return sum;
 }
 
-ADDRESS(0x800232ac, 0x80)
+ADDRESS(0x80023df4, 0x80)
 s32 memory_card_wait_event(void)
 {
     for (;;) {
@@ -459,7 +459,7 @@ s32 memory_card_wait_event(void)
     }
 }
 
-ADDRESS(0x8002332c, 0x58)
+ADDRESS(0x80023e74, 0x58)
 void memory_card_clear_events(void)
 {
     TestEvent(memory_card_io_end_event);

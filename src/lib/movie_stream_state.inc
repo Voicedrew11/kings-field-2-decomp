@@ -15,37 +15,37 @@
 #define VLC_BUFFER_HEIGHT 256
 
 /* TUTO0.C's movie size; nothing in either retail image reads them. */
-DATA_AT("OPEN", 0x8003dbbc, 0x4, ".sdata")
-DATA_AT("END", 0x8003aa4c, 0x4, ".sdata")
+DATA_AT("OPEN", 0x8003e74c, 0x4, ".sdata")
+DATA_AT("END", 0x80039760, 0x4, ".sdata")
 static int StrWidth = 0;
-DATA_AT("OPEN", 0x8003dbc0, 0x4, ".sdata")
-DATA_AT("END", 0x8003aa50, 0x4, ".sdata")
+DATA_AT("OPEN", 0x8003e750, 0x4, ".sdata")
+DATA_AT("END", 0x80039764, 0x4, ".sdata")
 static int StrHeight = 0;
 
-DATA_AT("OPEN", 0x8003dec0, 0x4, ".sbss")
-DATA_AT("END", 0x8003ace0, 0x4, ".sbss")
+DATA_AT("OPEN", 0x8003ea50, 0x4, ".sbss")
+DATA_AT("END", 0x800399f4, 0x4, ".sbss")
 static KfBool Rewind_Switch;
 
-DATA_AT("OPEN", 0x8003dec8, 0x4, ".sbss")
-DATA_AT("END", 0x8003ace8, 0x4, ".sbss")
+DATA_AT("OPEN", 0x8003ea58, 0x4, ".sbss")
+DATA_AT("END", 0x800399fc, 0x4, ".sbss")
 static long StrFrame;
 
-DATA_AT("OPEN", 0x8003e058, 0x28000, ".bss")
-DATA_AT("END", 0x8003ae50, 0x28000, ".bss")
+DATA_AT("OPEN", 0x8003ebf0, 0x28000, ".bss")
+DATA_AT("END", 0x80039b6c, 0x28000, ".bss")
 static u_long vlcbuf0[SCR_WIDTH / 2 * VLC_BUFFER_HEIGHT];
 
-DATA_AT("OPEN", 0x80066058, 0x28000, ".bss")
-DATA_AT("END", 0x80062e50, 0x28000, ".bss")
+DATA_AT("OPEN", 0x80066bf0, 0x28000, ".bss")
+DATA_AT("END", 0x80061b6c, 0x28000, ".bss")
 static u_long vlcbuf1[SCR_WIDTH / 2 * VLC_BUFFER_HEIGHT];
 
-DATA_AT("OPEN", 0x8008e058, 0x3c00, ".bss")
-DATA_AT("END", 0x8008ae50, 0x3c00, ".bss")
+DATA_AT("OPEN", 0x8008ebf0, 0x3c00, ".bss")
+DATA_AT("END", 0x80089b6c, 0x3c00, ".bss")
 static u_short imgbuf[7680];
 
-DATA_AT("OPEN", 0x80091c58, 0x10000, ".bss")
-DATA_AT("END", 0x8008ea50, 0x10000, ".bss")
+DATA_AT("OPEN", 0x800927f0, 0x10000, ".bss")
+DATA_AT("END", 0x8008d76c, 0x10000, ".bss")
 static u_long Ring_Buff[RING_SIZE * SECTOR_SIZE];
 
-DATA_AT("OPEN", 0x800a1c58, 0x30, ".bss")
-DATA_AT("END", 0x8009ea50, 0x30, ".bss")
+DATA_AT("OPEN", 0x800a27f0, 0x30, ".bss")
+DATA_AT("END", 0x8009d76c, 0x30, ".bss")
 static DECENV dec;

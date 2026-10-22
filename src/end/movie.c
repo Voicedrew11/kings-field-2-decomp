@@ -21,7 +21,7 @@ RODATA(0x80011000, 0x1f)
 
 /* The tutorial's anim() as adapted for END.EXE: decode the ending movie while
  * fading the music, then stop the drive and wait forever. */
-ADDRESS(0x80011fd8, 0x214)
+ADDRESS(0x80011cc4, 0x1dc)
 void ending_play_movie(void)
 {
     CdlFILE file;

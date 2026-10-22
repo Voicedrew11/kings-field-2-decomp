@@ -2,4 +2,4 @@
 # with their retail addresses. They name boundaries, not storage, so they never
 # appear in data_identities.tsv; the target relink resolves references to them.
 image	name	va	evidence	note
-GAME.EXE	BSS_END	0x801da018	asm;main InitHeap base;last .bss references end at 0x801da018	heap start passed to InitHeap by main
+GAME.EXE	BSS_END	0x801daf5c	asm;main InitHeap base;last .bss references end at 0x801daf5c	heap start passed to InitHeap by main

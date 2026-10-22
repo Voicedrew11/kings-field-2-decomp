@@ -24,22 +24,22 @@
 #include <kf/game/card_payload.h>
 #include <psyq/libc.h>
 
-DATA(0x800679a0, 0x8, ".data")
+DATA(0x8006888c, 0x8, ".data")
 u8 event_magic_unlock_ids_5a[8] = {7, 8, 9, 10, 0xff, 0, 0, 0};
 
-DATA(0x800679a8, 0x8, ".data")
+DATA(0x80068894, 0x8, ".data")
 u8 event_magic_unlock_ids_5b[8] = {14, 15, 0, 13, 0xff, 0, 0, 0};
 
-DATA(0x800679b0, 0x8, ".data")
+DATA(0x8006889c, 0x8, ".data")
 u8 event_magic_unlock_ids_5c[8] = {16, 1, 2, 3, 0xff, 0, 0, 0};
 
-DATA(0x800679b8, 0x8, ".data")
+DATA(0x800688a4, 0x8, ".data")
 u8 event_magic_unlock_ids_5d[8] = {4, 17, 5, 6, 0xff, 0, 0, 0};
 
-DATA(0x800679c0, 0x8, ".data")
+DATA(0x800688ac, 0x8, ".data")
 u8 event_magic_unlock_ids_5e[8] = {18, 19, 11, 12, 0xff, 0xff, 0xff, 0xff};
 
-DATA(0x8009a5e8, 0x78, ".bss")
+DATA(0x8009b52c, 0x78, ".bss")
 u8 game_counter_bytes[KF_ITEM_ID_COUNT];
 
 typedef void (*KfEventCommandCallback)(const VECTOR *position,
@@ -49,17 +49,17 @@ typedef void (*KfEventCommandCallback)(const VECTOR *position,
 RODATA(0x80012890, 0x3a8)
 
 /* Unreferenced return stubs; original roles and TU owner remain unresolved. */
-ADDRESS(0x80045f10, 0x8)
+ADDRESS(0x80046c54, 0x8)
 void event_unused_stub_0(void)
 {
 }
 
-ADDRESS(0x80045f18, 0x8)
+ADDRESS(0x80046c5c, 0x8)
 void event_unused_stub_1(void)
 {
 }
 
-ADDRESS(0x80045f20, 0xb4)
+ADDRESS(0x80046c64, 0xb4)
 void scene_position_from_camera_offset(s32 x, s32 y, s32 z, s32 pitch, s32 yaw,
                    s32 height_offset, s32 z_offset, VECTOR *output)
 {
@@ -82,7 +82,7 @@ void scene_position_from_camera_offset(s32 x, s32 y, s32 z, s32 pitch, s32 yaw,
     output->vz += player_state.camera_position.vz;
 }
 
-ADDRESS(0x80045fd4, 0xcc)
+ADDRESS(0x80046d18, 0xcc)
 void scene_pose_interpolate(
     KfMapObject *destination, const VECTOR *start_position,
     const VECTOR *end_position, const SVECTOR *start_angles,
@@ -105,7 +105,7 @@ void scene_pose_interpolate(
         ((delta) + (actor)->animation_phase) & KF_ACTOR_ANIMATION_PHASE_MAX; \
 } while (0)
 
-ADDRESS(0x800460a0, 0xa4)
+ADDRESS(0x80046de4, 0xa4)
 void actor_animation_seek_phase(KfActor *actor, KfAnimationClip state, u16 phase, s32 target_phase,
                                 s32 phase_step)
 {
@@ -132,7 +132,7 @@ void actor_animation_seek_phase(KfActor *actor, KfAnimationClip state, u16 phase
     render_game_frame(NULL, NULL);
 }
 
-ADDRESS(0x80046144, 0x5c)
+ADDRESS(0x80046e88, 0x5c)
 u8 event_target_stream_find_marker(const KfTargetCandidate *candidate, u8 marker)
 {
     const u8 *cursor = candidate->word_14.bytes;
@@ -154,7 +154,7 @@ u8 event_target_stream_find_marker(const KfTargetCandidate *candidate, u8 marker
     }
 }
 
-ADDRESS(0x800461a0, 0x11c)
+ADDRESS(0x80046ee4, 0x11c)
 u8 *event_target_stream_resolve_cursor(KfActor *actor)
 {
     KfTargetCandidate *candidate =
@@ -190,7 +190,7 @@ use_fallback:
     }
 }
 
-ADDRESS(0x800462bc, 0x444)
+ADDRESS(0x80047000, 0x444)
 void event_target_stream_execute(KfActor *actor)
 {
     KfTargetCandidate *candidate =
@@ -338,7 +338,7 @@ after_script:
     player_clear_motion();
 }
 
-ADDRESS(0x80046700, 0x8c)
+ADDRESS(0x80047444, 0x8c)
 void event_spawn_effect_object(KfMapObject *event, KF_ENUM_PARAM(KfObjectId, s32) object_id)
 {
     KfMapObject *object = map_object_effect_pool_acquire(KF_MAP_OBJECT_EVENT_POOL_FIRST,
@@ -350,7 +350,7 @@ void event_spawn_effect_object(KfMapObject *event, KF_ENUM_PARAM(KfObjectId, s32
     object->tail.fields.unknown_38 = KF_MAP_OBJECT_EVENT_DISARMED;
 }
 
-ADDRESS(0x8004678c, 0xc54)
+ADDRESS(0x800474d0, 0xc54)
 void event_scene_command_dispatch(const VECTOR *position,
                                   const KfPlayerViewRotation *rotation,
                                   KF_ENUM_PARAM(KfObjectId, s32) command)
@@ -763,7 +763,7 @@ invoke_callback:
     }
     player_clear_motion();
 }
-ADDRESS(0x800473e0, 0x54)
+ADDRESS(0x80048124, 0x54)
 b32 game_counter_decrement(KF_ENUM_PARAM(KfObjectId, s32) index)
 {
     if (game_counter_bytes[KF_ENUM_ENCODE(s32, index)] != 0) {
@@ -774,7 +774,7 @@ b32 game_counter_decrement(KF_ENUM_PARAM(KfObjectId, s32) index)
     return KF_TRUE;
 }
 
-ADDRESS(0x80047434, 0x90)
+ADDRESS(0x80048178, 0x90)
 b32 game_counter_increment(KF_ENUM_PARAM(KfObjectId, s32) index)
 {
     if (game_counter_bytes[KF_ENUM_ENCODE(s32, index)] < 99) {
@@ -787,7 +787,7 @@ b32 game_counter_increment(KF_ENUM_PARAM(KfObjectId, s32) index)
     return KF_TRUE;
 }
 
-ADDRESS(0x800474c4, 0x114)
+ADDRESS(0x80048208, 0x114)
 void color_overlay_transition(s32 step, s32 first, s32 second, s32 third,
                               s32 target_first, s32 target_second,
                               s32 target_third)
@@ -812,7 +812,7 @@ void color_overlay_transition(s32 step, s32 first, s32 second, s32 third,
     accumulate_color_overlay(target_first, target_second, target_third, 0x800);
     render_game_frame(NULL, NULL);
 }
-ADDRESS(0x800475d8, 0x6c0)
+ADDRESS(0x8004831c, 0x6e0)
 void event_map_object_interact(KfMapObject *object, ...)
 {
     va_list arguments;
@@ -1004,7 +1004,7 @@ finish:
     player_clear_motion();
 }
 
-ADDRESS(0x80047c98, 0x660)
+ADDRESS(0x800489fc, 0x660)
 void event_world_dispatch_interaction(const VECTOR *position,
                                       const KfPlayerViewRotation *rotation)
 {
@@ -1215,10 +1215,10 @@ enum {
 
 
 
-DATA(0x801b2140, 0x3918, ".bss")
+DATA(0x801b3084, 0x3918, ".bss")
 KfEventState event_state;
 
-ADDRESS(0x800482f8, 0xb0)
+ADDRESS(0x8004905c, 0xb0)
 void event_state_initialize(void)
 {
     u16 *offset;
@@ -1244,13 +1244,13 @@ void event_state_initialize(void)
     game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_0)] = 1;
 }
 
-ADDRESS(0x800483a8, 0x30)
+ADDRESS(0x8004910c, 0x30)
 void callback_invoke_slot_04_zero(void)
 {
     ((void (*)(s32))resource_state.active_table[1])(0);
 }
 
-ADDRESS(0x800483d8, 0x50)
+ADDRESS(0x8004913c, 0x50)
 void event_saved_offsets_decode(u8 **pointers)
 {
     u16 *offset = event_state.saved_offsets;
@@ -1268,7 +1268,7 @@ void event_saved_offsets_decode(u8 **pointers)
     }
 }
 
-ADDRESS(0x80048428, 0x70)
+ADDRESS(0x8004918c, 0x70)
 void event_arena_owner_pointers_add_delta(s32 delta)
 {
     KfMemoryBlock *block = &event_state.arena.first_block;
@@ -1288,7 +1288,7 @@ void event_arena_owner_pointers_add_delta(s32 delta)
     }
 }
 
-ADDRESS(0x80048498, 0x4c)
+ADDRESS(0x800491fc, 0x4c)
 void event_saved_offsets_encode(u8 **pointers)
 {
     u16 *offset = event_state.saved_offsets;
@@ -1306,7 +1306,7 @@ void event_saved_offsets_encode(u8 **pointers)
     }
 }
 
-ADDRESS(0x800484e4, 0x70)
+ADDRESS(0x80049248, 0x70)
 void event_arena_owner_pointers_subtract_delta(s32 delta)
 {
     KfMemoryBlock *block = &event_state.arena.first_block;
@@ -1326,7 +1326,7 @@ void event_arena_owner_pointers_subtract_delta(s32 delta)
     }
 }
 
-ADDRESS(0x80048554, 0x458)
+ADDRESS(0x800492b8, 0x458)
 void event_world_state_save_slot(s32 save_slot)
 {
     u8 *saved[KF_EVENT_SAVED_SLOT_COUNT];
@@ -1476,7 +1476,7 @@ void event_world_state_save_slot(s32 save_slot)
     }
 }
 
-ADDRESS(0x800489ac, 0x378)
+ADDRESS(0x80049710, 0x378)
 void event_world_state_restore_slot(s32 save_slot)
 {
     u8 *saved[KF_EVENT_SAVED_SLOT_COUNT];
@@ -1602,7 +1602,7 @@ apply_position:
     }
 }
 
-ADDRESS(0x80048d24, 0x5b8)
+ADDRESS(0x80049a88, 0x5b8)
 void card_payload_capture_game_state(u8 *buffer)
 {
     KfCardSavePayload *payload = (KfCardSavePayload *)buffer;
@@ -1678,7 +1678,7 @@ void card_payload_capture_game_state(u8 *buffer)
         sizeof payload->saved_event_offsets);
 }
 
-ADDRESS(0x800492dc, 0x5e0)
+ADDRESS(0x8004a040, 0x5e0)
 void card_payload_restore_game_state(const u8 *buffer)
 {
     const KfCardSavePayload *payload = (const KfCardSavePayload *)buffer;

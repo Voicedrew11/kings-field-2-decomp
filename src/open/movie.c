@@ -25,7 +25,7 @@ RODATA(0x80011000, 0x1f)
 
 /* The tutorial's anim(): decodes the opening movie at 320 pixels, stops when
  * a button is pressed, then restores the 640-pixel title display. */
-ADDRESS(0x800134f0, 0x34c)
+ADDRESS(0x80013dc8, 0x3a8)
 void opening_play_movie(void)
 {
     CdlFILE file;

@@ -14,8 +14,8 @@ typedef struct {
     u_long headv;
 } StrSectorHeader;
 
-ADDRESS_AT("OPEN", 0x8001383c, 0xbc)
-ADDRESS_AT("END", 0x800121ec, 0xbc)
+ADDRESS_AT("OPEN", 0x80014170, 0xbc)
+ADDRESS_AT("END", 0x80011ea0, 0xbc)
 void strSetDefDecEnv(void)
 {
     dec.vlcbuf[0] = vlcbuf0;
@@ -29,8 +29,8 @@ void strSetDefDecEnv(void)
     setRECT(&dec.slice, 0, 0, SLICE_WIDTH_PIXELS, SCR_HEIGHT);
 }
 
-ADDRESS_AT("OPEN", 0x800138f8, 0x74)
-ADDRESS_AT("END", 0x800122a8, 0x74)
+ADDRESS_AT("OPEN", 0x8001422c, 0x74)
+ADDRESS_AT("END", 0x80011f5c, 0x74)
 void strInit(CdlLOC *loc)
 {
     DecDCTReset(0);
@@ -43,8 +43,8 @@ void strInit(CdlLOC *loc)
 
 /* DecDCTout completion callback: store the decoded slice, then start the
  * next slice or finish the frame and flip the destination rectangle. */
-ADDRESS_AT("OPEN", 0x8001396c, 0x10c)
-ADDRESS_AT("END", 0x8001231c, 0x10c)
+ADDRESS_AT("OPEN", 0x800142a0, 0x10c)
+ADDRESS_AT("END", 0x80011fd0, 0x10c)
 void strCallback(void)
 {
     LoadImage(&dec.slice, (u_long *)dec.imgbuf);
@@ -59,8 +59,8 @@ void strCallback(void)
     }
 }
 
-ADDRESS_AT("OPEN", 0x80013a78, 0x94)
-ADDRESS_AT("END", 0x80012428, 0x94)
+ADDRESS_AT("OPEN", 0x800143ac, 0x94)
+ADDRESS_AT("END", 0x800120dc, 0x94)
 int strNextVlc(void)
 {
     int cnt = WAIT_TIME;
@@ -78,8 +78,8 @@ int strNextVlc(void)
 }
 
 /* The environment argument is unused; the caller passes the global. */
-ADDRESS_AT("OPEN", 0x80013b0c, 0xb0)
-ADDRESS_AT("END", 0x800124bc, 0xb0)
+ADDRESS_AT("OPEN", 0x80014440, 0xb4)
+ADDRESS_AT("END", 0x80012170, 0xac)
 u_long *strNext(DECENV *env)
 {
     u_long *addr;
@@ -102,8 +102,8 @@ u_long *strNext(DECENV *env)
     return addr;
 }
 
-ADDRESS_AT("OPEN", 0x80013bbc, 0x74)
-ADDRESS_AT("END", 0x8001256c, 0x74)
+ADDRESS_AT("OPEN", 0x800144f4, 0x74)
+ADDRESS_AT("END", 0x8001221c, 0x74)
 void strSync(DECENV *env)
 {
     u_long cnt = WAIT_TIME;
@@ -119,8 +119,8 @@ void strSync(DECENV *env)
     env->isdone = KF_FALSE;
 }
 
-ADDRESS_AT("OPEN", 0x80013c30, 0x48)
-ADDRESS_AT("END", 0x800125e0, 0x48)
+ADDRESS_AT("OPEN", 0x80014568, 0x48)
+ADDRESS_AT("END", 0x80012290, 0x48)
 void strKickCD(CdlLOC *loc)
 {
     while (CdSeekL(loc) == 0) {

@@ -13,13 +13,13 @@
 
 RODATA(0x80011484, 0x498)
 
-ADDRESS(0x80035504, 0x30)
+ADDRESS(0x8003623c, 0x30)
 KfAudioPlaybackResult map_object_play_spatial_sound(KfMapObject *object, s32 sound)
 {
     return audio_play_spatial_default_range(sound, &object->position, 120, 0);
 }
 
-ADDRESS(0x80035534, 0x5c)
+ADDRESS(0x8003626c, 0x5c)
 void map_object_pool_reset(void)
 {
     KfMapObject *object;
@@ -41,7 +41,7 @@ void map_object_pool_reset(void)
     map_object_state.spawn_sequence_pool_15e = 0;
 }
 
-ADDRESS(0x80035590, 0x48)
+ADDRESS(0x800362c8, 0x48)
 void map_object_reset(KfMapObject *object)
 {
     object->asset_clip_selector = KF_ANIMATION_CLIP_STATIC_OBJECT_FIRST;
@@ -58,7 +58,7 @@ void map_object_reset(KfMapObject *object)
     object->lighting_blend_q12 = 0;
 }
 
-ADDRESS(0x800355d8, 0xd4)
+ADDRESS(0x80036310, 0xd4)
 void map_object_set_property(s32 index, KfMapObjectProperty property, ...)
 {
     KfMapObject *object;
@@ -93,7 +93,7 @@ void map_object_set_property(s32 index, KfMapObjectProperty property, ...)
     va_end(arguments);
 }
 
-ADDRESS(0x800356ac, 0xf4)
+ADDRESS(0x800363e4, 0xf4)
 void map_object_set_cell_marker(KfMapObject *object, KfMapCellMarkerMode mode, u8 marker)
 {
     KfMapOccupancyCell *cell;
@@ -124,7 +124,7 @@ void map_object_set_cell_marker(KfMapObject *object, KfMapCellMarkerMode mode, u
     }
 }
 
-ADDRESS(0x800357a0, 0xf4)
+ADDRESS(0x800364d8, 0xf4)
 void map_object_refresh_cell_markers(KfMapCellMarkerMode mode)
 {
     KfMapObject *object;
@@ -158,7 +158,7 @@ void map_object_refresh_cell_markers(KfMapCellMarkerMode mode)
     }
 }
 
-ADDRESS(0x80035894, 0x7e4)
+ADDRESS(0x800365cc, 0x7e4)
 void map_object_initialize_from_placements(const KfMapObjectPlacement *placements)
 {
     KfMapObject *object = map_object_state.objects;
@@ -445,7 +445,7 @@ void map_object_initialize_from_placements(const KfMapObjectPlacement *placement
     }
 }
 
-ADDRESS(0x80036078, 0x118)
+ADDRESS(0x80036db0, 0x118)
 s32 map_object_find_collision_at_point(s32 x, s32 y, s32 z, s32 radius, s32 point_height)
 {
     KfMapObject *object = map_object_state.objects;
@@ -476,7 +476,7 @@ s32 map_object_find_collision_at_point(s32 x, s32 y, s32 z, s32 radius, s32 poin
 
 enum { MAP_OBJECT_HINGE_INTERACTION_FORWARD = 0x700 };
 
-ADDRESS(0x80036190, 0x22c)
+ADDRESS(0x80036ec8, 0x22c)
 s32 map_object_find_interaction_target(s32 first_index, const VECTOR *position, s32 radius,
                    s32 point_height, s32 angle, s32 tolerance)
 {
@@ -535,7 +535,7 @@ s32 map_object_find_interaction_target(s32 first_index, const VECTOR *position, 
     return -1;
 }
 
-ADDRESS(0x800363bc, 0x20)
+ADDRESS(0x800370f4, 0x20)
 void map_object_start_action_if_idle(KfMapObject *object, KfMapObjectOperation action)
 {
     if (object->action == KF_MAP_OBJECT_OP_NONE) {
@@ -544,7 +544,7 @@ void map_object_start_action_if_idle(KfMapObject *object, KfMapObjectOperation a
     }
 }
 
-ADDRESS(0x800363dc, 0x88)
+ADDRESS(0x80037114, 0x88)
 KfMapObject *map_object_effect_pool_acquire(s32 first_index, s32 count, s32 sequence)
 {
     KfMapObject *object = &map_object_state.objects[first_index];
@@ -571,7 +571,7 @@ KfMapObject *map_object_effect_pool_acquire(s32 first_index, s32 count, s32 sequ
     return oldest;
 }
 
-ADDRESS(0x80036464, 0x174)
+ADDRESS(0x8003719c, 0x174)
 void map_object_spawn_effect(KfMapObjectDropSource source, KF_ENUM_PARAM(KfObjectId, u8) object_id,
                              const VECTOR *position, s32 height_offset)
 {
@@ -630,7 +630,7 @@ enum { KF_MAP_OBJECT_SCATTER_RADIUS = 600 };
 
 
 
-ADDRESS(0x800365d8, 0x124)
+ADDRESS(0x80037310, 0x124)
 void map_object_spawn_scattered_effect(u16 effect_id, const VECTOR *origin,
                                        s32 height_offset)
 {
@@ -656,7 +656,7 @@ void map_object_spawn_scattered_effect(u16 effect_id, const VECTOR *origin,
     object->tail.motion.motion_velocity.signed_value = -120;
 }
 
-ADDRESS(0x800366fc, 0x1b8)
+ADDRESS(0x80037434, 0x1b8)
 void map_object_apply_marker_signal(u8 identifier)
 {
     KfMapObject *object = map_object_state.objects;
@@ -723,7 +723,7 @@ void map_object_apply_marker_signal(u8 identifier)
     } while (remaining-- != 0);
 }
 
-ADDRESS(0x800368b4, 0x90)
+ADDRESS(0x800375ec, 0x90)
 KfMapObjectMarkerCheck map_object_check_and_consume_marker(KfMapObject *object, s32 marker)
 {
     switch (object->action) {
@@ -753,7 +753,7 @@ KfMapObjectMarkerCheck map_object_check_and_consume_marker(KfMapObject *object, 
     }
 }
 
-ADDRESS(0x80036944, 0x74)
+ADDRESS(0x8003767c, 0x74)
 void map_object_process_marker_all(u8 marker)
 {
     KfMapObject *object = map_object_state.objects;
@@ -769,7 +769,7 @@ void map_object_process_marker_all(u8 marker)
     } while (remaining-- != 0);
 }
 
-ADDRESS(0x800369b8, 0x120)
+ADDRESS(0x800376f0, 0x120)
 void map_object_sample_world_vertex(KfMapObject *object, s32 vertex_index, VECTOR *result)
 {
     struct KfEulerAngles angles;
@@ -791,7 +791,7 @@ void map_object_sample_world_vertex(KfMapObject *object, s32 vertex_index, VECTO
     addVector(result, &object->position);
 }
 
-ADDRESS(0x80036ad8, 0x90)
+ADDRESS(0x80037810, 0x90)
 b32 player_camera_within_map_region(s32 x, s32 z, s32 width, s32 depth, s32 height)
 {
     s32 camera_x = player_state.camera_position.vx >> KF_MAP_CELL_POSITION_SHIFT;
@@ -819,7 +819,7 @@ enum {
     KF_MAP_OBJECT_MOTION_LIMIT = 0xfff
 };
 
-ADDRESS(0x80036b68, 0x2bc)
+ADDRESS(0x800378a0, 0x2bc)
 b32 map_object_step_offset_motion(KfMapObject *source, KfMapObject *target,
                    SVECTOR *start_offset, SVECTOR *end_offset,
                    b32 brighten, s32 duration)
@@ -895,7 +895,7 @@ b32 map_object_step_offset_motion(KfMapObject *source, KfMapObject *target,
    declaration even when nothing reads it. */
 static const u32 map_object_unreferenced_rodata_word = 0;
 
-DATA(0x80067890, 0x10e, ".data")
+DATA(0x8006877c, 0x10e, ".data")
 KfMapCellPattern map_object_cell_patterns
     [KF_MAP_OBJECT_PATTERN_GROUPS][KF_MAP_OBJECT_PATTERN_ROWS] = {
     {
@@ -945,5 +945,5 @@ KfMapCellPattern map_object_cell_patterns
     },
 };
 
-DATA(0x801749d0, 0x8744, ".bss")
+DATA(0x80175914, 0x8744, ".bss")
 KfMapObjectStateGame map_object_state;

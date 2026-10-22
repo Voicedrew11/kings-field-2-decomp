@@ -4,7 +4,7 @@
 #include <kf/lib/display.h>
 #include <kf/lib/null.h>
 
-ADDRESS(0x800133e0, 0x70)
+ADDRESS(0x80013cb8, 0x70)
 void tim_upload_images(u8 *tim_data)
 {
     TIM_IMAGE image;
@@ -20,7 +20,7 @@ void tim_upload_images(u8 *tim_data)
     }
 }
 
-ADDRESS(0x80013450, 0x88)
+ADDRESS(0x80013d28, 0x88)
 void audio_play_voice(
     s16 vab_id, s16 program, s16 tone, s16 note, s16 left_volume, s16 right_volume)
 {

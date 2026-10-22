@@ -30,17 +30,17 @@ enum {
     OPENING_CLOSE_DISPLAY_WIDTH = 320
 };
 
-DATA(0x8003db88, 0x4, ".sdata")
+DATA(0x8003e714, 0x4, ".sdata")
 u8 *overlay_next_request = (u8 *)0x800102f0;
 DATA(0x8003db8c, 0x5, ".sdata")
 char opening_data_file[5] = "OP.D";
 
-DATA(0x800a6410, 0x4, ".bss")
+DATA(0x800a6fa8, 0x4, ".bss")
 u8 *opening_data;
-DATA(0x800ac540, 0x1, ".bss")
+DATA(0x800ad0d8, 0x1, ".bss")
 u8 display_fade_level;
 
-ADDRESS(0x80011ac0, 0x4dc)
+ADDRESS(0x80011ae0, 0x4e0)
 void main(void)
 {
     RECT rect;
@@ -154,7 +154,7 @@ restart:
 }
 
 /* Darkens the title screen while fading the title music out. */
-ADDRESS(0x80011f9c, 0xc4)
+ADDRESS(0x80011fc0, 0xc4)
 void opening_fade_out(KfTitleMode prompt_mode)
 {
     s32 level = 0;
@@ -179,7 +179,7 @@ void opening_fade_out(KfTitleMode prompt_mode)
     SsSetMVol(0, 0);
 }
 
-ADDRESS(0x80012060, 0x68)
+ADDRESS(0x80012084, 0xfc)
 void opening_load_data(void)
 {
     s32 attempt;

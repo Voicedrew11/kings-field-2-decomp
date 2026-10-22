@@ -11,15 +11,15 @@ enum {
     KF_CD_DATA_START_SECOND = 2
 };
 
-DATA_AT("OPEN", 0x8003dbb0, 0x5, ".sdata")
+DATA_AT("OPEN", 0x8003e740, 0x5, ".sdata")
 DATA_AT("END", 0x8003aa40, 0x5, ".sdata")
 char cd_path_prefix[5] = "\\OP\\";
-DATA_AT("OPEN", 0x8003dbb8, 0x3, ".sdata")
+DATA_AT("OPEN", 0x8003e748, 0x3, ".sdata")
 DATA_AT("END", 0x8003aa48, 0x3, ".sdata")
 char cd_version_suffix[3] = ";1";
 
 /* Reads \OP\<relative_path>;1 sector by sector into DESTINATION. */
-ADDRESS_AT("OPEN", 0x80013284, 0x15c)
+ADDRESS_AT("OPEN", 0x80013b5c, 0x15c)
 ADDRESS_AT("END", 0x80011e64, 0x15c)
 int cd_file_load_into(u_long *destination, const char *relative_path)
 {

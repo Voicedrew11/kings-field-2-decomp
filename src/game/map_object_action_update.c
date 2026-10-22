@@ -18,13 +18,13 @@
 #include <psyq/sdk.h>
 #include <psyq/libc.h>
 
-DATA(0x8006d6e4, 0x8, ".sdata")
+DATA(0x8006e618, 0x8, ".sdata")
 SVECTOR map_object_motion_recall_socket_start_offset = {0, -1424, 0, 0};
-DATA(0x8006d6ec, 0x8, ".sdata")
+DATA(0x8006e620, 0x8, ".sdata")
 SVECTOR map_object_motion_recall_socket_end_offset = {0, -912, 0, 0};
-DATA(0x8006d6f4, 0x8, ".sdata")
+DATA(0x8006e628, 0x8, ".sdata")
 SVECTOR map_object_motion_door_socket_start_offset = {0, -100, 300, 0};
-DATA(0x8006d6fc, 0x8, ".sdata")
+DATA(0x8006e630, 0x8, ".sdata")
 SVECTOR map_object_motion_door_socket_end_offset = {0, 0, 64, 0};
 
 /* The three adjacent retail tables dispatch actions and subactions. */
@@ -36,7 +36,7 @@ enum {
     MAP_OBJECT_CELL_PATTERN_SWITCH_PHASE = 0xc18
 };
 
-ADDRESS(0x80036e24, 0xb0)
+ADDRESS(0x80037b5c, 0xb0)
 void render_frames_with_color_overlay(KF_ENUM_PARAM(KfColorOverlayControl, s32) mode, s32 phase, s32 last_phase,
     s32 step)
 {
@@ -64,7 +64,7 @@ void render_frames_with_color_overlay(KF_ENUM_PARAM(KfColorOverlayControl, s32) 
     }
 }
 
-ADDRESS(0x80036ed4, 0x1df4)
+ADDRESS(0x80037c0c, 0x1df4)
 void map_object_update_actions(void)
 {
     KfMapObject *object = map_object_state.objects;

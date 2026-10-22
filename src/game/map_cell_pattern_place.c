@@ -15,7 +15,7 @@ enum {
     KF_PATTERN_LIGHTING_FLAGS_MASK = 0xc0
 };
 
-ADDRESS(0x80034f90, 0x204)
+ADDRESS(0x80035cc8, 0x204)
 void map_cell_apply_rotated_pattern(KfMapLayerMask mode, s32 world_x, s32 world_z, s32 angle,
                    const KfMapCellPattern *patterns, s32 variant_index,
                    s32 layer_flag)
@@ -73,7 +73,7 @@ void map_cell_apply_rotated_pattern(KfMapLayerMask mode, s32 world_x, s32 world_
 }
 
 
-ADDRESS(0x80035194, 0x370)
+ADDRESS(0x80035ecc, 0x370)
 void map_cell_copy_rotated_fields(KfMapLayerMask layer_select, s32 source_x, s32 source_z,
                    s32 destination_x, s32 destination_z,
                    s32 width, s32 height, s32 rotation, u32 field_mask)

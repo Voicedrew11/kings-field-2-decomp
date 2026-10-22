@@ -5,12 +5,12 @@ enum {
     AUDIO_REVERB_DEPTH = 0x20
 };
 
-DATA_AT("OPEN", 0x800ac618, 0x158, ".bss")
+DATA_AT("OPEN", 0x800ad1b0, 0x158, ".bss")
 DATA_AT("END", 0x800a93f8, 0x158, ".bss")
 char audio_sequence_table[SS_SEQ_TABSIZ * KF_AUDIO_SEQUENCE_CAPACITY * KF_AUDIO_TRACKS_PER_SEQUENCE];
 
-ADDRESS_AT("OPEN", 0x80012204, 0x6c)
-ADDRESS_AT("END", 0x80011c80, 0x6c)
+ADDRESS_AT("OPEN", 0x800122bc, 0x8c)
+ADDRESS_AT("END", 0x80011ba8, 0x4c)
 void audio_initialize(void)
 {
     SsInit();

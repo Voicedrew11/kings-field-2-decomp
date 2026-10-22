@@ -23,23 +23,23 @@ enum {
     CHOICE_VOICE_VOLUME = 64
 };
 
-DATA(0x8003db94, 0x4, ".sdata")
+DATA(0x8003e724, 0x4, ".sdata")
 s32 title_level = 0;
-DATA(0x8003db98, 0x4, ".sdata")
+DATA(0x8003e728, 0x4, ".sdata")
 KfTitlePhase title_phase = KF_TITLE_PHASE_FADE_IN;
-DATA(0x8003db9c, 0x4, ".sdata")
+DATA(0x8003e72c, 0x4, ".sdata")
 s32 banner_level = 0;
-DATA(0x8003dba0, 0x4, ".sdata")
+DATA(0x8003e730, 0x4, ".sdata")
 KfTitlePhase banner_phase = KF_TITLE_PHASE_FADE_IN;
-DATA(0x8003dba4, 0x4, ".sdata")
+DATA(0x8003e734, 0x4, ".sdata")
 s32 prompt_level = PROMPT_PULSE_LOW;
-DATA(0x8003dba8, 0x4, ".sdata")
+DATA(0x8003e738, 0x4, ".sdata")
 KfPromptPhase prompt_phase = KF_PROMPT_PHASE_BRIGHTEN;
-DATA(0x8003dbac, 0x4, ".sdata")
+DATA(0x8003e73c, 0x4, ".sdata")
 u32 pad_previous_buttons = 0;
 
 /* Draws the backdrop and the four title tiles; returns true once settled. */
-ADDRESS(0x80012560, 0x61c)
+ADDRESS(0x80012d28, 0x61c)
 b32 opening_draw_title(KfTitleMode mode)
 {
     b32 settled = KF_FALSE;
@@ -96,7 +96,7 @@ b32 opening_draw_title(KfTitleMode mode)
 }
 
 /* Draws the banner under the title; returns true once settled. */
-ADDRESS(0x80012b7c, 0x200)
+ADDRESS(0x80013344, 0x33c)
 b32 opening_draw_banner(KfTitleMode mode)
 {
     b32 settled = KF_FALSE;
@@ -131,7 +131,7 @@ b32 opening_draw_banner(KfTitleMode mode)
 }
 
 /* Draws the prompt; KF_TITLE_ANIMATE makes it pulse. */
-ADDRESS(0x80012d7c, 0x1c0)
+ADDRESS(0x80013680, 0x1c0)
 void opening_draw_prompt(KfTitleMode mode)
 {
     if (prompt_phase == KF_PROMPT_PHASE_BRIGHTEN) {
@@ -159,7 +159,7 @@ void opening_draw_prompt(KfTitleMode mode)
 
 /* A newly pressed face button or START starts the game; SELECT plays the
  * movie. Counts every polled frame in IDLE_FRAMES. */
-ADDRESS(0x80012f3c, 0x170)
+ADDRESS(0x80013840, 0x144)
 KfOpeningChoice opening_poll_pad(const KfTitleMode *prompt_mode, s32 *idle_frames)
 {
     KfOpeningChoice choice = KF_OPENING_NO_CHOICE;
@@ -183,7 +183,7 @@ KfOpeningChoice opening_poll_pad(const KfTitleMode *prompt_mode, s32 *idle_frame
     return choice;
 }
 
-ADDRESS(0x800130ac, 0x50)
+ADDRESS(0x80013984, 0x50)
 void primitive_buffer_begin_poly_ft4(void)
 {
     SetPolyFT4(current_poly_ft4);
@@ -191,7 +191,7 @@ void primitive_buffer_begin_poly_ft4(void)
 }
 
 /* Darkens the quad by display_fade_level, then links it at DEPTH. */
-ADDRESS(0x800130fc, 0xcc)
+ADDRESS(0x800139d4, 0xcc)
 void primitive_buffer_commit_poly_ft4(s32 depth)
 {
     u8 level;

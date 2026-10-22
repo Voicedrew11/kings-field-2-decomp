@@ -6,7 +6,7 @@
 
 enum { FLOOR_ITEM_VRAM_PIXEL_BYTES = sizeof(u16) };
 
-ADDRESS(0x8002ce2c, 0x3c)
+ADDRESS(0x8002db64, 0x3c)
 KfFloorItem *floor_item_find_free(void)
 {
     KfFloorItem *item = game_graphics_runtime.floor_items;
@@ -23,7 +23,7 @@ KfFloorItem *floor_item_find_free(void)
 }
 
 /* A scrolling image passes its byte width and height after KIND. */
-ADDRESS(0x8002ce68, 0xd8)
+ADDRESS(0x8002dba0, 0xd8)
 void floor_item_capture_image(s32 x, s32 y, u8 update_interval, u8 row_step,
                    s32 kind, ...)
 {
@@ -54,7 +54,7 @@ void floor_item_capture_image(s32 x, s32 y, u8 update_interval, u8 row_step,
     }
 }
 
-ADDRESS(0x8002cf40, 0x164)
+ADDRESS(0x8002dc78, 0x164)
 void floor_item_update_textures(void)
 {
     KfFloorItem *item = game_graphics_runtime.floor_items;

@@ -8,7 +8,7 @@ enum {
     COLLISION_LOWER_DEATH_LIMIT = -1000
 };
 
-ADDRESS(0x80023384, 0xac)
+ADDRESS(0x80023ecc, 0xac)
 void player_update_collision_bounds(void)
 {
     s32 lower;
@@ -31,7 +31,7 @@ void player_update_collision_bounds(void)
     }
 }
 
-ADDRESS(0x80023430, 0x54)
+ADDRESS(0x80023f78, 0x54)
 s32 player_distance_to_point_with_margin(
     s32 point_x, s32 point_y, s32 point_z, s32 max_distance,
     s32 point_height)
@@ -46,7 +46,7 @@ enum {
     PLAYER_COLLISION_CLEARANCE_INITIAL = 10000
 };
 
-ADDRESS(0x80023484, 0xec)
+ADDRESS(0x80023fcc, 0xec)
 void player_reset_view(void)
 {
     player_state.camera_vertical_offset = 0;

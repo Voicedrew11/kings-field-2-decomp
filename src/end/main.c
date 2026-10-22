@@ -18,7 +18,7 @@ enum {
     ENDING_LOAD_ATTEMPTS = 10
 };
 
-DATA(0x8003aa34, 0x4, ".sdata")
+DATA(0x8003975c, 0x4, ".sdata")
 u8 *overlay_next_request = (u8 *)0x800102f0;
 DATA(0x8003aa38, 0x5, ".sdata")
 char ending_data_file[5] = "ED.D";
@@ -26,7 +26,7 @@ char ending_data_file[5] = "ED.D";
 DATA(0x800a31f0, 0x4, ".bss")
 u8 *ending_data;
 
-ADDRESS(0x800119f8, 0xe0)
+ADDRESS(0x800119a4, 0xc4)
 void main(void)
 {
     /* Unused: retail reserves this 8-byte slot, where OPEN's copy of main

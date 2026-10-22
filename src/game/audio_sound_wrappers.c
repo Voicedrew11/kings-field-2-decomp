@@ -7,19 +7,19 @@
 
 enum { AUDIO_WRAPPER_VOLUME = 100 };
 
-ADDRESS(0x80045e18, 0x24)
+ADDRESS(0x80046b5c, 0x24)
 void audio_play_sound_64(void)
 {
     audio_play_sound(0x40, AUDIO_WRAPPER_VOLUME);
 }
 
-ADDRESS(0x80045e3c, 0x20)
+ADDRESS(0x80046b80, 0x20)
 void audio_play_sound_at_volume_100(s32 sound)
 {
     audio_play_sound(sound, AUDIO_WRAPPER_VOLUME);
 }
 
-ADDRESS(0x80045e5c, 0xb4)
+ADDRESS(0x80046ba0, 0xb4)
 b32 collision_probe_forward_shape_0x20(const VECTOR *position, const struct KfEulerAngles *angles)
 {
     s32 x = position->vx - ((rsin(angles->y) * KF_PLAYER_COLLISION_RADIUS) >> KF_FIXED12_BITS);

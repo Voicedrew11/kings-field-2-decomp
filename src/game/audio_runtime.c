@@ -29,25 +29,25 @@ enum {
 };
 
 /* SDK-required 2-by-1 sequence workspace; original allocation extent is WIP. */
-DATA(0x8009a6a0, 0x158, ".bss")
+DATA(0x8009b5e4, 0x158, ".bss")
 char audio_sequence_table[SS_SEQ_TABSIZ * KF_AUDIO_SEQUENCE_CAPACITY * KF_AUDIO_TRACKS_PER_SEQUENCE];
 
 /* Five pooled VAB headers and the dedicated stream-slot-6 header use 0x1000 bytes each. */
-DATA(0x80164a68, 0x6000, ".bss")
+DATA(0x801659ac, 0x6000, ".bss")
 u8 audio_vab_stream_buffers[AUDIO_VAB_STREAM_BUFFER_COUNT][AUDIO_VAB_STREAM_BUFFER_BYTES];
 typedef char kf_audio_vab_stream_buffers_size[
     sizeof(audio_vab_stream_buffers) == 0x6000 ? 1 : -1];
 
-DATA(0x80194e30, 0x2800, ".bss")
+DATA(0x80195d74, 0x2800, ".bss")
 u8 audio_main_vab_header_buffer[AUDIO_MAIN_VAB_HEADER_BUFFER_BYTES];
 
-DATA(0x80197630, 0xe9c, ".bss")
+DATA(0x80198574, 0xe9c, ".bss")
 KfGameAudioState audio_state;
 
-DATA(0x80198640, 0x3000, ".bss")
+DATA(0x80199584, 0x3000, ".bss")
 u8 audio_sequence_buffer[AUDIO_SEQUENCE_BUFFER_BYTES];
 
-ADDRESS(0x800139c4, 0x120)
+ADDRESS(0x80013a40, 0x120)
 void audio_initialize_runtime(void)
 {
     KfAudioVabSlot *vab_slot;
@@ -101,7 +101,7 @@ void audio_initialize_runtime(void)
         audio_vab_stream_buffers[0];
 }
 
-ADDRESS(0x80013ae4, 0x98)
+ADDRESS(0x80013b60, 0x98)
 void audio_start_sequence(void)
 {
     if (player_state.audio_music_enabled != KF_PLAYER_OPTION_OFF && audio_state.sequence_ready != 0) {
@@ -114,7 +114,7 @@ void audio_start_sequence(void)
     }
 }
 
-ADDRESS(0x80013b7c, 0x58)
+ADDRESS(0x80013bf8, 0x58)
 void audio_stop_sequence(void)
 {
     if (audio_state.sequence_active == KF_TRUE) {
@@ -124,7 +124,7 @@ void audio_stop_sequence(void)
     }
 }
 
-ADDRESS(0x80013bd4, 0xb8)
+ADDRESS(0x80013c50, 0xb8)
 void audio_shutdown(void)
 {
     KfAudioVabSlot *slot;
@@ -148,7 +148,7 @@ void audio_shutdown(void)
     SsEnd();
 }
 
-ADDRESS(0x80013c8c, 0x2c4)
+ADDRESS(0x80013d08, 0x2c4)
 KfAudioPlaybackResult audio_play_spatial(
     s32 sound, const VECTOR *position, s32 volume, s32 max_distance,
     s32 attenuation_distance, s32 note_offset)
@@ -209,7 +209,7 @@ KfAudioPlaybackResult audio_play_spatial(
     return KF_AUDIO_PLAYED;
 }
 
-ADDRESS(0x80013f50, 0x34)
+ADDRESS(0x80013fcc, 0x34)
 KfAudioPlaybackResult audio_play_spatial_default_range(
     s32 sound, const VECTOR *position, s16 volume, s32 note_offset)
 {
@@ -217,7 +217,7 @@ KfAudioPlaybackResult audio_play_spatial_default_range(
         KF_AUDIO_DEFAULT_ATTENUATION_DISTANCE, note_offset);
 }
 
-ADDRESS(0x80013f84, 0x34)
+ADDRESS(0x80014000, 0x34)
 KfAudioPlaybackResult audio_play_spatial_range(
     s32 sound, const VECTOR *position, s16 volume, s32 max_distance,
     s32 attenuation_distance, s32 note_offset)
@@ -226,7 +226,7 @@ KfAudioPlaybackResult audio_play_spatial_range(
         sound, position, volume, max_distance, attenuation_distance, note_offset);
 }
 
-ADDRESS(0x80013fb8, 0x78)
+ADDRESS(0x80014034, 0x78)
 void audio_key_off_handle(KfAudioVoiceHandle *handle)
 {
     KfAudioVoiceParams *voice = &audio_state.voices.params[(u8)handle->sound_id];
@@ -237,7 +237,7 @@ void audio_key_off_handle(KfAudioVoiceHandle *handle)
     }
 }
 
-ADDRESS(0x80014030, 0xac)
+ADDRESS(0x800140ac, 0xac)
 void audio_update_listener(const VECTOR *position, const SVECTOR *rotation)
 {
     if (position != NULL) {
@@ -250,13 +250,13 @@ void audio_update_listener(const VECTOR *position, const SVECTOR *rotation)
     }
 }
 
-ADDRESS(0x800140dc, 0x24)
+ADDRESS(0x80014158, 0x24)
 void audio_play_sound(s32 sound, s32 volume)
 {
     audio_key_on(sound, volume, volume, 0);
 }
 
-ADDRESS(0x80014100, 0x64)
+ADDRESS(0x8001417c, 0x64)
 void audio_refresh_voice_handles(void)
 {
     u8 status[KF_AUDIO_SPU_VOICE_COUNT];
@@ -275,7 +275,7 @@ void audio_refresh_voice_handles(void)
     } while (index != -1);
 }
 
-ADDRESS(0x80014164, 0x114)
+ADDRESS(0x800141e0, 0x114)
 KfAudioVoiceHandle *audio_allocate_voice_handle(s32 sound_id)
 {
     KfAudioVoiceHandle *handle;
@@ -328,7 +328,7 @@ KfAudioVoiceHandle *audio_allocate_voice_handle(s32 sound_id)
     return lowest_priority_handle;
 }
 
-ADDRESS(0x80014278, 0x11c)
+ADDRESS(0x800142f4, 0x11c)
 void audio_key_on(s32 sound, s32 left_volume, s32 right_volume, s32 note_offset)
 {
     KfAudioVoiceParams *voice;
@@ -358,7 +358,7 @@ void audio_key_on(s32 sound, s32 left_volume, s32 right_volume, s32 note_offset)
     handle->sound_id = sound;
 }
 
-ADDRESS(0x80014394, 0x124)
+ADDRESS(0x80014410, 0x124)
 void audio_vab_stream_callback(KfCdRequest *request)
 {
     KfAudioVabSlot *vab_slot;
@@ -397,7 +397,7 @@ void audio_vab_stream_callback(KfCdRequest *request)
     }
 }
 
-ADDRESS(0x800144b8, 0x13c)
+ADDRESS(0x80014534, 0x13c)
 void cd_request_service_vab(void)
 {
     KfCdRequest *request;
@@ -441,7 +441,7 @@ void cd_request_service_vab(void)
     }
 }
 
-ADDRESS(0x800145f4, 0xdc)
+ADDRESS(0x80014670, 0xdc)
 KfAudioVabStreamSlot *audio_acquire_vab_stream_slot(void)
 {
     KfAudioVabStreamSlot *stream_slot;
@@ -483,7 +483,7 @@ KfAudioVabStreamSlot *audio_acquire_vab_stream_slot(void)
     return NULL;
 }
 
-ADDRESS(0x800146d0, 0xd0)
+ADDRESS(0x8001474c, 0xd0)
 void audio_queue_vab_stream(s32 archive_slot, s32 entry, s32 vab_slot_index)
 {
     KfAudioVabSlot *vab_slot;

@@ -6,14 +6,14 @@
 
 /* GAME .data opens with these two objects, ahead of every later unit's
    contribution; the renderer passes the matrix as its world transform. */
-DATA(0x80063dcc, 0x20, ".data")
+DATA(0x80064b30, 0x20, ".data")
 MATRIX render_world_identity_matrix = {
     {{KF_FIXED12_ONE, 0, 0}, {0, KF_FIXED12_ONE, 0}, {0, 0, KF_FIXED12_ONE}},
     {0, 0, 0}
 };
 
 /* Unreferenced in every retail build; owner and element type unresolved. */
-DATA(0x80063dec, 0x14, ".data")
+DATA(0x80064b50, 0x14, ".data")
 static u8 matrix_rotation_unreferenced_bytes[20] = {
     0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 2, 2, 2, 2, 0, 3, 3, 3, 3, 0
 };
@@ -29,7 +29,7 @@ enum {
  * way and the wrapped value is clamped only while it stays on the target's
  * side of the half-turn boundary.
  */
-ADDRESS(0x800147a0, 0xc4)
+ADDRESS(0x8001481c, 0xc4)
 s16 angle_approach(s16 current, s16 target, s32 step)
 {
     s16 result;
@@ -69,7 +69,7 @@ s16 angle_approach(s16 current, s16 target, s32 step)
 
 /* Moves CURRENT toward TARGET by |STEP| without passing it; a negative STEP
  * is applied with the opposite sign. */
-ADDRESS(0x80014864, 0x68)
+ADDRESS(0x800148e0, 0x68)
 s32 value_approach(s32 current, s32 target, s32 step)
 {
     if (step > 0) {
@@ -101,7 +101,7 @@ s32 value_approach(s32 current, s32 target, s32 step)
 }
 
 /* DIRECTION = (TO - FROM) scaled to length SCALE. */
-ADDRESS(0x800148cc, 0x13c)
+ADDRESS(0x80014948, 0x13c)
 void vector_direction_scaled(VECTOR *from, VECTOR *to, s32 scale, SVECTOR *direction)
 {
     s32 dx = to->vx - from->vx;
@@ -116,7 +116,7 @@ void vector_direction_scaled(VECTOR *from, VECTOR *to, s32 scale, SVECTOR *direc
 
 /* Turns VELOCITY toward TARGET by ACCELERATION and damps it. When CURRENT is
  * within the angular and velocity tolerances, return the remaining angle. */
-ADDRESS(0x80014a08, 0xb8)
+ADDRESS(0x80014a84, 0xb8)
 s32 angle_velocity_step(s32 current, s32 target, s32 velocity, s32 acceleration, s32 damping)
 {
     if (angle_within_tolerance(current, target, acceleration >> 1)
@@ -138,7 +138,7 @@ s32 angle_velocity_step(s32 current, s32 target, s32 velocity, s32 acceleration,
     return velocity;
 }
 
-ADDRESS(0x80014ac0, 0x4c)
+ADDRESS(0x80014b3c, 0x4c)
 void angle_to_forward_xz(s16 angle, struct KfVecXZi *direction)
 {
     direction->x = -rsin(angle);
@@ -146,7 +146,7 @@ void angle_to_forward_xz(s16 angle, struct KfVecXZi *direction)
 }
 
 /* DESTINATION = SOURCE turned by TURNS quarter turns about Y. */
-ADDRESS(0x80014b0c, 0x224)
+ADDRESS(0x80014b88, 0x224)
 void matrix_rotate_quarter_turns(MATRIX *source, MATRIX *destination,
     KF_ENUM_PARAM(KfQuarterTurn, s32) turns)
 {
@@ -198,7 +198,7 @@ void matrix_rotate_quarter_turns(MATRIX *source, MATRIX *destination,
     }
 }
 
-ADDRESS(0x80014d30, 0xe4)
+ADDRESS(0x80014dac, 0xe4)
 void svector_rotate_quarter_turns(SVECTOR *source, SVECTOR *destination,
     KF_ENUM_PARAM(KfQuarterTurn, s32) turns)
 {
@@ -224,7 +224,7 @@ void svector_rotate_quarter_turns(SVECTOR *source, SVECTOR *destination,
     }
 }
 
-ADDRESS(0x80014e14, 0x70)
+ADDRESS(0x80014e90, 0x70)
 void matrix_set_rotation_x(s16 angle, MATRIX *matrix)
 {
     s32 sine = rsin(angle);
@@ -241,7 +241,7 @@ void matrix_set_rotation_x(s16 angle, MATRIX *matrix)
     matrix->m[2][2] = cosine;
 }
 
-ADDRESS(0x80014e84, 0x70)
+ADDRESS(0x80014f00, 0x70)
 void matrix_set_rotation_y(s16 angle, MATRIX *matrix)
 {
     s32 sine = rsin(angle);
@@ -258,7 +258,7 @@ void matrix_set_rotation_y(s16 angle, MATRIX *matrix)
     matrix->m[2][2] = cosine;
 }
 
-ADDRESS(0x80014ef4, 0x70)
+ADDRESS(0x80014f70, 0x70)
 void matrix_set_rotation_z(s16 angle, MATRIX *matrix)
 {
     s32 sine = rsin(angle);
@@ -276,7 +276,7 @@ void matrix_set_rotation_z(s16 angle, MATRIX *matrix)
 }
 
 /* MATRIX = Ry * Rx * Rz. */
-ADDRESS(0x80014f64, 0x68)
+ADDRESS(0x80014fe0, 0x68)
 void matrix_set_rotation_yxz(const struct KfEulerAngles *angles, MATRIX *matrix)
 {
     MATRIX temporary;
@@ -289,7 +289,7 @@ void matrix_set_rotation_yxz(const struct KfEulerAngles *angles, MATRIX *matrix)
 }
 
 /* MATRIX = Rx * Rz * Ry. */
-ADDRESS(0x80014fcc, 0x68)
+ADDRESS(0x80015048, 0x68)
 void matrix_set_rotation_xzy(const struct KfEulerAngles *angles, MATRIX *matrix)
 {
     MATRIX temporary;
@@ -301,7 +301,7 @@ void matrix_set_rotation_xzy(const struct KfEulerAngles *angles, MATRIX *matrix)
     MulMatrix2(&temporary, matrix);
 }
 
-ADDRESS(0x80015034, 0xd0)
+ADDRESS(0x800150b0, 0xd0)
 void pitch_yaw_to_forward_vector(const struct KfEulerAngles *angles, SVECTOR *direction)
 {
     MATRIX pitch_matrix;
@@ -318,7 +318,7 @@ void pitch_yaw_to_forward_vector(const struct KfEulerAngles *angles, SVECTOR *di
     copyVector(direction, &result);
 }
 
-ADDRESS(0x80015104, 0x44)
+ADDRESS(0x80015180, 0x44)
 void vector_rotate_yxz(const struct KfEulerAngles *angles, SVECTOR *vector, VECTOR *result)
 {
     MATRIX rotation;
@@ -327,7 +327,7 @@ void vector_rotate_yxz(const struct KfEulerAngles *angles, SVECTOR *vector, VECT
     ApplyMatrix(&rotation, vector, result);
 }
 
-ADDRESS(0x80015148, 0x40)
+ADDRESS(0x800151c4, 0x40)
 void vector2i_scale_shift11(s16 scale, struct KfVecXZi *vector)
 {
     s32 x = scale * vector->x;
@@ -337,7 +337,7 @@ void vector2i_scale_shift11(s16 scale, struct KfVecXZi *vector)
     vector->z = z >> KF_FIXED11_BITS;
 }
 
-ADDRESS(0x80015188, 0x5c)
+ADDRESS(0x80015204, 0x5c)
 void vector3s_scale_shift12(s16 scale, SVECTOR *vector)
 {
     s32 x = vector->vx * scale;
@@ -347,7 +347,7 @@ void vector3s_scale_shift12(s16 scale, SVECTOR *vector)
     setVector(vector, x >> KF_FIXED12_BITS, y >> KF_FIXED12_BITS, z >> KF_FIXED12_BITS);
 }
 
-ADDRESS(0x800151e4, 0x40)
+ADDRESS(0x80015260, 0x40)
 void vector2i_scale_shift12(s16 scale, s32 *vector)
 {
     s32 x = scale * vector[0];
@@ -357,7 +357,7 @@ void vector2i_scale_shift12(s16 scale, s32 *vector)
     vector[1] = y >> KF_FIXED12_BITS;
 }
 
-ADDRESS(0x80015224, 0x5c)
+ADDRESS(0x800152a0, 0x5c)
 void vector3s_scale_shift12_alt(s16 scale, s16 *vector)
 {
     s32 x = vector[0] * scale;
@@ -369,14 +369,14 @@ void vector3s_scale_shift12_alt(s16 scale, s16 *vector)
     vector[2] = z >> KF_FIXED12_BITS;
 }
 
-ADDRESS(0x80015280, 0x2c)
+ADDRESS(0x800152fc, 0x2c)
 void vector3i_add_xz(VECTOR *destination, const struct KfVecXZi *delta)
 {
     destination->vx += delta->x;
     destination->vz += delta->z;
 }
 
-ADDRESS(0x800152ac, 0x3c)
+ADDRESS(0x80015328, 0x3c)
 KfBool angle_within_tolerance(int lhs, int rhs, s16 range)
 {
     int delta = (lhs - rhs) & KF_ANGLE_WRAP_MASK;
@@ -384,14 +384,14 @@ KfBool angle_within_tolerance(int lhs, int rhs, s16 range)
     return delta <= range || KF_ANGLE_FULL_TURN - range <= delta;
 }
 
-ADDRESS(0x800152e8, 0x10)
+ADDRESS(0x80015364, 0x10)
 KfBool angle_mod_delta_le_half_turn(int lhs, int rhs)
 {
     return ((lhs - rhs) & KF_ANGLE_WRAP_MASK) <= KF_ANGLE_HALF_TURN;
 }
 
 /* Signed turn from FROM to TO in -0x7ff..0x800. */
-ADDRESS(0x800152f8, 0x20)
+ADDRESS(0x80015374, 0x20)
 s32 angle_shortest_delta(s32 from, s32 to)
 {
     s32 difference = (to - from) & KF_ANGLE_WRAP_MASK;
@@ -404,7 +404,7 @@ s32 angle_shortest_delta(s32 from, s32 to)
 
 /* Psy-Q LIBGTE: catan(long) returns a 12-bit angle for a 12-bit fixed ratio.
  * The larger component is the divisor, keeping the ratio within one. */
-ADDRESS(0x80015318, 0x150)
+ADDRESS(0x80015394, 0x150)
 s32 vector_xz_to_angle(s32 x, s32 z)
 {
     if (abs(x) <= abs(z)) {
@@ -422,7 +422,7 @@ s32 vector_xz_to_angle(s32 x, s32 z)
     return catan((z << KF_FIXED12_BITS) / x) + KF_ANGLE_QUARTER_TURN;
 }
 
-ADDRESS(0x80015468, 0x40)
+ADDRESS(0x800154e4, 0x40)
 s32 fixed_vector2_length(s32 x, s32 y)
 {
     x >>= KF_LENGTH_SQUARE_DOWNSHIFT;
@@ -430,7 +430,7 @@ s32 fixed_vector2_length(s32 x, s32 y)
     return SquareRoot0(x * x + y * y) << KF_LENGTH_SQUARE_DOWNSHIFT;
 }
 
-ADDRESS(0x800154a8, 0x54)
+ADDRESS(0x80015524, 0x54)
 s32 fixed_vector3_length(s32 x, s32 y, s32 z)
 {
     x >>= KF_LENGTH_SQUARE_DOWNSHIFT;
@@ -439,7 +439,7 @@ s32 fixed_vector3_length(s32 x, s32 y, s32 z)
     return SquareRoot0(x * x + y * y + z * z) << KF_LENGTH_SQUARE_DOWNSHIFT;
 }
 
-ADDRESS(0x800154fc, 0x78)
+ADDRESS(0x80015578, 0x78)
 void vector_displacement_to_pitch_yaw(s32 x, s32 y, s32 z, struct KfEulerAngles *angles)
 {
     angles->y = vector_xz_to_angle(x, z);
@@ -447,7 +447,7 @@ void vector_displacement_to_pitch_yaw(s32 x, s32 y, s32 z, struct KfEulerAngles 
     angles->z = 0;
 }
 
-ADDRESS(0x80015574, 0x30)
+ADDRESS(0x800155f0, 0x30)
 KfBool directed_intervals_overlap(s32 first, s32 first_width, s32 second, s32 second_width)
 {
     if (second < first) {
@@ -462,7 +462,7 @@ KfBool directed_intervals_overlap(s32 first, s32 first_width, s32 second, s32 se
     return KF_TRUE;
 }
 
-ADDRESS(0x800155a4, 0xf4)
+ADDRESS(0x80015620, 0xf4)
 s32 vector_distance_to_point(
     const VECTOR *position, s32 point_x, s32 point_y, s32 point_z,
     s32 max_distance, s32 height, s32 point_height)
@@ -499,7 +499,7 @@ reject:
     return KF_DISTANCE_NONE;
 }
 
-ADDRESS(0x80015698, 0x114)
+ADDRESS(0x80015714, 0x114)
 s32 vector_distance_between_with_reach(const VECTOR *first, s32 reach, const VECTOR *second,
                   s32 offset, s32 height)
 {
@@ -534,7 +534,7 @@ s32 vector_distance_between_with_reach(const VECTOR *first, s32 reach, const VEC
     return KF_DISTANCE_OUTSIDE_REACH;
 }
 
-ADDRESS(0x800157ac, 0x4c)
+ADDRESS(0x80015828, 0x4c)
 s32 random_triangular_scaled(s32 amplitude)
 {
     s32 first = rand();
@@ -543,7 +543,7 @@ s32 random_triangular_scaled(s32 amplitude)
     return ((first + second) * amplitude) >> 15;
 }
 
-ADDRESS(0x800157f8, 0x54)
+ADDRESS(0x80015874, 0x54)
 s32 random_centered_triangular_scaled(s32 amplitude)
 {
     s32 first = rand();
@@ -552,13 +552,13 @@ s32 random_centered_triangular_scaled(s32 amplitude)
     return ((first + second - RANDOM_TRIANGULAR_CENTER) * amplitude) >> 15;
 }
 
-ADDRESS(0x8001584c, 0x20)
+ADDRESS(0x800158c8, 0x20)
 s32 fixed_lerp_q12(s32 start, s32 end, s32 fraction)
 {
     return (((end - start) * fraction) >> KF_FIXED12_BITS) + start;
 }
 
-ADDRESS(0x8001586c, 0x48)
+ADDRESS(0x800158e8, 0x48)
 s32 angle_lerp_shortest_q12(s32 start, s32 end, s32 fraction)
 {
     s32 delta = ((s16)end - (s16)start) & KF_ANGLE_WRAP_MASK;
@@ -569,7 +569,7 @@ s32 angle_lerp_shortest_q12(s32 start, s32 end, s32 fraction)
     return (start + ((delta * fraction) >> KF_FIXED12_BITS)) & KF_ANGLE_WRAP_MASK;
 }
 
-ADDRESS(0x800158b4, 0x64)
+ADDRESS(0x80015930, 0x64)
 void fixed_lerp_nine_halfwords_q12(const s16 *start, const s16 *end, s16 *output, s16 fraction)
 {
     const s16 *source = start;
@@ -586,7 +586,7 @@ void fixed_lerp_nine_halfwords_q12(const s16 *start, const s16 *end, s16 *output
     }
 }
 
-ADDRESS(0x80015918, 0x2b0)
+ADDRESS(0x80015994, 0x2b0)
 KF_ENUM_PARAM(KfTrajectoryResult, s32) trajectory_solve_time_angle(KF_ENUM_PARAM(KfTrajectoryMode, s32) mode, s32 horizontal_distance,
     s32 vertical_distance, s32 speed, s32 amplitude,
     s32 *travel_time, s32 *angle)
@@ -636,7 +636,7 @@ KF_ENUM_PARAM(KfTrajectoryResult, s32) trajectory_solve_time_angle(KF_ENUM_PARAM
     return KF_TRAJECTORY_SOLVED;
 }
 
-ADDRESS(0x80015bc8, 0x118)
+ADDRESS(0x80015c44, 0x118)
 KF_ENUM_PARAM(KfTrajectoryResult, s32) trajectory_solve_motion_between_points(
     KF_ENUM_PARAM(KfTrajectoryMode, s32) mode,
     s32 source_x, s32 source_y, s32 source_z, s32 target_x, s32 target_y, s32 target_z,
@@ -658,7 +658,7 @@ KF_ENUM_PARAM(KfTrajectoryResult, s32) trajectory_solve_motion_between_points(
     return status;
 }
 
-ADDRESS(0x80015ce0, 0x70)
+ADDRESS(0x80015d5c, 0x70)
 void vector_add_scaled_delta(const VECTOR *origin, const SVECTOR *delta, s32 scale,
     VECTOR *output)
 {

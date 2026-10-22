@@ -15,10 +15,10 @@
 
 
 
-DATA(0x8016b600, 0x93cc, ".bss")
+DATA(0x8016c544, 0x93cc, ".bss")
 KfActorStateGame actor_state;
 
-ADDRESS(0x80038cc8, 0x3c)
+ADDRESS(0x80039a00, 0x3c)
 KfActor *actor_pool_find_free(void)
 {
     KfActor *actor = &actor_state.actors[KF_ACTOR_DYNAMIC_START];
@@ -42,7 +42,7 @@ enum {
     ACTOR_LIGHTING_BLEND_HALF = KF_FIXED12_ONE / 2
 };
 
-ADDRESS(0x80038d04, 0xc0)
+ADDRESS(0x80039a3c, 0xc0)
 void actor_set_home_position(KfActor *actor)
 {
     actor->position.vx = (actor->home_cell_x << ACTOR_HOME_CELL_SHIFT)
@@ -65,7 +65,7 @@ void actor_set_home_position(KfActor *actor)
     }
 }
 
-ADDRESS(0x80038dc4, 0x74)
+ADDRESS(0x80039afc, 0x74)
 void actor_copy_group_defaults(KfActor *actor)
 {
     const KfTargetGroup *group = &actor_state.target_groups[actor->group_index];
@@ -82,7 +82,7 @@ void actor_copy_group_defaults(KfActor *actor)
     actor->model_scale_x = value;
 }
 
-ADDRESS(0x80038e38, 0xc4)
+ADDRESS(0x80039b70, 0xc4)
 void actor_initialize_from_group(KfActor *actor)
 {
     actor_copy_group_defaults(actor);
@@ -111,14 +111,14 @@ void actor_initialize_from_group(KfActor *actor)
     map_cell_add_layer_occupancy(actor->position.vx, actor->position.vz, actor->collision_radius, 1);
 }
 
-ADDRESS(0x80038efc, 0x24)
+ADDRESS(0x80039c34, 0x24)
 void actor_set_lifecycle_and_home_position(KfActor *actor)
 {
     actor->lifecycle = KF_ACTOR_LIFECYCLE_DISABLED;
     actor_set_home_position(actor);
 }
 
-ADDRESS(0x80038f20, 0xd0)
+ADDRESS(0x80039c58, 0xd0)
 void actor_disable_type3_transition_actors(void)
 {
     KfActor *actor = actor_state.actors;
@@ -138,7 +138,7 @@ void actor_disable_type3_transition_actors(void)
     } while (--remaining != -1);
 }
 
-ADDRESS(0x80038ff0, 0x58)
+ADDRESS(0x80039d28, 0x58)
 void actor_prepare_and_initialize(KfActor *actor)
 {
     actor->rotation.z = 0;
@@ -152,13 +152,13 @@ void actor_prepare_and_initialize(KfActor *actor)
     }
 }
 
-ADDRESS(0x80039048, 0x38)
+ADDRESS(0x80039d80, 0x38)
 void actor_prepare_and_initialize_by_index(u16 actor_index)
 {
     actor_prepare_and_initialize(&actor_state.actors[actor_index]);
 }
 
-ADDRESS(0x80039080, 0x50)
+ADDRESS(0x80039db8, 0x50)
 void actor_pool_clear(void)
 {
     KfActor *actor;
@@ -180,7 +180,7 @@ typedef s32 (*KfCandidateScoreCallback)(KfTargetCandidate *target,
 
 RODATA(0x80011cd8, 0x7c4)
 
-ADDRESS(0x800390d0, 0x38)
+ADDRESS(0x80039e08, 0x38)
 void actor_set_target(KfActor *actor, KfTargetCandidate *target)
 {
     actor->previous_target_type = actor->target_type;
@@ -198,7 +198,7 @@ void actor_set_target(KfActor *actor, KfTargetCandidate *target)
     }
 }
 
-ADDRESS(0x80039108, 0x4c0)
+ADDRESS(0x80039e40, 0x4c0)
 s32 actor_score_target_candidate(KfTargetCandidate *target, s32 player_distance)
 {
     KfActor *actor = actor_state.current;
@@ -371,7 +371,7 @@ score_target:
     return score;
 }
 
-ADDRESS(0x800395c8, 0xfc)
+ADDRESS(0x8003a300, 0xfc)
 void actor_select_best_target(s32 player_distance)
 {
     KfActor *actor = actor_state.current;
@@ -411,7 +411,7 @@ void actor_select_best_target(s32 player_distance)
     }
 }
 
-ADDRESS(0x800396c4, 0x4c)
+ADDRESS(0x8003a3fc, 0x4c)
 void actor_select_target_for_player_distance(void)
 {
     KfActor *actor = actor_state.current;
@@ -422,7 +422,7 @@ void actor_select_target_for_player_distance(void)
     actor_select_best_target(distance);
 }
 
-ADDRESS(0x80039710, 0x48)
+ADDRESS(0x8003a448, 0x48)
 KfTargetCandidate *actor_find_target_of_type(const KfTargetGroup *group, KfActorTargetType type)
 {
     KfTargetCandidate *target;
@@ -441,7 +441,7 @@ KfTargetCandidate *actor_find_target_of_type(const KfTargetGroup *group, KfActor
     return NULL;
 }
 
-ADDRESS(0x80039758, 0x50)
+ADDRESS(0x8003a490, 0x50)
 void actor_select_target_type_in_own_group(KfActor *actor, KfActorTargetType type)
 {
     KfTargetGroup *group = &actor_state.target_groups[actor->group_index];
@@ -450,7 +450,7 @@ void actor_select_target_type_in_own_group(KfActor *actor, KfActorTargetType typ
     actor_set_target(actor, target);
 }
 
-ADDRESS(0x800397a8, 0x30)
+ADDRESS(0x8003a4e0, 0x30)
 void actor_reset_target_and_reselect(void)
 {
     KfActor *actor = actor_state.current;
@@ -460,7 +460,7 @@ void actor_reset_target_and_reselect(void)
     actor_select_target_for_player_distance();
 }
 
-ADDRESS(0x800397d8, 0x2c)
+ADDRESS(0x8003a510, 0x2c)
 void actor_set_animation(KfAnimationClip animation_id)
 {
     if (animation_id != KF_ANIMATION_CLIP_NONE) {
@@ -471,7 +471,7 @@ void actor_set_animation(KfAnimationClip animation_id)
     }
 }
 
-ADDRESS(0x80039804, 0x38)
+ADDRESS(0x8003a53c, 0x38)
 void actor_set_animation_if_changed(KfAnimationClip animation_id)
 {
     KfActor *actor = actor_state.current;
@@ -489,7 +489,7 @@ void actor_set_animation_if_changed(KfAnimationClip animation_id)
     actor_set_home_position(actor); \
 } while (0)
 
-ADDRESS(0x8003983c, 0x31c)
+ADDRESS(0x8003a574, 0x31c)
 void actor_update_lifecycle_for_player_range(void)
 {
     KfActor *actor = actor_state.current;
@@ -600,7 +600,7 @@ void actor_update_lifecycle_for_player_range(void)
     }
 }
 
-ADDRESS(0x80039b58, 0xbc)
+ADDRESS(0x8003a890, 0xbc)
 void actor_retarget_or_disable_group_members(s32 group_index)
 {
     KfActor *actor = actor_state.actors;
@@ -619,7 +619,7 @@ void actor_retarget_or_disable_group_members(s32 group_index)
     } while (--remaining != -1);
 }
 
-ADDRESS(0x80039c14, 0x80)
+ADDRESS(0x8003a94c, 0x80)
 s32 actor_magic_component_curve(s32 base, s32 amount, s32 divisor)
 {
     amount <<= 4;
@@ -643,7 +643,7 @@ typedef void (*KfMagicRecipientCallback)(KfActor *actor, s32 amount,
     u16 magic_06, u16 magic_08, u16 magic_0a, u16 magic_0c,
     u16 magic_0e, u16 magic_10, u16 magic_12, u16 magic_14);
 
-ADDRESS(0x80039c94, 0x684)
+ADDRESS(0x8003a9cc, 0x684)
 void actor_apply_magic_to_actor(s32 actor_index, u16 power, u16 magic_06,
     u16 magic_08, u16 magic_0a, u16 magic_0c, u16 magic_0e,
     u16 magic_10, u16 magic_12, u16 magic_14, u16 amount,
@@ -806,7 +806,7 @@ enum {
     (amount) = (u32)(amount_and_flags) & KF_AREA_MAGIC_AMOUNT_MASK; \
 } while (0)
 
-ADDRESS(0x8003a318, 0x2fc)
+ADDRESS(0x8003b050, 0x2fc)
 void actor_apply_area_magic(VECTOR *position, s32 minimum_distance, s32 reach,
                    s32 mode, u16 falloff, u16 power, u16 magic_06,
                    u16 magic_08, u16 magic_0a, u16 magic_0c, u16 magic_0e,
@@ -867,7 +867,7 @@ void actor_apply_area_magic(VECTOR *position, s32 minimum_distance, s32 reach,
     }
 }
 
-ADDRESS(0x8003a614, 0x164)
+ADDRESS(0x8003b34c, 0x164)
 b32 actor_try_damage_player_in_cone(s32 minimum_distance, s32 maximum_distance, s32 y_offset,
                   s32 angle_tolerance, u16 damage0, u16 damage1,
                   u16 damage2, u16 damage_flags)
@@ -906,7 +906,7 @@ b32 actor_try_damage_player_in_cone(s32 minimum_distance, s32 maximum_distance, 
     return KF_TRUE;
 }
 
-ADDRESS(0x8003a778, 0x27c)
+ADDRESS(0x8003b4b0, 0x27c)
 KfActor *actor_find_best_in_cone(const VECTOR *position, s16 yaw, s16 pitch,
                        s32 max_distance, s32 yaw_limit, s32 pitch_limit,
                        s32 *distance, s32 variation)
@@ -973,7 +973,7 @@ KfActor *actor_find_best_in_cone(const VECTOR *position, s16 yaw, s16 pitch,
     return best;
 }
 
-ADDRESS(0x8003a9f4, 0x168)
+ADDRESS(0x8003b72c, 0x168)
 s32 actor_find_overlap_excluding_target_type3(s32 x, s32 y, s32 z,
                                              s32 radius, s32 height)
 {
@@ -1009,7 +1009,7 @@ s32 actor_find_overlap_excluding_target_type3(s32 x, s32 y, s32 z,
     return KF_ACTOR_INDEX_NONE;
 }
 
-ADDRESS(0x8003ab5c, 0x158)
+ADDRESS(0x8003b894, 0x158)
 s32 actor_find_overlap(s32 x, s32 y, s32 z, s32 radius, s32 height)
 {
     KfActor *actor = actor_state.actors;
@@ -1044,7 +1044,7 @@ s32 actor_find_overlap(s32 x, s32 y, s32 z, s32 radius, s32 height)
     return KF_ACTOR_INDEX_NONE;
 }
 
-ADDRESS(0x8003acb4, 0xdc)
+ADDRESS(0x8003b9ec, 0xdc)
 void actor_bind_current(KfActor *actor)
 {
     KfTargetGroup *group;
@@ -1069,7 +1069,7 @@ void actor_bind_current(KfActor *actor)
     }
 }
 
-ADDRESS(0x8003ad90, 0x34)
+ADDRESS(0x8003bac8, 0x34)
 void actor_advance_animation_wrapped(KfActor *actor, s16 delta)
 {
     if (delta < 0) {
@@ -1080,7 +1080,7 @@ void actor_advance_animation_wrapped(KfActor *actor, s16 delta)
     actor->animation_phase = (actor->animation_phase + delta) & KF_ACTOR_ANIMATION_PHASE_MAX;
 }
 
-ADDRESS(0x8003adc4, 0x5c)
+ADDRESS(0x8003bafc, 0x5c)
 void actor_advance_animation_clamped(KfActor *actor, s16 delta)
 {
     s16 phase;
@@ -1099,14 +1099,14 @@ void actor_advance_animation_clamped(KfActor *actor, s16 delta)
     }
 }
 
-ADDRESS(0x8003ae20, 0x30)
+ADDRESS(0x8003bb58, 0x30)
 KfBool32 actor_animation_crossed_phase(const KfActor *actor, u16 phase)
 {
     return phase < actor->animation_phase
         && phase >= actor->animation_phase - actor->animation_step;
 }
 
-ADDRESS(0x8003ae50, 0x4ec)
+ADDRESS(0x8003bb88, 0x4ec)
 KF_ENUM_PARAM(KfCollisionHitFlags, s32) actor_move_horizontal_with_collision(SVECTOR *motion,
     KF_ENUM_PARAM(KfActorMoveFlags, s32) flags)
 {
@@ -1292,7 +1292,7 @@ finish:
     return result;
 }
 
-ADDRESS(0x8003b33c, 0x1e4)
+ADDRESS(0x8003c074, 0x1e4)
 KF_ENUM_PARAM(KfCollisionHitFlags, s32) actor_move_with_collision(SVECTOR *motion)
 {
     KfActor *actor = actor_state.current;
@@ -1327,7 +1327,7 @@ KF_ENUM_PARAM(KfCollisionHitFlags, s32) actor_move_with_collision(SVECTOR *motio
     return result;
 }
 
-ADDRESS(0x8003b520, 0x9c)
+ADDRESS(0x8003c258, 0x9c)
 s32 actor_start_ballistic_motion(KF_ENUM_PARAM(KfTrajectoryMode, s32) mode, s32 target_x,
     s32 target_y, s32 target_z, s32 trajectory_parameter, s32 trajectory_speed)
 {
@@ -1347,13 +1347,13 @@ s32 actor_start_ballistic_motion(KF_ENUM_PARAM(KfTrajectoryMode, s32) mode, s32 
     return result;
 }
 
-ADDRESS(0x8003b5bc, 0x14)
+ADDRESS(0x8003c2f4, 0x14)
 void actor_suspend_vertical_motion(void)
 {
     actor_state.current->vertical_motion_state = KF_ACTOR_VERTICAL_MOTION_SUSPENDED;
 }
 
-ADDRESS(0x8003b5d0, 0x3d4)
+ADDRESS(0x8003c308, 0x3d4)
 void actor_update_vertical_motion(void)
 {
     KfActor *actor = actor_state.current;
@@ -1467,7 +1467,7 @@ reset_vertical_motion_state:
     }
 }
 
-ADDRESS(0x8003b9a4, 0x140)
+ADDRESS(0x8003c6dc, 0x140)
 KF_ENUM_PARAM(KfCollisionHitFlags, s32) actor_damp_horizontal_motion(s32 decay,
     KF_ENUM_PARAM(KfActorMoveFlags, s32) move_flags)
 {
@@ -1488,7 +1488,7 @@ KF_ENUM_PARAM(KfCollisionHitFlags, s32) actor_damp_horizontal_motion(s32 decay,
     return actor_move_horizontal_with_collision(&actor->motion.vector, move_flags);
 }
 
-ADDRESS(0x8003bae4, 0xbc)
+ADDRESS(0x8003c81c, 0xbc)
 KF_ENUM_PARAM(KfCollisionHitFlags, s32) actor_move_along_heading(s16 angle, s32 speed, s32 step,
     KF_ENUM_PARAM(KfActorMoveFlags, s32) move_flags)
 {
@@ -1507,7 +1507,7 @@ KF_ENUM_PARAM(KfCollisionHitFlags, s32) actor_move_along_heading(s16 angle, s32 
     return actor_move_horizontal_with_collision(&actor->motion.vector, move_flags);
 }
 
-ADDRESS(0x8003bba0, 0x130)
+ADDRESS(0x8003c8d8, 0x130)
 void actor_turn_toward_angle(KfActor *actor, s32 target_angle, s32 max_speed,
     s32 acceleration)
 {
@@ -1544,7 +1544,7 @@ void actor_turn_toward_angle(KfActor *actor, s32 target_angle, s32 max_speed,
     }
 }
 
-ADDRESS(0x8003bcd0, 0x70)
+ADDRESS(0x8003ca08, 0x70)
 KF_ENUM_PARAM(KfCollisionHitFlags, s32) actor_turn_and_move_along_heading(s16 angle, s32 speed,
     s32 range, s32 step, s32 mode, KF_ENUM_PARAM(KfActorMoveFlags, s32) move_flags)
 {
@@ -1554,7 +1554,7 @@ KF_ENUM_PARAM(KfCollisionHitFlags, s32) actor_turn_and_move_along_heading(s16 an
     return actor_move_along_heading(actor->rotation.y, speed, step, move_flags);
 }
 
-ADDRESS(0x8003bd40, 0xf8)
+ADDRESS(0x8003ca78, 0xf8)
 s32 actor_turn_and_move_toward_point(s32 world_x, s32 world_z, s32 speed, s32 range,
     s16 reference_angle, s32 step, s32 mode, KF_ENUM_PARAM(KfActorMoveFlags, s32) move_flags)
 {
@@ -1572,7 +1572,7 @@ s32 actor_turn_and_move_toward_point(s32 world_x, s32 world_z, s32 speed, s32 ra
     return angle & KF_ANGLE_WRAP_MASK;
 }
 
-ADDRESS(0x8003be38, 0x13c)
+ADDRESS(0x8003cb70, 0x13c)
 KF_ENUM_PARAM(KfActorEulerMoveResult, s32) actor_move_along_euler_angles(
     const struct KfEulerAngles *angles, s32 speed, s32 step,
     KF_ENUM_PARAM(KfActorMoveFlags, s32) move_flags)
@@ -1611,7 +1611,7 @@ KF_ENUM_PARAM(KfActorEulerMoveResult, s32) actor_move_along_euler_angles(
     return moved;
 }
 
-ADDRESS(0x8003bf74, 0x8c)
+ADDRESS(0x8003ccac, 0x8c)
 KF_ENUM_PARAM(KfActorEulerMoveResult, s32) actor_turn_and_move_along_euler_angles(
     const struct KfEulerAngles *angles, s32 speed, s32 range, s32 step, s32 mode,
     KF_ENUM_PARAM(KfActorMoveFlags, s32) move_flags)
@@ -1623,7 +1623,7 @@ KF_ENUM_PARAM(KfActorEulerMoveResult, s32) actor_turn_and_move_along_euler_angle
     return actor_move_along_euler_angles(&actor->rotation, speed, step, move_flags);
 }
 
-ADDRESS(0x8003c000, 0x10c)
+ADDRESS(0x8003cd38, 0x10c)
 s32 actor_sample_rotated_animation_vertex(KfActor *actor, s32 vertex_index, VECTOR *output)
 {
     struct KfEulerAngles rotation;
@@ -1646,7 +1646,7 @@ s32 actor_sample_rotated_animation_vertex(KfActor *actor, s32 vertex_index, VECT
     return 1;
 }
 
-ADDRESS(0x8003c10c, 0x114)
+ADDRESS(0x8003ce44, 0x114)
 VECTOR *actor_resolve_group_position(KfActor *actor, VECTOR *output)
 {
     KfTargetGroup *group;
@@ -1671,7 +1671,7 @@ VECTOR *actor_resolve_group_position(KfActor *actor, VECTOR *output)
     /* Retail leaves the return register unspecified for mode 3. */
 }
 
-ADDRESS(0x8003c220, 0x1c0)
+ADDRESS(0x8003cf58, 0x1c0)
 void actor_update_motion_animation(KF_ENUM_PARAM(KfAnimationClip, s32) first,
     KF_ENUM_PARAM(KfAnimationClip, s32) reverse, KF_ENUM_PARAM(KfAnimationClip, s32) forward,
     KF_ENUM_PARAM(KfAnimationClip, s32) fast, KF_ENUM_PARAM(KfAnimationClip, s32) slow,
@@ -1743,7 +1743,7 @@ void actor_update_motion_animation(KF_ENUM_PARAM(KfAnimationClip, s32) first,
     }
 }
 
-ADDRESS(0x8003c3e0, 0x234)
+ADDRESS(0x8003d118, 0x234)
 s32 actor_compute_target_direction(KfActor *actor, const VECTOR *origin, s32 step,
                   const VECTOR *target, SVECTOR *direction,
                   s32 pitch_override, u16 yaw_limit, s32 iterations)
@@ -1820,7 +1820,7 @@ enum {
 /* The script gives either three signed coordinates, two vertex indices and a
  * blend fraction, or one vertex index. The final pointer is used by the
  * coordinate form when an effect kind consumes an extra script halfword. */
-ADDRESS(0x8003c614, 0xa70)
+ADDRESS(0x8003d34c, 0xa70)
 void actor_dispatch_group_effect(KF_ENUM_PARAM(KfEffectKind, s32) kind, s32 damage_multiplier_tenths,
                                  s32 position_mode, ...)
 {
@@ -2124,7 +2124,7 @@ enum {
     KF_TARGET_SOUND_TRIGGER_RANDOM = 0x8000
 };
 
-ADDRESS(0x8003d084, 0x64)
+ADDRESS(0x8003ddbc, 0x64)
 s32 actor_sound_note_offset(KfActor *actor)
 {
     s32 offset = 16 - actor->model_scale_y.bytes.high;
@@ -2137,7 +2137,7 @@ s32 actor_sound_note_offset(KfActor *actor)
     return offset + (((rand() * 5) >> 15) - 2);
 }
 
-ADDRESS(0x8003d0e8, 0x9c)
+ADDRESS(0x8003de20, 0x9c)
 void actor_play_target_sound(KfActor *actor)
 {
     KfTargetCandidate *target = actor->target;
@@ -2152,7 +2152,7 @@ void actor_play_target_sound(KfActor *actor)
     }
 }
 
-ADDRESS(0x8003d184, 0x248c)
+ADDRESS(0x8003debc, 0x248c)
 void actor_update_behavior(void)
 {
     KfActor *actor = actor_state.current;
@@ -3337,7 +3337,7 @@ behavior_done:
     }
 }
 
-ADDRESS(0x8003f610, 0x1dc)
+ADDRESS(0x80040348, 0x1dc)
 void actor_update_frame(void)
 {
     KfActor *actor;
@@ -3389,7 +3389,7 @@ void actor_update_frame(void)
     actor_bind_current(NULL);
 }
 
-ADDRESS(0x8003f7ec, 0x74)
+ADDRESS(0x80040524, 0x74)
 void actor_fixup_group_targets(void)
 {
     KfTargetGroup *group = actor_state.target_groups;
@@ -3416,7 +3416,7 @@ void actor_fixup_group_targets(void)
     }
 }
 
-ADDRESS(0x8003f860, 0x1cc)
+ADDRESS(0x80040598, 0x1cc)
 void actor_load_records(const KfActorLoadRecord *records)
 {
     KfActor *actor = actor_state.actors;

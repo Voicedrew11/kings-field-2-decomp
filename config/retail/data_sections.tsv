@@ -1,66 +1,62 @@
 image	va	name	section	evidence
-PSX.EXE	0x80010260	overlay_index	.sdata	retail layout: follows the 2MBYTE.OBJ .data words after overlay_path_table;native-gcc257-aspsx107-G8
-PSX.EXE	0x80010264	overlay_next_request	.sdata	retail layout: follows the 2MBYTE.OBJ .data words after overlay_path_table;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d674	main_unreferenced_sdata_word	.sdata	retail layout: first game .sdata bytes at the gp anchor before cd_memory small data;initialized under cc1 -G8
-GAME.EXE	0x8006d678	main_unreferenced_sdata_bytes	.sdata	retail layout: first game .sdata bytes at the gp anchor before cd_memory small data;initialized under cc1 -G8
-GAME.EXE	0x8006d680	cd_path_prefix	.sdata	retail layout: first game .sdata contribution after the gp anchor words;five-byte global under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d688	cd_version_suffix	.sdata	retail layout: follows cd_path_prefix at the next word in game .sdata;three-byte global under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d68c	menu_item_model_allocation_pending	.sdata	retail layout: menu_root word in the game .sdata run between cd_memory and memory_card_events small data;initialized word under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d690	input_press_pending	.sdata	retail layout: menu_root word in the game .sdata run between cd_memory and memory_card_events small data;initialized word under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d694	menu_item_quantity	.sdata	retail layout: menu_root word in the game .sdata run between cd_memory and memory_card_events small data;initialized word under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d698	menu_cursor_animation_frame	.sdata	retail layout: menu_root word in the game .sdata run between cd_memory and memory_card_events small data;initialized word under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d69c	menu_cursor_animation_direction	.sdata	retail layout: menu_root word in the game .sdata run between cd_memory and memory_card_events small data;initialized word under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d6a0	memory_card_loaded_slot	.sdata	retail layout: game .sdata run between the LIBGPU OTAG .data tail and LIBCD .sdata;one-byte global under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d6b0	player_status_texture_row_0	.sdata	retail layout: eight-byte RECT in the game .sdata run between memory_card_events and display small data;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d6b8	player_status_texture_row_1	.sdata	retail layout: eight-byte RECT in the game .sdata run between memory_card_events and display small data;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d6c0	player_status_texture_row_2	.sdata	retail layout: eight-byte RECT in the game .sdata run between memory_card_events and display small data;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d6c8	player_status_texture_row_3	.sdata	retail layout: eight-byte RECT in the game .sdata run between memory_card_events and display small data;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d6d0	map_textured_primitive_color	.sdata	retail layout: display word in the game .sdata run after the player status rows;four-byte CVECTOR under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d6d4	render_model_yaw_smoothing_accumulator	.sdata	retail layout: display word in the game .sdata run;initialized word under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d6d8	display_unreferenced_sdata_word	.sdata	retail layout: display word between the yaw accumulator and menu_transition_rect in the game .sdata run;initialized word under cc1 -G8
-GAME.EXE	0x8006d6dc	menu_transition_rect	.sdata	retail layout: display eight-byte RECT in the game .sdata run;initialized under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d6e4	map_object_motion_recall_socket_start_offset	.sdata	retail layout: map_object_action_update eight-byte SVECTOR in the game .sdata run after display small data;initialized under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d6ec	map_object_motion_recall_socket_end_offset	.sdata	retail layout: map_object_action_update eight-byte SVECTOR in the game .sdata run;initialized under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d6f4	map_object_motion_door_socket_start_offset	.sdata	retail layout: map_object_action_update eight-byte SVECTOR in the game .sdata run;initialized under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d6fc	map_object_motion_door_socket_end_offset	.sdata	retail layout: map_object_action_update eight-byte SVECTOR in the game .sdata run;initialized under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d704	effect_trail_next_slot	.sdata	retail layout: effect_runtime word in the game .sdata run before LIBCD .sdata;initialized word under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d708	effect_zero_direction	.sdata	retail layout: effect_runtime eight-byte static SVECTOR ending the game .sdata run at 0x8006d710;initialized under cc1 -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d9e0	current_poly_ft4	.sbss	retail layout: menu_root static in the eight-byte .lcomm run 0x8006d9e0-0x8006da18 before the memory card statics;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d9e8	menu_saved_music_enabled	.sbss	retail layout: menu_root static in the eight-byte .lcomm run 0x8006d9e0-0x8006da18 before the memory card statics;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d9f0	menu_frame_upload_pixels	.sbss	retail layout: menu_root static in the eight-byte .lcomm run 0x8006d9e0-0x8006da18 before the memory card statics;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006d9f8	menu_frame_upload_rect	.sbss	retail layout: menu_root static in the eight-byte .lcomm run 0x8006d9e0-0x8006da18 before the memory card statics;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006da00	menu_item_preview_translation	.sbss	retail layout: menu_root static in the eight-byte .lcomm run 0x8006d9e0-0x8006da18 before the memory card statics;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006da08	menu_item_preview_rotation	.sbss	retail layout: menu_root static in the eight-byte .lcomm run 0x8006d9e0-0x8006da18 before the memory card statics;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006da10	menu_item_preview_rotation_step	.sbss	retail layout: menu_root static in the eight-byte .lcomm run 0x8006d9e0-0x8006da18 before the memory card statics;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006da18	memory_card_io_end_event	.sbss	retail layout: eight-byte .lcomm stride before SDK small BSS at 0x8006da60;static under ASPSX -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006da20	memory_card_timeout_event	.sbss	retail layout: eight-byte .lcomm stride before SDK small BSS at 0x8006da60;static under ASPSX -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006da28	memory_card_new_device_event	.sbss	retail layout: eight-byte .lcomm stride before SDK small BSS at 0x8006da60;static under ASPSX -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006da30	memory_card_error_event	.sbss	retail layout: eight-byte .lcomm stride before SDK small BSS at 0x8006da60;static under ASPSX -G8;native-gcc257-aspsx107-G8
-GAME.EXE	0x8006da38	memory_card_unreferenced_word_0	.sbss	retail layout: eight-byte .lcomm stride between memory_card_error_event and memory_card_buffer;static under ASPSX -G8
-GAME.EXE	0x8006da40	memory_card_unreferenced_word_1	.sbss	retail layout: eight-byte .lcomm stride between memory_card_error_event and memory_card_buffer;static under ASPSX -G8
-GAME.EXE	0x8006da48	memory_card_unreferenced_word_2	.sbss	retail layout: eight-byte .lcomm stride between memory_card_error_event and memory_card_buffer;static under ASPSX -G8
-GAME.EXE	0x8006da50	memory_card_unreferenced_word_3	.sbss	retail layout: eight-byte .lcomm stride between memory_card_error_event and memory_card_buffer;static under ASPSX -G8
-GAME.EXE	0x8006da58	memory_card_buffer	.sbss	retail layout: eight-byte .lcomm stride before SDK small BSS at 0x8006da60;static under ASPSX -G8;native-gcc257-aspsx107-G8
-OPEN.EXE	0x8003db88	overlay_next_request	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
-OPEN.EXE	0x8003db8c	opening_data_file	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
-OPEN.EXE	0x8003db94	title_level	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
-OPEN.EXE	0x8003db98	title_phase	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
-OPEN.EXE	0x8003db9c	banner_level	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
-OPEN.EXE	0x8003dba0	banner_phase	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
-OPEN.EXE	0x8003dba4	prompt_level	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
-OPEN.EXE	0x8003dba8	prompt_phase	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
-OPEN.EXE	0x8003dbac	pad_previous_buttons	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
-OPEN.EXE	0x8003dbb0	cd_path_prefix	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
-OPEN.EXE	0x8003dbb8	cd_version_suffix	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
-OPEN.EXE	0x8003dbbc	StrWidth	.sdata	retail layout: last game .sdata words before LIBPRESS .sdata;TUTO0.C initialized static under cc1 -G8
-OPEN.EXE	0x8003dbc0	StrHeight	.sdata	retail layout: last game .sdata words before LIBPRESS .sdata;TUTO0.C initialized static under cc1 -G8
-OPEN.EXE	0x8003dec0	Rewind_Switch	.sbss	retail layout: first game .sbss reservation, eight-byte stride;static under ASPSX -G8
-OPEN.EXE	0x8003dec8	StrFrame	.sbss	retail layout: first game .sbss reservation, eight-byte stride;static under ASPSX -G8
-END.EXE	0x8003aa34	overlay_next_request	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
-END.EXE	0x8003aa38	ending_data_file	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
-END.EXE	0x8003aa40	cd_path_prefix	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
-END.EXE	0x8003aa48	cd_version_suffix	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
-END.EXE	0x8003aa4c	StrWidth	.sdata	retail layout: last game .sdata words before LIBPRESS .sdata;TUTO0.C initialized static under cc1 -G8
-END.EXE	0x8003aa50	StrHeight	.sdata	retail layout: last game .sdata words before LIBPRESS .sdata;TUTO0.C initialized static under cc1 -G8
-END.EXE	0x8003ace0	Rewind_Switch	.sbss	retail layout: first game .sbss reservation, eight-byte stride;static under ASPSX -G8
-END.EXE	0x8003ace8	StrFrame	.sbss	retail layout: first game .sbss reservation, eight-byte stride;static under ASPSX -G8
+PSX.EXE	0x80010268	overlay_index	.sdata	retail layout: follows the 2MBYTE.OBJ .data words after overlay_path_table;native-gcc257-aspsx107-G8
+PSX.EXE	0x8001026c	overlay_next_request	.sdata	retail layout: follows the 2MBYTE.OBJ .data words after overlay_path_table;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e560	main_unreferenced_sdata_word	.sdata	retail layout: first game .sdata bytes at the gp anchor before cd_memory small data;initialized under cc1 -G8
+GAME.EXE	0x8006e564	main_unreferenced_sdata_bytes	.sdata	retail layout: first game .sdata bytes at the gp anchor before cd_memory small data;initialized under cc1 -G8
+GAME.EXE	0x8006e5b4	cd_path_prefix	.sdata	retail layout: first game .sdata contribution after the gp anchor words;five-byte global under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e5bc	cd_version_suffix	.sdata	retail layout: follows cd_path_prefix at the next word in game .sdata;three-byte global under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e5c0	menu_item_model_allocation_pending	.sdata	retail layout: menu_root word in the game .sdata run between cd_memory and memory_card_events small data;initialized word under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e5c4	input_press_pending	.sdata	retail layout: menu_root word in the game .sdata run between cd_memory and memory_card_events small data;initialized word under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e5c8	menu_item_quantity	.sdata	retail layout: menu_root word in the game .sdata run between cd_memory and memory_card_events small data;initialized word under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e5cc	menu_cursor_animation_frame	.sdata	retail layout: menu_root word in the game .sdata run between cd_memory and memory_card_events small data;initialized word under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e5d0	menu_cursor_animation_direction	.sdata	retail layout: menu_root word in the game .sdata run between cd_memory and memory_card_events small data;initialized word under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e5d4	memory_card_loaded_slot	.sdata	retail layout: game .sdata run between the LIBGPU OTAG .data tail and LIBCD .sdata;one-byte global under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e5e4	player_status_texture_row_0	.sdata	retail layout: eight-byte RECT in the game .sdata run between memory_card_events and display small data;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e5ec	player_status_texture_row_1	.sdata	retail layout: eight-byte RECT in the game .sdata run between memory_card_events and display small data;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e5f4	player_status_texture_row_2	.sdata	retail layout: eight-byte RECT in the game .sdata run between memory_card_events and display small data;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e5fc	player_status_texture_row_3	.sdata	retail layout: eight-byte RECT in the game .sdata run between memory_card_events and display small data;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e604	map_textured_primitive_color	.sdata	retail layout: display word in the game .sdata run after the player status rows;four-byte CVECTOR under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e608	render_model_yaw_smoothing_accumulator	.sdata	retail layout: display word in the game .sdata run;initialized word under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e60c	display_unreferenced_sdata_word	.sdata	retail layout: display word between the yaw accumulator and menu_transition_rect in the game .sdata run;initialized word under cc1 -G8
+GAME.EXE	0x8006e610	menu_transition_rect	.sdata	retail layout: display eight-byte RECT in the game .sdata run;initialized under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e618	map_object_motion_recall_socket_start_offset	.sdata	retail layout: map_object_action_update eight-byte SVECTOR in the game .sdata run after display small data;initialized under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e620	map_object_motion_recall_socket_end_offset	.sdata	retail layout: map_object_action_update eight-byte SVECTOR in the game .sdata run;initialized under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e628	map_object_motion_door_socket_start_offset	.sdata	retail layout: map_object_action_update eight-byte SVECTOR in the game .sdata run;initialized under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e630	map_object_motion_door_socket_end_offset	.sdata	retail layout: map_object_action_update eight-byte SVECTOR in the game .sdata run;initialized under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e638	effect_trail_next_slot	.sdata	retail layout: effect_runtime word in the game .sdata run before LIBCD .sdata;initialized word under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e63c	effect_zero_direction	.sdata	retail layout: effect_runtime eight-byte static SVECTOR ending the game .sdata run at 0x8006e644;initialized under cc1 -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e914	current_poly_ft4	.sbss	retail layout: menu_root static in the eight-byte .lcomm run 0x8006e914-0x8006e94c before the memory card statics;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e91c	menu_saved_music_enabled	.sbss	retail layout: menu_root static in the eight-byte .lcomm run 0x8006e914-0x8006e94c before the memory card statics;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e924	menu_frame_upload_pixels	.sbss	retail layout: menu_root static in the eight-byte .lcomm run 0x8006e914-0x8006e94c before the memory card statics;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e92c	menu_frame_upload_rect	.sbss	retail layout: menu_root static in the eight-byte .lcomm run 0x8006e914-0x8006e94c before the memory card statics;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e934	menu_item_preview_translation	.sbss	retail layout: menu_root static in the eight-byte .lcomm run 0x8006e914-0x8006e94c before the memory card statics;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e93c	menu_item_preview_rotation	.sbss	retail layout: menu_root static in the eight-byte .lcomm run 0x8006e914-0x8006e94c before the memory card statics;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e944	menu_item_preview_rotation_step	.sbss	retail layout: menu_root static in the eight-byte .lcomm run 0x8006e914-0x8006e94c before the memory card statics;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e94c	memory_card_io_end_event	.sbss	retail layout: eight-byte .lcomm stride before SDK small BSS at 0x8006e99c;static under ASPSX -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e954	memory_card_timeout_event	.sbss	retail layout: eight-byte .lcomm stride before SDK small BSS at 0x8006e99c;static under ASPSX -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e95c	memory_card_new_device_event	.sbss	retail layout: eight-byte .lcomm stride before SDK small BSS at 0x8006e99c;static under ASPSX -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e964	memory_card_error_event	.sbss	retail layout: eight-byte .lcomm stride before SDK small BSS at 0x8006e99c;static under ASPSX -G8;native-gcc257-aspsx107-G8
+GAME.EXE	0x8006e96c	memory_card_unreferenced_word_0	.sbss	retail layout: eight-byte .lcomm stride between memory_card_error_event and memory_card_buffer;static under ASPSX -G8
+GAME.EXE	0x8006e974	memory_card_unreferenced_word_1	.sbss	retail layout: eight-byte .lcomm stride between memory_card_error_event and memory_card_buffer;static under ASPSX -G8
+GAME.EXE	0x8006e97c	memory_card_unreferenced_word_2	.sbss	retail layout: eight-byte .lcomm stride between memory_card_error_event and memory_card_buffer;static under ASPSX -G8
+GAME.EXE	0x8006e984	memory_card_unreferenced_word_3	.sbss	retail layout: eight-byte .lcomm stride between memory_card_error_event and memory_card_buffer;static under ASPSX -G8
+GAME.EXE	0x8006e98c	memory_card_buffer	.sbss	retail layout: eight-byte .lcomm stride before SDK small BSS at 0x8006e99c;static under ASPSX -G8;native-gcc257-aspsx107-G8
+OPEN.EXE	0x8003e714	overlay_next_request	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
+OPEN.EXE	0x8003e724	title_level	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
+OPEN.EXE	0x8003e728	title_phase	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
+OPEN.EXE	0x8003e72c	banner_level	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
+OPEN.EXE	0x8003e730	banner_phase	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
+OPEN.EXE	0x8003e734	prompt_level	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
+OPEN.EXE	0x8003e738	prompt_phase	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
+OPEN.EXE	0x8003e73c	pad_previous_buttons	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
+OPEN.EXE	0x8003e740	cd_path_prefix	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
+OPEN.EXE	0x8003e748	cd_version_suffix	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
+OPEN.EXE	0x8003e74c	StrWidth	.sdata	retail layout: last game .sdata words before LIBPRESS .sdata;TUTO0.C initialized static under cc1 -G8
+OPEN.EXE	0x8003e750	StrHeight	.sdata	retail layout: last game .sdata words before LIBPRESS .sdata;TUTO0.C initialized static under cc1 -G8
+OPEN.EXE	0x8003ea50	Rewind_Switch	.sbss	retail layout: first game .sbss reservation, eight-byte stride;static under ASPSX -G8
+OPEN.EXE	0x8003ea58	StrFrame	.sbss	retail layout: first game .sbss reservation, eight-byte stride;static under ASPSX -G8
+END.EXE	0x8003975c	overlay_next_request	.sdata	retail layout: game small data after the last SDK .data and before the first LIBPRESS .sdata record;initialized under cc1 -G8
+END.EXE	0x80039760	StrWidth	.sdata	retail layout: last game .sdata words before LIBPRESS .sdata;TUTO0.C initialized static under cc1 -G8
+END.EXE	0x80039764	StrHeight	.sdata	retail layout: last game .sdata words before LIBPRESS .sdata;TUTO0.C initialized static under cc1 -G8
+END.EXE	0x800399f4	Rewind_Switch	.sbss	retail layout: first game .sbss reservation, eight-byte stride;static under ASPSX -G8
+END.EXE	0x800399fc	StrFrame	.sbss	retail layout: first game .sbss reservation, eight-byte stride;static under ASPSX -G8

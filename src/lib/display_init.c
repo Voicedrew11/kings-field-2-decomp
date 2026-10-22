@@ -18,20 +18,20 @@ enum {
 #define DISPLAY_BACKGROUND_LEVEL 0
 #endif
 
-DATA_AT("OPEN", 0x800a5ad0, 0x4, ".bss")
-DATA_AT("END", 0x800a2898, 0x4, ".bss")
+DATA_AT("OPEN", 0x800a6668, 0x4, ".bss")
+DATA_AT("END", 0x800a15ac, 0x4, ".bss")
 KfDisplayBuffer *display_current;
 
-DATA_AT("OPEN", 0x800a6438, 0x20e8, ".bss")
-DATA_AT("END", 0x800a31f8, 0x20e8, ".bss")
+DATA_AT("OPEN", 0x800a6fd0, 0x20e8, ".bss")
+DATA_AT("END", 0x800a1ef4, 0x20e8, ".bss")
 KfDisplayBuffer display_buffers[2];
 
-DATA_AT("OPEN", 0x800a8540, 0x4000, ".bss")
-DATA_AT("END", 0x800a52f8, 0x4000, ".bss")
+DATA_AT("OPEN", 0x800a90d8, 0x4000, ".bss")
+DATA_AT("END", 0x800a3ff4, 0x4000, ".bss")
 u8 display_primitives[2][KF_PRIMITIVE_BUFFER_BYTES];
 
-ADDRESS_AT("OPEN", 0x800120c8, 0x13c)
-ADDRESS_AT("END", 0x80011b40, 0x140)
+ADDRESS_AT("OPEN", 0x80012180, 0x13c)
+ADDRESS_AT("END", 0x80011a68, 0x140)
 void display_initialize(void)
 {
     ResetGraph(KF_GPU_RESET_FULL);

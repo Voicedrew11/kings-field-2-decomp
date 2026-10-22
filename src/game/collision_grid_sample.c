@@ -4,13 +4,13 @@
 
 enum { COLLISION_DEFAULT_SHAPE_ID = 0x3f };
 
-DATA(0x800667fc, 0xa, ".data")
+DATA(0x800676e8, 0xa, ".data")
 KfMapOccupancyCell collision_default_cell = {
     {{KF_MAP_CELL_NO_OBJECT_INDEX, 0, 0, COLLISION_DEFAULT_SHAPE_ID, 0},
      {KF_MAP_CELL_NO_OBJECT_INDEX, 0, 0, COLLISION_DEFAULT_SHAPE_ID, 0}}
 };
 
-ADDRESS(0x8002a988, 0x11c)
+ADDRESS(0x8002b6b4, 0x11c)
 s32 collision_sample_map_cell_layer(s32 x, s32 y, s32 z)
 {
     KfMapOccupancyCell *cell;

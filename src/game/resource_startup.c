@@ -27,7 +27,7 @@ enum {
 
 RODATA(0x80011000, 0x74)
 
-DATA(0x80063e00, 0x80, ".data")
+DATA(0x80064b64, 0x80, ".data")
 KfCallback callback_default_table[32] = {
     resource_noop_callback, resource_noop_callback, resource_noop_callback, resource_noop_callback,
     resource_noop_callback, resource_noop_callback, resource_noop_callback, resource_noop_callback,
@@ -39,31 +39,31 @@ KfCallback callback_default_table[32] = {
     resource_noop_callback, resource_noop_callback, resource_noop_callback, resource_noop_callback,
 };
 
-DATA(0x800855a0, 0x15000, ".bss")
+DATA(0x800864e4, 0x15000, ".bss")
 u8 resource_tmd_archive_28_workspace[0x15000];
 
-DATA(0x800fa0d0, 0x1960, ".bss")
+DATA(0x800fb014, 0x1960, ".bss")
 u8 resource_tmd_archive_0_workspace[0x1960];
 
-DATA(0x8012da68, 0x37000, ".bss")
+DATA(0x8012e9ac, 0x37000, ".bss")
 u8 resource_tmd_workspace[0x37000];
 
-DATA(0x8017d118, 0x1c, ".bss")
+DATA(0x8017e05c, 0x1c, ".bss")
 KfResourceState resource_state;
 
-DATA(0x8019e138, 0x14000, ".bss")
+DATA(0x8019f07c, 0x14000, ".bss")
 u8 resource_callback_table_workspace[0x14000];
 
-DATA(0x801d8d88, 0x800, ".bss")
+DATA(0x801d9ccc, 0x800, ".bss")
 KfEquipmentRecord player_equipment_records[KF_EQUIPMENT_RECORD_COUNT];
 
-ADDRESS(0x80015d50, 0x8)
+ADDRESS(0x80015dcc, 0x8)
 /* The default table serves callback slots with different caller arguments. */
 void resource_noop_callback()
 {
 }
 
-ADDRESS(0x80015d58, 0x27c)
+ADDRESS(0x80015dd4, 0x27c)
 void resource_initialize_game_assets(void)
 {
     u8 *source = (u8 *)KF_GAME_RESOURCE_ARENA_BASE;
@@ -116,7 +116,7 @@ void resource_initialize_game_assets(void)
     game_initialize_session();
 }
 
-ADDRESS(0x80015fd4, 0x114)
+ADDRESS(0x80016050, 0x114)
 void resource_run_initial_transition(void)
 {
     u8 first;
@@ -153,7 +153,7 @@ void resource_run_initial_transition(void)
     resource_state.active_table[5]();
 }
 
-ADDRESS(0x800160e8, 0x178)
+ADDRESS(0x80016164, 0x178)
 void translate_active_world_positions(s32 dx, s32 dy, s32 dz)
 {
     KfEffectRecord *effect = effect_state.records;
@@ -204,7 +204,7 @@ void translate_active_world_positions(s32 dx, s32 dy, s32 dz)
 
 /* Retail treats $v0 as live at every exit (an int-returning function whose
  * returns carry no value); callers ignore the result. */
-ADDRESS(0x80016260, 0x55c)
+ADDRESS(0x800162dc, 0x55c)
 KF_VALUELESS_S32 resource_request_transition(u8 map_region_id, u8 tmd_id, u8 tim_id, u8 vab_id,
                     u8 sequence_id, s8 offset_x, s8 offset_z, s8 offset_y)
 {
@@ -360,38 +360,38 @@ handle_active:
     goto apply;
 }
 
-ADDRESS(0x800167bc, 0x14)
+ADDRESS(0x80016838, 0x14)
 void resource_transition_set_phase_1(KfCdRequest *request)
 {
     resource_state.transition_phase = KF_RESOURCE_TRANSITION_LOAD_MAP_CELLS;
 }
 
-ADDRESS(0x800167d0, 0x14)
+ADDRESS(0x8001684c, 0x14)
 void resource_transition_set_phase_3(KfCdRequest *request)
 {
     resource_state.transition_phase = KF_RESOURCE_TRANSITION_LOAD_MAP_ACTORS;
 }
 
-ADDRESS(0x800167e4, 0x14)
+ADDRESS(0x80016860, 0x14)
 void resource_transition_set_phase_2(KfCdRequest *request)
 {
     resource_state.transition_phase = KF_RESOURCE_TRANSITION_QUEUE_MAP_ACTORS;
 }
 
-ADDRESS(0x800167f8, 0x14)
+ADDRESS(0x80016874, 0x14)
 void resource_transition_set_phase_4(KfCdRequest *request)
 {
     resource_state.transition_phase = KF_RESOURCE_TRANSITION_QUEUE_TIM;
 }
 
-ADDRESS(0x8001680c, 0x14)
+ADDRESS(0x80016888, 0x14)
 void resource_transition_set_phase_6(KfCdRequest *request)
 {
     resource_state.transition_phase = KF_RESOURCE_TRANSITION_FINISH_AUDIO;
 }
 
 
-ADDRESS(0x80016820, 0x6b4)
+ADDRESS(0x8001689c, 0x6b4)
 void resource_advance_transition(void)
 {
     u8 *buffer;

@@ -35,38 +35,38 @@ enum {
 
 RODATA(0x80011074, 0x21)
 
-DATA(0x8006d680, 0x5, ".sdata")
+DATA(0x8006e5b4, 0x5, ".sdata")
 char cd_path_prefix[5] = "\\CD\\";
-DATA(0x8006d688, 0x3, ".sdata")
+DATA(0x8006e5bc, 0x3, ".sdata")
 char cd_version_suffix[3] = ";1";
 
-DATA(0x8009b0a0, 0x5f000, ".bss")
+DATA(0x8009bfe4, 0x5f000, ".bss")
 u8 game_resource_arena[KF_GAME_RESOURCE_ARENA_CAPACITY];
 
-DATA(0x801b5d60, 0x2a4, ".bss")
+DATA(0x801b6ca4, 0x2a4, ".bss")
 KfCdState cd_state;
-DATA(0x801b6004, 0x60, ".bss")
+DATA(0x801b6f48, 0x60, ".bss")
 KfCdArchive cd_archives[KF_CD_ARCHIVE_SLOTS];
 
 /* Provisional extent: the first map payload copies 0xfa00 bytes from this
- * buffer, while the following BSS identity begins at 0x801c7068. */
-DATA(0x801b6064, 0x11000, ".bss")
+ * buffer, while the following BSS identity begins at 0x801c7fac. */
+DATA(0x801b6fa8, 0x11000, ".bss")
 u8 cd_stream_work_buffer[0x11000];
 
-ADDRESS(0x80016ed4, 0xc)
+ADDRESS(0x80016f50, 0xc)
 void cd_stream_mark_complete(KfCdRequest *request)
 {
     request->stream_complete = KF_CD_STREAM_CHUNK_READY;
 }
 
-ADDRESS(0x80016ee0, 0x30)
+ADDRESS(0x80016f5c, 0x30)
 void cd_map_stream_read(s32 slot, s32 entry)
 {
     cd_archive_read_chunked(slot, entry, cd_stream_work_buffer,
         cd_stream_mark_complete);
 }
 
-ADDRESS(0x80016f10, 0x3c)
+ADDRESS(0x80016f8c, 0x3c)
 void cd_stream_limit_chunk(KfCdRequest *request)
 {
     if (request->remaining_sectors > KF_CD_STREAM_CHUNK_SECTORS) {
@@ -78,7 +78,7 @@ void cd_stream_limit_chunk(KfCdRequest *request)
     }
 }
 
-ADDRESS(0x80016f4c, 0x27c)
+ADDRESS(0x80016fc8, 0x27c)
 void cd_request_service_stream(void)
 {
     KfCdRequest *request;
@@ -163,7 +163,7 @@ leave_critical:
     ExitCriticalSection();
 }
 
-ADDRESS(0x800171c8, 0x30)
+ADDRESS(0x80017244, 0x30)
 const u32 *resource_copy_words(u32 *destination, const u32 *source, u32 word_count)
 {
     while (word_count-- != 0) {
@@ -172,7 +172,7 @@ const u32 *resource_copy_words(u32 *destination, const u32 *source, u32 word_cou
     return source;
 }
 
-ADDRESS(0x800171f8, 0x30)
+ADDRESS(0x80017274, 0x30)
 const u16 *resource_copy_halfwords(u16 *destination, const u16 *source, u32 halfword_count)
 {
     while (halfword_count-- != 0) {
@@ -181,7 +181,7 @@ const u16 *resource_copy_halfwords(u16 *destination, const u16 *source, u32 half
     return source;
 }
 
-ADDRESS(0x80017228, 0x24)
+ADDRESS(0x800172a4, 0x24)
 u32 *repeat_store_word(u32 *destination, u32 value, s32 count)
 {
     while (count-- != 0) {
@@ -190,7 +190,7 @@ u32 *repeat_store_word(u32 *destination, u32 value, s32 count)
     return destination;
 }
 
-ADDRESS(0x8001724c, 0x24)
+ADDRESS(0x800172c8, 0x24)
 u16 *repeat_store_halfword(u16 *destination, u16 value, s32 count)
 {
     while (count-- != 0) {
@@ -199,7 +199,7 @@ u16 *repeat_store_halfword(u16 *destination, u16 value, s32 count)
     return destination;
 }
 
-ADDRESS(0x80017270, 0x84)
+ADDRESS(0x800172ec, 0x84)
 void memory_arena_coalesce_free(KfMemoryBlock *block)
 {
     KfMemoryBlock *first = block;
@@ -220,7 +220,7 @@ void memory_arena_coalesce_free(KfMemoryBlock *block)
     } while (block->kind != KF_MEMORY_BLOCK_END);
 }
 
-ADDRESS(0x800172f4, 0x20)
+ADDRESS(0x80017370, 0x20)
 void memory_arena_free(KfMemoryBlock *block)
 {
     u8 **owner = block->owner;
@@ -232,7 +232,7 @@ void memory_arena_free(KfMemoryBlock *block)
     }
 }
 
-ADDRESS(0x80017314, 0x158)
+ADDRESS(0x80017390, 0x158)
 KfMemoryBlock *memory_arena_find_block(KfMemoryBlock *arena, u32 size)
 {
     KfMemoryBlock *block = arena;
@@ -268,7 +268,7 @@ KfMemoryBlock *memory_arena_find_block(KfMemoryBlock *arena, u32 size)
     return NULL;
 }
 
-ADDRESS(0x8001746c, 0x98)
+ADDRESS(0x800174e8, 0x98)
 void memory_arena_wait_pending(KfMemoryBlock *arena)
 {
     KfMemoryBlock *block = arena;
@@ -281,7 +281,7 @@ void memory_arena_wait_pending(KfMemoryBlock *arena)
     }
 }
 
-ADDRESS(0x80017504, 0xe4)
+ADDRESS(0x80017580, 0xe4)
 void memory_arena_compact(KfMemoryBlock *arena)
 {
     KfMemoryBlock *read_block = arena;
@@ -317,7 +317,7 @@ void memory_arena_compact(KfMemoryBlock *arena)
     write_block->size = (u8 *)read_block - (u8 *)write_block - sizeof(KfMemoryBlock);
 }
 
-ADDRESS(0x800175e8, 0x20)
+ADDRESS(0x80017664, 0x20)
 void memory_arena_initialize_blocks(KfMemoryBlock *arena, u32 capacity)
 {
     arena->kind = KF_MEMORY_BLOCK_FREE;
@@ -327,7 +327,7 @@ void memory_arena_initialize_blocks(KfMemoryBlock *arena, u32 capacity)
     arena->kind = KF_MEMORY_BLOCK_END;
 }
 
-ADDRESS(0x80017608, 0xb8)
+ADDRESS(0x80017684, 0xb8)
 u8 *memory_arena_allocate_block(KfMemoryBlock *arena, u32 size, u8 **owner)
 {
     KfMemoryBlock *block = memory_arena_find_block(arena, size);
@@ -364,49 +364,49 @@ u8 *memory_arena_allocate_block(KfMemoryBlock *arena, u32 size, u8 **owner)
     return data;
 }
 
-ADDRESS(0x800176c0, 0x20)
+ADDRESS(0x8001773c, 0x20)
 void memory_block_release(u8 *data)
 {
     memory_arena_free(MEMORY_BLOCK(data));
 }
 
-ADDRESS(0x800176e0, 0x8)
+ADDRESS(0x8001775c, 0x8)
 void memory_block_set_kind(u8 *data, KfMemoryBlockKind kind)
 {
     MEMORY_BLOCK(data)->kind = kind;
 }
 
-ADDRESS(0x800176e8, 0xc)
+ADDRESS(0x80017764, 0xc)
 KfMemoryBlockKind memory_block_kind(u8 *data)
 {
     return MEMORY_BLOCK(data)->kind;
 }
 
-ADDRESS(0x800176f4, 0x8)
+ADDRESS(0x80017770, 0x8)
 void memory_block_set_flags(u8 *data, u8 flags)
 {
     MEMORY_BLOCK(data)->flags = flags;
 }
 
-ADDRESS(0x800176fc, 0xc)
+ADDRESS(0x80017778, 0xc)
 u8 memory_block_flags(u8 *data)
 {
     return MEMORY_BLOCK(data)->flags;
 }
 
-ADDRESS(0x80017708, 0x8)
+ADDRESS(0x80017784, 0x8)
 void memory_block_set_tag(u8 *data, u16 tag)
 {
     MEMORY_BLOCK(data)->tag = tag;
 }
 
-ADDRESS(0x80017710, 0xc)
+ADDRESS(0x8001778c, 0xc)
 u16 memory_block_tag(u8 *data)
 {
     return MEMORY_BLOCK(data)->tag;
 }
 
-ADDRESS(0x8001771c, 0x38)
+ADDRESS(0x80017798, 0x38)
 u8 *memory_malloc_checked(u32 size)
 {
     u8 *block = (u8 *)malloc(size);
@@ -417,13 +417,13 @@ u8 *memory_malloc_checked(u32 size)
     return block;
 }
 
-ADDRESS(0x80017754, 0x28)
+ADDRESS(0x800177d0, 0x28)
 u8 *memory_allocate(u32 size)
 {
     return memory_malloc_checked((size + 3) & ~3);
 }
 
-ADDRESS(0x8001777c, 0x20)
+ADDRESS(0x800177f8, 0x20)
 void memory_free(u8 *data)
 {
     free((void *)data);
@@ -431,7 +431,7 @@ void memory_free(u8 *data)
 
 /* Services the VAB and stream requests at the head of the CD queue, then
  * waits for the GPU and the next VSync. */
-ADDRESS(0x8001779c, 0x38)
+ADDRESS(0x80017818, 0x38)
 void cd_request_yield(void)
 {
     cd_request_service_vab();
@@ -440,14 +440,14 @@ void cd_request_yield(void)
     VSync(0);
 }
 
-ADDRESS(0x800177d4, 0x30)
+ADDRESS(0x80017850, 0x30)
 void cd_vsync_handler(void)
 {
     cd_state.vsync_count++;
     cd_state.frame_count++;
 }
 
-ADDRESS(0x80017804, 0x60)
+ADDRESS(0x80017880, 0x60)
 void cd_wait_two_vsyncs(void)
 {
     for (;;) {
@@ -463,7 +463,7 @@ void cd_wait_two_vsyncs(void)
     }
 }
 
-ADDRESS(0x80017864, 0x6c)
+ADDRESS(0x800178e0, 0x6c)
 void cd_request_advance(KfCdRequest *request)
 {
     KfCdRequest *next = request;
@@ -482,7 +482,7 @@ void cd_request_advance(KfCdRequest *request)
     }
 }
 
-ADDRESS(0x800178d0, 0x14c)
+ADDRESS(0x8001794c, 0x14c)
 void cd_complete_handler(void)
 {
     KfCdRequest *request = cd_state.current;
@@ -525,7 +525,7 @@ void cd_complete_handler(void)
     }
 }
 
-ADDRESS(0x80017a1c, 0x7c)
+ADDRESS(0x80017a98, 0x7c)
 void cd_data_ready_handler(void)
 {
     KfCdRequest *request = cd_state.current;
@@ -543,7 +543,7 @@ void cd_data_ready_handler(void)
     }
 }
 
-ADDRESS(0x80017a98, 0x8)
+ADDRESS(0x80017b14, 0x8)
 void cd_error_handler(void)
 {
 }
@@ -553,20 +553,20 @@ enum {
     CD_SECTORS_PER_MINUTE = 60 * CD_SECTORS_PER_SECOND
 };
 
-ADDRESS(0x80017aa0, 0x20)
+ADDRESS(0x80017b1c, 0x20)
 s32 cd_bcd_to_int(u8 bcd)
 {
     return (bcd >> 4) * 10 + (bcd & 0xf);
 }
 
-ADDRESS(0x80017ac0, 0x2c)
+ADDRESS(0x80017b3c, 0x2c)
 u32 cd_int_to_bcd(u8 value)
 {
     return itob(value);
 }
 
 /* Absolute sector of a BCD location, without CdPosToInt's 150-sector lead-in. */
-ADDRESS(0x80017aec, 0x80)
+ADDRESS(0x80017b68, 0x80)
 u32 cd_location_to_sector(CdlLOC *location)
 {
     return cd_bcd_to_int(location->minute) * CD_SECTORS_PER_MINUTE
@@ -574,7 +574,7 @@ u32 cd_location_to_sector(CdlLOC *location)
         + cd_bcd_to_int(location->sector);
 }
 
-ADDRESS(0x80017b6c, 0x84)
+ADDRESS(0x80017be8, 0x84)
 void cd_sector_to_location(CdlLOC *location, u32 sector)
 {
     u32 rest;
@@ -586,13 +586,13 @@ void cd_sector_to_location(CdlLOC *location, u32 sector)
     location->track = 0;
 }
 
-ADDRESS(0x80017bf0, 0x3c)
+ADDRESS(0x80017c6c, 0x3c)
 void cd_location_add(CdlLOC *base, u32 sector_offset, CdlLOC *result)
 {
     cd_sector_to_location(result, cd_location_to_sector(base) + sector_offset);
 }
 
-ADDRESS(0x80017c2c, 0x7c)
+ADDRESS(0x80017ca8, 0xb0)
 void cd_request_wait_idle(void)
 {
     for (;;) {
@@ -606,7 +606,7 @@ void cd_request_wait_idle(void)
     ExitCriticalSection();
 }
 
-ADDRESS(0x80017ca8, 0x58)
+ADDRESS(0x80017d58, 0x58)
 void cd_request_wait_done(KfCdRequest *request)
 {
     for (;;) {
@@ -622,7 +622,7 @@ void cd_request_wait_done(KfCdRequest *request)
 
 /* Nonzero unless the last word of DATA equals KF_CD_CHECKSUM_SEED plus the
  * sum of every preceding word. */
-ADDRESS(0x80017d00, 0x54)
+ADDRESS(0x80017db0, 0x54)
 b32 cd_sectors_corrupt(u32 *data, s32 sector_count)
 {
     u32 sum = KF_CD_CHECKSUM_SEED;
@@ -636,7 +636,7 @@ b32 cd_sectors_corrupt(u32 *data, s32 sector_count)
     return sum != data[last];
 }
 
-ADDRESS(0x80017d54, 0x118)
+ADDRESS(0x80017e04, 0x118)
 KfCdRequest *cd_request_enqueue(KF_ENUM_PARAM(KfCdRequestKind, s32) kind, CdlLOC *location, u32 byte_size,
     u_long *destination, KfCdRequestCallback on_complete)
 {
@@ -664,7 +664,7 @@ KfCdRequest *cd_request_enqueue(KF_ENUM_PARAM(KfCdRequestKind, s32) kind, CdlLOC
     return request;
 }
 
-ADDRESS(0x80017e6c, 0x88)
+ADDRESS(0x80017f1c, 0x88)
 u32 cd_archive_entry_extent(u16 slot, u16 entry, CdlLOC *location)
 {
     KfCdArchive *archive = &cd_archives[slot];
@@ -676,7 +676,7 @@ u32 cd_archive_entry_extent(u16 slot, u16 entry, CdlLOC *location)
     return (archive->sector_offsets[entry + 1] - start) << KF_CD_SECTOR_SHIFT;
 }
 
-ADDRESS(0x80017ef4, 0x54)
+ADDRESS(0x80017fa4, 0x54)
 void cd_archive_queue_read(u16 slot, u16 entry, u_long *destination,
     KfCdRequestCallback on_complete)
 {
@@ -686,7 +686,7 @@ void cd_archive_queue_read(u16 slot, u16 entry, u_long *destination,
     cd_request_enqueue(KF_CD_REQUEST_CHECKSUM_READ, &location, size, destination, on_complete);
 }
 
-ADDRESS(0x80017f48, 0x54)
+ADDRESS(0x80017ff8, 0x54)
 void cd_archive_queue_sector_callback_read(u16 slot, u16 entry, u_long *destination,
     KfCdRequestCallback on_complete)
 {
@@ -696,7 +696,7 @@ void cd_archive_queue_sector_callback_read(u16 slot, u16 entry, u_long *destinat
     cd_request_enqueue(KF_CD_REQUEST_SECTOR_CALLBACK, &location, size, destination, on_complete);
 }
 
-ADDRESS(0x80017f9c, 0x54)
+ADDRESS(0x8001804c, 0x54)
 void cd_archive_queue_stream_read(u16 slot, u16 entry, u_long *destination,
     KfCdRequestCallback on_complete)
 {
@@ -706,7 +706,7 @@ void cd_archive_queue_stream_read(u16 slot, u16 entry, u_long *destination,
     cd_request_enqueue(KF_CD_REQUEST_VAB_READ, &location, size, destination, on_complete);
 }
 
-ADDRESS(0x80017ff0, 0xc4)
+ADDRESS(0x800180a0, 0xc4)
 void cd_archive_read_chunked(u16 slot, u16 entry, u8 *destination,
     KfCdRequestCallback on_complete)
 {
@@ -731,7 +731,7 @@ void cd_archive_read_chunked(u16 slot, u16 entry, u8 *destination,
     }
 }
 
-ADDRESS(0x800180b4, 0x44)
+ADDRESS(0x80018164, 0x44)
 u32 cd_archive_entry_size(u16 slot, u16 entry)
 {
     u16 *offsets = cd_archives[slot].sector_offsets;
@@ -742,14 +742,14 @@ u32 cd_archive_entry_size(u16 slot, u16 entry)
 }
 
 /* Error hook left empty in retail. */
-ADDRESS(0x800180f8, 0x8)
+ADDRESS(0x800181a8, 0x8)
 void cd_report_error(s32 code)
 {
 }
 
 /* Reads SECTOR_COUNT sectors synchronously, with the request queue idle and
  * its CD events disabled. */
-ADDRESS(0x80018100, 0x140)
+ADDRESS(0x800181b0, 0x160)
 void cd_read_sectors(CdlLOC *location, u_long *destination, s32 sector_count)
 {
     s32 attempt = 0;
@@ -780,7 +780,7 @@ void cd_read_sectors(CdlLOC *location, u_long *destination, s32 sector_count)
     }
 }
 
-ADDRESS(0x80018240, 0x58)
+ADDRESS(0x80018310, 0x58)
 u8 *cd_extent_load(KfCdExtent *extent)
 {
     s32 size = (extent->size + KF_CD_SECTOR_BYTES - 1) & -KF_CD_SECTOR_BYTES;
@@ -791,7 +791,7 @@ u8 *cd_extent_load(KfCdExtent *extent)
 }
 
 /* Reads SIZE bytes of the extent, or all of it when SIZE is zero. */
-ADDRESS(0x80018298, 0x38)
+ADDRESS(0x80018368, 0x38)
 void cd_extent_read_into(u_long *destination, KfCdExtent *extent, u32 size)
 {
     if (size == 0) {
@@ -802,7 +802,7 @@ void cd_extent_read_into(u_long *destination, KfCdExtent *extent, u32 size)
 }
 
 /* Reads archive entry ENTRY until its checksum holds. */
-ADDRESS(0x800182d0, 0x94)
+ADDRESS(0x800183a0, 0x94)
 void cd_archive_read(u16 slot, u16 entry, u_long *destination)
 {
     KfCdArchive *archive = &cd_archives[slot];
@@ -817,7 +817,7 @@ void cd_archive_read(u16 slot, u16 entry, u_long *destination)
 }
 
 /* Loads \CD\<name>;1 into a fresh allocation. */
-ADDRESS(0x80018364, 0xb4)
+ADDRESS(0x80018434, 0xb4)
 u8 *cd_file_load(const char *name)
 {
     char path[CD_PATH_BYTES];
@@ -839,7 +839,7 @@ u8 *cd_file_load(const char *name)
 }
 
 /* Loads SIZE bytes of \CD\<name>;1, or all of it when SIZE is zero. */
-ADDRESS(0x80018418, 0xb8)
+ADDRESS(0x800184e8, 0xb8)
 s32 cd_file_load_into(u_long *destination, const char *name, u32 size)
 {
     char path[CD_PATH_BYTES];
@@ -866,7 +866,7 @@ s32 cd_file_load_into(u_long *destination, const char *name, u32 size)
 
 /* Opens \CD\<name>;1 as archive SLOT: keeps its extent and copies the
  * sector-offset table out of sector 0. */
-ADDRESS(0x800184d0, 0xf0)
+ADDRESS(0x800185a0, 0xf0)
 void cd_archive_open(u16 slot, const char *name)
 {
     u16 table[(KF_CD_SECTOR_BYTES + 0x40) / 2];
@@ -887,7 +887,7 @@ void cd_archive_open(u16 slot, const char *name)
     resource_copy_halfwords(archive->sector_offsets, &table[1], table[0] + 1);
 }
 
-ADDRESS(0x800185c0, 0x13c)
+ADDRESS(0x80018690, 0x13c)
 void cd_initialize(void)
 {
     KfCdRequest *request;
@@ -918,7 +918,7 @@ void cd_initialize(void)
     ExitCriticalSection();
 }
 
-ADDRESS(0x800186fc, 0x68)
+ADDRESS(0x800187cc, 0x68)
 void cd_close_events(void)
 {
     EnterCriticalSection();
