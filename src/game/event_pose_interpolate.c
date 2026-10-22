@@ -1,4 +1,5 @@
 #include <kf/game/event_stream.h>
+#include <kf/game/game.h>
 #include <kf/lib/null.h>
 #include <kf/game/map_object.h>
 #include <kf/game/player.h>
@@ -812,6 +813,8 @@ void color_overlay_transition(s32 step, s32 first, s32 second, s32 third,
     accumulate_color_overlay(target_first, target_second, target_third, 0x800);
     render_game_frame(NULL, NULL);
 }
+
+
 ADDRESS(0x8004831c, 0x6e0)
 void event_map_object_interact(KfMapObject *object, ...)
 {
@@ -831,6 +834,7 @@ void event_map_object_interact(KfMapObject *object, ...)
     s32 fraction;
     u32 previous_buttons;
     u32 buttons; /* reused as the remove-object flag after the button wait */
+    s32 hold_steps = 0;
 
     if (object == NULL) {
         va_start(arguments, object);
@@ -903,11 +907,6 @@ void event_map_object_interact(KfMapObject *object, ...)
         next_angles.vz = 0;
         next_angles.vx = 0;
         for (fraction = 0; fraction <= KF_FIXED12_ONE; fraction += 0x200) {
-            buttons = PadRead(1);
-            if (previous_buttons == 0 && buttons != 0) {
-                goto button_pressed;
-            }
-            previous_buttons = buttons;
             scene_pose_interpolate(object, &first_position,
                           &next_position, &first_angles, &next_angles,
                           fraction);
@@ -924,18 +923,19 @@ void event_map_object_interact(KfMapObject *object, ...)
 
     for (;;) {
         buttons = PadRead(1);
-        if (previous_buttons == 0 && buttons != 0) {
+        if (previous_buttons == 0 && buttons != 0 && hold_steps == 0x100) {
             break;
         }
+        previous_buttons = buttons;
         object->rotation.vy += 0x40;
+        hold_steps = hold_steps < 0x100 ? hold_steps + 0x40 : hold_steps;
         cd_request_service_vab();
         cd_request_service_stream();
         render_game_frame(NULL, (const SVECTOR *)&player_state.camera_rotation);
-        previous_buttons = buttons;
     }
 
 button_pressed:
-    if ((buttons & 0x20) == 0 && spawned_id == -1) {
+    if ((buttons & DAT_8006e568) == 0 && spawned_id == -1) {
         goto return_pose;
     }
     if (!game_counter_increment(object->object_id)) {

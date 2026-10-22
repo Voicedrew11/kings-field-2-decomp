@@ -12,10 +12,10 @@
 struct DIRENTRY;
 
 enum {
-    KF_MENU_GLYPHS_PER_ROW = 12,
+    KF_MENU_GLYPHS_PER_ROW = 24,
     KF_MENU_WINDOW_ROW_CAPACITY = 10,
     KF_MENU_WINDOW_COUNT = 8,
-    KF_MENU_LIST_TITLE_COPY_GLYPHS = 10,
+    KF_MENU_LIST_TITLE_COPY_GLYPHS = 24,
     KF_MENU_SPRITE_COUNT = 20
 };
 
@@ -214,7 +214,7 @@ enum {
 };
 
 enum {
-    KF_MENU_TEXT_END = -1,
+    KF_MENU_TEXT_END = 0xff,
     KF_MENU_TEXT_GLYPH_MASK = 0x0fff,
     KF_MENU_TEXT_DAKUTEN = 0x1000,
     KF_MENU_TEXT_HANDAKUTEN = 0x2000,
@@ -224,7 +224,7 @@ enum {
     KF_MENU_DAKUTEN_U = 210,
     KF_MENU_HANDAKUTEN_U = 225,
     KF_MENU_KANA_MARK_V = 30,
-    KF_MENU_GLYPH_ADVANCE = 14,
+    KF_MENU_GLYPH_ADVANCE = 7,
     KF_MENU_DIGIT_ADVANCE = 7,
     KF_MENU_NUMBER_COLUMN_ROWS = 11,
     KF_MENU_NUMBER_COLUMN_WIDTH = 7
@@ -245,11 +245,11 @@ typedef struct KfMenuSpriteDef {
 } KfMenuSpriteDef;
 
 typedef struct KfMenuGlyphRow {
-    s16 codes[KF_MENU_GLYPHS_PER_ROW];
+    u8 codes[KF_MENU_GLYPHS_PER_ROW];
 } KfMenuGlyphRow;
 
 typedef struct KfMenuLabelSuffix {
-    s16 codes[10];
+    u8 codes[24];
 } KfMenuLabelSuffix;
 
 typedef struct KfMenuGlyphString {
@@ -288,7 +288,7 @@ typedef struct KfItemMenuList {
 
 /* Card catalogue rows carry ten glyph codes; the renderer advances 20 bytes. */
 typedef struct KfCardSlotGlyphRow {
-    s16 codes[10];
+    u8 codes[20];
 } KfCardSlotGlyphRow;
 
 typedef struct KfCardMenuList {
@@ -311,14 +311,14 @@ typedef struct KfMagicMenuList {
  * comes from glyphs_per_entry, so card and item rows share this view. */
 typedef struct KfMenuRenderList {
     KfMenuList list;
-    const s16 *row_glyphs;
+    const u8 *row_glyphs;
     const KfMenuLabelSuffix *detail_rows;
     const u8 *byte_values;
     const s32 *number_values;
 } KfMenuRenderList;
 
 typedef char kf_menu_glyph_string_size[sizeof(KfMenuGlyphString) == 28 ? 1 : -1];
-typedef char kf_menu_label_suffix_size[sizeof(KfMenuLabelSuffix) == 20 ? 1 : -1];
+typedef char kf_menu_label_suffix_size[sizeof(KfMenuLabelSuffix) == 24 ? 1 : -1];
 typedef char kf_menu_sprite_def_size[sizeof(KfMenuSpriteDef) == 12 ? 1 : -1];
 typedef char kf_menu_window_layout_size[sizeof(KfMenuWindowLayout) == 308 ? 1 : -1];
 typedef char kf_menu_list_prefix_size[sizeof(KfMenuList) == 36 ? 1 : -1];
@@ -345,7 +345,7 @@ extern KfMenuWindowLayout menu_window_layouts[KF_MENU_WINDOW_COUNT];
 /* The layout record of a KfMenuWindowKind. */
 #define menu_window_layout(kind) (&menu_window_layouts[KF_ENUM_ENCODE(s32, kind)])
 extern KfMenuLabelSuffix menu_header_labels[12];
-extern KfMenuLabelSuffix menu_label_suffixes[16];
+extern KfMenuLabelSuffix menu_label_suffixes[26];
 extern KfMenuSpriteDef menu_sprite_defs[KF_MENU_SPRITE_COUNT];
 extern s32 menu_cursor_animation_frame;
 extern KfMenuCursorAnimation menu_cursor_animation_direction;
@@ -354,7 +354,7 @@ extern b32 menu_item_model_allocation_pending;
 extern s32 menu_item_quantity;
 extern KfMenuGlyphRow menu_glyph_rows[KF_ITEM_ID_COUNT];
 extern KfMenuGlyphRow menu_glyph_rows_extra[20];
-extern KfMenuLabelSuffix menu_equipment_category_labels[11];
+extern KfMenuGlyphRow menu_equipment_category_labels[11];
 extern KfMenuLabelSuffix menu_none_option_glyphs;
 extern u8 menu_item_mask_pages[6][KF_ITEM_ID_COUNT];
 void menu_build_equipped_label_rows(KfMenuLabelSuffix *rows);
@@ -382,7 +382,7 @@ void menu_present_frame(void);
 void menu_frame_begin(void);
 void menu_render_list_mode_8_9_noop(void);
 void menu_format_number(s32 value, s32 count, KfFormatPaddingMode padding_mode,
-    KfMenuFormatStyle style, s16 *out);
+    KfMenuFormatStyle style, u8 *out);
 void menu_draw_two_option(const KfMenuGlyphString *accept_label,
     const KfMenuGlyphString *decline_label, s32 selected_choice, b32 confirmation);
 void menu_draw_window(KfMenuWindowKind window_kind, s32 count, s32 highlight,
@@ -407,7 +407,7 @@ void menu_fill_item_counts_and_prices(const u8 *source, u8 *counts, s32 *prices,
     const u8 *indices, s32 first, s32 last, s32 group);
 void menu_fill_item_prices(s32 *prices, const u8 *indices,
     s32 first, s32 last, s32 group);
-s32 menu_card_build_slot_rows(const struct DIRENTRY *card_entries, s16 *glyph_rows,
+s32 menu_card_build_slot_rows(const struct DIRENTRY *card_entries, u8 *glyph_rows,
     s32 *experience_values, u8 *levels, s32 *slot_ids);
 void menu_show_dialog_panel(s32 panel, const KfMenuGlyphString *rows, s32 count,
     s32 detail0, s32 detail1, s32 detail2, s32 detail3, s32 detail4,
@@ -431,6 +431,7 @@ void menu_item_buy_sell_controller(s32 kind);
 s32 menu_choose_inventory_item(void);
 void menu_item_trade_controller(void);
 void menu_item_stock_choice_controller(void);
+void func_8001883c(void);
 s32 menu_run_root_controller(void);
 void player_clear_and_cap_status_effects(void);
 void player_cap_darkness_phase(void);

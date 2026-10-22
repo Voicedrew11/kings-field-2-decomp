@@ -146,6 +146,7 @@ extern char cd_version_suffix[3];
 extern KfCdArchive cd_archives[KF_CD_ARCHIVE_SLOTS];
 extern KfCdState cd_state;
 extern u8 cd_stream_work_buffer[];
+extern u8 DAT_800864dc;
 
 s32 cd_bcd_to_int(u8 bcd);
 u32 cd_int_to_bcd(u8 value);

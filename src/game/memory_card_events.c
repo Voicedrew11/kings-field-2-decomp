@@ -105,7 +105,8 @@ enum {
 };
 
 enum {
-    CARD_READ_MAX_RETRIES = 2
+    CARD_READ_MAX_RETRIES = 2,
+    CARD_WRITE_MAX_RETRIES = 3
 };
 
 ADDRESS(0x80022efc, 0x30)
@@ -320,6 +321,9 @@ s32 memory_card_write_slot(s32 slot)
     s32 index;
     s32 entry_slot;
     s32 handle;
+    u32 checksum;
+    s32 attempt = 0;
+    s32 block_bytes = KF_CARD_BLOCK_BYTES;
 
     memset((void *)occupied, 0, sizeof(occupied));
     memset((void *)entries, 0, sizeof(entries));
@@ -349,6 +353,7 @@ s32 memory_card_write_slot(s32 slot)
         }
     }
 
+retry:
     strcat(path, memory_card_file_prefix);
     path[CARD_PATH_SLOT_DIGIT_OFFSET] = slot + '0';
     path[CARD_PATH_SLOT_DIGIT_OFFSET + 1] = '\0';
@@ -375,6 +380,7 @@ s32 memory_card_write_slot(s32 slot)
     card_payload_capture_game_state(memory_card_buffer + KF_CARD_HEADER_BYTES);
     header.payload_checksum = memory_card_payload_byte_sum(
         memory_card_buffer + KF_CARD_HEADER_BYTES);
+    checksum = header.payload_checksum;
     memcpy((void *)memory_card_buffer, (const void *)&header, sizeof(header));
 
     if (!present) {
@@ -383,17 +389,27 @@ s32 memory_card_write_slot(s32 slot)
             return KF_CARD_WRITE_IO_FAILURE;
         }
         close(handle);
+        present = KF_TRUE;
     }
     handle = open(path, FWRITE);
-    if (handle == -1) {
-        return KF_CARD_WRITE_IO_FAILURE;
+    if (handle != -1 && write(handle, (const void *)memory_card_buffer, KF_CARD_BLOCK_BYTES)
+            == block_bytes) {
+        close(handle);
+        handle = open(path, FREAD);
+        if (handle != -1 && read(handle, (void *)memory_card_buffer, KF_CARD_BLOCK_BYTES)
+                == block_bytes) {
+            close(handle);
+            if (memory_card_payload_byte_sum(memory_card_buffer + KF_CARD_HEADER_BYTES) == checksum) {
+                memory_card_loaded_slot = slot;
+                return KF_CARD_WRITE_OK;
+            }
+        }
     }
-    if (write(handle, (const void *)memory_card_buffer, KF_CARD_BLOCK_BYTES) != KF_CARD_BLOCK_BYTES) {
-        return KF_CARD_WRITE_IO_FAILURE;
+    if (attempt < CARD_WRITE_MAX_RETRIES) {
+        attempt++;
+        goto retry;
     }
-    close(handle);
-    memory_card_loaded_slot = slot;
-    return KF_CARD_WRITE_OK;
+    return KF_CARD_WRITE_IO_FAILURE;
 }
 
 ADDRESS(0x80023cc0, 0x110)

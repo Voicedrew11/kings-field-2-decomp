@@ -31,7 +31,7 @@ KfCardHeader	0x280	supported	game/card.h;GAME 0x80022990/0x80022994;GAME 0x80023
 KfCardMenuList	0x34	supported	game/menu.h;menu_card_load_browser;menu_card_load_slot_browser;menu_card_save_browser	card list prefix and row, level, and experience pointers
 KfCardPlayerSnapshot	0x58	supported	game/card_payload.h;GAME 0x80048da8-0x8004906c;GAME 0x80049370-0x80049638	88-byte player snapshot view; original typedef spelling unproved
 KfCardSavePayload	0x3c00	supported	game/card_payload.h;GAME 0x80048d24/0x800492dc;memory_card_write_slot	0x3c00-byte on-card payload format; interior gaps and tail unclassified; original C object extent unproved
-KfCardSlotGlyphRow	0x14	supported	game/menu.h;menu_card_build_slot_rows;menu_card_load_browser	ten halfword glyph codes per card slot
+KfCardSlotGlyphRow	0x14	supported	game/menu.h;menu_card_build_slot_rows;menu_card_load_browser	twenty byte glyph codes per card slot (US sb stores)
 KfCdArchive	0x0c	supported	game/cd.h;cd_archive_open;cd_archive_entry_extent	sector-offset table and file extent
 KfCdExtent	0x08	supported	game/cd.h;cd_file_load;cd_archive_open	CD location and byte extent
 KfCdRequest	0x28	supported	game/cd.h;asm;cd_initialize;func_80017d54	one queued asynchronous CD request
@@ -153,9 +153,9 @@ KfMapOccupancyLayer	0x05	supported	asm;render_map_cell_object;collision_occupanc
 KfMapPlacedEntry	0x18	supported	asm;map_placed_expand_sources;map resource caller	128 runtime rows at graphics runtime +0x170f0
 KfMapPlacedSource	0x10	supported	asm;map_placed_expand_sources;map resource caller	16-byte map resource rows
 KfMemoryBlock	0x0c	supported	game headers;asm;xrefs	layout from the reconstructed header
-KfMenuGlyphRow	0x18	supported	asm;menu_list_init;KF1 counterpart;loaded menu table	twelve halfword codes in a positioned menu row
+KfMenuGlyphRow	0x18	supported	asm;menu_list_init;KF1 counterpart;loaded menu table;US lbu glyph reads	twenty-four byte glyph codes (0xff end) in a positioned menu row
 KfMenuGlyphString	0x1c	supported	asm;menu_list_init;KF1 counterpart;loaded menu table	layout from the reconstructed header
-KfMenuLabelSuffix	0x14	supported	retail bytes;menu label builder xrefs	one 20-byte source suffix copied into a positioned glyph row
+KfMenuLabelSuffix	0x18	supported	retail bytes;menu label builder xrefs;US 0x18 row stride	one 24-byte label row copied into a positioned glyph row
 KfMenuList	0x24	supported	asm;menu_list_init;KF1 counterpart;loaded menu table	layout from the reconstructed header
 KfMenuPoint	0x04	supported	asm;menu_list_init;KF1 counterpart;loaded menu table	layout from the reconstructed header
 KfMenuRenderList	0x34	supported	game/menu.h;GAME 0x8001fcc4-0x8001fcd0;menu_render_list	shared renderer access view; caller records differ and original standalone ownership unproved
@@ -166,7 +166,7 @@ KfNotificationQuad	0x12	supported	game/notification_quad.h;notification_draw_qua
 KfOrderingTable	0x8000	supported	game headers;asm;xrefs	layout from the reconstructed header
 KfPlayerDamageReaction	0x10	supported	asm;func_800293d4;func_80029464	rotation and motion view of the player reaction overlay
 KfPlayerLevelGrowth	0x0c	supported	asm;xrefs;KF1 player.h counterpart	layout from the reconstructed header
-KfPlayerMagicIdSequence	0x14	supported	asm;func_80026498;func_80028998;retail bytes	12 effect IDs followed by four u16 attack masks
+KfPlayerMagicIdSequence	0xc	supported	asm;retail bytes;US 0xc data extent	12 effect IDs (US moved the u16 attack masks to .sbss)
 KfPlayerMagicSpawnFields	0x8	supported	game/player.h	One magic spawn offset; its SVECTOR pad slot carries the effect kind.
 KfPlayerMagicSpawnRecord	0x08	supported	asm;player_dispatch_magic_effect;retail bytes	Eight-byte offset copied as SVECTOR with signed effect kind at +6; original typedef spelling unresolved
 KfPlayerMovementSpeed	0x02	supported	asm;player_update_vertical_motion	one halfword read with both lh and lhu in vertical motion

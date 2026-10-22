@@ -14,6 +14,9 @@ enum {
 };
 
 extern u8 *overlay_next_request;
+/* US GAME stores the request and a flag byte through relocated symbols. */
+extern u8 DAT_800102f0;
+extern u8 DAT_800102f8;
 
 /* End of the program's linked .bss. GAME retail loads it as a relocated
  * symbol (lui/addiu, run-time subtraction), so it is a link-time label, not a

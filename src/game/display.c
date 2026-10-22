@@ -2048,7 +2048,7 @@ void render_sliding_panel_primary(void)
             y = 0;
         }
         render_textured_quad(0, y, 320, 240, 128, 192, 15, 15, KF_TEXTURED_QUAD_SEMI_TRANSPARENT, 55,
-                             0x7bdc, 60, 60, 60, 64);
+                             0x7bdc, 60, 60, 60, 12);
     }
 }
 
@@ -2063,7 +2063,7 @@ void render_sliding_panel_secondary(void)
             y = 0;
         }
         render_textured_quad(0, y, 320, 240, 144, 192, 15, 15, KF_TEXTURED_QUAD_SEMI_TRANSPARENT, 55,
-                             0x7bdc, 60, 60, 60, 64);
+                             0x7bdc, 60, 60, 60, 12);
     }
 }
 
@@ -2080,7 +2080,7 @@ void render_color_overlay(void)
                              game_graphics_runtime.color_overlay_rgb[1],
                              game_graphics_runtime.color_overlay_rgb[2],
                              (game_graphics_runtime.color_overlay_control & KF_COLOR_OVERLAY_FRONT) != KF_COLOR_OVERLAY_NO_FLAGS
-                                 ? 1 : 0x40);
+                                 ? 1 : 0xc);
     }
 }
 
@@ -2105,7 +2105,7 @@ void render_accumulated_color_overlay(void)
                           game_graphics_runtime.color_overlay_sample_count,
                       *(s16 *)&game_graphics_runtime.color_overlay_blue_sum /
                           game_graphics_runtime.color_overlay_sample_count,
-                      0x40);
+                      0xc);
     }
 }
 
@@ -2934,7 +2934,7 @@ void notification_update(void)
         game_graphics_runtime.notification_brightness = 0;
         game_graphics_runtime.notification_control.hold_frames = 15;
         if (id == KF_NOTIFICATION_PAYLOAD_ID) {
-            s16 digits[12];
+            u8 digits[24];
 
             notification_quads[KF_NOTIFICATION_TEXT_SPRITE].kind = KF_SPRITE_HIDDEN;
             notification_quads[KF_NOTIFICATION_GOLD_SPRITE].kind = KF_SPRITE_VISIBLE;
@@ -2943,13 +2943,13 @@ void notification_update(void)
             menu_format_number(game_graphics_runtime.notification_payloads[tail],
                                4, KF_FORMAT_PAD_SPACES, KF_MENU_FORMAT_STYLE_PLAIN, digits);
             notification_quads[KF_NOTIFICATION_ONES_SPRITE].kind = KF_SPRITE_VISIBLE;
-            notification_digit_set_v(&notification_quads[KF_NOTIFICATION_ONES_SPRITE], (u16)digits[3]);
+            notification_digit_set_v(&notification_quads[KF_NOTIFICATION_ONES_SPRITE], digits[3]);
             notification_quads[KF_NOTIFICATION_TENS_SPRITE].kind = KF_SPRITE_VISIBLE;
-            notification_digit_set_v(&notification_quads[KF_NOTIFICATION_TENS_SPRITE], (u16)digits[2]);
+            notification_digit_set_v(&notification_quads[KF_NOTIFICATION_TENS_SPRITE], digits[2]);
             notification_quads[KF_NOTIFICATION_HUNDREDS_SPRITE].kind = KF_SPRITE_VISIBLE;
-            notification_digit_set_v(&notification_quads[KF_NOTIFICATION_HUNDREDS_SPRITE], (u16)digits[1]);
+            notification_digit_set_v(&notification_quads[KF_NOTIFICATION_HUNDREDS_SPRITE], digits[1]);
             notification_quads[KF_NOTIFICATION_THOUSANDS_SPRITE].kind = KF_SPRITE_VISIBLE;
-            notification_digit_set_v(&notification_quads[KF_NOTIFICATION_THOUSANDS_SPRITE], (u16)digits[0]);
+            notification_digit_set_v(&notification_quads[KF_NOTIFICATION_THOUSANDS_SPRITE], digits[0]);
         } else {
             notification_quads[KF_NOTIFICATION_TEXT_SPRITE].kind = KF_SPRITE_VISIBLE;
             notification_quads[KF_NOTIFICATION_THOUSANDS_SPRITE].kind = KF_SPRITE_HIDDEN;
@@ -3692,8 +3692,8 @@ s32 menu_fade_transition(s32 level, s32 step)
 
         MENU_FADE_NEXT_QUAD();
         SetSemiTrans((void *)quad, 1);
-        setXYWH(quad, 32, 112, 256, 128);
-        setUVWH(quad, 0, 0, 255, 128);
+        setXYWH(quad, 32, 10, 255, 255);
+        setUVWH(quad, 0, 0, 255, 255);
         setClut(quad, 576, 511);
         setTPage(quad, 0, 1, 960, 256);
         setRGB0(quad, level, level, level);
@@ -3701,8 +3701,8 @@ s32 menu_fade_transition(s32 level, s32 step)
 
         MENU_FADE_NEXT_QUAD();
         SetSemiTrans((void *)quad, 1);
-        setXYWH(quad, 32, 112, 256, 128);
-        setUVWH(quad, 0, 0, 255, 128);
+        setXYWH(quad, 32, 10, 255, 255);
+        setUVWH(quad, 0, 0, 255, 255);
         setClut(quad, 576, 511);
         setTPage(quad, 0, 2, 960, 256);
         setRGB0(quad, level, level, level);

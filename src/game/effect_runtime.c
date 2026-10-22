@@ -2277,18 +2277,20 @@ void effect_update_dispatch(void)
                     child->phase = 2;
                 }
             }
-            actor = &actor_state.actors[record->cache_tail.payload.kind5.actor_index];
-            if (record->cache_tail.payload.kind5.initial_child_count != 0) {
-                actor_apply_magic_to_actor(record->cache_tail.payload.kind5.actor_index,
-                              (u16)effect_magic_power(record),
-                              magic->damage_components[0], magic->damage_components[1],
-                              magic->damage_components[2], magic->damage_components[3],
-                              magic->damage_components[4], magic->damage_components[5],
-                              magic->damage_components[6], magic->damage_components[7],
-                              (matches << 12) / record->cache_tail.payload.kind5.initial_child_count,
-                              KF_ENUM_DECODE(KF_ENUM_PROMOTED(KfActorDamageFlags),
-                          KF_ENUM_ENCODE(u8, record->type & KF_EFFECT_SOURCE_MASK)) | KF_ACTOR_DAMAGE_MAGIC,
-                              &actor->position);
+            if (record->cache_tail.payload.kind5.actor_index != KF_EFFECT_TARGET_ACTOR_NONE) {
+                actor = &actor_state.actors[record->cache_tail.payload.kind5.actor_index];
+                if (record->cache_tail.payload.kind5.initial_child_count != 0) {
+                    actor_apply_magic_to_actor(record->cache_tail.payload.kind5.actor_index,
+                                  (u16)effect_magic_power(record),
+                                  magic->damage_components[0], magic->damage_components[1],
+                                  magic->damage_components[2], magic->damage_components[3],
+                                  magic->damage_components[4], magic->damage_components[5],
+                                  magic->damage_components[6], magic->damage_components[7],
+                                  (matches << 12) / record->cache_tail.payload.kind5.initial_child_count,
+                                  KF_ENUM_DECODE(KF_ENUM_PROMOTED(KfActorDamageFlags),
+                              KF_ENUM_ENCODE(u8, record->type & KF_EFFECT_SOURCE_MASK)) | KF_ACTOR_DAMAGE_MAGIC,
+                                  &actor->position);
+                }
             }
             record->type = KF_EFFECT_SLOT_FREE;
             break;

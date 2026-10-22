@@ -3,6 +3,7 @@
 #include <kf/lib/null.h>
 #include <kf/game/cd.h>
 #include <kf/game/memory.h>
+#include <kf/game/menu.h>
 #include <psyq/kernel.h>
 #include <psyq/libc.h>
 #include <psyq/pad.h>
@@ -602,6 +603,12 @@ void cd_request_wait_idle(void)
         }
         ExitCriticalSection();
         cd_request_yield();
+        if (DAT_800864dc) {
+            func_8001883c();
+            func_8001883c();
+            func_8001883c();
+            func_8001883c();
+        }
     }
     ExitCriticalSection();
 }
@@ -765,6 +772,9 @@ void cd_read_sectors(CdlLOC *location, u_long *destination, s32 sector_count)
         CdControl(CdlSetloc, (u_char *)location, NULL);
         CdRead(sector_count, destination, CdlModeSpeed);
         while ((result = CdReadSync(CD_READ_SYNC_POLL, NULL)) > 0) {
+            if (DAT_800864dc) {
+                func_8001883c();
+            }
         }
         CdPause();
         if (result == 0) {

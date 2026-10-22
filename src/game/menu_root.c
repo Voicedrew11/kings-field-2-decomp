@@ -1,4 +1,5 @@
 #include <kf/game/callback.h>
+#include <kf/game/game.h>
 #include <kf/lib/null.h>
 #include <kf/lib/bool.h>
 #include <kf/game/card.h>
@@ -64,6 +65,12 @@ enum {
 };
 
 
+/* US label rows are whole 24-byte byte-glyph templates, terminator included. */
+static inline void menu_copy_label_row(u8 *destination, const u8 *source)
+{
+    memcpy((void *)destination, (const void *)source, sizeof(KfMenuLabelSuffix));
+}
+
 /* The templates copied here use four, five, or six 16-bit glyph codes. */
 static inline void menu_copy_prefix8(s16 *destination, const s16 *source)
 {
@@ -85,7 +92,167 @@ void menu_unused_stub(void)
 {
 }
 
+/* US-only; the CD wait loops call it. */
 ADDRESS(0x8001883c, 0x644)
+void func_8001883c(void)
+{
+    RECT rect;
+    s32 index;
+
+    if ((u32)(DAT_8006e5a8 - 5) >= 22) {
+        switch (DAT_8006e5a4 % 32) {
+        case 0:
+            rect.x = DAT_8006e5ac;
+            rect.y = DAT_8006e5b0;
+            rect.w = 32;
+            rect.h = 32;
+            ClearImage(&rect, 0, 0, 0);
+            if (DAT_8006e5ac < 288) {
+                if (DAT_8006e5a8 < 5) {
+                    DAT_8006e5ac = DAT_8006e5ac + 3;
+                } else {
+                    DAT_8006e5ac = DAT_8006e5ac + 5;
+                }
+            }
+            rect.x = 960;
+            rect.y = 256;
+            rect.w = 32;
+            rect.h = 32;
+            MoveImage(&rect, DAT_8006e5ac, DAT_8006e5b0);
+            break;
+        case 8:
+            rect.x = DAT_8006e5ac;
+            rect.y = DAT_8006e5b0;
+            rect.w = 32;
+            rect.h = 32;
+            ClearImage(&rect, 0, 0, 0);
+            if (DAT_8006e5ac < 288) {
+                if (DAT_8006e5a8 < 5) {
+                    DAT_8006e5ac = DAT_8006e5ac + 3;
+                } else {
+                    DAT_8006e5ac = DAT_8006e5ac + 5;
+                }
+            }
+            rect.x = 992;
+            rect.y = 256;
+            rect.w = 32;
+            rect.h = 32;
+            MoveImage(&rect, DAT_8006e5ac, DAT_8006e5b0);
+            break;
+        case 16:
+            rect.x = DAT_8006e5ac;
+            rect.y = DAT_8006e5b0;
+            rect.w = 32;
+            rect.h = 32;
+            ClearImage(&rect, 0, 0, 0);
+            if (DAT_8006e5ac < 288) {
+                if (DAT_8006e5a8 < 5) {
+                    DAT_8006e5ac = DAT_8006e5ac + 3;
+                } else {
+                    DAT_8006e5ac = DAT_8006e5ac + 5;
+                }
+            }
+            rect.x = 960;
+            rect.y = 288;
+            rect.w = 32;
+            rect.h = 32;
+            MoveImage(&rect, DAT_8006e5ac, DAT_8006e5b0);
+            break;
+        case 24:
+            rect.x = DAT_8006e5ac;
+            rect.y = DAT_8006e5b0;
+            rect.w = 32;
+            rect.h = 32;
+            ClearImage(&rect, 0, 0, 0);
+            if (DAT_8006e5ac < 288) {
+                if (DAT_8006e5a8 < 5) {
+                    DAT_8006e5ac = DAT_8006e5ac + 3;
+                } else {
+                    DAT_8006e5ac = DAT_8006e5ac + 5;
+                }
+            }
+            rect.x = 992;
+            rect.y = 288;
+            rect.w = 32;
+            rect.h = 32;
+            MoveImage(&rect, DAT_8006e5ac, DAT_8006e5b0);
+            DAT_8006e5a8++;
+            break;
+        }
+    }
+
+    index = DAT_8006e5a8 - 5;
+    if ((u32)index < 10) {
+        if ((DAT_8006e5a4 & 7) == 0) {
+            rect.x = 960 + (index % 2) * 32;
+            rect.y = 320 + (index / 2) * 32;
+            rect.w = 32;
+            rect.h = 32;
+            MoveImage(&rect, DAT_8006e5ac, DAT_8006e5b0);
+            DAT_8006e5a8++;
+        }
+    }
+
+    if ((u32)(DAT_8006e5a8 - 14) < 10) {
+        if ((DAT_8006e5a4 & 3) == 0) {
+            if (DAT_8006e5a8 != 14) {
+                rect.x = DAT_8006e5ac + (DAT_8006e5a8 - 14) * 20;
+                rect.y = DAT_8006e5b0 - 10;
+                rect.w = 64;
+                rect.h = 52;
+                ClearImage(&rect, 0, 0, 0);
+            }
+            rect.x = 992;
+            rect.y = 480;
+            rect.w = 32;
+            rect.h = 32;
+            MoveImage(&rect, DAT_8006e5ac + ((DAT_8006e5a8 - 14) * 20 + 32), DAT_8006e5b0);
+            DAT_8006e5a8++;
+        }
+    }
+
+    if (DAT_8006e5a8 == 24) {
+        if ((DAT_8006e5a4 & 3) == 0) {
+            DAT_8006e5a8 = 25;
+            DAT_8006e5a4 = 1;
+            rect.x = 256;
+            rect.y = DAT_8006e5b0;
+            rect.w = 64;
+            rect.h = 32;
+            ClearImage(&rect, 0, 0, 0);
+        }
+    }
+
+    if (DAT_8006e5a8 == 25) {
+        if ((DAT_8006e5a4 & 7) == 0) {
+            rect.x = 992;
+            rect.y = 448;
+            rect.w = 32;
+            rect.h = 32;
+            MoveImage(&rect, DAT_8006e5ac, DAT_8006e5b0);
+            DAT_8006e5a8++;
+            DAT_8006e5a4++;
+        }
+    }
+
+    if (DAT_8006e5a8 == 26) {
+        if ((DAT_8006e5a4 & 7) == 0) {
+            rect.x = 960;
+            rect.y = 480;
+            rect.w = 32;
+            rect.h = 32;
+            MoveImage(&rect, DAT_8006e5ac, DAT_8006e5b0);
+            DAT_8006e5a8++;
+            DAT_8006e5a4++;
+        }
+    }
+
+    DrawSync(0);
+    VSync(0);
+    DAT_8006e5a4++;
+}
+
+ADDRESS(0x80018e80, 0x2ac)
 s32 menu_run_root_controller(void)
 {
     s32 cursor = 0;
@@ -156,7 +323,7 @@ s32 menu_run_root_controller(void)
         buttons = PadRead(1);
         for (frame = 0; frame < 2; frame++) {
             menu_frame_begin();
-            if ((buttons & PADR1) != 0 && (buttons & PADL1) != 0) {
+            if ((buttons & DAT_8006e580) != 0 && (buttons & DAT_8006e588) != 0) {
                 menu_draw_location_number();
             }
             menu_draw_player_status();
@@ -168,12 +335,13 @@ s32 menu_run_root_controller(void)
     if (result == KF_MENU_RESULT_CANCELLED) {
         menu_play_sound_cue(KF_MENU_SOUND_NONE);
     }
-    if (result == KF_MENU_RESULT_GAME_LOADED) {
+    if (result == KF_MENU_RESULT_GAME_LOADED || result == KF_MENU_RESULT_QUIT_GAME) {
         menu_exit_display_state(KF_TRUE);
     } else {
         menu_exit_display_state(KF_FALSE);
     }
     if (result != KF_MENU_RESULT_CANCELLED &&
+        result != KF_MENU_RESULT_QUIT_GAME &&
         result != KF_MENU_RESULT_GAME_LOADED &&
         (result & KF_MENU_MAGIC_ACTION_TAG) != 0) {
         player_select_magic_action(KF_ENUM_DECODE(KF_ENUM_PROMOTED(KfEffectKind),
@@ -181,12 +349,6 @@ s32 menu_run_root_controller(void)
         result = KF_MENU_RESULT_CANCELLED;
     }
     return result;
-}
-
-/* TODO(us-port): US-only function, not in the JP build; not reconstructed. */
-ADDRESS(0x80018e80, 0x2ac)
-void func_80018e80(void)
-{
 }
 
 ADDRESS(0x8001912c, 0xd8)
@@ -234,7 +396,7 @@ s32 menu_item_selection_controller(void)
     menu.list.entry_count = count;
     menu.rows = rows;
     menu.values = values;
-    menu.list.glyphs_per_entry = KF_MENU_GLYPHS_PER_ROW;
+    menu.list.glyphs_per_entry = 0x18;
     if (menu.list.entry_count != 0
         && menu_load_item_model(indices[menu.list.selected_index]) != 0) {
         return KF_MENU_RESULT_CANCELLED;
@@ -359,10 +521,31 @@ s32 menu_collect_available_item_rows(const u8 *mask, KfMenuGlyphRow *rows,
     return count;
 }
 
-/* TODO(us-port): US-only function, not in the JP build; not reconstructed. */
 ADDRESS(0x800196c8, 0x10c)
-void func_800196c8(void)
+s32 func_800196c8(const u8 *mask, KfMenuGlyphRow *rows,
+    u8 *values, u8 *indices, s32 first, s32 last)
 {
+    const KfMenuGlyphRow *glyph = &menu_glyph_rows[first];
+    const u8 *entry = mask + first;
+    s32 index;
+    s32 count = 0;
+
+    last++;
+    index = first;
+    while (index < last) {
+        if (*entry != 0 && menu_item_code_secondary[4][index] != 50000) {
+            *rows++ = *glyph;
+            *values = *entry;
+            *indices = index;
+            values++;
+            indices++;
+            count++;
+        }
+        entry++;
+        glyph++;
+        index++;
+    }
+    return count;
 }
 
 ADDRESS(0x800197d4, 0x2b4)
@@ -481,8 +664,7 @@ void menu_show_map_preview(s32 menu_code)
         menu_frame_begin();
 
         primitive_buffer_begin_poly_ft4();
-        setRGB0(current_poly_ft4, 0x7f, 0x7f, 0x7f);
-        SetSemiTrans((void *)current_poly_ft4, 1);
+        setRGB0(current_poly_ft4, 0x5f, 0x5f, 0x5f);
         current_poly_ft4->tpage = 0x1f;
         current_poly_ft4->clut = 0x7fe4;
         setXYWH(current_poly_ft4, 0x3c, 0x14, 200, 200);
@@ -491,7 +673,6 @@ void menu_show_map_preview(s32 menu_code)
 
         primitive_buffer_begin_poly_ft4();
         setRGB0(current_poly_ft4, 0x7f, 0x7f, 0x7f);
-        SetSemiTrans((void *)current_poly_ft4, 1);
         current_poly_ft4->tpage = 0x1c;
         current_poly_ft4->clut = 0x7d25;
         setXYWH(current_poly_ft4,
@@ -540,7 +721,7 @@ s32 menu_choose_magic_action(void)
     menu.rows = rows;
     menu.values = values;
     menu.list.list_y = 0x83;
-    menu.list.glyphs_per_entry = KF_MENU_GLYPHS_PER_ROW;
+    menu.list.glyphs_per_entry = 0x18;
 
     for (;;) {
         if (confirmed || result != KF_MENU_RESULT_PENDING) {
@@ -640,6 +821,7 @@ void menu_equipment_list_controller(void)
     menu.row_glyphs = initial_rows[0].codes;
     menu.detail_rows = current_rows;
     menu.list.list_y = 39;
+    menu.list.glyphs_per_entry = 0x18;
 
     for (;;) {
         if (confirmed || result != KF_MENU_RESULT_PENDING) {
@@ -712,7 +894,7 @@ void menu_build_equipped_label_rows(KfMenuLabelSuffix *rows)
                 *rows = *(const KfMenuLabelSuffix *)menu_glyph_rows[id].codes;
             }
         } else {
-            rows->codes[0] = -1;
+            rows->codes[0] = KF_EQUIPMENT_NONE;
         }
     }
 }
@@ -774,7 +956,7 @@ void menu_equipment_category_controller(s32 category)
     count = menu_collect_masked_item_rows(game_counter_bytes, rows, values, item_ids,
         first, last);
     memcpy((void *)rows[count].codes, (const void *)menu_none_option_glyphs.codes,
-        MENU_NONE_OPTION_GLYPHS * sizeof(s16));
+        sizeof(KfMenuLabelSuffix));
     values[count] = KF_MENU_LIST_NO_BYTE;
     item_ids[count] = 0xff;
     count++;
@@ -783,7 +965,7 @@ void menu_equipment_category_controller(s32 category)
     menu.list.entry_count = count;
     menu.rows = rows;
     menu.values = values;
-    menu.list.glyphs_per_entry = KF_MENU_GLYPHS_PER_ROW;
+    menu.list.glyphs_per_entry = 0x18;
 
     if (menu.list.entry_count != 0
         && menu_load_item_model(item_ids[menu.list.selected_index]) != 0) {
@@ -879,8 +1061,7 @@ void menu_choose_primary_magic_shortcut(void)
     s32 frame;
 
     count = menu_collect_available_magic_rows(effect_state.magic_records, rows, values, indices, 0, 13);
-    memcpy((void *)rows[count].codes, (const void *)menu_none_option_glyphs.codes,
-        MENU_NONE_OPTION_GLYPHS * sizeof(s16));
+    memcpy((void *)rows[count].codes, (const void *)menu_none_option_glyphs.codes, sizeof(rows[count].codes));
     values[count] = KF_MENU_LIST_NO_NUMBER;
     indices[count] = KF_ENUM_ENCODE(u8, KF_MAGIC_NONE);
     count++;
@@ -891,7 +1072,7 @@ void menu_choose_primary_magic_shortcut(void)
     menu.rows = rows;
     menu.values = values;
     menu.list.list_y = 0x83;
-    menu.list.glyphs_per_entry = KF_MENU_GLYPHS_PER_ROW;
+    menu.list.glyphs_per_entry = 0x18;
 
     for (;;) {
         if (confirmed || result != KF_MENU_RESULT_PENDING) {
@@ -962,8 +1143,7 @@ void menu_item_magic_controller(void)
 
     count += menu_collect_available_magic_rows(effect_state.magic_records, &rows[count],
         &numbers[count], &magic_ids[count], 0, 19);
-    memcpy((void *)rows[count].codes, (const void *)menu_none_option_glyphs.codes,
-        MENU_NONE_OPTION_GLYPHS * sizeof(s16));
+    memcpy((void *)rows[count].codes, (const void *)menu_none_option_glyphs.codes, sizeof(rows[count].codes));
     count++;
 
     menu_list_init(&menu.list, KF_MENU_WINDOW_ROOT, KF_MENU_ROOT_EQUIPMENT);
@@ -971,7 +1151,7 @@ void menu_item_magic_controller(void)
     menu.row_glyphs = rows[0].codes;
     menu.byte_values = counts;
     menu.number_values = numbers;
-    menu.list.glyphs_per_entry = KF_MENU_GLYPHS_PER_ROW;
+    menu.list.glyphs_per_entry = 0x18;
 
     if (menu.list.entry_count != 0
         && menu_load_item_model(item_ids[menu.list.selected_index]) != 0) {
@@ -1026,7 +1206,6 @@ void menu_show_combat_attributes(void)
 {
     s32 current = KF_MENU_RESULT_PENDING;
     s32 previous = KF_MENU_RESULT_PENDING;
-    s32 frame;
 
     for (;;) {
         if (current != previous) {
@@ -1038,11 +1217,9 @@ void menu_show_combat_attributes(void)
             menu_play_sound_cue(KF_MENU_SOUND_CANCEL);
             current = KF_MENU_RESULT_CANCELLED;
         }
-        for (frame = 0; frame < 2; frame++) {
-            menu_frame_begin();
-            menu_draw_combat_attributes();
-            menu_present_frame();
-        }
+        menu_frame_begin();
+        menu_draw_combat_attributes();
+        menu_present_frame();
     }
 }
 
@@ -1064,7 +1241,7 @@ void menu_item_use_controller(void)
     menu.list.entry_count = count;
     menu.rows = rows;
     menu.values = values;
-    menu.list.glyphs_per_entry = KF_MENU_GLYPHS_PER_ROW;
+    menu.list.glyphs_per_entry = 0x18;
     if (menu.list.entry_count != 0
         && menu_load_item_model(indices[menu.list.selected_index]) != 0) {
         return;
@@ -1119,7 +1296,6 @@ s32 menu_run_card_choice(void)
     s32 result = KF_MENU_RESULT_PENDING;
     s32 selection = KF_MENU_SELECTION_NONE;
     s32 frame;
-    s32 volume;
 
     for (;;) {
         if (selection != KF_MENU_SELECTION_NONE || result != KF_MENU_RESULT_PENDING) {
@@ -1159,18 +1335,10 @@ s32 menu_run_card_choice(void)
     }
 
     if (result == KF_MENU_RESULT_QUIT_GAME) {
-        u32 cd_result;
-
-        CdControl(CdlStop, NULL, (u8 *)&cd_result);
-        volume = 60;
-        menu_prepare_card_exit_rows(labels);
-        for (;;) {
-            menu_show_dialog_panel(KF_MENU_SYSTEM_QUIT_TITLE, labels, 2, 70, 87, 178, 66, 2, 0);
-            if (volume > 0) {
-                volume--;
-                SsSeqSetVol(audio_state.sequence_id, volume, volume);
-            }
+        for (frame = 0; frame < 30; frame++) {
+            VSync(0);
         }
+        SsSeqSetVol(audio_state.sequence_id, 0, 0);
     }
     return result;
 }
@@ -1193,7 +1361,7 @@ s32 menu_card_load_browser(void)
     s32 frame;
 
     menu_prepare_card_browser_rows(dialog_rows);
-    menu_show_dialog_panel(KF_MENU_SYSTEM_LOAD_TITLE, dialog_rows, 2, 70, 87, 178, 66, 2, 0);
+    menu_show_dialog_panel(KF_MENU_SYSTEM_LOAD_TITLE, dialog_rows, 1, 70, 87, 178, 66, 2, 0);
     memory_card_start();
     memory_card_scan_save_entries(entries, &matching_count);
     count = menu_card_build_slot_rows(entries, glyph_rows[0].codes,
@@ -1241,7 +1409,7 @@ s32 menu_card_load_browser(void)
         if (read_result != KF_CARD_READ_OK) {
             menu_prepare_card_read_failure_rows(dialog_rows, read_result);
             menu_show_dialog_panel(KF_MENU_SYSTEM_LOAD_TITLE,
-                dialog_rows, 3, 70, 87, 178, 81, 2, 0);
+                dialog_rows, 2, 70, 87, 178, 66, 2, 0);
             input_wait_release();
             while (PadRead(1) == 0) {}
             input_wait_release();
@@ -1255,7 +1423,7 @@ s32 menu_card_load_browser(void)
 }
 
 ADDRESS(0x8001b7a8, 0x104)
-s32 menu_card_build_slot_rows(const struct DIRENTRY *card_entries, s16 *glyph_rows,
+s32 menu_card_build_slot_rows(const struct DIRENTRY *card_entries, u8 *glyph_rows,
     s32 *experience_values, u8 *levels, s32 *slot_ids)
 {
     s32 count = 0;
@@ -1267,12 +1435,13 @@ s32 menu_card_build_slot_rows(const struct DIRENTRY *card_entries, s16 *glyph_ro
     for (index = 0; index < KF_CARD_DIRECTORY_CAPACITY; index++) {
         if (memory_card_read_slot_summary(card_entries->name,
             &experience, &level, &slot_id) == KF_FALSE) {
-            *glyph_rows++ = 0x1012;
-            *glyph_rows++ = 0x2d;
-            *glyph_rows++ = 0xf;
-            *glyph_rows++ = slot_id + 229;
-            *glyph_rows = KF_MENU_TEXT_END;
-            glyph_rows += 6;
+            *glyph_rows++ = 0x03;
+            *glyph_rows++ = 0x00;
+            *glyph_rows++ = 0x13;
+            *glyph_rows++ = 0x00;
+            *glyph_rows++ = (u8)(slot_id + 32);
+            *glyph_rows = 0xff;
+            glyph_rows += 15;
             *experience_values++ = experience;
             *levels++ = level;
             *slot_ids++ = slot_id;
@@ -1320,6 +1489,7 @@ s32 menu_prompt_two_option(void)
     s32 current;
     s32 frame;
     s32 cursor_frame;
+    u8 *glyph_bytes;
 
     current = 0;
     confirmed = KF_FALSE;
@@ -1327,15 +1497,22 @@ s32 menu_prompt_two_option(void)
     selected = KF_MENU_SELECTION_NONE;
     labels[0].position.x = 101;
     labels[0].position.y = 123;
-    labels[0].glyphs.codes[0] = 89;
-    labels[0].glyphs.codes[1] = 65;
-    labels[0].glyphs.codes[2] = KF_MENU_TEXT_END;
+    glyph_bytes = labels[0].glyphs.codes;
+    glyph_bytes[0] = 0x10;
+    glyph_bytes[1] = 0x14;
+    glyph_bytes[2] = 0x08;
+    glyph_bytes[3] = 0x13;
+    glyph_bytes[4] = 0xff;
     labels[1].position.x = 101;
     labels[1].position.y = 149;
-    labels[1].glyphs.codes[0] = 65;
-    labels[1].glyphs.codes[1] = 65;
-    labels[1].glyphs.codes[2] = 67;
-    labels[1].glyphs.codes[3] = KF_MENU_TEXT_END;
+    glyph_bytes = labels[1].glyphs.codes;
+    glyph_bytes[0] = 0x11;
+    glyph_bytes[1] = 0x04;
+    glyph_bytes[2] = 0x13;
+    glyph_bytes[3] = 0x14;
+    glyph_bytes[4] = 0x11;
+    glyph_bytes[5] = 0x0d;
+    glyph_bytes[6] = 0xff;
 
     for (;;) {
         if (selected != KF_MENU_SELECTION_NONE || result != KF_MENU_RESULT_PENDING) {
@@ -1394,15 +1571,15 @@ void menu_options_controller(void)
 
     labels[0].position.x = 180;
     labels[0].position.y = 45;
-    labels[0].glyphs.codes[0] = 240;
-    labels[0].glyphs.codes[1] = 241;
-    labels[0].glyphs.codes[2] = KF_MENU_TEXT_END;
+    labels[0].glyphs.codes[0] = 0x0e;
+    labels[0].glyphs.codes[1] = 0x0d;
+    labels[0].glyphs.codes[2] = 0xff;
     labels[1].position.x = 254;
     labels[1].position.y = 45;
-    labels[1].glyphs.codes[0] = 242;
-    labels[1].glyphs.codes[1] = 243;
-    labels[1].glyphs.codes[2] = 244;
-    labels[1].glyphs.codes[3] = KF_MENU_TEXT_END;
+    labels[1].glyphs.codes[0] = 0x0e;
+    labels[1].glyphs.codes[1] = 0x05;
+    labels[1].glyphs.codes[2] = 0x05;
+    labels[1].glyphs.codes[3] = 0xff;
 
     selected[KF_MENU_OPTION_EFFECTS_ROW] = player_state.audio_effects_enabled;
     selected[KF_MENU_OPTION_MUSIC_ROW] = player_state.audio_music_enabled;
@@ -1420,7 +1597,7 @@ void menu_options_controller(void)
         input_wait_brief_release();
         buttons = input_read_mark_active();
         confirmed = KF_FALSE;
-        if (buttons & PADLup) {
+        if (buttons & DAT_8006e590) {
             menu_cursor_animation_direction = KF_MENU_CURSOR_ANIMATION_FORWARD;
             menu_play_sound_cue(KF_MENU_SOUND_CURSOR);
             if (choice != 0) {
@@ -1428,7 +1605,7 @@ void menu_options_controller(void)
             } else {
                 choice = last_row;
             }
-        } else if (buttons & PADLdown) {
+        } else if (buttons & DAT_8006e594) {
             menu_cursor_animation_direction = KF_MENU_CURSOR_ANIMATION_FORWARD;
             menu_play_sound_cue(KF_MENU_SOUND_CURSOR);
             if (choice != last_row) {
@@ -1436,18 +1613,18 @@ void menu_options_controller(void)
             } else {
                 choice = 0;
             }
-        } else if ((buttons & PADRright) || (buttons & PADLright)
-            || (buttons & PADLleft)) {
+        } else if ((buttons & DAT_8006e568) || (buttons & DAT_8006e598)
+            || (buttons & DAT_8006e59c)) {
             if (choice < last_row) {
                 menu_play_sound_cue(KF_MENU_SOUND_CONFIRM);
                 confirmed = KF_TRUE;
                 selected[choice] = KF_ENUM_DECODE(KfPlayerOption, selected[choice] == KF_PLAYER_OPTION_OFF);
-            } else if (buttons & PADRright) {
+            } else if (buttons & DAT_8006e568) {
                 menu_play_sound_cue(KF_MENU_SOUND_CONFIRM);
                 result = KF_MENU_RESULT_CANCELLED;
                 confirmed = KF_TRUE;
             }
-        } else if (buttons & PADRdown) {
+        } else if ((buttons & DAT_8006e56c) || (buttons & DAT_8006e57c)) {
             menu_play_sound_cue(KF_MENU_SOUND_CANCEL);
             result = KF_MENU_RESULT_CANCELLED;
         }
@@ -1485,12 +1662,12 @@ s32 menu_card_browser(void)
 
     menu_enter_display_state(0);
     menu_prepare_card_browser_rows(rows);
-    menu_show_dialog_panel(KF_MENU_SYSTEM_UNTITLED, rows, 2, 70, 87, 178, 66, 2, 0);
+    menu_show_dialog_panel(KF_MENU_SYSTEM_UNTITLED, rows, 1, 70, 87, 178, 66, 2, 0);
     memory_card_start();
     status = memory_card_probe_temporary_file();
     if (status != KF_CARD_PROBE_OK && status != KF_CARD_PROBE_CREATE_FAILED) {
         menu_build_card_probe_error_rows(rows);
-        menu_show_dialog_panel(KF_MENU_SYSTEM_UNTITLED, rows, 3, 50, 87, 220, 66, 2, 0);
+        menu_show_dialog_panel(KF_MENU_SYSTEM_UNTITLED, rows, 2, 70, 87, 178, 66, 2, 0);
         input_wait_release();
         while (PadRead(1) == 0) {}
         input_wait_release();
@@ -1503,7 +1680,7 @@ s32 menu_card_browser(void)
     if (matching_count == 0) {
         if (status == KF_TRUE) {
             menu_build_card_full_rows(rows);
-            menu_show_dialog_panel(KF_MENU_SYSTEM_UNTITLED, rows, 4, 70, 87, 178, 96, 2, 0);
+            menu_show_dialog_panel(KF_MENU_SYSTEM_UNTITLED, rows, 3, 70, 87, 178, 81, 2, 0);
             input_wait_release();
             while (PadRead(1) == 0) {}
             input_wait_release();
@@ -1537,7 +1714,7 @@ s32 menu_card_browser(void)
 
         input_wait_brief_release();
         buttons = input_read_mark_active();
-        if ((buttons & PADLup) || (buttons & PADLdown)) {
+        if ((buttons & DAT_8006e590) || (buttons & DAT_8006e594)) {
             menu_cursor_animation_direction = KF_MENU_CURSOR_ANIMATION_FORWARD;
             menu_play_sound_cue(KF_MENU_SOUND_CURSOR);
             if (cursor == KF_MENU_CARD_BROWSER_START_ROW) {
@@ -1545,7 +1722,7 @@ s32 menu_card_browser(void)
             } else {
                 cursor = KF_MENU_CARD_BROWSER_START_ROW;
             }
-        } else if (buttons & PADRright) {
+        } else if (buttons & DAT_8006e568) {
             menu_play_sound_cue(KF_MENU_SOUND_CONFIRM);
             confirmed = KF_TRUE;
             selection = cursor;
@@ -1624,7 +1801,7 @@ s32 menu_card_load_slot_browser(void)
         read_result = memory_card_read_slot(result);
         if (read_result != KF_CARD_READ_OK) {
             menu_prepare_card_read_failure_rows(dialog_rows, read_result);
-            menu_show_dialog_panel(KF_MENU_SYSTEM_UNTITLED, dialog_rows, 3, 70, 87, 178, 81, 2, 0);
+            menu_show_dialog_panel(KF_MENU_SYSTEM_UNTITLED, dialog_rows, 2, 70, 87, 178, 66, 2, 0);
             input_wait_release();
             while (PadRead(1) == 0) {}
             input_wait_release();
@@ -1636,67 +1813,33 @@ s32 menu_card_load_slot_browser(void)
 ADDRESS(0x8001c3bc, 0xf8)
 void menu_build_card_probe_error_rows(KfMenuGlyphString *row)
 {
-    row->position.x = 70;
+    const KfMenuGlyphRow *labels = (const KfMenuGlyphRow *)menu_label_suffixes;
+
+    row->position.x = 89;
     row->position.y = 105;
-    memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[5].codes, sizeof(KfMenuLabelSuffix));
-    row->glyphs.codes[8] = 84;
-    row->glyphs.codes[9] = 65;
-    row->glyphs.codes[10] = 83;
-    row->glyphs.codes[11] = -1;
+    memcpy((void *)row->glyphs.codes, (const void *)labels[17].codes, sizeof(KfMenuGlyphRow));
     row++;
-    row->position.x = 70;
+    row->position.x = 89;
     row->position.y = 120;
-    row->glyphs.codes[0] = 0x1008;
-    row->glyphs.codes[1] = 45;
-    row->glyphs.codes[2] = 32;
-    row->glyphs.codes[3] = 88;
-    row->glyphs.codes[4] = 13;
-    row->glyphs.codes[5] = 45;
-    row->glyphs.codes[6] = 0x101b;
-    row->glyphs.codes[7] = 0x1045;
-    row->glyphs.codes[8] = -1;
-    row++;
-    row->position.x = 182;
-    row->position.y = 120;
-    row->glyphs.codes[0] = 0x1052;
-    row->glyphs.codes[1] = 70;
-    row->glyphs.codes[2] = 94;
-    row->glyphs.codes[3] = 77;
-    row->glyphs.codes[4] = 103;
-    row->glyphs.codes[5] = -1;
+    memcpy((void *)row->glyphs.codes, (const void *)labels[18].codes, sizeof(KfMenuGlyphRow));
 }
 
 ADDRESS(0x8001c4b4, 0x170)
 void menu_build_card_full_rows(KfMenuGlyphString *row)
 {
+    const KfMenuGlyphRow *labels = (const KfMenuGlyphRow *)menu_label_suffixes;
+
     row->position.x = 104;
     row->position.y = 105;
-    memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[5].codes, sizeof(KfMenuLabelSuffix));
+    memcpy((void *)row->glyphs.codes, (const void *)labels[12].codes, sizeof(KfMenuGlyphRow));
     row++;
     row->position.x = 104;
     row->position.y = 120;
-    row->glyphs.codes[0] = 65;
-    row->glyphs.codes[1] = 59;
-    row->glyphs.codes[2] = 0x2059;
-    row->glyphs.codes[3] = 65;
-    row->glyphs.codes[4] = 0x1052;
-    row->glyphs.codes[5] = 76;
-    row->glyphs.codes[6] = -1;
+    memcpy((void *)row->glyphs.codes, (const void *)labels[8].codes, sizeof(KfMenuGlyphRow));
     row++;
     row->position.x = 104;
     row->position.y = 135;
-    row->glyphs.codes[0] = 73;
-    row->glyphs.codes[1] = 88;
-    row->glyphs.codes[2] = 5;
-    row->glyphs.codes[3] = 45;
-    row->glyphs.codes[4] = 0x1013;
-    row->glyphs.codes[5] = 85;
-    row->glyphs.codes[6] = 89;
-    row->glyphs.codes[7] = -1;
-    row++;
-    row->position.x = 104;
-    row->position.y = 150;
-    memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[2].codes, sizeof(KfMenuLabelSuffix));
+    memcpy((void *)row->glyphs.codes, (const void *)labels[9].codes, sizeof(KfMenuGlyphRow));
 }
 
 ADDRESS(0x8001c624, 0x268)
@@ -1714,19 +1857,21 @@ void menu_card_save_browser(void)
     s32 result = KF_MENU_RESULT_PENDING;
     s32 count;
     s32 frame;
+    u8 *new_label;
 
     menu_enter_display_state(1);
     menu_prepare_card_browser_rows(dialog_rows);
-    menu_draw_card_dialog_rows(dialog_rows, 2, 70, 87, 178, 66, 2, 0);
+    menu_draw_card_dialog_rows(dialog_rows, 1, 70, 87, 178, 66, 2, 0);
     memory_card_start();
     memory_card_probe_temporary_file();
     memory_card_scan_save_entries(entries, &matching_count);
     count = menu_card_build_slot_rows(entries, glyph_rows[0].codes,
         experience_values, levels, slot_ids);
-    glyph_rows[count].codes[0] = 0xe0;
-    glyph_rows[count].codes[1] = 0xe1;
-    glyph_rows[count].codes[2] = 0xe2;
-    glyph_rows[count].codes[3] = -1;
+    new_label = glyph_rows[count].codes;
+    new_label[0] = 0x0d;
+    new_label[1] = 0x04;
+    new_label[2] = 0x16;
+    new_label[3] = 0xff;
     experience_values[count] = KF_MENU_LIST_NO_NUMBER;
     levels[count] = CARD_MENU_NO_LEVEL;
     slot_ids[count] = CARD_MENU_NEW_SLOT;
@@ -1777,8 +1922,8 @@ void menu_card_save_browser(void)
 }
 
 /* Shows a card dialog and waits for a fresh button press. */
-#define MENU_CARD_DIALOG_WAIT(rows, count, width, height, overlap_x) do { \
-    menu_draw_card_dialog_rows(rows, count, 70, 87, width, height, overlap_x, 0); \
+#define MENU_CARD_DIALOG_WAIT(rows, count, x, width, height, overlap_x) do { \
+    menu_draw_card_dialog_rows(rows, count, x, 91, width, height, overlap_x, 0); \
     input_wait_release(); \
     while (PadRead(1) == 0) {} \
 } while (0)
@@ -1788,40 +1933,45 @@ void menu_card_save_slot(s32 slot)
 {
     KfMenuGlyphString rows[4];
     s32 result = memory_card_probe_temporary_file();
-    s32 width = 2;
-    s32 overlap_x;
+    s32 overlap_x = 2;
+    s32 x;
+    s32 width;
+    s32 height;
 
-    if (result != KF_CARD_PROBE_OK) {
-        if (result != KF_CARD_PROBE_CREATE_FAILED) {
+    do {
+        if (result != KF_CARD_PROBE_OK) {
+            if (result != KF_CARD_PROBE_CREATE_FAILED) {
+                menu_prepare_card_io_error_rows(rows);
+                MENU_CARD_DIALOG_WAIT(rows, 2, 70, 178, 66, overlap_x);
+                break;
+            }
+            if (menu_confirm_card_format(KF_MENU_CARD_FORMAT_WITH_NOTICE) == KF_MENU_RESULT_ACCEPTED) {
+                memory_card_format();
+            } else {
+                menu_prepare_card_format_declined_rows(rows);
+                MENU_CARD_DIALOG_WAIT(rows, 2, 63, 192, 66, overlap_x);
+                break;
+            }
+        }
+
+        menu_prepare_card_write_rows(rows);
+        width = 178;
+        height = 66;
+        menu_draw_card_dialog_rows(rows, 1, 70, 91, width, height, overlap_x, 0);
+        result = memory_card_write_slot(slot);
+        if (result == KF_CARD_WRITE_OK) {
+            return;
+        }
+        if (result == KF_CARD_WRITE_IO_FAILURE) {
             menu_prepare_card_io_error_rows(rows);
-            MENU_CARD_DIALOG_WAIT(rows, 3, 178, 81, width);
-            input_wait_release();
-            return;
-        }
-        if (menu_confirm_card_format(KF_MENU_CARD_FORMAT_WITH_NOTICE) == KF_MENU_RESULT_ACCEPTED) {
-            memory_card_format();
+            x = 70;
         } else {
-            menu_prepare_card_format_declined_rows(rows);
-            MENU_CARD_DIALOG_WAIT(rows, 3, 192, 66, width);
-            input_wait_release();
-            return;
+            menu_prepare_card_write_full_rows(rows);
+            x = 56;
+            width = 206;
         }
-    }
-
-    menu_prepare_card_write_rows(rows);
-    width = 178;
-    overlap_x = 2;
-    menu_draw_card_dialog_rows(rows, 2, 70, 87, width, 66, overlap_x, 0);
-    result = memory_card_write_slot(slot);
-    if (result == KF_CARD_WRITE_OK) {
-        return;
-    }
-    if (result == KF_CARD_WRITE_IO_FAILURE) {
-        menu_prepare_card_io_error_rows(rows);
-    } else {
-        menu_prepare_card_write_full_rows(rows);
-    }
-    MENU_CARD_DIALOG_WAIT(rows, 3, width, 81, overlap_x);
+        MENU_CARD_DIALOG_WAIT(rows, 2, x, width, height, overlap_x);
+    } while (0);
 
     input_wait_release();
 }
@@ -1829,8 +1979,9 @@ void menu_card_save_slot(s32 slot)
 ADDRESS(0x8001ca70, 0x2f0)
 s32 menu_confirm_card_format(s32 kind)
 {
+    const KfMenuGlyphRow *labels_table = (const KfMenuGlyphRow *)menu_label_suffixes;
     KfMenuGlyphString labels[7];
-    s32 cursor = 0;
+    s32 cursor = 1;
     b32 confirmed = KF_FALSE;
     s32 result = KF_MENU_RESULT_PENDING;
     s32 selection = KF_MENU_SELECTION_NONE;
@@ -1838,32 +1989,23 @@ s32 menu_confirm_card_format(s32 kind)
 
     labels[0].position.x = menu_window_layout(KF_MENU_WINDOW_SYSTEM)->rows[0].position.x;
     labels[0].position.y = menu_window_layout(KF_MENU_WINDOW_SYSTEM)->rows[0].position.y;
-    labels[0].glyphs.codes[0] = 89;
-    labels[0].glyphs.codes[1] = 65;
-    labels[0].glyphs.codes[2] = KF_MENU_TEXT_END;
+    labels[0].glyphs.codes[0] = 0x18;
+    labels[0].glyphs.codes[1] = 0x04;
+    labels[0].glyphs.codes[2] = 0x12;
+    labels[0].glyphs.codes[3] = 0xff;
     labels[1].position.x = menu_window_layout(KF_MENU_WINDOW_SYSTEM)->rows[1].position.x;
     labels[1].position.y = menu_window_layout(KF_MENU_WINDOW_SYSTEM)->rows[1].position.y;
-    labels[1].glyphs.codes[0] = 65;
-    labels[1].glyphs.codes[1] = 65;
-    labels[1].glyphs.codes[2] = 67;
-    labels[1].glyphs.codes[3] = KF_MENU_TEXT_END;
+    labels[1].glyphs.codes[0] = 0x0d;
+    labels[1].glyphs.codes[1] = 0x0e;
+    labels[1].glyphs.codes[2] = 0xff;
 
     if (kind == KF_MENU_CARD_FORMAT_WITH_NOTICE) {
-        labels[2].position.x = 90;
-        labels[2].position.y = 110;
-        memcpy((void *)labels[2].glyphs.codes, (const void *)menu_label_suffixes[5].codes, sizeof(KfMenuLabelSuffix));
-        labels[3].position.x = 90;
-        labels[3].position.y = 125;
-        memcpy((void *)labels[3].glyphs.codes, (const void *)menu_label_suffixes[6].codes, sizeof(KfMenuLabelSuffix));
-        labels[4].position.x = 174;
-        labels[4].position.y = 125;
-        memcpy((void *)labels[4].glyphs.codes, (const void *)menu_label_suffixes[7].codes, sizeof(KfMenuLabelSuffix));
-        labels[5].position.x = 90;
-        labels[5].position.y = 140;
-        memcpy((void *)labels[5].glyphs.codes, (const void *)menu_label_suffixes[6].codes, sizeof(KfMenuLabelSuffix));
-        labels[6].position.x = 174;
-        labels[6].position.y = 140;
-        memcpy((void *)labels[6].glyphs.codes, (const void *)menu_label_suffixes[8].codes, sizeof(KfMenuLabelSuffix));
+        labels[2].position.x = 103;
+        labels[2].position.y = 109;
+        memcpy((void *)labels[2].glyphs.codes, (const void *)labels_table[4].codes, sizeof(KfMenuGlyphRow));
+        labels[3].position.x = 103;
+        labels[3].position.y = 124;
+        memcpy((void *)labels[3].glyphs.codes, (const void *)labels_table[5].codes, sizeof(KfMenuGlyphRow));
     }
 
     for (;;) {
@@ -1894,10 +2036,7 @@ s32 menu_confirm_card_format(s32 kind)
             if (kind == KF_MENU_CARD_FORMAT_WITH_NOTICE) {
                 menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &labels[2]);
                 menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &labels[3]);
-                menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &labels[4]);
-                menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &labels[5]);
-                menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &labels[6]);
-                menu_draw_nine_slice_panel(70, 92, 220, 81, 2, 0);
+                menu_draw_nine_slice_panel(70, 91, 178, 66, 2, 0);
             }
             menu_present_frame();
         }
@@ -1909,88 +2048,59 @@ s32 menu_confirm_card_format(s32 kind)
 ADDRESS(0x8001cd60, 0x80)
 void menu_prepare_card_browser_rows(KfMenuGlyphString *row)
 {
-    row->position.x = 90;
-    row->position.y = 105;
+    row->position.x = 85;
+    row->position.y = 112;
     memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[0].codes,
         sizeof menu_label_suffixes[0]);
-    row++;
-    row->position.x = 90;
-    row->position.y = 120;
-    memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[1].codes,
-        sizeof menu_label_suffixes[1]);
-    row->glyphs.codes[10] = -1;
 }
 
 ADDRESS(0x8001cde0, 0xf8)
 void menu_prepare_card_io_error_rows(KfMenuGlyphString *row)
 {
-    row->position.x = 90;
-    row->position.y = 105;
+    row->position.x = 96;
+    row->position.y = 109;
     memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[2].codes,
         sizeof menu_label_suffixes[2]);
     row++;
-    row->position.x = 90;
-    row->position.y = 120;
+    row->position.x = 96;
+    row->position.y = 124;
     memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[3].codes,
         sizeof menu_label_suffixes[3]);
-    row++;
-    row->position.x = 90;
-    row->position.y = 135;
-    memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[4].codes,
-        sizeof menu_label_suffixes[4]);
-    row->glyphs.codes[10] = -1;
 }
 
 ADDRESS(0x8001ced8, 0xf8)
 void menu_prepare_card_format_declined_rows(KfMenuGlyphString *row)
 {
-    row->position.x = 90;
-    row->position.y = 105;
+    row->position.x = 79;
+    row->position.y = 109;
     memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[6].codes,
         sizeof menu_label_suffixes[6]);
     row++;
-    row->position.x = 174;
-    row->position.y = 105;
-    memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[9].codes,
-        sizeof menu_label_suffixes[9]);
-    row++;
-    row->position.x = 90;
-    row->position.y = 120;
-    memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[2].codes,
-        sizeof menu_label_suffixes[2]);
+    row->position.x = 79;
+    row->position.y = 124;
+    memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[7].codes,
+        sizeof menu_label_suffixes[7]);
 }
 
 ADDRESS(0x8001cfd0, 0xf8)
 void menu_prepare_card_write_full_rows(KfMenuGlyphString *row)
 {
-    row->position.x = 102;
-    row->position.y = 105;
-    memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[2].codes,
-        sizeof menu_label_suffixes[2]);
+    row->position.x = 74;
+    row->position.y = 109;
+    memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[19].codes,
+        sizeof menu_label_suffixes[19]);
     row++;
-    row->position.x = 102;
-    row->position.y = 120;
-    memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[0].codes,
-        sizeof menu_label_suffixes[0]);
-    row++;
-    row->position.x = 102;
-    row->position.y = 135;
-    memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[12].codes,
-        sizeof menu_label_suffixes[12]);
-    row->glyphs.codes[10] = -1;
+    row->position.x = 74;
+    row->position.y = 124;
+    memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[20].codes,
+        sizeof menu_label_suffixes[20]);
 }
 
 ADDRESS(0x8001d0c8, 0x80)
 void menu_prepare_card_write_rows(KfMenuGlyphString *row)
 {
-    row->position.x = 102;
-    row->position.y = 105;
-    memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[0].codes,
-        sizeof menu_label_suffixes[0]);
-    row->glyphs.codes[7] = 85;
-    row++;
-    row->position.x = 102;
-    row->position.y = 120;
+    row->position.x = 134;
+    row->position.y = 116;
     memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[11].codes,
         sizeof menu_label_suffixes[11]);
 }
@@ -1998,7 +2108,7 @@ void menu_prepare_card_write_rows(KfMenuGlyphString *row)
 ADDRESS(0x8001d148, 0x80)
 void menu_prepare_card_read_row(KfMenuGlyphString *row)
 {
-    row->position.x = 102;
+    row->position.x = 130;
     row->position.y = 112;
     memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[13].codes,
         sizeof menu_label_suffixes[13]);
@@ -2007,46 +2117,34 @@ void menu_prepare_card_read_row(KfMenuGlyphString *row)
 ADDRESS(0x8001d1c8, 0x17c)
 void menu_prepare_card_read_failure_rows(KfMenuGlyphString *row, s32 kind)
 {
-    row->position.x = 90;
+    row->position.x = 96;
     row->position.y = 105;
     if (kind == KF_CARD_READ_IO_FAILURE) {
         memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[10].codes,
             sizeof menu_label_suffixes[10]);
     } else {
-        row->glyphs.codes[0] = 0x1012;
-        row->glyphs.codes[1] = 45;
-        row->glyphs.codes[2] = 15;
-        row->glyphs.codes[3] = 3;
-        row->glyphs.codes[4] = 40;
-        row->glyphs.codes[5] = 45;
-        row->glyphs.codes[6] = -1;
+        memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[16].codes,
+            sizeof menu_label_suffixes[16]);
     }
     row++;
-    row->position.x = 90;
+    row->position.x = 96;
     row->position.y = 120;
     memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[3].codes,
         sizeof menu_label_suffixes[3]);
-    row++;
-    row->position.x = 90;
-    row->position.y = 135;
-    memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[4].codes,
-        sizeof menu_label_suffixes[4]);
-    row->glyphs.codes[10] = -1;
 }
 
 ADDRESS(0x8001d344, 0xf8)
 void menu_prepare_card_exit_rows(KfMenuGlyphString *row)
 {
-    row->position.x = 90;
+    row->position.x = 83;
     row->position.y = 105;
     memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[14].codes,
         sizeof menu_label_suffixes[14]);
     row++;
-    row->position.x = 90;
+    row->position.x = 83;
     row->position.y = 120;
     memcpy((void *)row->glyphs.codes, (const void *)menu_label_suffixes[15].codes,
         sizeof menu_label_suffixes[15]);
-    row->glyphs.codes[10] = -1;
 }
 
 ADDRESS(0x8001d43c, 0x108)
@@ -2076,7 +2174,7 @@ void menu_draw_card_dialog_rows(const KfMenuGlyphString *rows, s32 count,
 DATA(0x80064be4, 0xf0, ".data")
 KfMenuSpriteDef menu_sprite_defs[KF_MENU_SPRITE_COUNT] = {
     {0x1d, 0x7f64, 240, 0, 7, 14},
-    {0x1d, 0x7f64, 0, 0, 15, 15},
+    {0x1d, 0x7f64, 0, 0, 8, 15},
     {0x1c, 0x7ee4, 128, 128, 14, 14},
     {0x1e, 0x7fa4, 160, 0, 54, 24},
     {0x1e, 0x7fa4, 160, 32, 54, 24},
@@ -2099,72 +2197,76 @@ KfMenuSpriteDef menu_sprite_defs[KF_MENU_SPRITE_COUNT] = {
 DATA(0x80064cd4, 0x9a0, ".data")
 KfMenuWindowLayout menu_window_layouts[KF_MENU_WINDOW_COUNT] = {
     {
-        {{0, 0}, {{-1}}},
+        {{0, 0}, {{0xff}}},
         {
-            {{31, 19}, {{0, 1, 18, 32, 109, 114, 66, -1}}},
-            {{31, 45}, {{120, 121, 109, 114, 66, -1}}},
-            {{31, 71}, {{112, 113, -1}}},
-            {{31, 97}, {{137, 138, 57, 122, 208, -1}}},
-            {{31, 123}, {{117, 82, 106, -1}}},
-            {{31, 149}, {{11, 12, 18, 32, -1}}},
-            {{31, 175}, {{4, 8219, 11, 56, 39, -1}}},
-            {{31, 201}, {{98, 4179, 106, -1}}},
+            {{31, 19}, {{0x14, 0x12, 0x04, 0x7f, 0x08, 0x13, 0x04, 0x0c, 0xff}}},  /* USE ITEM */
+            {{31, 45}, {{0x14, 0x12, 0x04, 0x7f, 0x0c, 0x00, 0x06, 0x08, 0x02, 0xff}}},  /* USE MAGIC */
+            {{31, 71}, {{0x04, 0x10, 0x14, 0x08, 0x0f, 0x0c, 0x04, 0x0d, 0x13, 0xff}}},  /* EQUIPMENT */
+            {{31, 97}, {{0x12, 0x13, 0x11, 0x04, 0x0d, 0x06, 0x13, 0x07, 0xff}}},  /* STRENGTH */
+            {{31, 123}, {{0x03, 0x11, 0x0e, 0x0f, 0x7f, 0x08, 0x13, 0x04, 0x0c, 0xff}}},  /* DROP ITEM */
+            {{31, 149}, {{0x03, 0x00, 0x13, 0x00, 0xff}}},  /* DATA */
+            {{31, 175}, {{0x0e, 0x0f, 0x13, 0x08, 0x0e, 0x0d, 0xff}}},  /* OPTION */
+            {{31, 201}, {{0x11, 0x04, 0x13, 0x14, 0x11, 0x0d, 0xff}}},  /* RETURN */
         },
     },
     {
-        {{17, 19}, {{11, 12, 18, 32, -1}}},
+        {{17, 19}, {{0x03, 0x00, 0x13, 0x00, 0xff}}},  /* DATA */
         {
-            {{31, 45}, {{44, 45, 4115, -1}}},
-            {{31, 71}, {{4104, 45, 32, 109, 99, 97, 106, -1}}},
-            {{31, 97}, {{98, 4179, 106, -1}}},
-            {{17, 19}, {{13, 45, 4123, -1}}},
-            {{17, 19}, {{44, 45, 4115, -1}}},
-            {{17, 19}, {{4104, 45, 32, 109, 99, 97, 106, -1}}},
+            {{31, 45}, {{0x0b, 0x0e, 0x00, 0x03, 0xff}}},  /* LOAD */
+            {{31, 71}, {{0x10, 0x14, 0x08, 0x13, 0xff}}},  /* QUIT */
+            {{31, 97}, {{0x11, 0x04, 0x13, 0x14, 0x11, 0x0d, 0xff}}},  /* RETURN */
+            {{17, 19}, {{0x12, 0x00, 0x15, 0x04, 0xff}}},  /* SAVE */
+            {{17, 19}, {{0x0b, 0x0e, 0x00, 0x03, 0xff}}},  /* LOAD */
+            {{17, 19}, {{0x10, 0x14, 0x08, 0x13, 0xff}}},  /* QUIT */
         },
     },
     {
-        {{17, 19}, {{4, 8219, 11, 56, 39, -1}}},
+        {{17, 19}, {{0x0e, 0x0f, 0x13, 0x08, 0x0e, 0x0d, 0xff}}},  /* OPTION */
         {
-            {{31, 45}, {{213, 214, 215, -1}}},
-            {{31, 71}, {{215, 216, -1}}},
-            {{31, 97}, {{133, 134, 217, 218, -1}}},
-            {{31, 123}, {{219, 220, 217, 218, -1}}},
-            {{31, 149}, {{0, 1, 18, 32, 217, 218, -1}}},
-            {{31, 175}, {{238, 239, 213, 214, -1}}},
-            {{31, 201}, {{98, 4179, 106, -1}}},
+            {{31, 45}, {{0x12, 0x0e, 0x14, 0x0d, 0x03, 0x7f, 0xff}}},  /* SOUND  */
+            {{31, 71}, {{0x0c, 0x14, 0x12, 0x08, 0x02, 0xff}}},  /* MUSIC */
+            {{31, 97}, {{0x03, 0x08, 0x12, 0x0f, 0x0b, 0x00, 0x18, 0x7f, 0x07, 0x0f, 0x35, 0x0c, 0x0f, 0xff}}},  /* DISPLAY HP{35}MP */
+            {{31, 123}, {{0x03, 0x08, 0x12, 0x0f, 0x0b, 0x00, 0x18, 0x7f, 0x02, 0x0e, 0x0c, 0x0f, 0x00, 0x12, 0x12, 0xff}}},  /* DISPLAY COMPASS */
+            {{31, 149}, {{0x03, 0x08, 0x12, 0x0f, 0x0b, 0x00, 0x18, 0x7f, 0x08, 0x13, 0x04, 0x0c, 0x12, 0xff}}},  /* DISPLAY ITEMS */
+            {{31, 175}, {{0x16, 0x00, 0x0b, 0x0a, 0x08, 0x0d, 0x06, 0x7f, 0x04, 0x05, 0x05, 0x04, 0x02, 0x13, 0xff}}},  /* WALKING EFFECT */
+            {{31, 201}, {{0x11, 0x04, 0x13, 0x14, 0x11, 0x0d, 0xff}}},  /* RETURN */
         },
     },
     {
-        {{17, 19}, {{116, 66, 57, 115, 106, -1}}},
+        {{17, 19}, {{0x12, 0x07, 0x0e, 0x0f, 0xff}}},  /* SHOP */
         {
-            {{31, 45}, {{116, 66, -1}}},
-            {{31, 71}, {{115, 106, -1}}},
-            {{31, 97}, {{98, 4179, 106, -1}}},
+            {{31, 45}, {{0x01, 0x14, 0x18, 0xff}}},  /* BUY */
+            {{31, 71}, {{0x12, 0x04, 0x0b, 0x0b, 0xff}}},  /* SELL */
+            {{31, 97}, {{0x11, 0x04, 0x13, 0x14, 0x11, 0x0d, 0xff}}},  /* RETURN */
         },
     },
     {
-        {{17, 19}, {{164, 206, -1}}},
+        {{17, 19}, {{0x0b, 0x0e, 0x02, 0x0a, 0x12, 0x0c, 0x08, 0x13, 0x07, 0xff}}},  /* LOCKSMITH */
         {
-            {{31, 45}, {{116, 66, -1}}},
-            {{31, 71}, {{256, 257, 109, 207, 106, -1}}},
-            {{31, 97}, {{98, 4179, 106, -1}}},
+            {{31, 45}, {{0x01, 0x14, 0x18, 0xff}}},  /* BUY */
+            {{31, 71}, {{0x02, 0x0e, 0x0f, 0x18, 0xff}}},  /* COPY */
+            {{31, 97}, {{0x11, 0x04, 0x13, 0x14, 0x11, 0x0d, 0xff}}},  /* RETURN */
         },
     },
     {
-        {{17, 19}, {{0, -1}}},
+        {{17, 19}, {{0x00, 0xff}}},  /* A */
         {
-            {{31, 45}, {{258, 259, -1}}},
-            {{31, 71}, {{141, 142, 206, -1}}},
+            {{31, 45}, {{0x05, 0x0e, 0x11, 0x13, 0x14, 0x0d, 0x04, 0x13, 0x04, 0x0b, 0x0b, 0x04, 0x11, 0xff}}},  /* FORTUNETELLER */
+            {{31, 71}, {{0x02, 0x11, 0x18, 0x12, 0x13, 0x00, 0x0b, 0x7f, 0x00, 0x11, 0x13, 0x08, 0x12, 0x00, 0x0d, 0xff}}},  /* CRYSTAL ARTISAN */
         },
     },
     {
-        {{0, 0}, {{-1}}},
+        {{0, 0}, {{0xff}}},
         {
-            {{98, 94}, {{89, 4171, 97, 106, -1}}},
-            {{98, 120}, {{44, 45, 4115, 76, 106, -1}}},
+            {{98, 94}, {{0x0d, 0x04, 0x16, 0xff}}},  /* NEW */
+            {{98, 120}, {{0x0b, 0x0e, 0x00, 0x03, 0xff}}},  /* LOAD */
         },
     },
-    {0},
+    {
+        {{0, 0}, {{0}}},
+        {
+        },
+    },
 };
 
 enum {
@@ -2174,200 +2276,205 @@ enum {
 /* The controller copies the first MENU_CATEGORY_COUNT rows; nothing reads
    the eleventh, which keeps the same glyph-row layout. */
 DATA(0x80065674, 0x108, ".data")
-KfMenuLabelSuffix menu_equipment_category_labels[11] = {
-    {{118, 119, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{120, 121, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{122, 123, 57, 124, -1, 0, 0, 0, 0, 0}},
-    {{122, 123, 57, 125, -1, 0, 0, 0, 0, 0}},
-    {{122, 123, 57, 126, -1, 0, 0, 0, 0, 0}},
-    {{122, 123, 57, 127, -1, 0, 0, 0, 0, 0}},
-    {{122, 123, 57, 128, -1, 0, 0, 0, 0, 0}},
-    {{0, 1, 18, 32, 230, -1, 0, 0, 0, 0}},
-    {{0, 1, 18, 32, 231, -1, 0, 0, 0, 0}},
-    {{58, 4125, 15, 39, -1, 0, 0, 0, 0, 0}},
-    {{5, 45, 4115, 88, 224, 225, 226, -1, 0, 0}},
+KfMenuGlyphRow menu_equipment_category_labels[11] = {
+    {{0x16, 0x04, 0x00, 0x0f, 0x0e, 0x0d, 0xff}}, /* WEAPON */
+    {{0x0c, 0x00, 0x06, 0x08, 0x02, 0xff}}, /* MAGIC */
+    {{0x12, 0x07, 0x08, 0x04, 0x0b, 0x03, 0xff}}, /* SHIELD */
+    {{0x07, 0x04, 0x00, 0x03, 0xff}}, /* HEAD */
+    {{0x01, 0x0e, 0x03, 0x18, 0xff}}, /* BODY */
+    {{0x00, 0x11, 0x0c, 0x12, 0xff}}, /* ARMS */
+    {{0x05, 0x04, 0x04, 0x13, 0xff}}, /* FEET */
+    {{0x08, 0x13, 0x04, 0x0c, 0x7f, 0x21, 0xff}}, /* ITEM {21} */
+    {{0x08, 0x13, 0x04, 0x0c, 0x7f, 0x22, 0xff}}, /* ITEM {22} */
+    {{0x39, 0x7f, 0x01, 0x14, 0x13, 0x13, 0x0e, 0x0d, 0xff}}, /* {39} BUTTON */
+    {{0x00, 0x02, 0x02, 0x04, 0x12, 0x12, 0x7f, 0x0c, 0x04, 0x0c, 0x0e, 0x11, 0x18, 0x02, 0x00, 0x11, 0x03, 0xff}}, /* ACCESS MEMORYCARD */
 };
 DATA(0x8006577c, 0x18, ".data")
-KfMenuLabelSuffix menu_none_option_glyphs = {{89, 4172, 76, -1, 0, 0, 0, 0, 0, 0}};
+KfMenuLabelSuffix menu_none_option_glyphs = {{0x13, 0x00, 0x0a, 0x04, 0x7f, 0x0e, 0x05, 0x05, 0xff}}; /* TAKE OFF */
 DATA(0x80065794, 0x120, ".data")
 KfMenuLabelSuffix menu_header_labels[12] = {
-    {{130, 131, 132, -1, 0, 0, 0, 0, 0, 0}},
-    {{43, 4124, 42, -1, 0, 0, 0, 0, 0, 0}},
-    {{137, 138, 139, -1, 0, 0, 0, 0, 0, 0}},
-    {{122, 208, 139, -1, 0, 0, 0, 0, 0, 0}},
-    {{133, 134, -1, 0, 0, 0, 0, 0, 0}},
-    {{8217, 40, 40, 1, 4108, -1, 0, 0, 0, 0}},
-    {{255, 255, 5, 45, 12, -1, 0, 0, 0, 0}},
-    {{255, 255, 12, 44, 45, -1, 0, 0, 0, 0}},
-    {{255, 8221, 1, 4110, 39, -1, 0, 0, 0, 0}},
-    {{255, 255, 4111, 45, 7, -1, 0, 0, 0, 0}},
-    {{255, 255, 255, 197, 198, -1, 0, 0, 0, 0}},
-    {{4105, 45, 42, 4115, -1, 0, 0, 0, 0}},
+    {{0x04, 0x17, 0x0f, 0x04, 0x11, 0x08, 0x04, 0x0d, 0x02, 0x04, 0xff}}, /* EXPERIENCE */
+    {{0x0b, 0x04, 0x15, 0x04, 0x0b, 0xff}}, /* LEVEL */
+    {{0x0e, 0x05, 0x05, 0x04, 0x0d, 0x12, 0x04, 0xff}}, /* OFFENSE */
+    {{0x03, 0x04, 0x05, 0x04, 0x0d, 0x12, 0x04, 0xff}}, /* DEFENSE */
+    {{0x02, 0x0e, 0x0d, 0x03, 0x08, 0x13, 0x08, 0x0e, 0x0d, 0xff}}, /* CONDITION */
+    {{0x7f, 0x7f, 0x0f, 0x00, 0x11, 0x00, 0x0b, 0x18, 0x19, 0x04, 0xff}}, /*   PARALYZE */
+    {{0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x02, 0x14, 0x11, 0x12, 0x04, 0xff}}, /*      CURSE */
+    {{0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x12, 0x0b, 0x0e, 0x16, 0xff}}, /*       SLOW */
+    {{0x7f, 0x7f, 0x7f, 0x7f, 0x0f, 0x0e, 0x08, 0x12, 0x0e, 0x0d, 0xff}}, /*     POISON */
+    {{0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x03, 0x00, 0x11, 0x0a, 0xff}}, /*       DARK */
+    {{0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x06, 0x0e, 0x0e, 0x03, 0xff}}, /*       GOOD */
+    {{0x06, 0x0e, 0x0b, 0x03, 0xff}}, /* GOLD */
 };
 DATA(0x800658b4, 0x270, ".data")
-KfMenuLabelSuffix menu_label_suffixes[16] = {
-    {{33, 34, 41, 45, 5, 45, 4115, 88, -1, 0}},
-    {{16, 51, 53, 7, 109, 75, 82, 65, 94, 76}},
-    {{13, 45, 4123, 4178, 70, 94, 77, 103, -1, 0}},
-    {{33, 34, 41, 45, 5, 45, 4115, 109, -1, 0}},
-    {{16, 51, 53, 7, 75, 82, 71, 4175, 74, 65}},
-    {{33, 34, 41, 45, 5, 45, 4115, 4165, -1, 0}},
-    {{27, 52, 45, 30, 53, 19, -1, 0, 0, 0}},
-    {{74, 107, 82, 65, 94, 77, 103, -1, 0, 0}},
-    {{75, 94, 76, 69, -1, 0, 0, 0, 0, 0}},
-    {{109, 75, 84, 65, 83, -1, 0, 0, 0, 0}},
-    {{44, 45, 4115, 4178, 70, 94, 77, 103, -1, 0}},
-    {{13, 45, 4123, 75, 82, 65, 94, 76, -1, 0}},
-    {{267, 268, 4165, 79, 105, 94, 77, 103, -1, 0}},
-    {{44, 45, 4115, 75, 82, 65, 94, 76, -1, 0}},
-    {{269, 270, 109, 86, 65, 82, -1, 0, 0, 0}},
-    {{161, 271, 109, 263, 59, 82, 71, 4175, 74, 65}}
+KfMenuLabelSuffix menu_label_suffixes[26] = {
+    {{0x02, 0x07, 0x04, 0x02, 0x0a, 0x08, 0x0d, 0x06, 0x7f, 0x13, 0x07, 0x04, 0x7f, 0x11, 0x00, 0x0c, 0x7f, 0x02, 0x00, 0x11, 0x03, 0xff}}, /* CHECKING THE RAM CARD */
+    {{0x0f, 0x0b, 0x04, 0x00, 0x12, 0x04, 0x7f, 0x16, 0x00, 0x08, 0x13, 0xff}}, /* PLEASE WAIT */
+    {{0x02, 0x00, 0x0d, 0x0d, 0x0e, 0x13, 0x7f, 0x12, 0x00, 0x15, 0x04, 0xff}}, /* CANNOT SAVE */
+    {{0x02, 0x07, 0x04, 0x02, 0x0a, 0x7f, 0x13, 0x07, 0x04, 0x7f, 0x11, 0x00, 0x0c, 0x7f, 0x02, 0x00, 0x11, 0x03, 0xff}}, /* CHECK THE RAM CARD */
+    {{0x0d, 0x0e, 0x13, 0x7f, 0x05, 0x0e, 0x11, 0x0c, 0x00, 0x13, 0x13, 0x04, 0x03, 0xff}}, /* NOT FORMATTED */
+    {{0x16, 0x08, 0x0b, 0x0b, 0x7f, 0x18, 0x0e, 0x14, 0x7f, 0x05, 0x0e, 0x11, 0x0c, 0x00, 0x13, 0x3a, 0xff}}, /* WILL YOU FORMAT{3a} */
+    {{0x02, 0x00, 0x0d, 0x0d, 0x0e, 0x13, 0x7f, 0x12, 0x00, 0x15, 0x04, 0x31, 0x7f, 0x08, 0x05, 0x7f, 0x13, 0x07, 0x04, 0x7f, 0x11, 0x00, 0x0c, 0xff}}, /* CANNOT SAVE{31} IF THE RAM */
+    {{0x02, 0x00, 0x11, 0x03, 0x7f, 0x08, 0x12, 0x7f, 0x0d, 0x0e, 0x13, 0x7f, 0x05, 0x0e, 0x11, 0x0c, 0x00, 0x13, 0x13, 0x04, 0x03, 0xff}}, /* CARD IS NOT FORMATTED */
+    {{0x02, 0x00, 0x0d, 0x0d, 0x0e, 0x13, 0x7f, 0x12, 0x00, 0x15, 0x04, 0x7f, 0x03, 0x00, 0x13, 0x00, 0xff}}, /* CANNOT SAVE DATA */
+    {{0x08, 0x0d, 0x7f, 0x13, 0x07, 0x08, 0x12, 0x7f, 0x02, 0x00, 0x11, 0x03, 0xff}}, /* IN THIS CARD */
+    {{0x02, 0x00, 0x0d, 0x0d, 0x0e, 0x13, 0x7f, 0x0b, 0x0e, 0x00, 0x03, 0xff}}, /* CANNOT LOAD */
+    {{0x12, 0x00, 0x15, 0x08, 0x0d, 0x06, 0xff}}, /* SAVING */
+    {{0x0d, 0x0e, 0x13, 0x7f, 0x04, 0x0d, 0x0e, 0x14, 0x06, 0x07, 0x7f, 0x12, 0x0f, 0x00, 0x02, 0x04, 0xff}}, /* NOT ENOUGH SPACE */
+    {{0x0b, 0x0e, 0x00, 0x03, 0x08, 0x0d, 0x06, 0xff}}, /* LOADING */
+    {{0x11, 0x04, 0x0c, 0x0e, 0x15, 0x04, 0x7f, 0x13, 0x07, 0x04, 0x7f, 0x02, 0x03, 0xff}}, /* REMOVE THE CD */
+    {{0x00, 0x0d, 0x03, 0x7f, 0x13, 0x14, 0x11, 0x0d, 0x7f, 0x0e, 0x05, 0x05, 0x7f, 0x13, 0x07, 0x04, 0x7f, 0x0f, 0x0e, 0x16, 0x04, 0x11, 0xff}}, /* AND TURN OFF THE POWER */
+    {{0x03, 0x00, 0x13, 0x00, 0x7f, 0x04, 0x11, 0x11, 0x0e, 0x11, 0x38, 0xff}}, /* DATA ERROR{38} */
+    {{0x02, 0x00, 0x0d, 0x0d, 0x0e, 0x13, 0x7f, 0x12, 0x00, 0x15, 0x04, 0xff}}, /* CANNOT SAVE */
+    {{0x16, 0x08, 0x13, 0x07, 0x0e, 0x14, 0x13, 0x7f, 0x13, 0x07, 0x04, 0x7f, 0x11, 0x00, 0x0c, 0x7f, 0x02, 0x00, 0x11, 0x03, 0xff}}, /* WITHOUT THE RAM CARD */
+    {{0x11, 0x00, 0x0c, 0x7f, 0x02, 0x00, 0x11, 0x03, 0x7f, 0x08, 0x12, 0x7f, 0x05, 0x14, 0x0b, 0x0b, 0xff}}, /* RAM CARD IS FULL */
+    {{0x0f, 0x0b, 0x04, 0x00, 0x12, 0x04, 0x7f, 0x08, 0x0d, 0x12, 0x04, 0x11, 0x13, 0x7f, 0x00, 0x7f, 0x0d, 0x04, 0x16, 0x7f, 0x02, 0x00, 0x11, 0x03}}, /* PLEASE INSERT A NEW CARD */
 };
 DATA(0x80065b24, 0xb40, ".data")
 KfMenuGlyphRow menu_glyph_rows[KF_ITEM_ID_COUNT] = {
-    {{4111, 4101, 45, -1, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{11, 56, 45, 19, 14, 45, 4115, -1, 0, 0, 0, 0}},
-    {{20, 1, 19, 14, 45, 4115, -1, 0, 0, 0, 0, 0}},
-    {{34, 45, 21, 39, 4103, 12, 15, 45, -1, 0, 0, 0}},
-    {{4121, 19, 42, 25, 39, 30, 45, -1, 0, 0, 0, 0}},
-    {{4121, 12, 15, 45, 4115, 14, 45, 4115, -1, 0, 0, 0}},
-    {{7, 43, 13, 39, 19, 0, 53, 7, 12, -1, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{27, 43, 1, 32, 14, 45, 4115, -1, 0, 0, 0, 0}},
-    {{160, 161, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{12, 8217, 1, 4111, 45, -1, 0, 0, 0, 0, 0, 0}},
-    {{0, 1, 12, 4123, 43, 45, 4115, -1, 0, 0, 0, 0}},
-    {{33, 43, 42, 57, 2, 42, 88, 129, -1, 0, 0, 0}},
-    {{32, 45, 39, 40, 1, 19, 14, 45, 4115, -1, 0, 0}},
-    {{4111, 45, 7, 57, 12, 43, 1, 35, 45, -1, 0, 0}},
-    {{4125, 2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{0, 42, 4121, 43, 12, 19, -1, 0, 0, 0, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{0, 1, 0, 39, 30, 12, 7, -1, 0, 0, 0, 0}},
-    {{20, 1, 19, 28, 42, 32, -1, 0, 0, 0, 0, 0}},
-    {{4103, 43, 45, 19, 28, 42, 32, -1, 0, 0, 0, 0}},
-    {{4123, 40, 53, 4115, 7, 40, 2, 39, -1, 0, 0, 0}},
-    {{162, 163, 88, 150, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{33, 43, 42, 57, 2, 42, 88, 150, -1, 0, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{4123, 43, 12, 19, 8219, 43, 45, 19, -1, 0, 0, 0}},
-    {{20, 1, 19, 8219, 43, 45, 19, -1, 0, 0, 0, 0}},
-    {{0, 1, 12, 0, 45, 30, 45, -1, 0, 0, 0, 0}},
-    {{211, 212, 88, 157, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{33, 43, 42, 57, 2, 42, 88, 157, -1, 0, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{43, 4106, 45, 11, 45, 42, 4115, -1, 0, 0, 0, 0}},
-    {{40, 45, 4107, 11, 45, 42, 4115, -1, 0, 0, 0, 0}},
-    {{32, 45, 39, 4101, 45, 4115, -1, 0, 0, 0, 0, 0}},
-    {{7, 41, 12, 15, 42, 4101, 45, 4115, -1, 0, 0, 0}},
-    {{12, 5, 42, 11, 45, 42, 4115, -1, 0, 0, 0, 0}},
-    {{33, 43, 42, 57, 2, 42, 88, 124, -1, 0, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{0, 1, 0, 39, 4103, 44, 45, 4123, -1, 0, 0, 0}},
-    {{12, 19, 45, 39, 25, 39, 4115, -1, 0, 0, 0, 0}},
-    {{11, 42, 4121, 45, 0, 45, 32, -1, 0, 0, 0, 0}},
-    {{4114, 45, 34, 39, 25, 39, 4115, -1, 0, 0, 0, 0}},
-    {{42, 1, 20, 12, 4103, 44, 45, 4123, -1, 0, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{0, 1, 0, 39, 4123, 45, 17, -1, 0, 0, 0, 0}},
-    {{43, 53, 4103, 4101, 45, 4111, 45, -1, 0, 0, 0, 0}},
-    {{11, 42, 4121, 45, 4123, 45, 17, -1, 0, 0, 0, 0}},
-    {{4114, 12, 2, 52, 45, 5, 45, -1, 0, 0, 0, 0}},
-    {{42, 1, 20, 12, 4123, 45, 17, -1, 0, 0, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{204, 88, 127, 156, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{11, 45, 12, 88, 177, -1, 0, 0, 0, 0, 0, 0}},
-    {{33, 43, 42, 57, 2, 42, 88, 127, 156, -1, 0, 0}},
-    {{168, 205, 88, 158, 156, -1, 0, 0, 0, 0, 0, 0}},
-    {{246, 81, 247, 248, 249, 88, 250, 156, -1, 0, 0, 0}},
-    {{251, 83, 252, 88, 120, 253, 72, -1, 0, 0, 0, 0}},
-    {{189, 254, 88, 158, 156, -1, 0, 0, 0, 0, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{165, 166, 88, 168, 169, -1, 0, 0, 0, 0, 0, 0}},
-    {{141, 142, 159, 105, 88, 168, 169, -1, 0, 0, 0, 0}},
-    {{181, 149, 88, 168, 169, -1, 0, 0, 0, 0, 0, 0}},
-    {{6, 39, 5, -1, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{4123, 40, 53, 4115, 12, 19, 45, 39, -1, 0, 0, 0}},
-    {{32, 45, 39, 12, 19, 45, 39, -1, 0, 0, 0, 0}},
-    {{4098, 48, 45, 4111, 1, 19, -1, 0, 0, 0, 0, 0}},
-    {{143, 144, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{136, 145, 75, 144, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{148, 149, 144, 88, 151, -1, 0, 0, 0, 0, 0, 0}},
-    {{146, 147, 88, 141, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{146, 147, 88, 141, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{146, 147, 88, 141, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{146, 147, 88, 141, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{136, 88, 141, -1, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{141, 142, 88, 173, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{11, 45, 12, 88, 196, -1, 0, 0, 0, 0, 0, 0}},
-    {{171, 88, 172, -1, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{174, 175, 88, 176, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{11, 45, 12, 88, 191, -1, 0, 0, 0, 0, 0, 0}},
-    {{199, 120, 88, 200, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{188, 88, 111, -1, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{74, 74, 99, 70, 88, 167, -1, 0, 0, 0, 0, 0}},
-    {{190, 88, 7, 41, 12, 15, 42, -1, 0, 0, 0, 0}},
-    {{141, 88, 7, 41, 12, 15, 42, -1, 0, 0, 0, 0}},
-    {{187, 88, 7, 41, 12, 15, 42, -1, 0, 0, 0, 0}},
-    {{188, 88, 7, 41, 12, 15, 42, -1, 0, 0, 0, 0}},
-    {{189, 88, 7, 41, 12, 15, 42, -1, 0, 0, 0, 0}},
-    {{4111, 45, 7, 7, 41, 12, 15, 42, -1, 0, 0, 0}},
-    {{141, 142, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{141, 142, 88, 69, 72, 104, -1, 0, 0, 0, 0, 0}},
-    {{31, 11, 37, 2, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{3, 42, 27, 88, 164, -1, 0, 0, 0, 0, 0, 0}},
-    {{165, 166, 88, 164, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{194, 195, 88, 164, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{178, 88, 164, -1, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{182, 183, 88, 164, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{201, 149, 88, 164, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{148, 88, 186, -1, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{120, 192, 193, 88, 164, -1, 0, 0, 0, 0, 0, 0}},
-    {{210, 88, 164, -1, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{209, 88, 164, -1, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{184, 185, 88, 164, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{223, 110, 88, 127, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{152, 88, 4104, 45, 19, -1, 0, 0, 0, 0, 0, 0}},
-    {{153, 88, 4104, 45, 19, -1, 0, 0, 0, 0, 0, 0}},
-    {{154, 155, 88, 4104, 45, 19, -1, 0, 0, 0, 0, 0}},
-    {{152, 88, 164, -1, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{153, 88, 164, -1, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{154, 155, 88, 164, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{141, 142, 88, 135, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{3, 42, 27, 88, 135, -1, 0, 0, 0, 0, 0, 0}},
-    {{40, 12, 19, 4104, 45, 19, -1, 0, 0, 0, 0, 0}},
+    {{0x03, 0x00, 0x06, 0x06, 0x04, 0x11, 0xff}}, /* DAGGER */
+    {{0x12, 0x07, 0x0e, 0x11, 0x13, 0x7f, 0x12, 0x16, 0x0e, 0x11, 0x03, 0xff}}, /* SHORT SWORD */
+    {{0x0a, 0x0d, 0x08, 0x06, 0x07, 0x13, 0x7f, 0x12, 0x16, 0x0e, 0x11, 0x03, 0xff}}, /* KNIGHT SWORD */
+    {{0x0c, 0x0e, 0x11, 0x0d, 0x08, 0x0d, 0x06, 0x7f, 0x12, 0x13, 0x00, 0x11, 0xff}}, /* MORNING STAR */
+    {{0x01, 0x00, 0x13, 0x13, 0x0b, 0x04, 0x7f, 0x07, 0x00, 0x0c, 0x0c, 0x04, 0x11, 0xff}}, /* BATTLE HAMMER */
+    {{0x01, 0x00, 0x12, 0x13, 0x00, 0x11, 0x03, 0x7f, 0x12, 0x16, 0x0e, 0x11, 0x03, 0xff}}, /* BASTARD SWORD */
+    {{0x02, 0x11, 0x04, 0x12, 0x02, 0x04, 0x0d, 0x13, 0x7f, 0x00, 0x17, 0x04, 0xff}}, /* CRESCENT AXE */
+    {{0x00, 0xff}}, /* A */
+    {{0x00, 0xff}}, /* A */
+    {{0x05, 0x0b, 0x00, 0x0c, 0x04, 0x7f, 0x12, 0x16, 0x0e, 0x11, 0x03, 0xff}}, /* FLAME SWORD */
+    {{0x12, 0x07, 0x08, 0x03, 0x04, 0x0d, 0xff}}, /* SHIDEN */
+    {{0x12, 0x0f, 0x08, 0x03, 0x04, 0x11, 0xff}}, /* SPIDER */
+    {{0x08, 0x02, 0x04, 0x7f, 0x01, 0x0b, 0x00, 0x03, 0x04, 0xff}}, /* ICE BLADE */
+    {{0x12, 0x04, 0x00, 0x13, 0x07, 0x32, 0x12, 0x7f, 0x12, 0x16, 0x0e, 0x11, 0x03, 0xff}}, /* SEATH{32}S SWORD */
+    {{0x0c, 0x0e, 0x0e, 0x0d, 0x0b, 0x08, 0x06, 0x07, 0x13, 0x7f, 0x12, 0x16, 0x0e, 0x11, 0x03, 0xff}}, /* MOONLIGHT SWORD */
+    {{0x03, 0x00, 0x11, 0x0a, 0x7f, 0x12, 0x0b, 0x00, 0x18, 0x04, 0x11, 0xff}}, /* DARK SLAYER */
+    {{0x01, 0x0e, 0x16, 0xff}}, /* BOW */
+    {{0x00, 0x11, 0x01, 0x00, 0x0b, 0x04, 0x12, 0x13, 0xff}}, /* ARBALEST */
+    {{0x00, 0xff}}, /* A */
+    {{0x00, 0xff}}, /* A */
+    {{0x00, 0xff}}, /* A */
+    {{0x08, 0x11, 0x0e, 0x0d, 0x7f, 0x0c, 0x00, 0x12, 0x0a, 0xff}}, /* IRON MASK */
+    {{0x0a, 0x0d, 0x08, 0x06, 0x07, 0x13, 0x7f, 0x07, 0x04, 0x0b, 0x0c, 0xff}}, /* KNIGHT HELM */
+    {{0x06, 0x11, 0x04, 0x00, 0x13, 0x7f, 0x07, 0x04, 0x0b, 0x0c, 0xff}}, /* GREAT HELM */
+    {{0x01, 0x0b, 0x0e, 0x0e, 0x03, 0x7f, 0x02, 0x11, 0x0e, 0x16, 0x0d, 0xff}}, /* BLOOD CROWN */
+    {{0x0b, 0x08, 0x06, 0x07, 0x13, 0x0d, 0x08, 0x0d, 0x06, 0x7f, 0x07, 0x04, 0x0b, 0x0c, 0xff}}, /* LIGHTNING HELM */
+    {{0x12, 0x04, 0x00, 0x13, 0x07, 0x32, 0x12, 0x7f, 0x07, 0x04, 0x0b, 0x0c, 0xff}}, /* SEATH{32}S HELM */
+    {{0x00, 0xff}}, /* A */
+    {{0x01, 0x11, 0x04, 0x00, 0x12, 0x13, 0x7f, 0x0f, 0x0b, 0x00, 0x13, 0x04, 0xff}}, /* BREAST PLATE */
+    {{0x0a, 0x0d, 0x08, 0x06, 0x07, 0x13, 0x7f, 0x0f, 0x0b, 0x00, 0x13, 0x04, 0xff}}, /* KNIGHT PLATE */
+    {{0x08, 0x02, 0x04, 0x7f, 0x00, 0x11, 0x0c, 0x0e, 0x11, 0xff}}, /* ICE ARMOR */
+    {{0x03, 0x00, 0x11, 0x0a, 0x7f, 0x00, 0x11, 0x0c, 0x0e, 0x11, 0xff}}, /* DARK ARMOR */
+    {{0x12, 0x04, 0x00, 0x13, 0x07, 0x32, 0x12, 0x7f, 0x00, 0x11, 0x0c, 0x0e, 0x11, 0xff}}, /* SEATH{32}S ARMOR */
+    {{0x00, 0xff}}, /* A */
+    {{0x0b, 0x04, 0x00, 0x13, 0x07, 0x04, 0x11, 0x7f, 0x12, 0x07, 0x08, 0x04, 0x0b, 0x03, 0xff}}, /* LEATHER SHIELD */
+    {{0x0b, 0x00, 0x11, 0x06, 0x04, 0x7f, 0x12, 0x07, 0x08, 0x04, 0x0b, 0x03, 0xff}}, /* LARGE SHIELD */
+    {{0x0c, 0x0e, 0x0e, 0x0d, 0x7f, 0x06, 0x14, 0x00, 0x11, 0x03, 0xff}}, /* MOON GUARD */
+    {{0x02, 0x11, 0x18, 0x12, 0x13, 0x00, 0x0b, 0x7f, 0x06, 0x14, 0x00, 0x11, 0x03, 0xff}}, /* CRYSTAL GUARD */
+    {{0x12, 0x0a, 0x14, 0x0b, 0x0b, 0x7f, 0x12, 0x07, 0x08, 0x04, 0x0b, 0x03, 0xff}}, /* SKULL SHIELD */
+    {{0x12, 0x04, 0x00, 0x13, 0x07, 0x32, 0x12, 0x7f, 0x12, 0x07, 0x08, 0x04, 0x0b, 0x03, 0xff}}, /* SEATH{32}S SHIELD */
+    {{0x00, 0xff}}, /* A */
+    {{0x08, 0x11, 0x0e, 0x0d, 0x7f, 0x06, 0x0b, 0x0e, 0x15, 0x04, 0x12, 0xff}}, /* IRON GLOVES */
+    {{0x12, 0x13, 0x0e, 0x0d, 0x04, 0x7f, 0x07, 0x00, 0x0d, 0x03, 0x12, 0xff}}, /* STONE HANDS */
+    {{0x12, 0x08, 0x0b, 0x15, 0x04, 0x11, 0x7f, 0x00, 0x11, 0x0c, 0x12, 0xff}}, /* SILVER ARMS */
+    {{0x03, 0x04, 0x0c, 0x0e, 0x0d, 0x32, 0x12, 0x7f, 0x07, 0x00, 0x0d, 0x03, 0x12, 0xff}}, /* DEMON{32}S HANDS */
+    {{0x11, 0x14, 0x08, 0x0d, 0x0e, 0x14, 0x12, 0x7f, 0x06, 0x0b, 0x0e, 0x15, 0x04, 0x12, 0xff}}, /* RUINOUS GLOVES */
+    {{0x00, 0xff}}, /* A */
+    {{0x08, 0x11, 0x0e, 0x0d, 0x7f, 0x01, 0x0e, 0x0e, 0x13, 0x12, 0xff}}, /* IRON BOOTS */
+    {{0x0b, 0x04, 0x06, 0x7f, 0x06, 0x14, 0x00, 0x11, 0x03, 0x04, 0x11, 0x12, 0xff}}, /* LEG GUARDERS */
+    {{0x12, 0x08, 0x0b, 0x15, 0x04, 0x11, 0x7f, 0x01, 0x0e, 0x0e, 0x13, 0x12, 0xff}}, /* SILVER BOOTS */
+    {{0x03, 0x04, 0x00, 0x13, 0x07, 0x7f, 0x16, 0x00, 0x0b, 0x0a, 0x04, 0x11, 0x12, 0xff}}, /* DEATH WALKERS */
+    {{0x11, 0x14, 0x08, 0x0d, 0x0e, 0x14, 0x12, 0x7f, 0x01, 0x0e, 0x0e, 0x13, 0x12, 0xff}}, /* RUINOUS BOOTS */
+    {{0x00, 0xff}}, /* A */
+    {{0x12, 0x02, 0x0e, 0x11, 0x0f, 0x08, 0x0e, 0x0d, 0x32, 0x12, 0x7f, 0x01, 0x11, 0x00, 0x02, 0x04, 0x0b, 0x04, 0x13, 0xff}}, /* SCORPION{32}S BRACELET */
+    {{0x12, 0x04, 0x00, 0x13, 0x07, 0x32, 0x12, 0x7f, 0x13, 0x04, 0x00, 0x11, 0xff}}, /* SEATH{32}S TEAR */
+    {{0x12, 0x04, 0x00, 0x13, 0x07, 0x32, 0x12, 0x7f, 0x01, 0x11, 0x00, 0x02, 0x04, 0x0b, 0x04, 0x13, 0xff}}, /* SEATH{32}S BRACELET */
+    {{0x04, 0x00, 0x11, 0x13, 0x07, 0x7f, 0x11, 0x08, 0x0d, 0x06, 0xff}}, /* EARTH RING */
+    {{0x0f, 0x12, 0x18, 0x02, 0x0f, 0x11, 0x0e, 0x12, 0x7f, 0x02, 0x0e, 0x0b, 0x0b, 0x00, 0x11, 0xff}}, /* PSYCPROS COLLAR */
+    {{0x00, 0x0c, 0x14, 0x0b, 0x04, 0x13, 0x7f, 0x0e, 0x05, 0x7f, 0x0c, 0x08, 0x12, 0x13, 0xff}}, /* AMULET OF MIST */
+    {{0x0b, 0x08, 0x06, 0x07, 0x13, 0x16, 0x00, 0x15, 0x04, 0x7f, 0x11, 0x08, 0x0d, 0x06, 0xff}}, /* LIGHTWAVE RING */
+    {{0x00, 0xff}}, /* A */
+    {{0x00, 0xff}}, /* A */
+    {{0x00, 0xff}}, /* A */
+    {{0x00, 0xff}}, /* A */
+    {{0x00, 0xff}}, /* A */
+    {{0x00, 0xff}}, /* A */
+    {{0x00, 0xff}}, /* A */
+    {{0x0f, 0x08, 0x11, 0x00, 0x13, 0x04, 0x32, 0x12, 0x7f, 0x0c, 0x00, 0x0f, 0xff}}, /* PIRATE{32}S MAP */
+    {{0x0c, 0x08, 0x0d, 0x04, 0x11, 0x32, 0x12, 0x7f, 0x0c, 0x00, 0x0f, 0xff}}, /* MINER{32}S MAP */
+    {{0x0d, 0x04, 0x02, 0x11, 0x0e, 0x0d, 0x32, 0x12, 0x7f, 0x0c, 0x00, 0x0f, 0xff}}, /* NECRON{32}S MAP */
+    {{0x06, 0x0e, 0x0b, 0x03, 0x7f, 0x02, 0x0e, 0x08, 0x0d, 0xff}}, /* GOLD COIN */
+    {{0x01, 0x0b, 0x0e, 0x0e, 0x03, 0x7f, 0x12, 0x13, 0x0e, 0x0d, 0x04, 0xff}}, /* BLOOD STONE */
+    {{0x0c, 0x0e, 0x0e, 0x0d, 0x7f, 0x12, 0x13, 0x0e, 0x0d, 0x04, 0xff}}, /* MOON STONE */
+    {{0x15, 0x04, 0x11, 0x03, 0x08, 0x13, 0x04, 0xff}}, /* VERDITE */
+    {{0x04, 0x00, 0x11, 0x13, 0x07, 0x7f, 0x07, 0x04, 0x11, 0x01, 0xff}}, /* EARTH HERB */
+    {{0x00, 0x0d, 0x13, 0x08, 0x03, 0x0e, 0x13, 0x04, 0xff}}, /* ANTIDOTE */
+    {{0x03, 0x11, 0x00, 0x06, 0x0e, 0x0d, 0x7f, 0x02, 0x11, 0x18, 0x12, 0x13, 0x00, 0x0b, 0xff}}, /* DRAGON CRYSTAL */
+    {{0x01, 0x0b, 0x14, 0x04, 0x7f, 0x0f, 0x0e, 0x13, 0x08, 0x0e, 0x0d, 0xff}}, /* BLUE POTION */
+    {{0x11, 0x04, 0x03, 0x7f, 0x0f, 0x0e, 0x13, 0x08, 0x0e, 0x0d, 0xff}}, /* RED POTION */
+    {{0x06, 0x11, 0x04, 0x04, 0x0d, 0x7f, 0x0f, 0x0e, 0x13, 0x08, 0x0e, 0x0d, 0xff}}, /* GREEN POTION */
+    {{0x06, 0x0e, 0x0b, 0x03, 0x7f, 0x0f, 0x0e, 0x13, 0x08, 0x0e, 0x0d, 0xff}}, /* GOLD POTION */
+    {{0x00, 0xff}}, /* A */
+    {{0x02, 0x11, 0x18, 0x12, 0x13, 0x00, 0x0b, 0x7f, 0x05, 0x0b, 0x00, 0x12, 0x0a, 0xff}}, /* CRYSTAL FLASK */
+    {{0x05, 0x08, 0x06, 0x14, 0x11, 0x04, 0x7f, 0x0e, 0x05, 0x7f, 0x12, 0x04, 0x00, 0x13, 0x07, 0xff}}, /* FIGURE OF SEATH */
+    {{0x0f, 0x07, 0x00, 0x0d, 0x13, 0x0e, 0x0c, 0x7f, 0x11, 0x0e, 0x03, 0xff}}, /* PHANTOM ROD */
+    {{0x13, 0x11, 0x14, 0x13, 0x07, 0x7f, 0x06, 0x0b, 0x00, 0x12, 0x12, 0xff}}, /* TRUTH GLASS */
+    {{0x12, 0x04, 0x00, 0x13, 0x07, 0x32, 0x12, 0x7f, 0x0f, 0x0b, 0x14, 0x0c, 0x04, 0xff}}, /* SEATH{32}S PLUME */
+    {{0x03, 0x04, 0x0c, 0x0e, 0x0d, 0x32, 0x12, 0x7f, 0x0f, 0x08, 0x02, 0x0a, 0xff}}, /* DEMON{32}S PICK */
+    {{0x07, 0x00, 0x11, 0x15, 0x08, 0x0d, 0x04, 0x32, 0x12, 0x7f, 0x05, 0x0b, 0x14, 0x13, 0x04, 0xff}}, /* HARVINE{32}S FLUTE */
+    {{0x06, 0x11, 0x0e, 0x14, 0x0d, 0x03, 0x7f, 0x01, 0x04, 0x0b, 0x0b, 0xff}}, /* GROUND BELL */
+    {{0x05, 0x08, 0x11, 0x04, 0x7f, 0x02, 0x11, 0x18, 0x12, 0x13, 0x00, 0x0b, 0xff}}, /* FIRE CRYSTAL */
+    {{0x16, 0x00, 0x13, 0x04, 0x11, 0x7f, 0x02, 0x11, 0x18, 0x12, 0x13, 0x00, 0x0b, 0xff}}, /* WATER CRYSTAL */
+    {{0x04, 0x00, 0x11, 0x13, 0x07, 0x7f, 0x02, 0x11, 0x18, 0x12, 0x13, 0x00, 0x0b, 0xff}}, /* EARTH CRYSTAL */
+    {{0x16, 0x08, 0x0d, 0x03, 0x7f, 0x02, 0x11, 0x18, 0x12, 0x13, 0x00, 0x0b, 0xff}}, /* WIND CRYSTAL */
+    {{0x0b, 0x08, 0x06, 0x07, 0x13, 0x7f, 0x02, 0x11, 0x18, 0x12, 0x13, 0x00, 0x0b, 0xff}}, /* LIGHT CRYSTAL */
+    {{0x03, 0x00, 0x11, 0x0a, 0x7f, 0x02, 0x11, 0x18, 0x12, 0x13, 0x00, 0x0b, 0xff}}, /* DARK CRYSTAL */
+    {{0x02, 0x11, 0x18, 0x12, 0x13, 0x00, 0x0b, 0xff}}, /* CRYSTAL */
+    {{0x02, 0x11, 0x18, 0x12, 0x13, 0x00, 0x0b, 0x7f, 0x12, 0x07, 0x00, 0x11, 0x03, 0xff}}, /* CRYSTAL SHARD */
+    {{0x00, 0xff}}, /* A */
+    {{0x04, 0x0b, 0x05, 0x32, 0x12, 0x7f, 0x0a, 0x04, 0x18, 0xff}}, /* ELF{32}S KEY */
+    {{0x0f, 0x08, 0x11, 0x00, 0x13, 0x04, 0x32, 0x12, 0x7f, 0x0a, 0x04, 0x18, 0xff}}, /* PIRATE{32}S KEY */
+    {{0x12, 0x0a, 0x14, 0x0b, 0x0b, 0x7f, 0x0a, 0x04, 0x18, 0xff}}, /* SKULL KEY */
+    {{0x09, 0x00, 0x08, 0x0b, 0x7f, 0x0a, 0x04, 0x18, 0xff}}, /* JAIL KEY */
+    {{0x11, 0x07, 0x0e, 0x0c, 0x01, 0x14, 0x12, 0x7f, 0x0a, 0x04, 0x18, 0xff}}, /* RHOMBUS KEY */
+    {{0x07, 0x00, 0x11, 0x15, 0x08, 0x0d, 0x04, 0x32, 0x12, 0x7f, 0x0a, 0x04, 0x18, 0xff}}, /* HARVINE{32}S KEY */
+    {{0x03, 0x11, 0x00, 0x06, 0x0e, 0x0d, 0x7f, 0x12, 0x13, 0x0e, 0x0d, 0x04, 0xff}}, /* DRAGON STONE */
+    {{0x0c, 0x00, 0x06, 0x08, 0x02, 0x08, 0x00, 0x0d, 0x32, 0x12, 0x7f, 0x0a, 0x04, 0x18, 0xff}}, /* MAGICIAN{32}S KEY */
+    {{0x12, 0x08, 0x0b, 0x15, 0x04, 0x11, 0x7f, 0x0a, 0x04, 0x18, 0xff}}, /* SILVER KEY */
+    {{0x06, 0x0e, 0x0b, 0x03, 0x7f, 0x0a, 0x04, 0x18, 0xff}}, /* GOLD KEY */
+    {{0x12, 0x07, 0x11, 0x08, 0x0d, 0x04, 0x7f, 0x0a, 0x04, 0x18, 0xff}}, /* SHRINE KEY */
+    {{0x00, 0xff}}, /* A */
+    {{0x0c, 0x0e, 0x0e, 0x0d, 0x7f, 0x06, 0x00, 0x13, 0x04, 0xff}}, /* MOON GATE */
+    {{0x12, 0x13, 0x00, 0x11, 0x7f, 0x06, 0x00, 0x13, 0x04, 0xff}}, /* STAR GATE */
+    {{0x12, 0x14, 0x0d, 0x7f, 0x06, 0x00, 0x13, 0x04, 0xff}}, /* SUN GATE */
+    {{0x0c, 0x0e, 0x0e, 0x0d, 0x7f, 0x0a, 0x04, 0x18, 0xff}}, /* MOON KEY */
+    {{0x12, 0x13, 0x00, 0x11, 0x7f, 0x0a, 0x04, 0x18, 0xff}}, /* STAR KEY */
+    {{0x12, 0x14, 0x0d, 0x7f, 0x0a, 0x04, 0x18, 0xff}}, /* SUN KEY */
+    {{0x00, 0x11, 0x11, 0x0e, 0x16, 0x7f, 0x05, 0x0e, 0x11, 0x7f, 0x13, 0x07, 0x04, 0x7f, 0x01, 0x0e, 0x16, 0xff}}, /* ARROW FOR THE BOW */
+    {{0x04, 0x0b, 0x05, 0x32, 0x12, 0x7f, 0x01, 0x0e, 0x0b, 0x13, 0xff}}, /* ELF{32}S BOLT */
+    {{0x00, 0xff}}, /* A */
 };
 DATA(0x80066664, 0x1e0, ".data")
 KfMenuGlyphRow menu_glyph_rows_extra[20] = {
-    {{2, 52, 45, 15, 45, 27, 52, 45, 42, -1, 0, 0}},
-    {{12, 19, 45, 39, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{0, 45, 12, 2, 51, 45, 4123, -1, 0, 0, 0, 0}},
-    {{33, 18, 4, -1, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{2, 49, 39, 4115, 5, 53, 15, 45, -1, 0, 0, 0}},
-    {{0, 1, 12, 12, 19, 45, 32, -1, 0, 0, 0, 0}},
-    {{27, 41, 45, 4108, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{27, 48, 1, 0, 45, 4125, 45, 42, -1, 0, 0, 0}},
-    {{27, 48, 1, 0, 45, 2, 52, 45, 42, -1, 0, 0}},
-    {{27, 48, 1, 0, 45, 12, 19, 45, 32, -1, 0, 0}},
-    {{27, 43, 1, 32, -1, 0, 0, 0, 0, 0, 0, 0}},
-    {{40, 1, 19, 21, 39, 4103, 4125, 42, 19, -1, 0, 0}},
-    {{27, 40, 53, 11, 55, -1, 0, 0, 0, 0, 0, 0}},
-    {{11, 45, 12, -1, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{4114, 49, 12, 8221, 1, 4110, 39, -1, 0, 0, 0, 0}},
-    {{43, 4107, 12, 19, 27, 48, 1, 0, -1, 0, 0, 0}},
-    {{0, 45, 12, 26, 45, 42, -1, 0, 0, 0, 0, 0}},
-    {{31, 10, 1, 42, 11, 45, 42, 4115, -1, 0, 0, 0}},
-    {{40, 1, 19, -1, 0, 0, 0, 0, 0, 0, 0, 0}},
-    {{4123, 43, 12, -1, 0, 0, 0, 0, 0, 0, 0, 0}},
+    {{0x16, 0x00, 0x13, 0x04, 0x11, 0x7f, 0x05, 0x00, 0x0b, 0x0b, 0xff}}, /* WATER FALL */
+    {{0x12, 0x13, 0x0e, 0x0d, 0x04, 0xff}}, /* STONE */
+    {{0x04, 0x00, 0x11, 0x13, 0x07, 0x7f, 0x16, 0x00, 0x15, 0x04, 0xff}}, /* EARTH WAVE */
+    {{0x0c, 0x04, 0x13, 0x04, 0x0e, 0x11, 0xff}}, /* METEOR */
+    {{0x16, 0x08, 0x0d, 0x03, 0x7f, 0x02, 0x14, 0x13, 0x13, 0x04, 0x11, 0xff}}, /* WIND CUTTER */
+    {{0x08, 0x02, 0x04, 0x7f, 0x12, 0x13, 0x0e, 0x11, 0x0c, 0xff}}, /* ICE STORM */
+    {{0x05, 0x11, 0x04, 0x04, 0x19, 0x04, 0xff}}, /* FREEZE */
+    {{0x05, 0x08, 0x11, 0x04, 0x7f, 0x01, 0x00, 0x0b, 0x0b, 0xff}}, /* FIRE BALL */
+    {{0x05, 0x08, 0x11, 0x04, 0x7f, 0x16, 0x00, 0x0b, 0x0b, 0xff}}, /* FIRE WALL */
+    {{0x05, 0x08, 0x11, 0x04, 0x7f, 0x12, 0x13, 0x0e, 0x11, 0x0c, 0xff}}, /* FIRE STORM */
+    {{0x05, 0x0b, 0x00, 0x0c, 0x04, 0xff}}, /* FLAME */
+    {{0x0b, 0x08, 0x06, 0x07, 0x13, 0x0d, 0x08, 0x0d, 0x06, 0x7f, 0x15, 0x0e, 0x0b, 0x13, 0xff}}, /* LIGHTNING VOLT */
+    {{0x05, 0x0b, 0x00, 0x12, 0x07, 0xff}}, /* FLASH */
+    {{0x12, 0x04, 0x00, 0x13, 0x07, 0xff}}, /* SEATH */
+    {{0x03, 0x08, 0x12, 0x0f, 0x0e, 0x08, 0x12, 0x0e, 0x0d, 0xff}}, /* DISPOISON */
+    {{0x11, 0x04, 0x12, 0x08, 0x12, 0x13, 0x7f, 0x05, 0x08, 0x11, 0x04, 0xff}}, /* RESIST FIRE */
+    {{0x04, 0x00, 0x11, 0x13, 0x07, 0x7f, 0x07, 0x04, 0x00, 0x0b, 0xff}}, /* EARTH HEAL */
+    {{0x0c, 0x08, 0x12, 0x12, 0x08, 0x0b, 0x04, 0x7f, 0x12, 0x07, 0x08, 0x04, 0x0b, 0x03, 0xff}}, /* MISSILE SHIELD */
+    {{0x0b, 0x08, 0x06, 0x07, 0x13, 0xff}}, /* LIGHT */
+    {{0x01, 0x11, 0x04, 0x00, 0x13, 0x07, 0xff}}, /* BREATH */
 };
 DATA(0x80066844, 0x2d0, ".data")
 u8 menu_item_mask_pages[6][KF_ITEM_ID_COUNT] = {
@@ -2554,8 +2661,8 @@ u16 menu_item_code_secondary[5][KF_ITEM_ID_COUNT] = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 5000, 6500, 11300, 760, 580, 3800, 16200, 7800, 1400,
-        10500, 22900, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 50000, 50000, 50000, 50000, 580, 50000, 16200, 50000, 50000,
+        50000, 22900, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     },
 };
 DATA(0x8006e5c0, 0x4, ".sdata")
@@ -2661,7 +2768,7 @@ void menu_item_buy_controller(s32 kind)
     menu.rows = rows;
     menu.values = values;
     menu.prices = prices;
-    menu.list.glyphs_per_entry = 12;
+    menu.list.glyphs_per_entry = 24;
 
     if (menu_load_item_model(indices[menu.list.selected_index]) != 0) {
         return;
@@ -2754,7 +2861,7 @@ void menu_item_sell_controller(s32 kind)
     menu.rows = rows;
     menu.values = values;
     menu.prices = prices;
-    menu.list.glyphs_per_entry = 12;
+    menu.list.glyphs_per_entry = 24;
 
     if (menu.list.entry_count != 0
             && menu_load_item_model(indices[menu.list.selected_index]) != 0) {
@@ -2841,7 +2948,7 @@ s32 menu_choose_inventory_item(void)
     menu.list.entry_count = count;
     menu.rows = rows;
     menu.values = values;
-    menu.list.glyphs_per_entry = 12;
+    menu.list.glyphs_per_entry = 24;
     selected_item = indices[menu.list.selected_index];
     if (menu_load_item_model(selected_item) != 0) {
         return KF_MENU_RESULT_CANCELLED;
@@ -2919,7 +3026,7 @@ void menu_item_trade_controller(void)
     menu.rows = rows;
     menu.values = values;
     menu.prices = prices;
-    menu.list.glyphs_per_entry = 12;
+    menu.list.glyphs_per_entry = 24;
 
     selected_item = indices[menu.list.selected_index];
     if (menu_load_item_model(selected_item) != 0) {
@@ -3060,7 +3167,7 @@ void menu_buy_masked_stock_items(void)
     menu.rows = rows;
     menu.values = values;
     menu.prices = prices;
-    menu.list.glyphs_per_entry = 12;
+    menu.list.glyphs_per_entry = 24;
 
     if (menu_load_item_model(indices[menu.list.selected_index]) != 0) {
         return;
@@ -3130,7 +3237,7 @@ void menu_buy_owned_items(void)
     s32 cost;
     u8 selected_item;
 
-    count = menu_collect_masked_item_rows(counters, rows, values, indices, KF_ITEM_KEY_FIRST,
+    count = func_800196c8(counters, rows, values, indices, KF_ITEM_KEY_FIRST,
         KF_ITEM_KEY_LAST);
     menu_fill_item_prices(prices, indices, 0, count, 4);
     menu_list_init(&menu.list, KF_MENU_WINDOW_STOCK, 1);
@@ -3138,9 +3245,10 @@ void menu_buy_owned_items(void)
     menu.rows = rows;
     menu.values = values;
     menu.prices = prices;
-    menu.list.glyphs_per_entry = 12;
+    menu.list.glyphs_per_entry = 24;
 
-    if (menu_load_item_model(indices[menu.list.selected_index]) != 0) {
+    if (menu.list.entry_count != 0
+            && menu_load_item_model(indices[menu.list.selected_index]) != 0) {
         return;
     }
 
@@ -3191,6 +3299,7 @@ void menu_buy_owned_items(void)
         counters[result] += (u8)menu_item_quantity;
     }
 }
+
 ADDRESS(0x8001ea14, 0x15c)
 s32 menu_poll_choice_input(s32 index, s32 last, s32 *selection, b32 *confirmed,
     s32 *cancelled)
@@ -3201,7 +3310,7 @@ s32 menu_poll_choice_input(s32 index, s32 last, s32 *selection, b32 *confirmed,
     *confirmed = KF_FALSE;
     input_wait_brief_release();
     buttons = input_read_mark_active();
-    if (buttons & PADLup) {
+    if (buttons & DAT_8006e590) {
         menu_cursor_animation_direction = KF_MENU_CURSOR_ANIMATION_FORWARD;
         menu_play_sound_cue(KF_MENU_SOUND_CURSOR);
         if (index != 0) {
@@ -3209,7 +3318,7 @@ s32 menu_poll_choice_input(s32 index, s32 last, s32 *selection, b32 *confirmed,
         } else {
             index = last;
         }
-    } else if (buttons & PADLdown) {
+    } else if (buttons & DAT_8006e594) {
         menu_cursor_animation_direction = KF_MENU_CURSOR_ANIMATION_FORWARD;
         menu_play_sound_cue(KF_MENU_SOUND_CURSOR);
         if (index != last) {
@@ -3217,7 +3326,7 @@ s32 menu_poll_choice_input(s32 index, s32 last, s32 *selection, b32 *confirmed,
         } else {
             index = 0;
         }
-    } else if (buttons & PADRright) {
+    } else if (buttons & DAT_8006e568) {
         menu_play_sound_cue(KF_MENU_SOUND_CONFIRM);
         *confirmed = KF_TRUE;
         if (index < last) {
@@ -3225,7 +3334,7 @@ s32 menu_poll_choice_input(s32 index, s32 last, s32 *selection, b32 *confirmed,
         } else {
             *cancelled = KF_MENU_RESULT_CANCELLED;
         }
-    } else if (buttons & PADRdown) {
+    } else if ((buttons & DAT_8006e56c) || (buttons & DAT_8006e57c)) {
         menu_play_sound_cue(KF_MENU_SOUND_CANCEL);
         *cancelled = KF_MENU_RESULT_CANCELLED;
     }
@@ -3247,7 +3356,7 @@ u32 menu_update_list_input(KfMenuList *list, const u8 *item_ids,
             menu_play_sound_cue(KF_MENU_SOUND_CANCEL);
             *result = KF_MENU_RESULT_CANCELLED;
         }
-    } else if (buttons & PADLup) {
+    } else if (buttons & DAT_8006e590) {
         menu_play_sound_cue(KF_MENU_SOUND_CURSOR);
         if (list->selected_index != 0) {
             list->selected_index--;
@@ -3269,7 +3378,7 @@ u32 menu_update_list_input(KfMenuList *list, const u8 *item_ids,
         if (item_ids != NULL && menu_load_item_model(item_ids[list->selected_index]) != 0) {
             *result = KF_MENU_RESULT_CANCELLED;
         }
-    } else if (buttons & PADLdown) {
+    } else if (buttons & DAT_8006e594) {
         menu_play_sound_cue(KF_MENU_SOUND_CURSOR);
         if (list->selected_index < list->entry_count - 1) {
             list->selected_index++;
@@ -3286,77 +3395,73 @@ u32 menu_update_list_input(KfMenuList *list, const u8 *item_ids,
         if (item_ids != NULL && menu_load_item_model(item_ids[list->selected_index]) != 0) {
             *result = KF_MENU_RESULT_CANCELLED;
         }
-    } else if (buttons & PADLright) {
+    } else if (buttons & DAT_8006e598) {
         if (menu_item_quantity < 99) {
             menu_play_sound_cue(KF_MENU_SOUND_CURSOR);
             menu_item_quantity++;
         }
-    } else if (buttons & PADLleft) {
+    } else if (buttons & DAT_8006e59c) {
         if (menu_item_quantity > 1) {
             menu_play_sound_cue(KF_MENU_SOUND_CURSOR);
             menu_item_quantity--;
         }
-    } else if (buttons & PADRright) {
+    } else if (buttons & DAT_8006e568) {
         *confirmed = KF_TRUE;
-    } else if (buttons & PADRdown) {
+    } else if ((buttons & DAT_8006e56c) || (buttons & DAT_8006e57c)) {
         menu_play_sound_cue(KF_MENU_SOUND_CANCEL);
         *result = KF_MENU_RESULT_CANCELLED;
     }
 
-    if (buttons & PADselect) {
-        if (buttons & PADR1) {
-            input_press_pending = KF_FALSE;
-            menu_item_preview_rotation.vx += 16;
-        }
-        if (buttons & PADR2) {
-            input_press_pending = KF_FALSE;
-            menu_item_preview_rotation.vx -= 16;
-        }
-        if (buttons & PADL1) {
-            input_press_pending = KF_FALSE;
-            menu_item_preview_rotation.vz += 16;
-        }
-        if (buttons & PADL2) {
-            input_press_pending = KF_FALSE;
-            menu_item_preview_rotation.vz -= 16;
-        }
-        if (buttons & PADRup) {
-            input_press_pending = KF_FALSE;
-            menu_item_preview_rotation_step++;
-        }
-        if (buttons & PADRleft) {
-            input_press_pending = KF_FALSE;
-            menu_item_preview_rotation_step--;
-        }
+    if ((buttons & DAT_8006e57c) && (buttons & DAT_8006e580)) {
+        input_press_pending = KF_FALSE;
+        menu_item_preview_rotation.vx += 16;
+    }
+    if ((buttons & DAT_8006e57c) && (buttons & DAT_8006e584)) {
+        input_press_pending = KF_FALSE;
+        menu_item_preview_rotation.vx -= 16;
+    }
+    if ((buttons & DAT_8006e57c) && (buttons & DAT_8006e588)) {
+        input_press_pending = KF_FALSE;
+        menu_item_preview_rotation.vz += 16;
+    }
+    if ((buttons & DAT_8006e57c) && (buttons & DAT_8006e58c)) {
+        input_press_pending = KF_FALSE;
+        menu_item_preview_rotation.vz -= 16;
+    }
+    if ((buttons & DAT_8006e57c) && (buttons & DAT_8006e570)) {
+        input_press_pending = KF_FALSE;
+        menu_item_preview_rotation_step++;
+    }
+    if ((buttons & DAT_8006e57c) && (buttons & DAT_8006e574)) {
+        input_press_pending = KF_FALSE;
+        menu_item_preview_rotation_step--;
     }
 
-    if (buttons & PADstart) {
-        if (buttons & PADR1) {
-            input_press_pending = KF_FALSE;
-            menu_item_preview_translation.vx += 16;
+    if ((buttons & DAT_8006e578) && (buttons & DAT_8006e580)) {
+        input_press_pending = KF_FALSE;
+        menu_item_preview_translation.vx += 16;
+    }
+    if ((buttons & DAT_8006e578) && (buttons & DAT_8006e584)) {
+        input_press_pending = KF_FALSE;
+        menu_item_preview_translation.vx -= 16;
+    }
+    if ((buttons & DAT_8006e578) && (buttons & DAT_8006e588)) {
+        input_press_pending = KF_FALSE;
+        menu_item_preview_translation.vy += 16;
+    }
+    if ((buttons & DAT_8006e578) && (buttons & DAT_8006e58c)) {
+        input_press_pending = KF_FALSE;
+        menu_item_preview_translation.vy -= 16;
+    }
+    if ((buttons & DAT_8006e578) && (buttons & DAT_8006e570)) {
+        input_press_pending = KF_FALSE;
+        menu_item_preview_translation.vz += 16;
+    }
+    if ((buttons & DAT_8006e578) && (buttons & DAT_8006e574)) {
+        if (menu_item_preview_translation.vz > 500) {
+            menu_item_preview_translation.vz -= 16;
         }
-        if (buttons & PADR2) {
-            input_press_pending = KF_FALSE;
-            menu_item_preview_translation.vx -= 16;
-        }
-        if (buttons & PADL1) {
-            input_press_pending = KF_FALSE;
-            menu_item_preview_translation.vy += 16;
-        }
-        if (buttons & PADL2) {
-            input_press_pending = KF_FALSE;
-            menu_item_preview_translation.vy -= 16;
-        }
-        if (buttons & PADRup) {
-            input_press_pending = KF_FALSE;
-            menu_item_preview_translation.vz += 16;
-        }
-        if (buttons & PADRleft) {
-            if (menu_item_preview_translation.vz > 500) {
-                menu_item_preview_translation.vz -= 16;
-            }
-            input_press_pending = KF_FALSE;
-        }
+        input_press_pending = KF_FALSE;
     }
 
     return buttons;
@@ -3371,7 +3476,7 @@ void menu_draw_player_status(void)
 
     heading.position.x = 168;
     heading.position.y = 30;
-    menu_copy_prefix8(heading.glyphs.codes, menu_header_labels[0].codes);
+    menu_copy_label_row(heading.glyphs.codes, menu_header_labels[0].codes);
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.x = heading.position.x + 77;
     amount.position.y = heading.position.y;
@@ -3380,15 +3485,15 @@ void menu_draw_player_status(void)
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
 
     heading.position.y += row_step;
-    menu_copy_prefix8(heading.glyphs.codes, menu_header_labels[1].codes);
+    menu_copy_label_row(heading.glyphs.codes, menu_header_labels[1].codes);
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.y += row_step;
     menu_format_number(player_state.level, 7, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
 
-    heading.glyphs.codes[0] = 227;
-    heading.glyphs.codes[1] = 229;
+    heading.glyphs.codes[0] = 7;
+    heading.glyphs.codes[1] = 15;
     heading.glyphs.codes[2] = KF_MENU_TEXT_END;
     heading.position.y += row_step;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
@@ -3406,7 +3511,7 @@ void menu_draw_player_status(void)
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
 
-    heading.glyphs.codes[0] = 228;
+    heading.glyphs.codes[0] = 12;
     heading.position.y += row_step;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.x = heading.position.x + 63;
@@ -3423,9 +3528,16 @@ void menu_draw_player_status(void)
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
 
-    heading.glyphs.codes[0] = 140;
-    heading.glyphs.codes[1] = 139;
-    heading.glyphs.codes[2] = KF_MENU_TEXT_END;
+    heading.glyphs.codes[0] = 18;
+    heading.glyphs.codes[1] = 19;
+    heading.glyphs.codes[2] = 17;
+    heading.glyphs.codes[3] = 127;
+    heading.glyphs.codes[4] = 15;
+    heading.glyphs.codes[5] = 14;
+    heading.glyphs.codes[6] = 22;
+    heading.glyphs.codes[7] = 4;
+    heading.glyphs.codes[8] = 17;
+    heading.glyphs.codes[9] = KF_MENU_TEXT_END;
     heading.position.y += row_step;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.x = heading.position.x + 84;
@@ -3434,7 +3546,9 @@ void menu_draw_player_status(void)
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
 
-    heading.glyphs.codes[0] = 120;
+    heading.glyphs.codes[0] = 12;
+    heading.glyphs.codes[1] = 0;
+    heading.glyphs.codes[2] = 6;
     heading.position.y += row_step;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.x = heading.position.x + 84;
@@ -3444,27 +3558,27 @@ void menu_draw_player_status(void)
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
 
     heading.position.y += row_step;
-    menu_copy_prefix8(heading.glyphs.codes, menu_header_labels[4].codes);
+    menu_copy_label_row(heading.glyphs.codes, menu_header_labels[4].codes);
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.x = heading.position.x + 56;
     amount.position.y += row_step;
     if (player_state.paralysis_timer != 0) {
-        menu_copy_prefix12(amount.glyphs.codes, menu_header_labels[5].codes);
+        menu_copy_label_row(amount.glyphs.codes, menu_header_labels[5].codes);
     } else if (player_state.curse_strength != 0) {
-        menu_copy_prefix12(amount.glyphs.codes, menu_header_labels[6].codes);
+        menu_copy_label_row(amount.glyphs.codes, menu_header_labels[6].codes);
     } else if (player_state.slow_timer != 0) {
-        menu_copy_prefix12(amount.glyphs.codes, menu_header_labels[7].codes);
+        menu_copy_label_row(amount.glyphs.codes, menu_header_labels[7].codes);
     } else if (player_state.poison_timer != 0) {
-        menu_copy_prefix12(amount.glyphs.codes, menu_header_labels[8].codes);
+        menu_copy_label_row(amount.glyphs.codes, menu_header_labels[8].codes);
     } else if (player_state.darkness_phase != 0) {
-        menu_copy_prefix12(amount.glyphs.codes, menu_header_labels[9].codes);
+        menu_copy_label_row(amount.glyphs.codes, menu_header_labels[9].codes);
     } else {
-        menu_copy_prefix12(amount.glyphs.codes, menu_header_labels[10].codes);
+        menu_copy_label_row(amount.glyphs.codes, menu_header_labels[10].codes);
     }
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &amount);
 
     heading.position.y += row_step;
-    menu_copy_prefix10(heading.glyphs.codes, menu_header_labels[11].codes);
+    menu_copy_label_row(heading.glyphs.codes, menu_header_labels[11].codes);
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.x = heading.position.x + 77;
     amount.position.y += row_step;
@@ -3482,188 +3596,289 @@ void menu_draw_combat_attributes(void)
 
     label.position.x = 24;
     label.position.y = 28;
-    menu_copy_prefix8(label.glyphs.codes, menu_header_labels[2].codes);
+    menu_copy_label_row(label.glyphs.codes, menu_header_labels[2].codes);
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
 
-    label.glyphs.codes[0] = 255;
-    label.glyphs.codes[1] = 263;
-    label.glyphs.codes[2] = 106;
-    label.glyphs.codes[3] = KF_MENU_TEXT_END;
+    label.glyphs.codes[0] = 127;
+    label.glyphs.codes[1] = 18;
+    label.glyphs.codes[2] = 11;
+    label.glyphs.codes[3] = 0;
+    label.glyphs.codes[4] = 18;
+    label.glyphs.codes[5] = 7;
+    label.glyphs.codes[6] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.x = label.position.x + 84;
     number.position.y = label.position.y;
     menu_format_number(player_state.attack_components[0], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 264;
-    label.glyphs.codes[2] = 81;
-    label.position.y += 18;
-    menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
-    number.position.y = label.position.y;
-    menu_format_number(player_state.attack_components[1], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
-    menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
-
-    label.glyphs.codes[1] = 265;
-    label.glyphs.codes[2] = 76;
-    label.position.y += 18;
-    menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
-    number.position.y = label.position.y;
-    menu_format_number(player_state.attack_components[2], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
-    menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
-
-    label.glyphs.codes[1] = 266;
-    label.glyphs.codes[2] = 88;
-    label.glyphs.codes[3] = 120;
-    label.glyphs.codes[4] = 121;
+    label.glyphs.codes[1] = 2;
+    label.glyphs.codes[2] = 7;
+    label.glyphs.codes[3] = 14;
+    label.glyphs.codes[4] = 15;
     label.glyphs.codes[5] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.attack_components[3], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
+    menu_format_number(player_state.attack_components[1], 6, KF_FORMAT_PAD_SPACES,
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 170;
+    label.glyphs.codes[1] = 18;
+    label.glyphs.codes[2] = 19;
+    label.glyphs.codes[3] = 0;
+    label.glyphs.codes[4] = 1;
+    label.glyphs.codes[5] = KF_MENU_TEXT_END;
+    label.position.y += 18;
+    menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
+    number.position.y = label.position.y;
+    menu_format_number(player_state.attack_components[2], 6, KF_FORMAT_PAD_SPACES,
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
+    menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
+
+    label.glyphs.codes[1] = 7;
+    label.glyphs.codes[2] = 14;
+    label.glyphs.codes[3] = 11;
+    label.glyphs.codes[4] = 24;
+    label.glyphs.codes[5] = 127;
+    label.glyphs.codes[6] = 12;
+    label.glyphs.codes[7] = 0;
+    label.glyphs.codes[8] = 6;
+    label.glyphs.codes[9] = 8;
+    label.glyphs.codes[10] = 2;
+    label.glyphs.codes[11] = KF_MENU_TEXT_END;
+    label.position.y += 18;
+    menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
+    number.position.y = label.position.y;
+    menu_format_number(player_state.attack_components[3], 6, KF_FORMAT_PAD_SPACES,
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
+    menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
+
+    label.glyphs.codes[1] = 5;
+    label.glyphs.codes[2] = 8;
+    label.glyphs.codes[3] = 17;
+    label.glyphs.codes[4] = 4;
+    label.glyphs.codes[5] = 127;
+    label.glyphs.codes[6] = 12;
+    label.glyphs.codes[7] = 0;
+    label.glyphs.codes[8] = 6;
+    label.glyphs.codes[9] = 8;
+    label.glyphs.codes[10] = 2;
+    label.glyphs.codes[11] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
     menu_format_number(player_state.attack_components[4], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 187;
+    label.glyphs.codes[1] = 4;
+    label.glyphs.codes[2] = 0;
+    label.glyphs.codes[3] = 17;
+    label.glyphs.codes[4] = 19;
+    label.glyphs.codes[5] = 7;
+    label.glyphs.codes[6] = 127;
+    label.glyphs.codes[7] = 12;
+    label.glyphs.codes[8] = 0;
+    label.glyphs.codes[9] = 6;
+    label.glyphs.codes[10] = 8;
+    label.glyphs.codes[11] = 2;
+    label.glyphs.codes[12] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
     menu_format_number(player_state.attack_components[5], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 188;
+    label.glyphs.codes[1] = 22;
+    label.glyphs.codes[2] = 8;
+    label.glyphs.codes[3] = 13;
+    label.glyphs.codes[4] = 3;
+    label.glyphs.codes[5] = 127;
+    label.glyphs.codes[6] = 12;
+    label.glyphs.codes[7] = 0;
+    label.glyphs.codes[8] = 6;
+    label.glyphs.codes[9] = 8;
+    label.glyphs.codes[10] = 2;
+    label.glyphs.codes[11] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
     menu_format_number(player_state.attack_components[6], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 141;
+    label.glyphs.codes[1] = 22;
+    label.glyphs.codes[2] = 0;
+    label.glyphs.codes[3] = 19;
+    label.glyphs.codes[4] = 4;
+    label.glyphs.codes[5] = 17;
+    label.glyphs.codes[6] = 127;
+    label.glyphs.codes[7] = 12;
+    label.glyphs.codes[8] = 0;
+    label.glyphs.codes[9] = 6;
+    label.glyphs.codes[10] = 8;
+    label.glyphs.codes[11] = 2;
+    label.glyphs.codes[12] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
     menu_format_number(player_state.attack_components[7], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
     label.position.x = 168;
     label.position.y = 28;
-    menu_copy_prefix8(label.glyphs.codes, menu_header_labels[3].codes);
+    menu_copy_label_row(label.glyphs.codes, menu_header_labels[3].codes);
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
 
-    label.glyphs.codes[0] = 255;
-    label.glyphs.codes[1] = 263;
-    label.glyphs.codes[2] = 106;
-    label.glyphs.codes[3] = KF_MENU_TEXT_END;
+    label.glyphs.codes[0] = 127;
+    label.glyphs.codes[1] = 18;
+    label.glyphs.codes[2] = 11;
+    label.glyphs.codes[3] = 0;
+    label.glyphs.codes[4] = 18;
+    label.glyphs.codes[5] = 7;
+    label.glyphs.codes[6] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.x = label.position.x + 84;
     number.position.y = label.position.y;
     menu_format_number(player_state.combat_components[0], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 264;
-    label.glyphs.codes[2] = 81;
-    label.position.y += 18;
-    menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
-    number.position.y = label.position.y;
-    menu_format_number(player_state.combat_components[1], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
-    menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
-
-    label.glyphs.codes[1] = 265;
-    label.glyphs.codes[2] = 76;
-    label.position.y += 18;
-    menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
-    number.position.y = label.position.y;
-    menu_format_number(player_state.combat_components[2], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
-    menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
-
-    label.glyphs.codes[1] = 136;
-    label.glyphs.codes[2] = KF_MENU_TEXT_END;
-    label.position.y += 18;
-    menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
-    number.position.y = label.position.y;
-    menu_format_number(player_state.combat_components[3], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
-    menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
-
-    label.glyphs.codes[1] = 120;
-    label.glyphs.codes[2] = 88;
-    label.glyphs.codes[3] = 120;
-    label.glyphs.codes[4] = 121;
+    label.glyphs.codes[1] = 2;
+    label.glyphs.codes[2] = 7;
+    label.glyphs.codes[3] = 14;
+    label.glyphs.codes[4] = 15;
     label.glyphs.codes[5] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.combat_components[4], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
+    menu_format_number(player_state.combat_components[1], 6, KF_FORMAT_PAD_SPACES,
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 170;
+    label.glyphs.codes[1] = 18;
+    label.glyphs.codes[2] = 19;
+    label.glyphs.codes[3] = 0;
+    label.glyphs.codes[4] = 1;
+    label.glyphs.codes[5] = KF_MENU_TEXT_END;
+    label.position.y += 18;
+    menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
+    number.position.y = label.position.y;
+    menu_format_number(player_state.combat_components[2], 6, KF_FORMAT_PAD_SPACES,
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
+    menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
+
+    label.glyphs.codes[1] = 15;
+    label.glyphs.codes[2] = 14;
+    label.glyphs.codes[3] = 8;
+    label.glyphs.codes[4] = 18;
+    label.glyphs.codes[5] = 14;
+    label.glyphs.codes[6] = 13;
+    label.glyphs.codes[7] = KF_MENU_TEXT_END;
+    label.position.y += 18;
+    menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
+    number.position.y = label.position.y;
+    menu_format_number(player_state.combat_components[3], 6, KF_FORMAT_PAD_SPACES,
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
+    menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
+
+    label.glyphs.codes[1] = 3;
+    label.glyphs.codes[2] = 0;
+    label.glyphs.codes[3] = 17;
+    label.glyphs.codes[4] = 10;
+    label.glyphs.codes[5] = 127;
+    label.glyphs.codes[6] = 12;
+    label.glyphs.codes[7] = 0;
+    label.glyphs.codes[8] = 6;
+    label.glyphs.codes[9] = 8;
+    label.glyphs.codes[10] = 2;
+    label.glyphs.codes[11] = KF_MENU_TEXT_END;
+    label.position.y += 18;
+    menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
+    number.position.y = label.position.y;
+    menu_format_number(player_state.combat_components[4], 6, KF_FORMAT_PAD_SPACES,
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
+    menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
+
+    label.glyphs.codes[1] = 5;
+    label.glyphs.codes[2] = 8;
+    label.glyphs.codes[3] = 17;
+    label.glyphs.codes[4] = 4;
+    label.glyphs.codes[5] = 127;
+    label.glyphs.codes[6] = 12;
+    label.glyphs.codes[7] = 0;
+    label.glyphs.codes[8] = 6;
+    label.glyphs.codes[9] = 8;
+    label.glyphs.codes[10] = 2;
+    label.glyphs.codes[11] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
     menu_format_number(player_state.combat_components[5], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 187;
+    label.glyphs.codes[1] = 4;
+    label.glyphs.codes[2] = 0;
+    label.glyphs.codes[3] = 17;
+    label.glyphs.codes[4] = 19;
+    label.glyphs.codes[5] = 7;
+    label.glyphs.codes[6] = 127;
+    label.glyphs.codes[7] = 12;
+    label.glyphs.codes[8] = 0;
+    label.glyphs.codes[9] = 6;
+    label.glyphs.codes[10] = 8;
+    label.glyphs.codes[11] = 2;
+    label.glyphs.codes[12] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
     menu_format_number(player_state.combat_components[6], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 188;
+    label.glyphs.codes[1] = 22;
+    label.glyphs.codes[2] = 8;
+    label.glyphs.codes[3] = 13;
+    label.glyphs.codes[4] = 3;
+    label.glyphs.codes[5] = 127;
+    label.glyphs.codes[6] = 12;
+    label.glyphs.codes[7] = 0;
+    label.glyphs.codes[8] = 6;
+    label.glyphs.codes[9] = 8;
+    label.glyphs.codes[10] = 2;
+    label.glyphs.codes[11] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
     menu_format_number(player_state.combat_components[7], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 141;
+    label.glyphs.codes[1] = 22;
+    label.glyphs.codes[2] = 0;
+    label.glyphs.codes[3] = 19;
+    label.glyphs.codes[4] = 4;
+    label.glyphs.codes[5] = 17;
+    label.glyphs.codes[6] = 127;
+    label.glyphs.codes[7] = 12;
+    label.glyphs.codes[8] = 0;
+    label.glyphs.codes[9] = 6;
+    label.glyphs.codes[10] = 8;
+    label.glyphs.codes[11] = 2;
+    label.glyphs.codes[12] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
     menu_format_number(player_state.combat_components[8], 6, KF_FORMAT_PAD_SPACES,
-        KF_MENU_FORMAT_STYLE_PLAIN,
-        number.glyphs.codes);
+        KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
-
     menu_draw_nine_slice_panel(17, 14, 140, 205, 1, 2);
     menu_draw_nine_slice_panel(161, 14, 140, 205, 1, 2);
 }
@@ -3717,79 +3932,23 @@ s32 menu_preview_choice(const KfMenuList *list, KfMenuConfirmKind label_kind,
     labels[1].position.x = menu_window_layout(KF_MENU_WINDOW_SYSTEM)->rows[1].position.x;
     labels[1].position.y = menu_window_layout(KF_MENU_WINDOW_SYSTEM)->rows[1].position.y;
 
-    if (label_kind == KF_MENU_CONFIRM_USE) {
-        labels[0].glyphs.codes[0] = 114;
-        labels[0].glyphs.codes[1] = 66;
-        labels[0].glyphs.codes[2] = KF_MENU_TEXT_END;
-    } else if (label_kind == KF_MENU_CONFIRM_DROP) {
-        labels[0].glyphs.codes[0] = 117;
-        labels[0].glyphs.codes[1] = 82;
-        labels[0].glyphs.codes[2] = 106;
-        labels[0].glyphs.codes[3] = KF_MENU_TEXT_END;
-    } else if (label_kind == KF_MENU_CONFIRM_YES_NO) {
-        labels[0].glyphs.codes[0] = 89;
-        labels[0].glyphs.codes[1] = 65;
-        labels[0].glyphs.codes[2] = KF_MENU_TEXT_END;
-    } else if (label_kind == KF_MENU_CONFIRM_BUY) {
-        labels[0].glyphs.codes[0] = 116;
-        labels[0].glyphs.codes[1] = 66;
-        labels[0].glyphs.codes[2] = KF_MENU_TEXT_END;
-    } else if (label_kind == KF_MENU_CONFIRM_SELL) {
-        labels[0].glyphs.codes[0] = 115;
-        labels[0].glyphs.codes[1] = 106;
-        labels[0].glyphs.codes[2] = KF_MENU_TEXT_END;
-    } else if (label_kind == KF_MENU_CONFIRM_EQUIP) {
-        labels[0].glyphs.codes[0] = 112;
-        labels[0].glyphs.codes[1] = 113;
-        labels[0].glyphs.codes[2] = KF_MENU_TEXT_END;
-    } else if (label_kind == KF_MENU_CONFIRM_LOAD) {
-        labels[0].glyphs.codes[0] = 44;
-        labels[0].glyphs.codes[1] = 45;
-        labels[0].glyphs.codes[2] = 0x1013;
-        labels[0].glyphs.codes[3] = KF_MENU_TEXT_END;
-    } else if (label_kind == KF_MENU_CONFIRM_SAVE) {
-        labels[0].glyphs.codes[0] = 13;
-        labels[0].glyphs.codes[1] = 45;
-        labels[0].glyphs.codes[2] = 0x101b;
-        labels[0].glyphs.codes[3] = KF_MENU_TEXT_END;
-    } else if (label_kind == KF_MENU_CONFIRM_LABEL_8) {
-        labels[0].glyphs.codes[0] = 0x104;
-        labels[0].glyphs.codes[1] = 71;
-        labels[0].glyphs.codes[2] = KF_MENU_TEXT_END;
-    } else if (label_kind == KF_MENU_CONFIRM_LABEL_9) {
-        labels[0].glyphs.codes[0] = 0x105;
-        labels[0].glyphs.codes[1] = 0x106;
-        labels[0].glyphs.codes[2] = KF_MENU_TEXT_END;
-    } else {
-        labels[0].glyphs.codes[0] = 207;
-        labels[0].glyphs.codes[1] = 106;
-        labels[0].glyphs.codes[2] = KF_MENU_TEXT_END;
-    }
-
-    if (label_kind == KF_MENU_CONFIRM_YES_NO) {
-        labels[1].glyphs.codes[0] = 65;
-        labels[1].glyphs.codes[1] = 65;
-        labels[1].glyphs.codes[2] = 67;
-        goto labels_ready;
-    finished:
-        input_wait_release();
-        return result;
-    } else {
-        labels[1].glyphs.codes[0] = 99;
-        labels[1].glyphs.codes[1] = 97;
-        labels[1].glyphs.codes[2] = 106;
-    }
-labels_ready:
-    labels[1].glyphs.codes[3] = KF_MENU_TEXT_END;
+    labels[0].glyphs.codes[0] = 24;
+    labels[0].glyphs.codes[1] = 4;
+    labels[0].glyphs.codes[2] = 18;
+    labels[0].glyphs.codes[3] = KF_MENU_TEXT_END;
+    labels[1].glyphs.codes[0] = 13;
+    labels[1].glyphs.codes[1] = 14;
+    labels[1].glyphs.codes[2] = KF_MENU_TEXT_END;
 
     for (;;) {
         if (result != KF_MENU_RESULT_PENDING) {
-            goto finished;
+            input_wait_release();
+            return result;
         }
         input_wait_brief_release();
         buttons = input_read_mark_active();
         confirmed = KF_FALSE;
-        if ((buttons & PADLup) || (buttons & PADLdown)) {
+        if ((buttons & DAT_8006e590) || (buttons & DAT_8006e594)) {
             menu_cursor_animation_direction = KF_MENU_CURSOR_ANIMATION_FORWARD;
             menu_play_sound_cue(KF_MENU_SOUND_CURSOR);
             if (choice != KF_MENU_CHOICE_ACCEPT) {
@@ -3797,11 +3956,11 @@ labels_ready:
             } else {
                 choice = KF_MENU_CHOICE_DECLINE;
             }
-        } else if (buttons & PADRright) {
+        } else if (buttons & DAT_8006e568) {
             menu_play_sound_cue(KF_MENU_SOUND_CONFIRM);
             confirmed = KF_TRUE;
             result = -choice;
-        } else if (buttons & PADRdown) {
+        } else if ((buttons & DAT_8006e56c) || (buttons & DAT_8006e57c)) {
             menu_play_sound_cue(KF_MENU_SOUND_CANCEL);
             result = KF_MENU_RESULT_CANCELLED;
         }
@@ -3814,6 +3973,7 @@ labels_ready:
             menu_present_frame();
         }
     }
+
 }
 
 ADDRESS(0x800208d8, 0x108)
@@ -3853,12 +4013,12 @@ void menu_render_list(const KfMenuList *menu, KfMenuListMode render_mode)
     const KfMenuRenderList *view = (const KfMenuRenderList *)menu;
     const KfMenuList *list = &view->list;
     const KfMenuSpriteDef *sprite;
-    const s16 *row_glyphs = view->row_glyphs;
-    const s16 *detail_codes = (const s16 *)view->detail_rows;
+    const u8 *row_glyphs = view->row_glyphs;
+    const u8 *detail_codes = (const u8 *)view->detail_rows;
     const s32 *number_values = view->number_values;
     const u8 *byte_values = view->byte_values;
     KfMenuGlyphString text;
-    s16 *out_codes;
+    u8 *out_codes;
     s32 row;
     s32 code;
     s32 value;
@@ -3868,7 +4028,7 @@ void menu_render_list(const KfMenuList *menu, KfMenuListMode render_mode)
         menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &list->title);
     }
 
-    detail_codes += list->scroll_offset * 10;
+    detail_codes += list->scroll_offset * 24;
     row_glyphs += list->scroll_offset * list->glyphs_per_entry;
     number_values += list->scroll_offset;
     byte_values += list->scroll_offset;
@@ -3886,10 +4046,9 @@ void menu_render_list(const KfMenuList *menu, KfMenuListMode render_mode)
             if (render_mode == KF_MENU_LIST_EQUIPMENT) {
                 text.position.x += 84;
                 out_codes = text.glyphs.codes;
-                for (code = 0; code < 10; code++) {
+                for (code = 0; code < 24; code++) {
                     *out_codes++ = *detail_codes++;
                 }
-                *out_codes = KF_MENU_TEXT_END;
                 menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &text);
             }
 
@@ -4114,17 +4273,20 @@ void menu_draw_status_counters(s32 kind)
     heading.position.x = 183;
     heading.position.y = 33;
     if (kind == KF_MENU_COUNTERS_OBJECT_96) {
-        heading.glyphs.codes[0] = 7;
-        heading.glyphs.codes[1] = 41;
-        heading.glyphs.codes[2] = 12;
-        heading.glyphs.codes[3] = 15;
-        heading.glyphs.codes[4] = 42;
-        heading.glyphs.codes[5] = KF_MENU_TEXT_END;
+        heading.glyphs.codes[0] = 2;
+        heading.glyphs.codes[1] = 17;
+        heading.glyphs.codes[2] = 24;
+        heading.glyphs.codes[3] = 18;
+        heading.glyphs.codes[4] = 19;
+        heading.glyphs.codes[5] = 0;
+        heading.glyphs.codes[6] = 11;
+        heading.glyphs.codes[7] = KF_MENU_TEXT_END;
     } else {
-        heading.glyphs.codes[0] = 221;
-        heading.glyphs.codes[1] = 222;
-        heading.glyphs.codes[2] = 209;
-        heading.glyphs.codes[3] = KF_MENU_TEXT_END;
+        heading.glyphs.codes[0] = 6;
+        heading.glyphs.codes[1] = 14;
+        heading.glyphs.codes[2] = 11;
+        heading.glyphs.codes[3] = 3;
+        heading.glyphs.codes[4] = KF_MENU_TEXT_END;
     }
     menu_blit_sprite_translucent(&menu_sprite_defs[KF_MENU_SPRITE_PANEL_BACKGROUND], &heading.position);
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
@@ -4144,9 +4306,13 @@ void menu_draw_status_counters(s32 kind)
     if (kind != KF_MENU_COUNTERS_GOLD_ONLY) {
         heading.position.x = 183;
         heading.position.y = 61;
-        heading.glyphs.codes[0] = 202;
-        heading.glyphs.codes[1] = 203;
-        heading.glyphs.codes[2] = KF_MENU_TEXT_END;
+        heading.glyphs.codes[0] = 13;
+        heading.glyphs.codes[1] = 20;
+        heading.glyphs.codes[2] = 12;
+        heading.glyphs.codes[3] = 1;
+        heading.glyphs.codes[4] = 4;
+        heading.glyphs.codes[5] = 17;
+        heading.glyphs.codes[6] = KF_MENU_TEXT_END;
         menu_blit_sprite_translucent(&menu_sprite_defs[KF_MENU_SPRITE_PANEL_BACKGROUND], &heading.position);
         menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
         amount.position.x = heading.position.x + 91;
@@ -4223,59 +4389,42 @@ void menu_blit_sprite_fixed_clut(
         sprite->u, sprite->v, sprite->width, sprite->height);
     primitive_buffer_commit_poly_ft4(KF_MENU_WIDGET_OT_DEPTH);
 }
-static inline void menu_begin_text_glyph(
-    const KfMenuSpriteDef *font, const KfMenuGlyphString *string, s32 x_offset)
-{
-    primitive_buffer_begin_poly_ft4();
-    current_poly_ft4->tpage = font->tpage;
-    current_poly_ft4->clut = font->clut;
-    setXYWH(current_poly_ft4, string->position.x + x_offset,
-        string->position.y, font->width, font->height);
-}
-
-/* Selects the 15-by-15 font cell of a glyph code's low twelve bits. The
- * do/while contour weights its temporaries as one loop level deeper. */
-#define MENU_SET_GLYPH_UV(p, code, w, h) do { \
-    u32 glyph = (code) & KF_MENU_TEXT_GLYPH_MASK; \
-    setUVWH(p, (glyph % KF_MENU_FONT_COLUMNS) * KF_MENU_FONT_CELL_WIDTH, \
-        (glyph / KF_MENU_FONT_COLUMNS) * KF_MENU_FONT_CELL_HEIGHT, w, h); \
-} while (0)
-
 ADDRESS(0x80021e10, 0x1bc)
 void menu_draw_string(const KfMenuSpriteDef *font, const KfMenuGlyphString *string)
 {
-    const s16 *code = string->glyphs.codes;
-    s32 i;
+    enum { MENU_TEXT_CELL_WIDTH = 8, MENU_TEXT_SPAN_LIMIT = 168 };
+    const u8 *code;
     s32 x_offset;
-    /* Retail reserves an unreferenced 8-byte frame slot. */
-    s16 frame_reserve[4];
+    s32 glyph;
 
-    for (i = 0; *code != KF_MENU_TEXT_END; code++, i++) {
-        x_offset = i * KF_MENU_GLYPH_ADVANCE;
-        menu_begin_text_glyph(font, string, x_offset);
-        MENU_SET_GLYPH_UV(current_poly_ft4, *code, font->width, font->height);
-        primitive_buffer_commit_poly_ft4(KF_MENU_CONTENT_OT_DEPTH);
-
-        if (*code & KF_MENU_TEXT_DAKUTEN) {
-            menu_begin_text_glyph(font, string, x_offset);
-            setUVWH(current_poly_ft4, KF_MENU_DAKUTEN_U, KF_MENU_KANA_MARK_V,
-                font->width, font->height);
-            primitive_buffer_commit_poly_ft4(KF_MENU_CONTENT_OT_DEPTH);
-        }
-
-        if (*code & KF_MENU_TEXT_HANDAKUTEN) {
-            menu_begin_text_glyph(font, string, x_offset);
-            setUVWH(current_poly_ft4, KF_MENU_HANDAKUTEN_U, KF_MENU_KANA_MARK_V,
-                font->width, font->height);
-            primitive_buffer_commit_poly_ft4(KF_MENU_CONTENT_OT_DEPTH);
-        }
+    code = string->glyphs.codes;
+    if (*code == KF_MENU_TEXT_END) {
+        return;
     }
+    x_offset = 0;
+    do {
+        primitive_buffer_begin_poly_ft4();
+        current_poly_ft4->tpage = font->tpage;
+        current_poly_ft4->clut = font->clut;
+        setXYWH(current_poly_ft4,
+            string->position.x + x_offset, string->position.y,
+            font->width, font->height);
+        glyph = *code & 0x7f;
+        x_offset += KF_MENU_GLYPH_ADVANCE;
+        setUVWH(current_poly_ft4,
+            (glyph & (KF_MENU_FONT_COLUMNS - 1)) * MENU_TEXT_CELL_WIDTH,
+            (glyph >> 4) * KF_MENU_FONT_CELL_HEIGHT,
+            font->width, font->height);
+        primitive_buffer_commit_poly_ft4(KF_MENU_CONTENT_OT_DEPTH);
+        code++;
+    } while (*code != KF_MENU_TEXT_END && x_offset < MENU_TEXT_SPAN_LIMIT);
 }
 
 ADDRESS(0x80021fcc, 0x2ec)
 void menu_draw_number(const KfMenuSpriteDef *font, const KfMenuGlyphString *string)
 {
-    const s16 *code;
+    enum { MENU_NUMBER_SPAN_LIMIT = 168 };
+    const u8 *code;
     s32 x_offset;
 
     code = string->glyphs.codes;
@@ -4303,7 +4452,7 @@ void menu_draw_number(const KfMenuSpriteDef *font, const KfMenuGlyphString *stri
         primitive_buffer_commit_poly_ft4(KF_MENU_CONTENT_OT_DEPTH);
         code++;
         x_offset += KF_MENU_DIGIT_ADVANCE;
-    } while (*code != KF_MENU_TEXT_END);
+    } while (*code != KF_MENU_TEXT_END && x_offset < MENU_NUMBER_SPAN_LIMIT);
 }
 ADDRESS(0x800222b8, 0x270)
 void menu_draw_nine_slice_panel(s32 x, s32 y, s32 width, s32 height,
@@ -4516,8 +4665,8 @@ ADDRESS(0x80022a78, 0xa8)
 void menu_list_init(KfMenuList *list, KfMenuWindowKind window_kind, s32 row)
 {
     KfMenuGlyphString *source;
-    s16 *title_codes;
-    s16 *source_codes;
+    u8 *title_codes;
+    u8 *source_codes;
     s32 i;
 
     list->title.position.x = 17;
@@ -4535,18 +4684,18 @@ void menu_list_init(KfMenuList *list, KfMenuWindowKind window_kind, s32 row)
     list->scroll_offset = 0;
     list->selected_index = 0;
     list->cursor_row = 0;
-    list->glyphs_per_entry = 10;
+    list->glyphs_per_entry = 20;
 }
 
 enum { KF_MENU_FORMAT_BLANK = 10 };
 
 ADDRESS(0x80022b20, 0x18c)
 void menu_format_number(s32 value, s32 count, KfFormatPaddingMode padding_mode,
-    KfMenuFormatStyle style, s16 *out)
+    KfMenuFormatStyle style, u8 *out)
 {
     s32 i;
-    s16 blank;
-    s16 *cursor;
+    u8 blank;
+    u8 *cursor;
     /* Retail reserves an unreferenced 8-byte frame slot. */
     s16 frame_reserve[4];
 

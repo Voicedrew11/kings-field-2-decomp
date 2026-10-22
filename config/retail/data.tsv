@@ -500,7 +500,7 @@ GAME.EXE	0x80067564	0x56d64	0x10	defined	manual:card save prefix		char[16]	retai
 GAME.EXE	0x80067574	0x56d74	0x120	defined	manual:card title and icon palettes		KfCardAssets	retail title bytes;card-writer indexed palette copy	Shift-JIS title and seven 16-color icon palettes
 GAME.EXE	0x80067694	0x56e94	0x28	defined	manual:player effect spawn records	player_magic_spawn_records	KfPlayerMagicSpawnRecord[5]	retail bytes;player_dispatch_magic_effect eight-byte copy stride;source DATA claim	five rows copy as SVECTOR and provide a signed effect kind at +6; original C type and TU unresolved
 GAME.EXE	0x800676bc	0x56ebc	0x20	defined	manual:player effect vector templates	player_magic_square_offsets	SVECTOR[4]	retail bytes;func_80025a18 eight-byte copy stride	four signed corner records read by the bounded effect-spawn loop; defining TU unresolved
-GAME.EXE	0x800676dc	0x56edc	0xc	defined	manual:player magic IDs and attack masks	player_magic_id_sequence	KfPlayerMagicIdSequence	retail bytes;func_80026498 indexed lbu;func_80028998 halfword sequence	12 effect IDs followed by 0x20,0x10,0x80,0xffff masks; source owner unresolved
+GAME.EXE	0x800676dc	0x56edc	0xc	defined	manual:player magic IDs	player_magic_id_sequence	KfPlayerMagicIdSequence	retail bytes;indexed lbu in player code	12 effect IDs; US keeps the attack masks in .sbss; source owner unresolved
 GAME.EXE	0x800676e8	0x56ee8	0xa	defined	manual:collision grid sample		KfMapOccupancyCell	retail bytes;func_8002a988 fallback pointer	two five-byte layers with object index 0xff and flags 0x3f
 GAME.EXE	0x800676f2	0x56ef2	0x2	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 GAME.EXE	0x800676f4	0x56ef4	0x7e	defined	manual:notification quads		KfNotificationQuad[7]	retail bytes;func_80033140;notification mutation xrefs	six textured rectangles followed by 0xff terminator
@@ -561,8 +561,26 @@ GAME.EXE	0x8006e4a8	0x5dca8	0x40	defined	manual:exact Psy-Q 3.0 LIBGPU SYS .data
 GAME.EXE	0x8006e4e8	0x5dce8	0x60	defined	manual:exact Psy-Q 3.0 LIBGPU OTAG .data pointer record		u32[24]	24 archive 32-bit section patches;all 24 retail words	contiguous vendor record; original C declaration and linkage unresolved
 GAME.EXE	0x8006e548	0x5dd48	0x18	defined	manual:exact Psy-Q 3.0 LIBGPU OTAG.OBJ .data tail		u8[0x18]	archive .data+0x60 24 Code bytes match retail;get_p_size references section+0x60	vendor size table; original C declaration and linkage unresolved
 GAME.EXE	0x8006e560	0x5dd60	0x4	defined	manual:main-unreferenced-sdata	main_unreferenced_sdata_word	u32	retail zero word at the gp anchor that opens the game .sdata;no reference in JP, US or EU GAME;OPEN and END main units own the same first 12 bytes	unreferenced initialized small-data word; type unresolved
-GAME.EXE	0x8006e564	0x5dd64	0x4	defined	manual:main-unreferenced-sdata	main_unreferenced_sdata_bytes	u8[8]	retail zero bytes before cd_path_prefix;no reference in JP, US or EU GAME	unreferenced initialized small data; extent and type unresolved
-GAME.EXE	0x8006e568	0x5dd68	0x4c	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
+GAME.EXE	0x8006e564	0x5dd64	0x4	defined	manual:main-unreferenced-sdata	main_unreferenced_sdata_bytes	u8[4]	retail zero bytes before cd_path_prefix;no reference in JP, US or EU GAME	unreferenced initialized small data; extent and type unresolved
+GAME.EXE	0x8006e568	0x5dd68	0x4	defined	manual:us pad mask table	DAT_8006e568	u32	retail word 0x40;US HI/LO xrefs	US-only pad-button mask word
+GAME.EXE	0x8006e56c	0x5dd6c	0x4	defined	manual:us pad mask table	DAT_8006e56c	u32	retail word 0x20;US HI/LO xrefs	US-only pad-button mask word
+GAME.EXE	0x8006e570	0x5dd70	0x4	defined	manual:us pad mask table	DAT_8006e570	u32	retail word 0x80;US HI/LO xrefs	US-only pad-button mask word
+GAME.EXE	0x8006e574	0x5dd74	0x4	defined	manual:us pad mask table	DAT_8006e574	u32	retail word 0x10;US HI/LO xrefs	US-only pad-button mask word
+GAME.EXE	0x8006e578	0x5dd78	0x4	defined	manual:us pad mask table	DAT_8006e578	u32	retail word 0x100;US HI/LO xrefs	US-only pad-button mask word
+GAME.EXE	0x8006e57c	0x5dd7c	0x4	defined	manual:us pad mask table	DAT_8006e57c	u32	retail word 0x800;US HI/LO xrefs	US-only pad-button mask word
+GAME.EXE	0x8006e580	0x5dd80	0x4	defined	manual:us pad mask table	DAT_8006e580	u32	retail word 0x8;US HI/LO xrefs	US-only pad-button mask word
+GAME.EXE	0x8006e584	0x5dd84	0x4	defined	manual:us pad mask table	DAT_8006e584	u32	retail word 0x2;US HI/LO xrefs	US-only pad-button mask word
+GAME.EXE	0x8006e588	0x5dd88	0x4	defined	manual:us pad mask table	DAT_8006e588	u32	retail word 0x4;US HI/LO xrefs	US-only pad-button mask word
+GAME.EXE	0x8006e58c	0x5dd8c	0x4	defined	manual:us pad mask table	DAT_8006e58c	u32	retail word 0x1;US HI/LO xrefs	US-only pad-button mask word
+GAME.EXE	0x8006e590	0x5dd90	0x4	defined	manual:us pad mask table	DAT_8006e590	u32	retail word 0x1000;US HI/LO xrefs	US-only pad-button mask word
+GAME.EXE	0x8006e594	0x5dd94	0x4	defined	manual:us pad mask table	DAT_8006e594	u32	retail word 0x4000;US HI/LO xrefs	US-only pad-button mask word
+GAME.EXE	0x8006e598	0x5dd98	0x4	defined	manual:us pad mask table	DAT_8006e598	u32	retail word 0x2000;US HI/LO xrefs	US-only pad-button mask word
+GAME.EXE	0x8006e59c	0x5dd9c	0x4	defined	manual:us pad mask table	DAT_8006e59c	u32	retail word 0x8000;US HI/LO xrefs	US-only pad-button mask word
+GAME.EXE	0x8006e5a0	0x5dda0	0x4	defined	manual:us pad mask table	DAT_8006e5a0	u32	retail word 0x0;US HI/LO xrefs	US-only state word read by func_8001883c
+GAME.EXE	0x8006e5a4	0x5dda4	0x4	defined	manual:us pad mask table	DAT_8006e5a4	s32	retail word 0x0;US HI/LO xrefs	US-only state word read by func_8001883c
+GAME.EXE	0x8006e5a8	0x5dda8	0x4	defined	manual:us pad mask table	DAT_8006e5a8	s32	retail word 0x0;US HI/LO xrefs	US-only state word read by func_8001883c
+GAME.EXE	0x8006e5ac	0x5ddac	0x4	defined	manual:us pad mask table	DAT_8006e5ac	s32	retail word 0x0;US HI/LO xrefs	US-only state word read by func_8001883c
+GAME.EXE	0x8006e5b0	0x5ddb0	0x4	defined	manual:us pad mask table	DAT_8006e5b0	s32	retail word 0x158;US HI/LO xrefs	US-only state word read by func_8001883c
 GAME.EXE	0x8006e5b4	0x5ddb4	0x5	string	byte-pattern		ascii	investigation:string-census	escaped text: \\CD\\
 GAME.EXE	0x8006e5b9	0x5ddb9	0x3	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 GAME.EXE	0x8006e5bc	0x5ddbc	0x3	string	reviewed		ascii	manual:cd_memory;retail bytes;three validated xrefs	escaped text: ;1 (cd_version_suffix); original SDK ownership unresolved
@@ -715,7 +733,8 @@ GAME.EXE	0x8006e980	0x5e180	0x4	unclassified	payload-complement			payload-comple
 GAME.EXE	0x8006e984	0x5e184	0x4	bss	manual:memory-card-unreferenced-word-3	memory_card_unreferenced_word_3	long	retail eight-byte .sbss stride between memory_card_error_event and memory_card_buffer;no reference in JP, US or EU GAME	unreferenced private small-BSS slot; type and role unresolved
 GAME.EXE	0x8006e988	0x5e188	0x4	unclassified	payload-complement			payload-complement	remainder of the preceding eight-byte .lcomm reservation
 GAME.EXE	0x8006e98c	0x5e18c	0x4	bss	reviewed	memory_card_buffer	u8 *	retail zero word;memory_card_initialize writes before first read	pointer assigned to memory_card_buffer_storage; original allocation extent unresolved
-GAME.EXE	0x8006e990	0x5e190	0xc	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
+GAME.EXE	0x8006e990	0x5e190	0x4	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
+GAME.EXE	0x8006e994	0x5e194	0x8	bss	manual:us player attack masks	player_magic_attack_masks	u16[4]	US player_update_actions_and_charge stores 0xffff and three pad-mask words;two lui+addiu cursor xrefs	US .sbss home of the JP player_magic_id_sequence attack masks
 GAME.EXE	0x8006e99c	0x5e19c	0x4	defined	ghidra-defined		undefined4	Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08;Sony MALLOC.OBJ xrefs	curated direct references occur in signature-matched malloc routines; defining object and extent unresolved
 GAME.EXE	0x8006e9a0	0x5e1a0	0x4	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 GAME.EXE	0x8006e9a4	0x5e1a4	0x4	defined	ghidra-defined		undefined4	Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08;Sony MALLOC.OBJ xrefs	curated direct references occur in signature-matched malloc routines; defining object and extent unresolved

@@ -572,6 +572,7 @@ void reset_collision_rows_and_overlay(void)
     game_graphics_runtime.color_overlay_blue_sum = 0;
     game_graphics_runtime.color_overlay_green_sum = 0;
     game_graphics_runtime.color_overlay_red_sum = 0;
+    game_graphics_runtime.color_overlay_control = KF_COLOR_OVERLAY_OFF;
 }
 
 ADDRESS(0x8002ca74, 0x80)

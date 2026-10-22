@@ -286,13 +286,10 @@ typedef char kf_weapon_record_game_alternate_sound_step_offset[
 
 typedef struct KfPlayerMagicIdSequence {
     u8 effect_ids[12];
-    u16 attack_masks[4];
 } KfPlayerMagicIdSequence;
 
 typedef char kf_player_magic_id_sequence_size[
-    sizeof(KfPlayerMagicIdSequence) == 0x14 ? 1 : -1];
-typedef char kf_player_magic_attack_masks_offset[
-    offsetof(KfPlayerMagicIdSequence, attack_masks) == 0x0c ? 1 : -1];
+    sizeof(KfPlayerMagicIdSequence) == 0x0c ? 1 : -1];
 
 /* One magic spawn offset; its SVECTOR pad slot carries the effect kind. */
 typedef struct KfPlayerMagicSpawnFields {
@@ -574,6 +571,8 @@ typedef char kf_player_movement_step_limit_offset[
 extern KfPlayerLevelGrowth player_level_growth_table[KF_PLAYER_LEVEL_GROWTH_COUNT];
 extern KfPlayerState player_state;
 extern KfPlayerMagicIdSequence player_magic_id_sequence;
+/* US-only .sbss copy of the attack masks, refreshed from the pad masks. */
+extern u16 player_magic_attack_masks[4];
 extern KfBss801c7540 bss_801c7540;
 extern KfWeaponRecordGame player_weapon_records[18];
 extern KfEquipmentRecord player_equipment_records[KF_EQUIPMENT_RECORD_COUNT];

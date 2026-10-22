@@ -20,22 +20,56 @@
 #include <psyq/pad.h>
 #include <psyq/sdk.h>
 
-/* game_main_loop runs frames until the word reads EXIT_REQUESTED. */
-KF_ENUM_BEGIN(KfGameMainState, u32)
-    GAME_MAIN_RUNNING = 0,
-    GAME_MAIN_EXIT_REQUESTED = 1
-KF_ENUM_END(KfGameMainState)
 
-/* Twelve zero bytes open the game .sdata at the gp anchor, where OPEN's and
+/* Eight zero bytes open the game .sdata at the gp anchor, where OPEN's and
    END's main units keep their mailbox pointer and data-file name. Nothing in
    any GAME build reads them; their types are unresolved byte views. */
 DATA(0x8006e560, 0x4, ".sdata")
 static u32 main_unreferenced_sdata_word = 0;
 DATA(0x8006e564, 0x4, ".sdata")
-static u8 main_unreferenced_sdata_bytes[8] = {0};
+static u8 main_unreferenced_sdata_bytes[4] = {0};
+DATA(0x8006e568, 0x4, ".sdata")
+u32 DAT_8006e568 = 0x40;
+DATA(0x8006e56c, 0x4, ".sdata")
+u32 DAT_8006e56c = 0x20;
+DATA(0x8006e570, 0x4, ".sdata")
+u32 DAT_8006e570 = 0x80;
+DATA(0x8006e574, 0x4, ".sdata")
+u32 DAT_8006e574 = 0x10;
+DATA(0x8006e578, 0x4, ".sdata")
+u32 DAT_8006e578 = 0x100;
+DATA(0x8006e57c, 0x4, ".sdata")
+u32 DAT_8006e57c = 0x800;
+DATA(0x8006e580, 0x4, ".sdata")
+u32 DAT_8006e580 = 0x8;
+DATA(0x8006e584, 0x4, ".sdata")
+u32 DAT_8006e584 = 0x2;
+DATA(0x8006e588, 0x4, ".sdata")
+u32 DAT_8006e588 = 0x4;
+DATA(0x8006e58c, 0x4, ".sdata")
+u32 DAT_8006e58c = 0x1;
+DATA(0x8006e590, 0x4, ".sdata")
+u32 DAT_8006e590 = 0x1000;
+DATA(0x8006e594, 0x4, ".sdata")
+u32 DAT_8006e594 = 0x4000;
+DATA(0x8006e598, 0x4, ".sdata")
+u32 DAT_8006e598 = 0x2000;
+DATA(0x8006e59c, 0x4, ".sdata")
+u32 DAT_8006e59c = 0x8000;
+DATA(0x8006e5a0, 0x4, ".sdata")
+u32 DAT_8006e5a0 = 0x0;
+DATA(0x8006e5a4, 0x4, ".sdata")
+s32 DAT_8006e5a4 = 0x0;
+DATA(0x8006e5a8, 0x4, ".sdata")
+s32 DAT_8006e5a8 = 0x0;
+DATA(0x8006e5ac, 0x4, ".sdata")
+s32 DAT_8006e5ac = 0x0;
+DATA(0x8006e5b0, 0x4, ".sdata")
+s32 DAT_8006e5b0 = 0x158;
 
 DATA(0x80199574, 0x4, ".bss")
 KfGameMainState game_main_exit_flag;
+
 
 enum { GAME_INITIAL_MASTER_VOLUME = 0x7f };
 
@@ -59,8 +93,10 @@ void main(void)
 ADDRESS(0x8001369c, 0x36c)
 void game_main_loop(void)
 {
+    RECT clear_rect;
     VECTOR camera_position;
     SVECTOR camera_rotation;
+    KfGameMainState exit_requested;
 
     repeat_store_word((u32 *)&resource_state, 0,
         sizeof resource_state / sizeof(u32));
@@ -81,6 +117,7 @@ void game_main_loop(void)
     repeat_store_word((u32 *)&audio_state, 0,
         sizeof audio_state / sizeof(u32));
 
+    DAT_800864dc = KF_TRUE;
     cd_initialize();
     display_initialize();
     audio_initialize_runtime();
@@ -93,6 +130,9 @@ void game_main_loop(void)
     reset_collision_rows_and_overlay();
     game_graphics_runtime.collision_rotation_dirty = KF_TRUE;
     refresh_collision_row_rotations();
+    DAT_800864dc = KF_FALSE;
+    setRECT(&clear_rect, 0, 0, 0x140, 0x1e0);
+    ClearImage(&clear_rect, 0, 0, 0);
     SsSetMVol(GAME_INITIAL_MASTER_VOLUME, GAME_INITIAL_MASTER_VOLUME);
     if (menu_card_browser() != -1) {
         player_restore_equipment_effects();
@@ -112,6 +152,7 @@ void game_main_loop(void)
     render_frames_with_color_overlay(KF_COLOR_OVERLAY_SUBTRACT | KF_COLOR_OVERLAY_FRONT,
                                      0x1000, 0, -128);
     game_main_exit_flag = GAME_MAIN_RUNNING;
+    exit_requested = GAME_MAIN_EXIT_REQUESTED;
 
     do {
         reset_collision_rows_and_overlay();
@@ -128,11 +169,16 @@ void game_main_loop(void)
         cd_request_service_stream();
         cd_request_service_vab();
         render_game_frame(&camera_position, &camera_rotation);
-    } while (game_main_exit_flag != GAME_MAIN_EXIT_REQUESTED);
+    } while (game_main_exit_flag == GAME_MAIN_RUNNING);
 
     game_shutdown();
     /* PSX.EXE owns the fixed next-overlay mailbox. */
-    *(u8 *)0x800102f0 = KF_OVERLAY_END;
+    if (game_main_exit_flag == exit_requested) {
+        DAT_800102f0 = KF_OVERLAY_END;
+    } else if (game_main_exit_flag == GAME_MAIN_EXIT_ALTERNATE) {
+        DAT_800102f0 = KF_OVERLAY_OPEN;
+        DAT_800102f8 = KF_ENUM_ENCODE(u8, exit_requested);
+    }
 }
 
 ADDRESS(0x80013a08, 0x38)

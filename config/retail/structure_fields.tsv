@@ -209,7 +209,7 @@ KfCardSavePayload	0x39d4	0x10	camera_position	VECTOR	supported	game/card_payload
 KfCardSavePayload	0x39e4	0x08	camera_rotation_target	KfPlayerViewRotation	supported	game/card_payload.h;GAME 0x80048d7c-0x80048d98;card_payload_restore_game_state	eight-byte target rotation copy
 KfCardSavePayload	0x39ec	0x58	player	KfCardPlayerSnapshot	supported	game/card_payload.h;GAME 0x80048da8-0x8004906c;card_payload_restore_game_state	player snapshot fields copied individually; padding within snapshot unclassified
 KfCardSavePayload	0x3a44	0x1bc	unused_tail	u8[444]	opaque	game/card_payload.h	layout span without a supported meaning
-KfCardSlotGlyphRow	0x00	0x14	codes	s16[10]	supported	game/menu.h;menu_card_build_slot_rows	ten halfword glyph codes per card slot
+KfCardSlotGlyphRow	0x00	0x14	codes	u8[20]	supported	game/menu.h;menu_card_build_slot_rows;US sb stores	twenty byte glyph codes per card slot
 KfCdArchive	0x00	0x04	sector_offsets	u16 *	supported	game/cd.h;cd_archive_open	sector offset table
 KfCdArchive	0x04	0x08	extent	KfCdExtent	supported	game/cd.h;cd_archive_entry_extent	archive file extent
 KfCdExtent	0x00	0x04	pos	CdlLOC	supported	game/cd.h;cd_file_load	CD location
@@ -842,10 +842,10 @@ KfMemoryBlock	0x01	0x01	flags	u8	supported	game headers;asm;xrefs	member used by
 KfMemoryBlock	0x02	0x02	tag	u16	supported	game headers;asm;xrefs	member used by reconstructed code
 KfMemoryBlock	0x04	0x04	size	u32	supported	game headers;asm;xrefs	member used by reconstructed code
 KfMemoryBlock	0x08	0x04	owner	u8 **	supported	game headers;asm;xrefs	member used by reconstructed code
-KfMenuGlyphRow	0x00	0x18	codes	s16[12]	supported	asm;menu_list_init;KF1 counterpart;loaded menu table	twelve halfword codes per row
+KfMenuGlyphRow	0x00	0x18	codes	u8[24]	supported	asm;menu_list_init;US menu_draw_string lbu reads	twenty-four byte codes per row, 0xff end
 KfMenuGlyphString	0x00	0x04	position	KfMenuPoint	supported	asm;menu_list_init;KF1 counterpart;loaded menu table	member used by reconstructed code
 KfMenuGlyphString	0x04	0x18	glyphs	KfMenuGlyphRow	supported	asm;menu_list_init;KF1 counterpart;loaded menu table	glyph codes after the position
-KfMenuLabelSuffix	0x00	0x14	codes	s16[10]	supported	retail bytes;menu label builder xrefs	ten halfword codes per copied suffix
+KfMenuLabelSuffix	0x00	0x18	codes	u8[24]	supported	retail bytes;menu label builder xrefs;US 0x18 stride	twenty-four byte codes per copied label row
 KfMenuList	0x00	0x1c	title	KfMenuGlyphString	supported	asm;menu_list_init;KF1 counterpart;loaded menu table	member used by reconstructed code
 KfMenuList	0x1c	0x01	list_x	u8	supported	asm;menu_list_init;KF1 counterpart;loaded menu table	member used by reconstructed code
 KfMenuList	0x1d	0x01	list_y	u8	supported	asm;menu_list_init;KF1 counterpart;loaded menu table	member used by reconstructed code
@@ -858,8 +858,8 @@ KfMenuList	0x23	0x01	glyphs_per_entry	u8	supported	asm;menu_list_init;KF1 counte
 KfMenuPoint	0x00	0x02	x	s16	supported	asm;menu_list_init;KF1 counterpart;loaded menu table	member used by reconstructed code
 KfMenuPoint	0x02	0x02	y	s16	supported	asm;menu_list_init;KF1 counterpart;loaded menu table	member used by reconstructed code
 KfMenuRenderList	0x00	0x24	list	KfMenuList	supported	game/menu.h;GAME 0x8001fcd4/0x8001fd04;menu_render_list	shared initialized menu-list prefix
-KfMenuRenderList	0x24	0x04	row_glyphs	const s16 *	supported	game/menu.h;GAME 0x8001fcc4/0x8001fdac;menu_render_list	halfword glyph rows; element signedness is not distinguished by this copy
-KfMenuRenderList	0x28	0x04	detail_rows	const KfMenuLabelSuffix *	supported	game/menu.h;GAME 0x8001fcc8/0x8001fd18;menu_render_list	20-byte detail rows used by render mode 3
+KfMenuRenderList	0x24	0x04	row_glyphs	const u8 *	supported	game/menu.h;GAME 0x8001fcc4/0x8001fdac;menu_render_list	byte glyph codes of the list rows
+KfMenuRenderList	0x28	0x04	detail_rows	const KfMenuLabelSuffix *	supported	game/menu.h;GAME 0x8001fcc8/0x8001fd18;menu_render_list	24-byte detail rows used by render mode 3
 KfMenuRenderList	0x2c	0x04	byte_values	const u8 *	supported	game/menu.h;GAME 0x8001fcd0/0x8001ff44;menu_render_list	unsigned byte values with 0xff sentinel
 KfMenuRenderList	0x30	0x04	number_values	const s32 *	supported	game/menu.h;GAME 0x8001fccc/0x8001fe4c;menu_render_list	word values with -1 sentinel
 KfMenuSpriteDef	0x00	0x02	tpage	u16	supported	asm;menu sprite blitters;loaded descriptor table	texture page halfword
@@ -894,7 +894,6 @@ KfPlayerLevelGrowth	0x04	0x02	physical_power_step	u16	supported	asm;xrefs;KF1 pl
 KfPlayerLevelGrowth	0x06	0x02	magic_step	u16	supported	asm;xrefs;KF1 player.h counterpart	member used by reconstructed code
 KfPlayerLevelGrowth	0x08	0x04	experience_threshold	u32	supported	asm;xrefs;KF1 player.h counterpart	member used by reconstructed code
 KfPlayerMagicIdSequence	0x00	0x0c	effect_ids	u8[12]	supported	asm;player_dispatch_weapon_magic indexed lbu;retail bytes	twelve effect IDs
-KfPlayerMagicIdSequence	0x0c	0x08	attack_masks	u16[4]	supported	asm;player_update_actions_and_charge lhu and pointer increment;retail bytes	0x20,0x10,0x80,0xffff sentinel
 KfPlayerMagicSpawnFields	0x0	0x2	x	s16	candidate	game/player.h	KfPlayerMagicSpawnFields member from reconstructed header
 KfPlayerMagicSpawnFields	0x2	0x2	y	s16	candidate	game/player.h	KfPlayerMagicSpawnFields member from reconstructed header
 KfPlayerMagicSpawnFields	0x4	0x2	z	s16	candidate	game/player.h	KfPlayerMagicSpawnFields member from reconstructed header
