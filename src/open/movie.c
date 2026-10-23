@@ -1,49 +1,71 @@
 #include <kf/lib/address.h>
 #include <kf/lib/null.h>
-#include <kf/open/opening.h>
 #include <kf/lib/audio.h>
 #include <kf/lib/display.h>
+#include <kf/open/opening.h>
 #include <kf/lib/movie_stream.h>
+#include <psyq/kernel.h>
 #include <psyq/libc.h>
 #include <psyq/pad.h>
 
 #include "../lib/movie_stream_state.inc"
 
-/* The opening STR runs to frame 1085; its music replaces the title music. */
 enum {
-    OPENING_LAST_FRAME = 1085,
     OPENING_VOLUME_RAMP_END = 128,
     OPENING_VOLUME_STEP = 2,
+    OPENING_FADE_OUT_START = 127,
     OPENING_MDEC_16BIT_MODE = 2,
     OPENING_MOVIE_DISPLAY_WIDTH = 320,
-    OPENING_TITLE_DISPLAY_WIDTH = 640,
-    /* Frames held after an unskipped movie before the music fades. */
-    OPENING_HOLD_FRAMES = 90
+    OPENING_TITLE_DISPLAY_WIDTH = 640
 };
 
-RODATA(0x80011000, 0x1f)
+/* Results: the movie played through, PADstart skipped the sequence, or
+ * another stop button skipped only this movie. */
+enum {
+    OPENING_MOVIE_PLAYED = 0,
+    OPENING_MOVIE_START_PRESSED = 1,
+    OPENING_MOVIE_BUTTON_PRESSED = 2
+};
 
-/* The tutorial's anim(): decodes the opening movie at 320 pixels, stops when
- * a button is pressed, then restores the 640-pixel title display. */
+RODATA(0x80011008, 0x38)
+
+/* The tutorial's anim(): decodes one opening movie (OP0-OP2.S) at 320
+ * pixels, stops on a button, then restores the 640-pixel title display. */
 ADDRESS(0x80013dc8, 0x3a8)
-void opening_play_movie(void)
+s32 opening_play_movie(s32 movie)
 {
     CdlFILE file;
     u_char mode;
     s32 volume;
-    b32 skipped = KF_FALSE;
+    s32 frame = 0;
+    s32 result = 0;
+    u_long pad;
+    CdlFILE *found;
 
-    SsSeqStop(audio_title_sequence_id);
-    if (CdSearchFile(&file, "\\OP\\OP.S;1") == NULL) {
+    if (movie == 0) {
+        found = CdSearchFile(&file, "\\OP\\OP0.S;1");
+    } else if (movie == 1) {
+        found = CdSearchFile(&file, "\\OP\\OP1.S;1");
+    } else {
+        found = CdSearchFile(&file, "\\OP\\OP2.S;1");
+    }
+    if (found == NULL) {
         printf("\n__ file not found");
+        StopCallback();
+        /* Retail returns here without setting $v0, so the result is unspecified. */
         return;
+    }
+    if (movie == 0) {
+        movie_last_frame = 0x89;
+    } else if (movie == 1) {
+        movie_last_frame = 0x10c;
+    } else {
+        movie_last_frame = 0x43f;
     }
     for (volume = 0; volume < OPENING_VOLUME_RAMP_END; volume += OPENING_VOLUME_STEP) {
         VSync(0);
         SsSetMVol(volume, volume);
     }
-    SsSeqSetVol(audio_movie_sequence_id, KF_OPENING_SEQUENCE_VOLUME, KF_OPENING_SEQUENCE_VOLUME);
-    SsSeqPlay(audio_movie_sequence_id, SSPLAY_PLAY, 1);
     strSetDefDecEnv();
     strInit(&file.pos);
     strNextVlc();
@@ -62,35 +84,39 @@ void opening_play_movie(void)
         if (Rewind_Switch == KF_TRUE) {
             break;
         }
-        if (PadRead(1) != 0) {
-            skipped = KF_TRUE;
-            while (PadRead(1) != 0) {
-            }
+        pad = PadRead(1);
+        if (pad & PADstart) {
+            result = OPENING_MOVIE_START_PRESSED;
             break;
         }
-    } while (StrFrame < OPENING_LAST_FRAME);
-    if (!skipped) {
-        for (volume = 0; volume < OPENING_HOLD_FRAMES; volume++) {
-            VSync(0);
+        if ((pad & PADRup) || (pad & PADRleft) || (pad & PADRright) || (pad & PADRdown) || (pad & PADselect)) {
+            result = OPENING_MOVIE_BUTTON_PRESSED;
+            break;
         }
-    }
-    for (volume = KF_OPENING_SEQUENCE_VOLUME; volume >= 0; volume--) {
+        if (StrFrame > movie_last_frame) {
+            break;
+        }
+        frame++;
+    } while (frame <= movie_last_frame);
+    for (volume = OPENING_FADE_OUT_START; volume >= 0; volume -= OPENING_VOLUME_STEP) {
         VSync(0);
-        SsSeqSetVol(audio_movie_sequence_id, volume, volume);
+        SsSetMVol(volume, volume);
     }
-    SsSeqSetVol(audio_movie_sequence_id, 0, 0);
     mode = CdlModeSpeed;
     CdControlB(CdlSetmode, &mode, NULL);
     DecDCToutCallback(NULL);
     CdDataCallback(NULL);
     CdReadyCallback(NULL);
     CdControlB(CdlPause, NULL, NULL);
+    while (PadRead(1) != 0) {
+    }
     SetDefDrawEnv(&display_buffers[0].draw, 0, 0, OPENING_TITLE_DISPLAY_WIDTH, KF_DISPLAY_HEIGHT);
     SetDefDrawEnv(&display_buffers[1].draw, 0, KF_DISPLAY_HEIGHT, OPENING_TITLE_DISPLAY_WIDTH, KF_DISPLAY_HEIGHT);
     SetDefDispEnv(&display_buffers[0].disp, 0, KF_DISPLAY_HEIGHT, OPENING_TITLE_DISPLAY_WIDTH, KF_DISPLAY_HEIGHT);
     SetDefDispEnv(&display_buffers[1].disp, 0, 0, OPENING_TITLE_DISPLAY_WIDTH, KF_DISPLAY_HEIGHT);
+    display_buffers[0].draw.isbg = display_buffers[1].draw.isbg = 1;
     display_current = &display_buffers[0];
-    SsSeqStop(audio_movie_sequence_id);
+    return result;
 }
 
 #include "../lib/movie_stream.inc"

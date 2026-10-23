@@ -24,7 +24,7 @@ PSX.EXE	0x8001026c	0xa6c	0x4	pointer	ghidra-defined		pointer	Ghidra-12.0.4/ghidr
 PSX.EXE	0x80010270	0xa70	0x4	bss	reviewed		undefined4	pinned 2MBYTE.OBJ .sbss;PSX.MAP;retail stup1 xrefs	4-byte startup BSS word; original subobject identity unresolved
 PSX.EXE	0x80010274	0xa74	0x3c	bss	reviewed	overlay_header	struct EXEC	asm;xrefs	Load/Exec header; s_addr/s_size cleared before Exec
 PSX.EXE	0x800102b0	0xab0	0x48	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
-PSX.EXE	0x800102f8	0xaf8	0x1	defined	ghidra-defined		undefined1	Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP datum
+PSX.EXE	0x800102f8	0xaf8	0x1	bss	reviewed	DAT_800102f8	u8	asm;xrefs;PSX main sb zero	flag byte beside the overlay mailbox; zero-filled
 PSX.EXE	0x800102f9	0xaf9	0x507	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 GAME.EXE	0x80011000	0x800	0x8	string	byte-pattern		ascii	investigation:string-census	escaped text: COM\\MO.T
 GAME.EXE	0x80011008	0x808	0x4	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
@@ -1236,11 +1236,10 @@ OPEN.EXE	0x8002361f	0x12e1f	0x7	string	byte-pattern		shift_jis	investigation:str
 OPEN.EXE	0x80023626	0x12e26	0x7a	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 OPEN.EXE	0x800238f4	0x130f4	0x120	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 OPEN.EXE	0x800265e0	0x15de0	0xfc	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
-OPEN.EXE	0x800267d4	0x15fd4	0x1b4	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 OPEN.EXE	0x80026a44	0x16244	0xbc	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 OPEN.EXE	0x80026c08	0x16408	0x238	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 OPEN.EXE	0x80027840	0x17040	0x5c	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
-OPEN.EXE	0x80027cc4	0x174c4	0x208	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
+OPEN.EXE	0x80027cc4	0x174c4	0x168	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 OPEN.EXE	0x8002806b	0x1786b	0x6	string	byte-pattern		shift_jis	investigation:string-census	escaped text: <伍c瑚
 OPEN.EXE	0x800280b3	0x178b3	0x7	string	byte-pattern		shift_jis	investigation:string-census	escaped text: <佇ъb{
 OPEN.EXE	0x800283e8	0x17be8	0x30	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
@@ -1308,7 +1307,9 @@ OPEN.EXE	0x8003e3fc	0x2dbfc	0x2a8	defined	manual:exact Psy-Q 3.0 LIBSPU S_SRMP.O
 OPEN.EXE	0x8003e6a4	0x2dea4	0x6f	string	byte-pattern		ascii	investigation:string-census	escaped text: $Id: s_crwa.c,v 1.8 1995/03/11 08:24:16 kaol Exp $ : \tCopyright (C) by 1994-95 Sony Computer Entertainment Inc.
 OPEN.EXE	0x8003e713	0x2df13	0x1	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 OPEN.EXE	0x8003e714	0x2df14	0x4	pointer	manual:open-game-data	overlay_next_request	u8 *	retail word 0x800102f0;main source DATA claim and xrefs;candidate 60-byte game DATA record exact after reordering	pointer to PSX overlay mailbox byte
-OPEN.EXE	0x8003e718	0x2df18	0xc	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
+OPEN.EXE	0x8003e718	0x2df18	0x4	defined	manual:open-game-data	DAT_8003e718	s32	audio source DATA claim and xrefs;zero-initialized retail word	US sweep fade level
+OPEN.EXE	0x8003e71c	0x2df1c	0x4	defined	manual:open-game-data	DAT_8003e71c	s32	audio source DATA claim and xrefs;zero-initialized retail word	US sweep phase
+OPEN.EXE	0x8003e720	0x2df20	0x4	defined	manual:open-game-data	DAT_8003e720	s32	audio source DATA claim and xrefs;zero-initialized retail word	US sweep frame counter
 OPEN.EXE	0x8003e724	0x2df24	0x4	defined	manual:open-game-data	title_level	s32	title source DATA claim and xrefs;zero-initialized retail word;candidate 60-byte game DATA record exact after reordering	title tile brightness
 OPEN.EXE	0x8003e728	0x2df28	0x4	defined	manual:open-game-data	title_phase	KfTitlePhase	title source DATA claim and xrefs;zero-initialized retail word;candidate 60-byte game DATA record exact after reordering	title fade phase
 OPEN.EXE	0x8003e72c	0x2df2c	0x4	defined	manual:open-game-data	banner_level	s32	title source DATA claim and xrefs;zero-initialized retail word;candidate 60-byte game DATA record exact after reordering	banner brightness
@@ -1447,7 +1448,9 @@ OPEN.EXE	0x8003ea4c	0x2e24c	0x4	pointer	manual:exact Psy-Q 3.0 LIBSPU S_CRWA.OBJ
 OPEN.EXE	0x8003ea50	0x2e250	0x4	bss	reviewed	Rewind_Switch	int	manual:movie-stream;after exact SDK .sdata	stream rewind flag; zero-filled load tail
 OPEN.EXE	0x8003ea54	0x2e254	0x4	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 OPEN.EXE	0x8003ea58	0x2e258	0x4	bss	reviewed	StrFrame	long	manual:movie-stream;after exact SDK .sdata	stream frame number; zero-filled load tail
-OPEN.EXE	0x8003ea5c	0x2e25c	0xc	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
+OPEN.EXE	0x8003ea5c	0x2e25c	0x4	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
+OPEN.EXE	0x8003ea60	0x2e260	0x4	bss	reviewed	movie_last_frame	long	manual:movie-stream;strNext sltu bound;opening_play_movie stores	last frame of the playing movie
+OPEN.EXE	0x8003ea64	0x2e264	0x4	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 OPEN.EXE	0x8003ea68	0x2e268	0x4	defined	ghidra-defined		undefined4	Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP datum
 OPEN.EXE	0x8003ea6c	0x2e26c	0x4	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 OPEN.EXE	0x8003ea70	0x2e270	0x4	defined	ghidra-defined		undefined4	Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP datum
@@ -1734,7 +1737,6 @@ END.EXE	0x8001ba20	0xb220	0x4	unclassified	coverage-gap			payload-complement	may
 END.EXE	0x8001ba30	0xb230	0x4	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 END.EXE	0x8001bbb0	0xb3b0	0x4	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 END.EXE	0x8001bbc0	0xb3c0	0x4	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
-END.EXE	0x8001bc1c	0xb41c	0x1b4	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 END.EXE	0x8001cba4	0xc3a4	0xd	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 END.EXE	0x8001cbb1	0xc3b1	0x4	string	byte-pattern		ascii	investigation:string-census	"escaped text: ""!$!"
 END.EXE	0x8001cbb5	0xc3b5	0xc	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
@@ -1914,7 +1916,6 @@ END.EXE	0x80022958	0x12158	0x90	unclassified	coverage-gap			payload-complement	m
 END.EXE	0x80022c94	0x12494	0x1b	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 END.EXE	0x80022caf	0x124af	0x5	string	byte-pattern		shift_jis	investigation:string-census	escaped text: <P稗$
 END.EXE	0x80022cb4	0x124b4	0x3c	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
-END.EXE	0x80022ec8	0x126c8	0xa0	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 END.EXE	0x8002313f	0x1293f	0x7	string	byte-pattern		shift_jis	investigation:string-census	escaped text: <x埋圏o
 END.EXE	0x8002314f	0x1294f	0x7	string	byte-pattern		shift_jis	investigation:string-census	escaped text: <x埋口o
 END.EXE	0x80023484	0x12c84	0x30	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
@@ -2074,7 +2075,9 @@ END.EXE	0x800399f0	0x291f0	0x4	pointer	manual:exact Psy-Q 3.0 LIBSPU S_CRWA.OBJ 
 END.EXE	0x800399f4	0x291f4	0x4	bss	reviewed	Rewind_Switch	int	manual:movie-stream;after exact SDK .sdata	stream rewind flag; zero-filled load tail
 END.EXE	0x800399f8	0x291f8	0x4	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 END.EXE	0x800399fc	0x291fc	0x4	bss	reviewed	StrFrame	long	manual:movie-stream;after exact SDK .sdata	stream frame number; zero-filled load tail
-END.EXE	0x80039a00	0x29200	0xc	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
+END.EXE	0x80039a00	0x29200	0x4	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
+END.EXE	0x80039a04	0x29204	0x4	bss	reviewed	movie_last_frame	long	manual:movie-stream;strNext sltu bound;ending_play_movie stores	last frame of the playing movie
+END.EXE	0x80039a08	0x29208	0x4	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 END.EXE	0x80039a0c	0x2920c	0x4	defined	ghidra-defined		undefined4	Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP datum
 END.EXE	0x80039a10	0x29210	0x4	unclassified	coverage-gap			payload-complement	may contain missed code, tables, constants, padding, or writable data
 END.EXE	0x80039a14	0x29214	0x4	defined	ghidra-defined		undefined4	Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP datum

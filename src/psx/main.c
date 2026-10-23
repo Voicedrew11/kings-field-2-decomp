@@ -24,6 +24,11 @@ u8 *overlay_next_request = (u8 *)0x800102f0;
 DATA(0x80010274, 0x3c, ".bss")
 struct EXEC overlay_header;
 
+/* Flag byte next to the mailbox; cleared at boot. US GAME sets it and US OPEN
+ * skips the opening movies when it is 1. */
+DATA(0x800102f8, 0x1, ".bss")
+u8 DAT_800102f8;
+
 /* Loads and runs the overlay named by overlay_index forever; each overlay
  * leaves the index of its successor in the mailbox byte. */
 ADDRESS(0x80010038, 0xe8)
@@ -33,6 +38,7 @@ void main(void)
     _96_remove();
     _96_init();
     *overlay_next_request = KF_OVERLAY_OPEN;
+    DAT_800102f8 = 0;
     for (;;) {
         if (Load(overlay_path_table[overlay_index], &overlay_header) == 1) {
             _96_remove();

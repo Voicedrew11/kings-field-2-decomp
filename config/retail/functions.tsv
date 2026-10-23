@@ -1436,6 +1436,7 @@ OPEN.EXE	0x80026490	0x15c90	0x108	0x108	1	function	ghidra-analysis			Ghidra-12.0
 OPEN.EXE	0x80026598	0x15d98	0x10	0x10	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 OPEN.EXE	0x800265a8	0x15da8	0x38	0x38	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 OPEN.EXE	0x800266dc	0x15edc	0xf8	0xf8	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
+OPEN.EXE	0x800267d4	0x15fd4	0x1b4	0x1b4	1	function	sdk-object-xdef	SsSetSerialVol		psyq-sdk30:LIBSND.LIB/SCSSVOL.OBJ	archive XDEF .text+0x0; whole 0x1b4-byte object; US-only member found as audio_initialize jal target; kf-fid-census HIGH
 OPEN.EXE	0x80026988	0x16188	0x28	0x28	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 OPEN.EXE	0x800269b0	0x161b0	0x94	0x94	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 OPEN.EXE	0x80026b00	0x16300	0x108	0x108	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
@@ -1448,6 +1449,7 @@ OPEN.EXE	0x8002789c	0x1709c	0x1d8	0x1d8	1	function	ghidra-analysis			Ghidra-12.0
 OPEN.EXE	0x80027a74	0x17274	0x8c	0x8c	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 OPEN.EXE	0x80027b00	0x17300	0x5c	0x5c	1	function	sdk-object-label	SsVabOpen		psyq-sdk30:LIBSND.LIB/VS_VAB.OBJ	archive XDEF .text+0x8c;exact 0xe8-byte section;retail function ends at object text end
 OPEN.EXE	0x80027b5c	0x1735c	0x168	0x168	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
+OPEN.EXE	0x80027e2c	0x1762c	0xa0	0xa0	1	function	sdk-object-xdef	SsSetSerialAttr		psyq-sdk30:LIBSND.LIB/SCSSATTR.OBJ	archive XDEF .text+0x0; whole 0xa0-byte object; US-only member found as audio_initialize jal target; kf-fid-census HIGH
 OPEN.EXE	0x80027ecc	0x176cc	0xe0	0xe0	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 OPEN.EXE	0x80027fac	0x177ac	0x20	0x20	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 OPEN.EXE	0x80027fcc	0x177cc	0x20	0x20	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
@@ -1788,6 +1790,7 @@ END.EXE	0x8001bb70	0xb370	0x34	0x34	1	function	ghidra-analysis			Ghidra-12.0.4/g
 END.EXE	0x8001bba4	0xb3a4	0xc	0xc	1	function	ghidra-analysis	DisableEvent		Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 END.EXE	0x8001bbb4	0xb3b4	0xc	0xc	1	function	ghidra-analysis	OpenEvent		Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 END.EXE	0x8001bbc4	0xb3c4	0x58	0x58	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
+END.EXE	0x8001bc1c	0xb41c	0x1b4	0x1b4	1	function	sdk-object-xdef	SsSetSerialVol		psyq-sdk30:LIBSND.LIB/SCSSVOL.OBJ	archive XDEF .text+0x0; whole 0x1b4-byte object; US-only member found as audio_initialize jal target; kf-fid-census HIGH
 END.EXE	0x8001bdd0	0xb5d0	0x258	0x258	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 END.EXE	0x8001c028	0xb828	0x430	0x430	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 END.EXE	0x8001c458	0xbc58	0xd0	0xd0	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
@@ -1846,6 +1849,7 @@ END.EXE	0x80022af0	0x122f0	0x108	0x108	1	function	ghidra-analysis			Ghidra-12.0.
 END.EXE	0x80022bf8	0x123f8	0x10	0x10	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 END.EXE	0x80022c08	0x12408	0x8c	0x8c	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 END.EXE	0x80022cf0	0x124f0	0x1d8	0x1d8	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
+END.EXE	0x80022ec8	0x126c8	0xa0	0xa0	1	function	sdk-object-xdef	SsSetSerialAttr		psyq-sdk30:LIBSND.LIB/SCSSATTR.OBJ	archive XDEF .text+0x0; whole 0xa0-byte object; US-only member found as audio_initialize jal target; kf-fid-census HIGH
 END.EXE	0x80022f68	0x12768	0xe0	0xe0	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 END.EXE	0x80023048	0x12848	0x20	0x20	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 END.EXE	0x80023068	0x12868	0x20	0x20	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary

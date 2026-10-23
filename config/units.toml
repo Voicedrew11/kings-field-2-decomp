@@ -244,7 +244,7 @@ defines = ["KF_OPEN"]
 unit = "open.audio"
 image = "OPEN.EXE"
 source = "src/open/audio.c"
-profile = "probe-gcc257-o2-plain"
+profile = "probe-gcc257-o2-plain-g8"
 
 [[unit]]
 unit = "open.title"
@@ -277,7 +277,6 @@ unit = "open.movie"
 image = "OPEN.EXE"
 source = "src/open/movie.c"
 profile = "probe-gcc257-o2-plain-g8"
-defines = ["MOVIE_END_FRAME=1085"]
 
 [[unit]]
 unit = "end.main"
@@ -314,4 +313,4 @@ unit = "end.movie"
 image = "END.EXE"
 source = "src/end/movie.c"
 profile = "probe-gcc257-o2-plain-g8"
-defines = ["KF_END", "MOVIE_END_FRAME=2136"]
+defines = ["KF_END"]

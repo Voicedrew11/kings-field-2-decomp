@@ -534,7 +534,7 @@ OPEN.EXE	0x80012084	opening_load_data	opening	load_data	void		supported	candidat
 OPEN.EXE	0x80012180	display_initialize			unknown		supported	candidate	asm;cfg;callees;KF1 counterpart naming	initial static signature seed; requires call-site review
 OPEN.EXE	0x800122bc	audio_initialize			void		supported	candidate	asm;cfg;callees;KF1 counterpart naming	initial static signature seed; requires call-site review
 OPEN.EXE	0x80012348	opening_open_audio	opening	open_audio	void		supported	candidate	asm;cfg;callers;callees;strings;KF1 counterpart naming	call sites reviewed while reconstructing OPEN.EXE
-OPEN.EXE	0x80012638	func_80012638			void		address-only	candidate	us-port:jr-ra-boundary	US-only; not in the JP build
+OPEN.EXE	0x80012638	func_80012638			s32	s32 mode	address-only	candidate	us-port:jr-ra-boundary	US-only; not in the JP build
 OPEN.EXE	0x80012d28	opening_draw_title	opening	draw_title	b32	KfTitleMode mode	supported	candidate	asm;cfg;callers;callees;strings;KF1 counterpart naming	call sites reviewed while reconstructing OPEN.EXE
 OPEN.EXE	0x80013344	opening_draw_banner	opening	draw_banner	b32	KfTitleMode mode	supported	candidate	asm;cfg;callers;callees;strings;KF1 counterpart naming	call sites reviewed while reconstructing OPEN.EXE
 OPEN.EXE	0x80013680	opening_draw_prompt	opening	draw_prompt	void	KfTitleMode mode	supported	candidate	asm;cfg;callers;callees;strings;KF1 counterpart naming	call sites reviewed while reconstructing OPEN.EXE
@@ -546,7 +546,7 @@ OPEN.EXE	0x80013b04	display_present_frame			void		supported	candidate	asm;cfg;ca
 OPEN.EXE	0x80013b5c	cd_file_load_into			unknown	unknown arg0	supported	candidate	asm;cfg;callees;KF1 counterpart naming	initial static signature seed; requires call-site review
 OPEN.EXE	0x80013cb8	tim_upload_images	tim	upload_images	void	u8 *tim_data	supported	candidate	asm;cfg;callers;callees;strings;KF1 counterpart naming	call sites reviewed while reconstructing OPEN.EXE
 OPEN.EXE	0x80013d28	audio_play_voice	audio	play_voice	void	s16 vab_id;s16 program;s16 tone;s16 note;s16 left_volume;s16 right_volume	supported	candidate	asm;cfg;callers;callees;strings;KF1 counterpart naming	call sites reviewed while reconstructing OPEN.EXE
-OPEN.EXE	0x80013dc8	opening_play_movie	opening	play_movie	void		supported	candidate	asm;cfg;callers;callees;strings;KF1 counterpart naming	call sites reviewed while reconstructing OPEN.EXE
+OPEN.EXE	0x80013dc8	opening_play_movie	opening	play_movie	s32	s32 movie	supported	candidate	asm;cfg;callers;callees;strings;KF1 counterpart naming	call sites reviewed while reconstructing OPEN.EXE
 OPEN.EXE	0x80014170	strSetDefDecEnv			unknown		supported	candidate	asm;cfg;callees;Sony streaming movie tutorial (addons/cd/MOVIE/TUTO0.C) call structure	initial static signature seed; requires call-site review
 OPEN.EXE	0x8001422c	strInit			void	unknown arg0	supported	candidate	asm;cfg;callees;Sony streaming movie tutorial (addons/cd/MOVIE/TUTO0.C) call structure	initial static signature seed; requires call-site review
 OPEN.EXE	0x800142a0	strCallback			void		supported	candidate	asm;cfg;callees;Sony streaming movie tutorial (addons/cd/MOVIE/TUTO0.C) call structure	initial static signature seed; requires call-site review
@@ -559,7 +559,7 @@ END.EXE	0x80011a68	display_initialize			unknown		supported	candidate	asm;cfg;cal
 END.EXE	0x80011ba8	audio_initialize			void		supported	candidate	asm;cfg;callees;KF1 counterpart naming	initial static signature seed; requires call-site review
 END.EXE	0x80011bf4	display_begin_frame			unknown		supported	candidate	asm;cfg;callees;KF1 counterpart naming	initial static signature seed; requires call-site review
 END.EXE	0x80011c54	display_present_frame			void		supported	candidate	asm;cfg;callees;KF1 counterpart naming	initial static signature seed; requires call-site review
-END.EXE	0x80011cc4	ending_play_movie			unknown		supported	candidate	asm;cfg;callees;strings	initial static signature seed; requires call-site review
+END.EXE	0x80011cc4	ending_play_movie			void	s32 movie	supported	candidate	asm;cfg;callees;strings	initial static signature seed; requires call-site review
 END.EXE	0x80011ea0	strSetDefDecEnv			unknown		supported	candidate	asm;cfg;callees;Sony streaming movie tutorial (addons/cd/MOVIE/TUTO0.C) call structure	initial static signature seed; requires call-site review
 END.EXE	0x80011f5c	strInit			void	unknown arg0	supported	candidate	asm;cfg;callees;Sony streaming movie tutorial (addons/cd/MOVIE/TUTO0.C) call structure	initial static signature seed; requires call-site review
 END.EXE	0x80011fd0	strCallback			void		supported	candidate	asm;cfg;callees;Sony streaming movie tutorial (addons/cd/MOVIE/TUTO0.C) call structure	initial static signature seed; requires call-site review

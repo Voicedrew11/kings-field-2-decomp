@@ -827,7 +827,6 @@ void event_map_object_interact(KfMapObject *object, ...)
     VECTOR next_position;
     VECTOR first_position;
     s32 first_yaw;
-    s32 current_yaw;
     s32 target_yaw;
     s16 initial_render_depth_offset;
     s16 target_render_depth_offset;
@@ -906,7 +905,10 @@ void event_map_object_interact(KfMapObject *object, ...)
                       &next_position);
         next_angles.vz = 0;
         next_angles.vx = 0;
-        for (fraction = 0; fraction <= KF_FIXED12_ONE; fraction += 0x200) {
+        /* Retail copies the unassigned button word here. hold_steps starts at 0
+           and the loop breaks only at 0x100, so this value is never observed. */
+        for (fraction = 0, previous_buttons = buttons; fraction <= KF_FIXED12_ONE;
+             fraction += 0x200) {
             scene_pose_interpolate(object, &first_position,
                           &next_position, &first_angles, &next_angles,
                           fraction);
@@ -984,13 +986,13 @@ return_pose:
 interpolate_back:
     next_angles = object->rotation;
     next_position = object->position;
-    current_yaw = player_state.camera_rotation.angles[0];
+    target_yaw = player_state.camera_rotation.angles[0];
     for (fraction = 0; fraction <= KF_FIXED12_ONE; fraction += 0x200) {
         scene_pose_interpolate(object, &next_position,
                       &first_position, &next_angles, &first_angles,
                       fraction);
         player_state.camera_rotation.angles[0] = angle_lerp_shortest_q12(
-            current_yaw, first_yaw, fraction);
+            target_yaw, first_yaw, fraction);
         object->render_depth_offset = value_approach(
             target_render_depth_offset, initial_render_depth_offset, fraction);
         render_game_frame(NULL, (const SVECTOR *)&player_state.camera_rotation);

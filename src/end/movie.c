@@ -8,33 +8,39 @@
 
 #include "../lib/movie_stream_state.inc"
 
-/* The ending STR runs to frame 2136; the music fades out from frame 1336. */
 enum {
-    ENDING_FADE_FRAME = 1336,
-    ENDING_LAST_FRAME = 2136,
-    ENDING_MASTER_VOLUME = 127,
-    ENDING_SEQUENCE_VOLUME = 64,
     ENDING_MDEC_16BIT_MODE = 2
 };
 
 RODATA(0x80011000, 0x1f)
 
-/* TODO(us-port): not yet matched against US END; JP body with the sequence
- * audio removed, as US END links no LIBSND sequence player. */
+/* US END: plays ED0.S or ED1.S. ED1 then waits 150 counted periods of six
+ * VSyncs each, advancing StrFrame once per period, before stopping the drive. */
 ADDRESS(0x80011cc4, 0x1dc)
 void ending_play_movie(s32 movie)
 {
     CdlFILE file;
-    u_char mode;
+    /* Unused: retail's frame reserves an 8-byte slot after the file that no
+     * statement touches; a RECT-sized dead local reproduces it. */
+    RECT rect;
+    CdlFILE *found;
+    int i;
 
-    if (CdSearchFile(&file, movie == 0 ? "\\OP\\ED0.S;1" : "\\OP\\ED1.S;1") == NULL) {
+    if (movie == 0) {
+        found = CdSearchFile(&file, "\\OP\\ED0.S;1");
+    } else {
+        found = CdSearchFile(&file, "\\OP\\ED1.S;1");
+    }
+    if (found == NULL) {
         printf("\n__ file not found");
         return;
     }
+    movie_last_frame = movie != 0 ? 0xa6d : 0x6a2;
     strSetDefDecEnv();
     strInit(&file.pos);
     strNextVlc();
     display_current = &display_buffers[0];
+    StrFrame = 0;
     do {
         display_begin_frame();
         DecDCTin(dec.vlcbuf[dec.vlcid], ENDING_MDEC_16BIT_MODE);
@@ -45,24 +51,20 @@ void ending_play_movie(s32 movie)
         if (Rewind_Switch == KF_TRUE) {
             break;
         }
-    } while (StrFrame < ENDING_LAST_FRAME);
-    CdStop();
-    for (;;) {
+        StrFrame++;
+    } while (StrFrame <= movie_last_frame);
+    if (movie == 1) {
+        for (i = 0; i < 150; i++) {
+            VSync(0);
+            VSync(0);
+            VSync(0);
+            VSync(0);
+            VSync(0);
+            VSync(0);
+            StrFrame++;
+        }
     }
-    /* Unreachable: the cleanup OPEN's movie loop runs after its stream. The
-     * compiler drops it but keeps its frame: the fifth-argument slot of the
-     * SetDef*Env calls and the address-taken mode byte (retail's 72 bytes). */
-    mode = CdlModeSpeed;
-    CdControlB(CdlSetmode, &mode, NULL);
-    DecDCToutCallback(NULL);
-    CdDataCallback(NULL);
-    CdReadyCallback(NULL);
-    CdControlB(CdlPause, NULL, NULL);
-    SetDefDrawEnv(&display_buffers[0].draw, 0, 0, 320, KF_DISPLAY_HEIGHT);
-    SetDefDrawEnv(&display_buffers[1].draw, 0, KF_DISPLAY_HEIGHT, 320, KF_DISPLAY_HEIGHT);
-    SetDefDispEnv(&display_buffers[0].disp, 0, KF_DISPLAY_HEIGHT, 320, KF_DISPLAY_HEIGHT);
-    SetDefDispEnv(&display_buffers[1].disp, 0, 0, 320, KF_DISPLAY_HEIGHT);
-    display_current = &display_buffers[0];
+    CdStop();
 }
 
 #include "../lib/movie_stream.inc"

@@ -98,6 +98,7 @@ void func_8001883c(void)
 {
     RECT rect;
     s32 index;
+    s32 x;
 
     if ((u32)(DAT_8006e5a8 - 5) >= 22) {
         switch (DAT_8006e5a4 % 32) {
@@ -206,7 +207,8 @@ void func_8001883c(void)
             rect.y = 480;
             rect.w = 32;
             rect.h = 32;
-            MoveImage(&rect, DAT_8006e5ac + ((DAT_8006e5a8 - 14) * 20 + 32), DAT_8006e5b0);
+            x = (DAT_8006e5a8 - 14) * 20 + 32;
+            MoveImage(&rect, x + DAT_8006e5ac, DAT_8006e5b0);
             DAT_8006e5a8++;
         }
     }
@@ -4740,7 +4742,7 @@ void menu_format_number(s32 value, s32 count, KfFormatPaddingMode padding_mode,
         count--;
     }
 
-    for (i = count - 1; i >= 0; i--) {
+    for (i = count - 1; i > -1; i--) {
         out[i] = value % 10;
         value /= 10;
         if (value == 0) {

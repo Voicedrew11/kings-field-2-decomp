@@ -11,7 +11,7 @@ PSX.EXE	0x8001005c	0x85c		mips26	reachable-code	0x80010204	load		jal		control-fl
 PSX.EXE	0x80010064	0x864	0x80010068	mips_hi16_lo16	reachable-code	0x8001026c	load	overlay_next_request	lui+lw	v0	paired-reviewed	reviewed	us-port:scan;byte-validated
 PSX.EXE	0x8001006c	0x86c	0x80010070	mips_hi16_lo16	reachable-code	0x80010254	load	overlay_path_table	lui+addiu	s1	paired-reviewed	reviewed	us-port:scan;byte-validated
 PSX.EXE	0x80010074	0x874	0x80010078	mips_hi16_lo16	reachable-code	0x80010294	load		lui+addiu	s0	paired-reviewed	reviewed	us-port:scan;byte-validated
-PSX.EXE	0x80010080	0x880	0x80010084	mips_hi16_lo16	reachable-code	0x800102f8	load	DAT_800102f0	lui+sb	zero	paired-reviewed	reviewed	us-port:scan;byte-validated
+PSX.EXE	0x80010080	0x880	0x80010084	mips_hi16_lo16	reachable-code	0x800102f8	load	DAT_800102f8	lui+sb	zero	paired-reviewed	reviewed	us-port:scan;byte-validated
 PSX.EXE	0x80010088	0x888	0x8001008c	mips_hi16_lo16	reachable-code	0x80010268	load	overlay_index	lui+lw	v0	paired-reviewed	reviewed	us-port:scan;byte-validated
 PSX.EXE	0x800100a0	0x8a0	0x800100a4	mips_hi16_lo16	reachable-code	0x80010274	load	overlay_header	lui+addiu	a1	paired-reviewed	reviewed	us-port:scan;byte-validated
 PSX.EXE	0x800100a8	0x8a8		mips26	reachable-code	0x80010224	load		jal		control-flow	candidate	us-port:scan;byte-validated
@@ -12500,8 +12500,8 @@ OPEN.EXE	0x800122f0	0x1af0		mips26	reachable-code	0x8001f6e0	load		jal		control-
 OPEN.EXE	0x800122fc	0x1afc		mips26	reachable-code	0x8001f790	load		jal		control-flow	candidate	us-port:scan;byte-validated
 OPEN.EXE	0x80012304	0x1b04		mips26	reachable-code	0x8001f488	load		jal		control-flow	candidate	us-port:scan;byte-validated
 OPEN.EXE	0x80012310	0x1b10		mips26	reachable-code	0x8001fd90	load		jal		control-flow	candidate	us-port:scan;byte-validated
-OPEN.EXE	0x80012320	0x1b20		mips26	instruction-word	0x80027e2c	load		jal		control-flow	candidate	us-port:scan
-OPEN.EXE	0x80012330	0x1b30		mips26	instruction-word	0x800267d4	load		jal		control-flow	candidate	us-port:scan
+OPEN.EXE	0x80012320	0x1b20		mips26	reachable-code	0x80027e2c	load		jal		control-flow	candidate	us-port:scan;byte-validated
+OPEN.EXE	0x80012330	0x1b30		mips26	reachable-code	0x800267d4	load		jal		control-flow	candidate	us-port:scan;byte-validated
 OPEN.EXE	0x80012350	0x1b50	0x80012354	mips_hi16_lo16	reachable-code	0x800a6fa8	bss	opening_data	lui+lw		paired-reviewed	reviewed	manual:opening
 OPEN.EXE	0x8001235c	0x1b5c		mips26	reachable-code	0x80013cb8	load		jal		control-flow	candidate	investigation:relocs.tsv
 OPEN.EXE	0x8001236c	0x1b6c	0x80012370	mips_hi16_lo16	reachable-code	0x800a6660	bss	audio_vab_header	lui+lw		paired-reviewed	reviewed	manual:opening
@@ -15558,8 +15558,8 @@ END.EXE	0x80011b74	0x1374	0x80011b78	mips_hi16_lo16	reachable-code	0x800a2f83	bs
 END.EXE	0x80011b7c	0x137c		mips26	reachable-code	0x80013acc	load		jal		control-flow	candidate	us-port:scan;byte-validated
 END.EXE	0x80011b84	0x1384	0x80011b88	mips_hi16_lo16	reachable-code	0x800a3ff4	bss	display_primitives	lui+addiu	v0	paired-reviewed	reviewed	us-port:scan;byte-validated
 END.EXE	0x80011bb0	0x13b0		mips26	reachable-code	0x8001b3f4	load		jal		control-flow	candidate	us-port:scan;byte-validated
-END.EXE	0x80011bc0	0x13c0		mips26	instruction-word	0x80022ec8	load		jal		control-flow	candidate	us-port:scan
-END.EXE	0x80011bd0	0x13d0		mips26	instruction-word	0x8001bc1c	load		jal		control-flow	candidate	us-port:scan
+END.EXE	0x80011bc0	0x13c0		mips26	reachable-code	0x80022ec8	load		jal		control-flow	candidate	us-port:scan;byte-validated
+END.EXE	0x80011bd0	0x13d0		mips26	reachable-code	0x8001bc1c	load		jal		control-flow	candidate	us-port:scan;byte-validated
 END.EXE	0x80011bdc	0x13dc		mips26	reachable-code	0x8001bbc4	load		jal		control-flow	candidate	us-port:scan;byte-validated
 END.EXE	0x80011bf4	0x13f4	0x80011bf8	mips_hi16_lo16	reachable-code	0x800a15ac	bss	display_current	lui+lw		paired-reviewed	reviewed	manual:display
 END.EXE	0x80011c00	0x1400	0x80011c04	mips_hi16_lo16	reachable-code	0x800a1ef4	bss	display_buffers	lui+addiu		paired-reviewed	reviewed	manual:display

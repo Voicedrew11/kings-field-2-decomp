@@ -1,7 +1,7 @@
 /*
  * The tutorial's earlier revision as linked here: one decode buffer, 16-bit
- * output and a global DECENV. OPEN.EXE and END.EXE link the same bodies; only
- * the last frame differs. Included after the movie player's functions, in the
+ * output and a global DECENV. OPEN.EXE and END.EXE link the same bodies; the
+ * player sets movie_last_frame for each movie. Included after the movie player's functions, in the
  * translation unit whose state movie_stream_state.inc defines.
  */
 
@@ -95,8 +95,11 @@ u_long *strNext(DECENV *env)
         StFreeRing(addr);
         return NULL;
     }
+#ifndef KF_END
+    /* END's player counts StrFrame itself. */
     StrFrame = sector->header.frameCount;
-    if (sector->header.frameCount >= MOVIE_END_FRAME) {
+#endif
+    if (sector->header.frameCount > movie_last_frame) {
         Rewind_Switch = KF_TRUE;
     }
     return addr;
@@ -125,6 +128,6 @@ void strKickCD(CdlLOC *loc)
 {
     while (CdSeekL(loc) == 0) {
     }
-    while (CdRead2(CdlModeStream | CdlModeSpeed | CdlModeRT | CdlModeSF) == 0) {
+    while (CdRead2(CdlModeStream | CdlModeSpeed | CdlModeRT) == 0) {
     }
 }

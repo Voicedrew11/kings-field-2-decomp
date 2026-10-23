@@ -152,8 +152,6 @@ void game_main_loop(void)
     render_frames_with_color_overlay(KF_COLOR_OVERLAY_SUBTRACT | KF_COLOR_OVERLAY_FRONT,
                                      0x1000, 0, -128);
     game_main_exit_flag = GAME_MAIN_RUNNING;
-    exit_requested = GAME_MAIN_EXIT_REQUESTED;
-
     do {
         reset_collision_rows_and_overlay();
         map_object_update_actions();
@@ -169,6 +167,7 @@ void game_main_loop(void)
         cd_request_service_stream();
         cd_request_service_vab();
         render_game_frame(&camera_position, &camera_rotation);
+        exit_requested = GAME_MAIN_EXIT_REQUESTED;
     } while (game_main_exit_flag == GAME_MAIN_RUNNING);
 
     game_shutdown();

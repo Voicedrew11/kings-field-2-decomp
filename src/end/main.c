@@ -19,6 +19,11 @@ u8 *overlay_next_request = (u8 *)0x800102f0;
 ADDRESS(0x800119a4, 0xc4)
 void main(void)
 {
+    /* Unused: retail reserves this 8-byte slot in main's frame, where OPEN's
+     * copy of main keeps its RECT. The declaration survives from that shared
+     * template. */
+    RECT rect;
+
     ResetCallback();
     InitHeap((void *)ENDING_HEAP_BASE, ENDING_HEAP_BYTES);
     CdInit();

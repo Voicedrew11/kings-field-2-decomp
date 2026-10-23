@@ -30,6 +30,11 @@ DATA_AT("OPEN", 0x8003ea58, 0x4, ".sbss")
 DATA_AT("END", 0x800399fc, 0x4, ".sbss")
 static long StrFrame;
 
+/* Last frame of the movie being played; the player sets it per movie. */
+DATA_AT("OPEN", 0x8003ea60, 0x4, ".sbss")
+DATA_AT("END", 0x80039a04, 0x4, ".sbss")
+static long movie_last_frame;
+
 DATA_AT("OPEN", 0x8003ebf0, 0x28000, ".bss")
 DATA_AT("END", 0x80039b6c, 0x28000, ".bss")
 static u_long vlcbuf0[SCR_WIDTH / 2 * VLC_BUFFER_HEIGHT];

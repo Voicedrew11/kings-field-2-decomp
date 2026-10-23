@@ -64,6 +64,7 @@ void primitive_buffer_commit_poly_ft4(s32 depth);
 void tim_upload_images(u8 *tim_data);
 void audio_play_voice(
     s16 vab_id, s16 program, s16 tone, s16 note, s16 left_volume, s16 right_volume);
-void opening_play_movie(void);
+s32 opening_play_movie(s32 movie);
+s32 func_80012638(s32 mode);
 
 #endif

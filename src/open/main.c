@@ -26,9 +26,10 @@ enum {
     OPENING_PROMPT_STEADY_LEVEL = 32,
     OPENING_CLOSE_FRAMES = 3,
     OPENING_CLOSE_OT_DEPTH = 200,
-    OPENING_DISPLAY_WIDTH = 640,
     OPENING_CLOSE_DISPLAY_WIDTH = 320
 };
+
+RODATA(0x80011000, 0x8)
 
 DATA(0x8003e714, 0x4, ".sdata")
 u8 *overlay_next_request = (u8 *)0x800102f0;
@@ -44,9 +45,11 @@ void main(void)
     RECT rect;
     KfTitleMode prompt_mode = KF_TITLE_ANIMATE;
     s32 idle_frames = 0;
-    KfOpeningState state;
+    KfOpeningState state = KF_OPENING_STATE_TITLE_FADE_IN;
     KfOpeningChoice choice;
     s32 frame;
+    s32 data_loaded = 0;
+    u8 *mailbox = KF_OVERLAY_MAILBOX_FLAG;
 
     ResetCallback();
     InitHeap((void *)OPENING_HEAP_BASE, OPENING_HEAP_BYTES);
@@ -57,7 +60,6 @@ void main(void)
     audio_title_sequence_data = (u_long *)malloc(KF_OPENING_TITLE_SEQUENCE_BYTES);
     audio_movie_sequence_data = (u_long *)malloc(KF_OPENING_MOVIE_SEQUENCE_BYTES);
     audio_initialize();
-    opening_load_data();
     display_initialize();
     display_current = &display_buffers[0];
     PutDrawEnv(&display_current->draw);
@@ -65,9 +67,19 @@ void main(void)
     display_current = &display_buffers[1];
     PutDrawEnv(&display_current->draw);
     PutDispEnv(&display_current->disp);
-    state = KF_OPENING_STATE_TITLE_FADE_IN;
-    opening_open_audio();
-restart:
+    if (*mailbox != 1) {
+    play_movies:
+        if (opening_play_movie(0) != 1) {
+            if (opening_play_movie(1) != 1) {
+                opening_play_movie(2);
+            }
+        }
+    }
+    if (!data_loaded) {
+        data_loaded = 1;
+        opening_load_data();
+        opening_open_audio();
+    }
     SsSetMVol(OPENING_MASTER_VOLUME, OPENING_MASTER_VOLUME);
     SsSeqSetVol(audio_title_sequence_id, KF_OPENING_SEQUENCE_VOLUME, KF_OPENING_SEQUENCE_VOLUME);
     SsSeqPlay(audio_title_sequence_id, SSPLAY_PLAY, 1);
@@ -100,28 +112,19 @@ restart:
             opening_fade_out(prompt_mode);
             break;
         }
-        if (choice == KF_OPENING_PLAY_MOVIE) {
-            opening_fade_out(prompt_mode);
-            opening_play_movie();
-            *overlay_next_request = KF_OVERLAY_GAME;
-            break;
-        }
         if (idle_frames >= OPENING_IDLE_FRAMES) {
             opening_fade_out(prompt_mode);
             state = KF_OPENING_STATE_TITLE_FADE_IN;
+            func_80012638(KF_TITLE_RESET);
             opening_draw_title(KF_TITLE_RESET);
             opening_draw_banner(KF_TITLE_RESET);
             idle_frames = 0;
-            opening_play_movie();
-            rect.x = rect.y = 0;
-            rect.w = OPENING_DISPLAY_WIDTH;
-            rect.h = KF_DISPLAY_HEIGHT * 2;
-            ClearImage(&rect, 0, 0, 0);
-            goto restart;
+            goto play_movies;
         }
         opening_draw_prompt(prompt_mode);
         display_present_frame();
     }
+    *overlay_next_request = KF_OVERLAY_GAME;
     SetDefDrawEnv(&display_buffers[0].draw, 0, 0, OPENING_CLOSE_DISPLAY_WIDTH, KF_DISPLAY_HEIGHT);
     SetDefDrawEnv(&display_buffers[1].draw, 0, KF_DISPLAY_HEIGHT, OPENING_CLOSE_DISPLAY_WIDTH, KF_DISPLAY_HEIGHT);
     SetDefDispEnv(&display_buffers[0].disp, 0, KF_DISPLAY_HEIGHT, OPENING_CLOSE_DISPLAY_WIDTH, KF_DISPLAY_HEIGHT);
@@ -136,10 +139,10 @@ restart:
     for (frame = 0; frame < OPENING_CLOSE_FRAMES; frame++) {
         display_begin_frame();
         primitive_buffer_begin_poly_ft4();
-        setTPage(current_poly_ft4, 0, 1, 960, 256);
+        setTPage(current_poly_ft4, 0, 1, 960, 0);
         current_poly_ft4->clut = getClut(576, 511);
-        setXYWH(current_poly_ft4, 32, 0, 255, KF_DISPLAY_HEIGHT);
-        setUVWH(current_poly_ft4, 0, 0, 255, KF_DISPLAY_HEIGHT);
+        setXYWH(current_poly_ft4, 96, 88, 128, 64);
+        setUVWH(current_poly_ft4, 0, 0, 128, 64);
         primitive_buffer_commit_poly_ft4(OPENING_CLOSE_OT_DEPTH);
         display_present_frame();
     }
@@ -180,11 +183,25 @@ void opening_fade_out(KfTitleMode prompt_mode)
 ADDRESS(0x80012084, 0xfc)
 void opening_load_data(void)
 {
+    char file_name[10] = "OPU.D";
+    u32 pad;
     s32 attempt;
+    s32 frame;
 
+    for (frame = 0; frame < 10; frame++) {
+        VSync(0);
+        pad = PadRead(1);
+    }
+    if ((pad & PADRup) && (pad & PADRright) && (pad & PADRdown) && (pad & PADRleft)) {
+        file_name[2] = '.';
+        file_name[3] = 'D';
+        file_name[4] = '\0';
+    }
+    while (PadRead(1) != 0) {
+    }
     opening_data = (u8 *)malloc(OPENING_DATA_BYTES);
     for (attempt = OPENING_LOAD_ATTEMPTS - 1; attempt != -1; attempt--) {
-        if (cd_file_load_into((u_long *)opening_data, "OPU.D") == KF_CD_LOADED) {
+        if (cd_file_load_into((u_long *)opening_data, file_name) == KF_CD_LOADED) {
             break;
         }
     }

@@ -1,12 +1,22 @@
 #include <kf/lib/address.h>
 #include <kf/open/opening.h>
 #include <kf/lib/audio.h>
+#include <kf/lib/display.h>
 #include <psyq/libc.h>
+
+/* OPEN-only sweep state: a fade level, a phase (0 fades in, 127 is done, and
+ * 1..12 sweep rows), and a frame counter. */
+DATA(0x8003e718, 0x4, ".sdata")
+s32 DAT_8003e718 = 0;
+DATA(0x8003e71c, 0x4, ".sdata")
+s32 DAT_8003e71c = 0;
+DATA(0x8003e720, 0x4, ".sdata")
+s32 DAT_8003e720 = 0;
 
 /* OP.D holds the title TIM images, the VAB header and body, then the title
  * and movie sequences. */
 enum {
-    OPENING_IMAGE_BYTES = 0x497cc,
+    OPENING_IMAGE_BYTES = 0x4e400,
     OPENING_VAB_BODY_BYTES = 0x34ca0
 };
 
@@ -44,4 +54,111 @@ void opening_open_audio(void)
     audio_movie_sequence_id = SsSeqOpen(audio_movie_sequence_data, audio_vab_id);
     DrawSync(0);
     free((void *)opening_data);
+}
+
+enum {
+    SWEEP_FADE_STEP = 2,
+    SWEEP_FADE_IN_END = 65,
+    SWEEP_ROWS = 12,
+    SWEEP_PHASES = 13,
+    SWEEP_PHASE_DONE = 127,
+    SWEEP_FRAME_LIMIT = 88,
+    SWEEP_OT_DEPTH = 200
+};
+
+ADDRESS(0x80012638, 0x6f0)
+s32 func_80012638(s32 mode)
+{
+    s32 i;
+    s32 level;
+    s32 x;
+    s32 uv_top = 160;
+    s32 uv_width = 255;
+    s32 uv_height = 72;
+
+    if (mode == 2) {
+        DAT_8003e718 = 0;
+        DAT_8003e71c = 0;
+        DAT_8003e720 = 0;
+        return 0;
+    }
+    if (mode == 0) {
+        if (DAT_8003e71c == 0) {
+            DAT_8003e718 += SWEEP_FADE_STEP;
+            if (DAT_8003e718 >= SWEEP_FADE_IN_END) {
+                DAT_8003e71c = 1;
+            }
+        }
+    } else if (mode == 1) {
+        DAT_8003e718 -= SWEEP_FADE_STEP;
+        if (DAT_8003e718 < 0) {
+            DAT_8003e718 = 0;
+        }
+    }
+    if (mode == 0 && DAT_8003e71c == 0) {
+        x = 0xc0;
+        for (i = 0; i < SWEEP_ROWS; i++) {
+            primitive_buffer_begin_poly_ft4();
+            setTPage(current_poly_ft4, 0, 1, 896, 0);
+            current_poly_ft4->clut = getClut(16, 0x1eb - i);
+            setRGB0(current_poly_ft4, (u8)DAT_8003e718, (u8)DAT_8003e718, (u8)DAT_8003e718);
+            setXYWH(current_poly_ft4, x, 102 + i, 255, 36);
+            setUVWH(current_poly_ft4, 0, uv_top, uv_width, uv_height);
+            primitive_buffer_commit_poly_ft4(SWEEP_OT_DEPTH - i);
+            x += 2;
+        }
+    } else if (mode == 0 && DAT_8003e71c != SWEEP_PHASE_DONE) {
+        if (mode < SWEEP_PHASES - DAT_8003e71c) {
+            x = 0xc0;
+            for (i = 0; i < SWEEP_PHASES - DAT_8003e71c; i++) {
+                primitive_buffer_begin_poly_ft4();
+                setTPage(current_poly_ft4, 0, 1, 896, 0);
+                current_poly_ft4->clut = getClut(16, 0x1ec - i - DAT_8003e71c);
+                setRGB0(current_poly_ft4, (u8)DAT_8003e718, (u8)DAT_8003e718, (u8)DAT_8003e718);
+                setXYWH(current_poly_ft4, x, 102 + i, 255, 36);
+                setUVWH(current_poly_ft4, 0, uv_top, uv_width, uv_height);
+                primitive_buffer_commit_poly_ft4(SWEEP_OT_DEPTH - i);
+                x += 2;
+            }
+        }
+        DAT_8003e71c++;
+        if (DAT_8003e71c == SWEEP_PHASES) {
+            DAT_8003e71c = SWEEP_PHASE_DONE;
+        }
+        VSync(0);
+    } else {
+        primitive_buffer_begin_poly_ft4();
+        setTPage(current_poly_ft4, 0, 1, 896, 0);
+        current_poly_ft4->clut = getClut(16, 480);
+        setRGB0(current_poly_ft4, (u8)DAT_8003e718, (u8)DAT_8003e718, (u8)DAT_8003e718);
+        setXYWH(current_poly_ft4, 0xc0, 0x66, 255, 36);
+        setUVWH(current_poly_ft4, 0, uv_top, uv_width, uv_height);
+        primitive_buffer_commit_poly_ft4(SWEEP_OT_DEPTH);
+        if (mode == 1 || DAT_8003e720 < SWEEP_FRAME_LIMIT) {
+            primitive_buffer_begin_poly_ft4();
+            setTPage(current_poly_ft4, 0, 1, 896, 0);
+            current_poly_ft4->clut = getClut(16, 480);
+            SetSemiTrans(current_poly_ft4, 1);
+            if (mode == 0) {
+                level = DAT_8003e720 - (SWEEP_FRAME_LIMIT - 1);
+                if (DAT_8003e718 + 12 < level) {
+                    level = DAT_8003e718 + 12;
+                }
+            } else {
+                level = DAT_8003e718;
+            }
+            setRGB0(current_poly_ft4, level, level, level);
+            setXYWH(current_poly_ft4, 0xc0, 0x8a, 255, 12);
+            setUVWH(current_poly_ft4, 0, 0xe7, 255, 24);
+            primitive_buffer_commit_poly_ft4(SWEEP_OT_DEPTH);
+        }
+    }
+    DAT_8003e720++;
+    if (mode == 0) {
+        return DAT_8003e720;
+    }
+    if (mode == 1) {
+        return DAT_8003e718 == 0;
+    }
+    return 1;
 }

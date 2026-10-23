@@ -10,12 +10,19 @@ enum {
     TITLE_PEAK_LEVEL = 144,
     TITLE_REST_LEVEL = 96,
     PROMPT_PULSE_STEP = 3,
-    PROMPT_PULSE_HIGH = 101,
+    PROMPT_PULSE_HIGH = 97,
     PROMPT_PULSE_LOW = 48,
     TITLE_BACKDROP_LEVEL = 32,
     TITLE_BACKDROP_WIDTH = 640,
     TITLE_BACKDROP_OT_DEPTH = 100,
     TITLE_OT_DEPTH = 200,
+    /* The banner is two abutting quads on one line of the title screen. */
+    BANNER_LEFT_X = 132,
+    BANNER_RIGHT_X = 388,
+    BANNER_Y = 172,
+    BANNER_LEFT_WIDTH = 255,
+    BANNER_RIGHT_WIDTH = 128,
+    BANNER_HEIGHT = 32,
     PRIMITIVE_BRIGHTNESS = 64,
     /* Voice played when a title choice is made. */
     CHOICE_VOICE_PROGRAM = 10,
@@ -124,8 +131,16 @@ b32 opening_draw_banner(KfTitleMode mode)
     current_poly_ft4->clut = getClut(0, 500);
     SetSemiTrans((void *)current_poly_ft4, 1);
     setRGB0(current_poly_ft4, banner_level, banner_level, banner_level);
-    setXYWH(current_poly_ft4, 160, 180, 320, 16);
-    setUVWH(current_poly_ft4, 0, 0, 255, 16);
+    setXYWH(current_poly_ft4, BANNER_LEFT_X, BANNER_Y, BANNER_LEFT_WIDTH, BANNER_HEIGHT);
+    setUVWH(current_poly_ft4, 0, 0, BANNER_LEFT_WIDTH, BANNER_HEIGHT);
+    primitive_buffer_commit_poly_ft4(TITLE_OT_DEPTH);
+    primitive_buffer_begin_poly_ft4();
+    setTPage(current_poly_ft4, 0, 1, 896, 0);
+    current_poly_ft4->clut = getClut(0, 500);
+    SetSemiTrans((void *)current_poly_ft4, 1);
+    setRGB0(current_poly_ft4, banner_level, banner_level, banner_level);
+    setXYWH(current_poly_ft4, BANNER_RIGHT_X, BANNER_Y, BANNER_RIGHT_WIDTH, BANNER_HEIGHT);
+    setUVWH(current_poly_ft4, 0, BANNER_HEIGHT, BANNER_RIGHT_WIDTH, BANNER_HEIGHT);
     primitive_buffer_commit_poly_ft4(TITLE_OT_DEPTH);
     return settled;
 }
@@ -157,8 +172,8 @@ void opening_draw_prompt(KfTitleMode mode)
     primitive_buffer_commit_poly_ft4(TITLE_OT_DEPTH);
 }
 
-/* A newly pressed face button or START starts the game; SELECT plays the
- * movie. Counts every polled frame in IDLE_FRAMES. */
+/* A newly pressed D-pad direction, START or SELECT starts the game. Counts
+ * every polled frame in IDLE_FRAMES. */
 ADDRESS(0x80013840, 0x144)
 KfOpeningChoice opening_poll_pad(const KfTitleMode *prompt_mode, s32 *idle_frames)
 {
@@ -169,14 +184,11 @@ KfOpeningChoice opening_poll_pad(const KfTitleMode *prompt_mode, s32 *idle_frame
         || (buttons & PADRright && !(pad_previous_buttons & PADRright))
         || (buttons & PADRdown && !(pad_previous_buttons & PADRdown))
         || (buttons & PADRleft && !(pad_previous_buttons & PADRleft))
-        || (buttons & PADstart && !(pad_previous_buttons & PADstart))) {
+        || (buttons & PADstart && !(pad_previous_buttons & PADstart))
+        || (buttons & PADselect && !(pad_previous_buttons & PADselect))) {
         audio_play_voice(audio_vab_id, CHOICE_VOICE_PROGRAM, 0, CHOICE_VOICE_NOTE,
             CHOICE_VOICE_VOLUME, CHOICE_VOICE_VOLUME);
         choice = KF_OPENING_START_GAME;
-    } else if (buttons & PADselect && !(pad_previous_buttons & PADselect)) {
-        audio_play_voice(audio_vab_id, CHOICE_VOICE_PROGRAM, 0, CHOICE_VOICE_NOTE,
-            CHOICE_VOICE_VOLUME, CHOICE_VOICE_VOLUME);
-        choice = KF_OPENING_PLAY_MOVIE;
     }
     pad_previous_buttons = buttons;
     (*idle_frames)++;

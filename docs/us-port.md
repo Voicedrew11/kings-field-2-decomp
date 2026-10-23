@@ -7,10 +7,13 @@ is the `kf init` directory (it holds `PSX.EXE`, a copy of `SLUS_001.58`) and
 
 ## Baseline
 
-`kf analyze` against the US executables: GAME 518/524, OPEN 15/26, END 7/13,
-PSX 0/1 exact. GAME data modules match 5/16 (menu_root's .data is exact); the
+`kf analyze` against the US executables: GAME 522/524, OPEN 25/26, END 13/13,
+PSX 1/1 exact. GAME data modules match 5/16 (menu_root's .data is exact); the
 rest is mostly the COMMON-bucket placement upstream also lacks
-(`kf common-order`).
+(`kf common-order`). PSX, OPEN and END relink; GAME does not, because it
+references extern-only `.bss` and PSX-image symbols (`DAT_800864dc`,
+`player_magic_attack_masks`, `DAT_800102f0`, `DAT_800102f8`) that no GAME
+unit defines.
 
 ## US facts the model now carries
 
@@ -29,33 +32,39 @@ rest is mostly the COMMON-bucket placement upstream also lacks
 - The attack masks moved out of `player_magic_id_sequence` (now 12 bytes) into
   `.sbss` `player_magic_attack_masks` at 0x8006e994.
 
+## More US facts
+
+- US OPEN and END link LIBSND `SsSetSerialAttr` and `SsSetSerialVol` (FID
+  HIGH); `audio_initialize` turns serial (CD) audio on at volume 0x7f.
+- The movie players set a per-movie `movie_last_frame` (.sbss) that `strNext`
+  compares against; US `strKickCD` reads with mode 0x1c0 (no `CdlModeSF`).
+  END's `strNext` does not store `StrFrame`: `ending_play_movie` counts it.
+- US OPEN plays OP0-OP2.S through `s32 opening_play_movie(s32 movie)`, skips
+  them when the PSX flag byte 0x800102f8 is 1, and loads `OPU.D` (`OP.D` with
+  all four right-hand buttons held).
+- `func_80012638` (US OPEN) is a sweep animation over three `.sdata` words
+  (0x8003e718..0x8003e720), so `open.audio` uses the G8 profile.
+
 ## Worklist
 
-GAME, all register-allocation residue with CFG, calls and referents equal:
+All three remaining functions agree with retail on CFG, calls and referents:
 
-- `func_8001883c` (98.5%): one MoveImage argument's load order.
-- `game_main_loop` (99.1%): the `li s2,1` lands one instruction early.
-- `menu_card_save_slot` (91.9%): slot/width/height rotate among s0, s2, s3.
-- `menu_format_number` (97.0%): retail strength-reduces the digit loop's
-  index away (cursor and signed compare against `out`); ours keeps the index.
-- `memory_card_write_slot` (99.2%): slot/path and attempt/checksum swap.
-- `event_map_object_interact` (99.3%): five locals permute s2..s6.
-
-OPEN and END:
-
-- US-only OPEN 0x80012638 (0x6f0) has no claim yet, so OPEN shows 25 started
-  of 26.
-- US OPEN plays OP0-OP2.S and loads `OPU.D`. US END plays ED0.S then ED1.S with
-  no sequence audio, so `ending_play_movie(s32)` is a compile-only placeholder.
-  US END's `audio_initialize` is 0x4c long, against 0x8c in OPEN.
-- Constant-only differences remain in `opening_draw_prompt` (compare 97, JP 101)
-  and `opening_open_audio` (VAB body 0x4e400, JP 0x497cc).
+- `menu_card_save_slot` (91.9%): `slot` and the constants 0xb2, 0x42 and 2
+  rotate among s0-s3; retail rematerializes 2 on the write path.
+- `memory_card_write_slot` (99.2%): retail materializes 0x4000 into s3 after
+  `write()` and reuses it for the `read()` compare; ours keeps `block_bytes`
+  in s7 from entry. Literal compares move the constant correctly but swap
+  slot and path between s2 and s3.
+- `func_80012638` (92.9%): retail keeps five loop values in s0-s7 (frame 56)
+  and advances x and x+255 as separate induction variables; ours saves s0-s6
+  and recomputes.
 
 ## Not yet redone for US
 
 - `functions_vendored.tsv` for END: 13 JP SDK functions have no US copy, and
   US END and OPEN link some library members in a different order. Rerun
-  `kf-fid-census`.
+  `kf-fid-census` over the remaining coverage gaps (only the two serial-audio
+  members have been admitted so far).
 - Tests under `tests/` still carry JP addresses, and the curated-inventory
   test stops on retarget leftovers (e.g. `memory_card_buffer_storage`'s extent
   against the US load end).

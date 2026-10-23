@@ -7,16 +7,19 @@ enum {
     DISPLAY_OUTPUT_ENABLED = 1
 };
 
-/* OPEN clears a 640-pixel frame to black; END keeps its 320-pixel frame. */
+/* OPEN starts a full GPU reset and a 640-pixel black frame; END keeps the
+ * display environment across its overlay hand-over and uses a 320-pixel
+ * frame with a white background. Both clear the background. */
 #ifdef KF_END
+#define DISPLAY_RESET_MODE KF_GPU_RESET_KEEP_DISPLAY
 #define DISPLAY_WIDTH 320
-#define DISPLAY_CLEARS_BACKGROUND 0
 #define DISPLAY_BACKGROUND_LEVEL 255
 #else
+#define DISPLAY_RESET_MODE KF_GPU_RESET_FULL
 #define DISPLAY_WIDTH 640
-#define DISPLAY_CLEARS_BACKGROUND 1
 #define DISPLAY_BACKGROUND_LEVEL 0
 #endif
+#define DISPLAY_CLEARS_BACKGROUND 1
 
 DATA_AT("OPEN", 0x800a6668, 0x4, ".bss")
 DATA_AT("END", 0x800a15ac, 0x4, ".bss")
@@ -34,7 +37,7 @@ ADDRESS_AT("OPEN", 0x80012180, 0x13c)
 ADDRESS_AT("END", 0x80011a68, 0x140)
 void display_initialize(void)
 {
-    ResetGraph(KF_GPU_RESET_FULL);
+    ResetGraph(DISPLAY_RESET_MODE);
     SetGraphDebug(0);
     InitGeom();
     SetGeomOffset(DISPLAY_WIDTH / 2, KF_DISPLAY_HEIGHT / 2);

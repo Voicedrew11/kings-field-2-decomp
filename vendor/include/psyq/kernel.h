@@ -28,6 +28,7 @@ extern long CloseEvent(long event);
 extern void EnterCriticalSection(void);
 extern void ExitCriticalSection(void);
 extern void ResetCallback(void);
+extern void StopCallback(void);
 
 extern void InitHeap(void *head, long size);
 extern void InitCARD(long pad_enable);
