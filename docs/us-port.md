@@ -7,7 +7,7 @@ is the `kf init` directory (it holds `PSX.EXE`, a copy of `SLUS_001.58`) and
 
 ## Baseline
 
-`kf analyze` against the US executables: GAME 522/524, OPEN 25/26, END 13/13,
+`kf analyze` against the US executables: GAME 524/524, OPEN 26/26, END 13/13,
 PSX 1/1 exact. GAME data modules match 5/16 (menu_root's .data is exact); the
 rest is mostly the COMMON-bucket placement upstream also lacks
 (`kf common-order`). PSX, OPEN and END relink; GAME does not, because it
@@ -45,19 +45,22 @@ unit defines.
 - `func_80012638` (US OPEN) is a sweep animation over three `.sdata` words
   (0x8003e718..0x8003e720), so `open.audio` uses the G8 profile.
 
-## Worklist
+## Shapes that closed the last three
 
-All three remaining functions agree with retail on CFG, calls and referents:
-
-- `menu_card_save_slot` (91.9%): `slot` and the constants 0xb2, 0x42 and 2
-  rotate among s0-s3; retail rematerializes 2 on the write path.
-- `memory_card_write_slot` (99.2%): retail materializes 0x4000 into s3 after
-  `write()` and reuses it for the `read()` compare; ours keeps `block_bytes`
-  in s7 from entry. Literal compares move the constant correctly but swap
-  slot and path between s2 and s3.
-- `func_80012638` (92.9%): retail keeps five loop values in s0-s7 (frame 56)
-  and advances x and x+255 as separate induction variables; ours saves s0-s6
-  and recomputes.
+- `memory_card_write_slot`: `write()` and `read()` results go into one
+  `transferred` local inside nested `if`s, and the checksum compare puts
+  `checksum` first. CSE then reuses the 0x4000 constant register for the
+  `read()` compare instead of the dead `write()` result.
+- `menu_card_save_slot`: one local carries the probe dialogs' overlap (2) and
+  then the write dialogs' height (66), assigned in the write call's argument
+  list. The two failure arms each call `menu_draw_card_dialog_rows` (jump2
+  cross-jumps them) and share one wait. Forward `goto done` replaces
+  `do { } while (0)`.
+- `func_80012638`: literal UV corners (hoisted per loop), x written as
+  `0xc0 + i * 2` (strength-reduced with x+255), CLUT as `row * 64 + 1`, `i`
+  reused for the second quad's level, and no `mode < 13 - phase` guard: that
+  test is the `for` loop's entry check with `mode` (known 0) standing in for
+  `i`. The second quad is drawn once the frame counter reaches 88.
 
 ## Not yet redone for US
 

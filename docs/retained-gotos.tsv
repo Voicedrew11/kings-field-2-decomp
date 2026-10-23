@@ -113,6 +113,7 @@ src/game/map_object_action_update.c	map_object_update_actions	start_action_19	2	
 src/game/map_object_action_update.c	map_object_update_actions	clear_action_trigger	1	shared case tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/matrix_rotation.c	vector_distance_to_point	reject	2	shared tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/memory_card_events.c	memory_card_read_slot	retry	1	retry loop	do/while 84.2%, for (;;) 85.7%: a structured loop enables loop.c
+src/game/menu_root.c	menu_card_save_slot	done	2	forward jump	do/while (0) with break 96.6%: the loop weights slot's references and swaps its saved register with the 0xb2 width constant
 src/game/menu_root.c	menu_preview_choice	finished	1	shared body before the jump	break and exit after the loop 91.4%: retail keeps the exit before the loop
 src/game/menu_root.c	menu_preview_choice	labels_ready	1	forward jump	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/player_runtime.c	player_dispatch_magic_effect	simple_probe	1	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target

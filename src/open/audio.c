@@ -66,15 +66,12 @@ enum {
     SWEEP_OT_DEPTH = 200
 };
 
+/* The sweep rows spell the CLUT as row * 64 + 1 (getClut(16, row)); retail
+ * adds the x term with addiu where getClut's `|` emits ori. */
 ADDRESS(0x80012638, 0x6f0)
 s32 func_80012638(s32 mode)
 {
     s32 i;
-    s32 level;
-    s32 x;
-    s32 uv_top = 160;
-    s32 uv_width = 255;
-    s32 uv_height = 72;
 
     if (mode == 2) {
         DAT_8003e718 = 0;
@@ -96,30 +93,24 @@ s32 func_80012638(s32 mode)
         }
     }
     if (mode == 0 && DAT_8003e71c == 0) {
-        x = 0xc0;
         for (i = 0; i < SWEEP_ROWS; i++) {
             primitive_buffer_begin_poly_ft4();
             setTPage(current_poly_ft4, 0, 1, 896, 0);
-            current_poly_ft4->clut = getClut(16, 0x1eb - i);
+            current_poly_ft4->clut = (0x1eb - i) * 64 + 1;
             setRGB0(current_poly_ft4, (u8)DAT_8003e718, (u8)DAT_8003e718, (u8)DAT_8003e718);
-            setXYWH(current_poly_ft4, x, 102 + i, 255, 36);
-            setUVWH(current_poly_ft4, 0, uv_top, uv_width, uv_height);
+            setXYWH(current_poly_ft4, 0xc0 + i * 2, 102 + i, 255, 36);
+            setUVWH(current_poly_ft4, 0, 160, 255, 72);
             primitive_buffer_commit_poly_ft4(SWEEP_OT_DEPTH - i);
-            x += 2;
         }
     } else if (mode == 0 && DAT_8003e71c != SWEEP_PHASE_DONE) {
-        if (mode < SWEEP_PHASES - DAT_8003e71c) {
-            x = 0xc0;
-            for (i = 0; i < SWEEP_PHASES - DAT_8003e71c; i++) {
-                primitive_buffer_begin_poly_ft4();
-                setTPage(current_poly_ft4, 0, 1, 896, 0);
-                current_poly_ft4->clut = getClut(16, 0x1ec - i - DAT_8003e71c);
-                setRGB0(current_poly_ft4, (u8)DAT_8003e718, (u8)DAT_8003e718, (u8)DAT_8003e718);
-                setXYWH(current_poly_ft4, x, 102 + i, 255, 36);
-                setUVWH(current_poly_ft4, 0, uv_top, uv_width, uv_height);
-                primitive_buffer_commit_poly_ft4(SWEEP_OT_DEPTH - i);
-                x += 2;
-            }
+        for (i = 0; i < SWEEP_PHASES - DAT_8003e71c; i++) {
+            primitive_buffer_begin_poly_ft4();
+            setTPage(current_poly_ft4, 0, 1, 896, 0);
+            current_poly_ft4->clut = (0x1ec - DAT_8003e71c - i) * 64 + 1;
+            setRGB0(current_poly_ft4, (u8)DAT_8003e718, (u8)DAT_8003e718, (u8)DAT_8003e718);
+            setXYWH(current_poly_ft4, 0xc0 + i * 2, 102 + i, 255, 36);
+            setUVWH(current_poly_ft4, 0, 160, 255, 72);
+            primitive_buffer_commit_poly_ft4(SWEEP_OT_DEPTH - i);
         }
         DAT_8003e71c++;
         if (DAT_8003e71c == SWEEP_PHASES) {
@@ -132,22 +123,22 @@ s32 func_80012638(s32 mode)
         current_poly_ft4->clut = getClut(16, 480);
         setRGB0(current_poly_ft4, (u8)DAT_8003e718, (u8)DAT_8003e718, (u8)DAT_8003e718);
         setXYWH(current_poly_ft4, 0xc0, 0x66, 255, 36);
-        setUVWH(current_poly_ft4, 0, uv_top, uv_width, uv_height);
+        setUVWH(current_poly_ft4, 0, 160, 255, 72);
         primitive_buffer_commit_poly_ft4(SWEEP_OT_DEPTH);
-        if (mode == 1 || DAT_8003e720 < SWEEP_FRAME_LIMIT) {
+        if (mode == 1 || DAT_8003e720 >= SWEEP_FRAME_LIMIT) {
             primitive_buffer_begin_poly_ft4();
             setTPage(current_poly_ft4, 0, 1, 896, 0);
             current_poly_ft4->clut = getClut(16, 480);
             SetSemiTrans(current_poly_ft4, 1);
             if (mode == 0) {
-                level = DAT_8003e720 - (SWEEP_FRAME_LIMIT - 1);
-                if (DAT_8003e718 + 12 < level) {
-                    level = DAT_8003e718 + 12;
+                i = DAT_8003e720 - (SWEEP_FRAME_LIMIT - 1);
+                if (DAT_8003e718 + 12 < i) {
+                    i = DAT_8003e718 + 12;
                 }
             } else {
-                level = DAT_8003e718;
+                i = DAT_8003e718;
             }
-            setRGB0(current_poly_ft4, level, level, level);
+            setRGB0(current_poly_ft4, i, i, i);
             setXYWH(current_poly_ft4, 0xc0, 0x8a, 255, 12);
             setUVWH(current_poly_ft4, 0, 0xe7, 255, 24);
             primitive_buffer_commit_poly_ft4(SWEEP_OT_DEPTH);

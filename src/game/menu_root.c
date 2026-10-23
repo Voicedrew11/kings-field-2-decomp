@@ -1935,46 +1935,42 @@ void menu_card_save_slot(s32 slot)
 {
     KfMenuGlyphString rows[4];
     s32 result = memory_card_probe_temporary_file();
-    s32 overlap_x = 2;
-    s32 x;
-    s32 width;
-    s32 height;
+    /* One local is the probe dialogs' overlap and then the write dialogs'
+       height; retail keeps both values in s0. */
+    s32 metric = 2;
 
-    do {
-        if (result != KF_CARD_PROBE_OK) {
-            if (result != KF_CARD_PROBE_CREATE_FAILED) {
-                menu_prepare_card_io_error_rows(rows);
-                MENU_CARD_DIALOG_WAIT(rows, 2, 70, 178, 66, overlap_x);
-                break;
-            }
-            if (menu_confirm_card_format(KF_MENU_CARD_FORMAT_WITH_NOTICE) == KF_MENU_RESULT_ACCEPTED) {
-                memory_card_format();
-            } else {
-                menu_prepare_card_format_declined_rows(rows);
-                MENU_CARD_DIALOG_WAIT(rows, 2, 63, 192, 66, overlap_x);
-                break;
-            }
-        }
-
-        menu_prepare_card_write_rows(rows);
-        width = 178;
-        height = 66;
-        menu_draw_card_dialog_rows(rows, 1, 70, 91, width, height, overlap_x, 0);
-        result = memory_card_write_slot(slot);
-        if (result == KF_CARD_WRITE_OK) {
-            return;
-        }
-        if (result == KF_CARD_WRITE_IO_FAILURE) {
+    if (result != KF_CARD_PROBE_OK) {
+        if (result != KF_CARD_PROBE_CREATE_FAILED) {
             menu_prepare_card_io_error_rows(rows);
-            x = 70;
-        } else {
-            menu_prepare_card_write_full_rows(rows);
-            x = 56;
-            width = 206;
+            MENU_CARD_DIALOG_WAIT(rows, 2, 70, 178, 66, metric);
+            goto done;
         }
-        MENU_CARD_DIALOG_WAIT(rows, 2, x, width, height, overlap_x);
-    } while (0);
+        if (menu_confirm_card_format(KF_MENU_CARD_FORMAT_WITH_NOTICE) == KF_MENU_RESULT_ACCEPTED) {
+            memory_card_format();
+        } else {
+            menu_prepare_card_format_declined_rows(rows);
+            MENU_CARD_DIALOG_WAIT(rows, 2, 63, 192, 66, metric);
+            goto done;
+        }
+    }
 
+    menu_prepare_card_write_rows(rows);
+    menu_draw_card_dialog_rows(rows, 1, 70, 91, 178, metric = 66, 2, 0);
+    result = memory_card_write_slot(slot);
+    if (result == KF_CARD_WRITE_OK) {
+        return;
+    }
+    if (result == KF_CARD_WRITE_IO_FAILURE) {
+        menu_prepare_card_io_error_rows(rows);
+        menu_draw_card_dialog_rows(rows, 2, 70, 91, 178, metric, 2, 0);
+    } else {
+        menu_prepare_card_write_full_rows(rows);
+        menu_draw_card_dialog_rows(rows, 2, 56, 91, 206, metric, 2, 0);
+    }
+    input_wait_release();
+    while (PadRead(1) == 0) {}
+
+done:
     input_wait_release();
 }
 

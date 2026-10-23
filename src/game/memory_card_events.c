@@ -323,7 +323,7 @@ s32 memory_card_write_slot(s32 slot)
     s32 handle;
     u32 checksum;
     s32 attempt = 0;
-    s32 block_bytes = KF_CARD_BLOCK_BYTES;
+    s32 transferred;
 
     memset((void *)occupied, 0, sizeof(occupied));
     memset((void *)entries, 0, sizeof(entries));
@@ -392,16 +392,21 @@ retry:
         present = KF_TRUE;
     }
     handle = open(path, FWRITE);
-    if (handle != -1 && write(handle, (const void *)memory_card_buffer, KF_CARD_BLOCK_BYTES)
-            == block_bytes) {
-        close(handle);
-        handle = open(path, FREAD);
-        if (handle != -1 && read(handle, (void *)memory_card_buffer, KF_CARD_BLOCK_BYTES)
-                == block_bytes) {
+    if (handle != -1) {
+        transferred = write(handle, (const void *)memory_card_buffer, KF_CARD_BLOCK_BYTES);
+        if (transferred == KF_CARD_BLOCK_BYTES) {
             close(handle);
-            if (memory_card_payload_byte_sum(memory_card_buffer + KF_CARD_HEADER_BYTES) == checksum) {
-                memory_card_loaded_slot = slot;
-                return KF_CARD_WRITE_OK;
+            handle = open(path, FREAD);
+            if (handle != -1) {
+                transferred = read(handle, (void *)memory_card_buffer, KF_CARD_BLOCK_BYTES);
+                if (transferred == KF_CARD_BLOCK_BYTES) {
+                    close(handle);
+                    if (checksum == memory_card_payload_byte_sum(
+                            memory_card_buffer + KF_CARD_HEADER_BYTES)) {
+                        memory_card_loaded_slot = slot;
+                        return KF_CARD_WRITE_OK;
+                    }
+                }
             }
         }
     }
