@@ -420,8 +420,8 @@ retry:
 ADDRESS(0x80023cc0, 0x110)
 void memory_card_write_title_stats(KfCardHeader *header, s32 slot_glyph)
 {
-    s32 experience = player_state.experience;
-    s32 level = player_state.level;
+    s32 experience = cur_avatar_status.experience;
+    s32 level = cur_avatar_status.level;
     s32 index;
 
     header->title[CARD_TITLE_SLOT_DIGIT_OFFSET] = CARD_SHIFT_JIS_DIGIT_LEAD;

@@ -15,17 +15,17 @@ void player_update_collision_bounds(void)
     s32 upper;
 
     lower = KF_COLLISION_CACHE_LOWER_BOUND + KF_PLAYER_CAMERA_EYE_OFFSET;
-    lower -= player_state.camera_vertical_offset + player_state.camera_position.vy
-           + player_state.landing_vertical_offset;
-    player_state.collision_lower_clearance = lower;
+    lower -= cur_avatar_status.camera_vertical_offset + cur_avatar_status.camera_position.vy
+           + cur_avatar_status.landing_vertical_offset;
+    cur_avatar_status.collision_lower_clearance = lower;
     if (lower < COLLISION_LOWER_DEATH_LIMIT) {
         player_death_begin(NULL);
     }
 
     upper = KF_COLLISION_CACHE_UPPER_BOUND + KF_PLAYER_CAMERA_EYE_OFFSET;
-    upper -= player_state.camera_vertical_offset + player_state.camera_position.vy
-           + player_state.landing_vertical_offset;
-    player_state.collision_upper_clearance = upper;
+    upper -= cur_avatar_status.camera_vertical_offset + cur_avatar_status.camera_position.vy
+           + cur_avatar_status.landing_vertical_offset;
+    cur_avatar_status.collision_upper_clearance = upper;
     if (upper <= 0) {
         player_death_begin(NULL);
     }
@@ -37,7 +37,7 @@ s32 player_distance_to_point_with_margin(
     s32 point_height)
 {
     return vector_distance_to_point(
-        &player_state.camera_position, point_x, point_y, point_z,
+        &cur_avatar_status.camera_position, point_x, point_y, point_z,
         max_distance + KF_PLAYER_COLLISION_RADIUS, KF_PLAYER_HEIGHT,
         point_height);
 }
@@ -49,26 +49,26 @@ enum {
 ADDRESS(0x80023fcc, 0xec)
 void player_reset_view(void)
 {
-    player_state.camera_vertical_offset = 0;
-    player_state.walking_bob_phase = 0;
-    player_state.landing_vertical_offset = 0;
-    player_state.vertical_motion_state = KF_PLAYER_VERTICAL_GROUNDED;
-    player_state.vertical_velocity = 0;
-    player_state.death_state = KF_PLAYER_REACTION_NORMAL;
-    player_state.camera_yaw_roll_offsets[1] = 0;
-    player_state.camera_yaw_roll_offsets[0] = 0;
-    player_state.vertical_motion_pitch_offset = 0;
-    player_state.view_rotation_offset.components[2] = 0;
-    player_state.view_rotation_offset.components[1] = 0;
-    player_state.view_rotation_offset.components[0] = 0;
-    player_state.reaction_rotation_offset[2] = 0;
-    player_state.reaction_rotation_offset[1] = 0;
-    player_state.reaction_rotation_offset[0] = 0;
-    player_state.camera_rotation = player_state.camera_rotation_target;
-    player_state.movement_speed_adjustment_q12 = 0;
-    player_state.movement_speed_adjustment_decay_latch = 0;
-    player_state.damage_scale = KF_FIXED12_ONE;
-    player_state.queued_magic_action.magic_id = KF_MAGIC_NONE;
-    player_state.collision_lower_clearance = PLAYER_COLLISION_CLEARANCE_INITIAL;
-    player_state.collision_upper_clearance = PLAYER_COLLISION_CLEARANCE_INITIAL;
+    cur_avatar_status.camera_vertical_offset = 0;
+    cur_avatar_status.walking_bob_phase = 0;
+    cur_avatar_status.landing_vertical_offset = 0;
+    cur_avatar_status.vertical_motion_state = KF_PLAYER_VERTICAL_GROUNDED;
+    cur_avatar_status.vertical_velocity = 0;
+    cur_avatar_status.death_state = KF_PLAYER_REACTION_NORMAL;
+    cur_avatar_status.camera_yaw_roll_offsets[1] = 0;
+    cur_avatar_status.camera_yaw_roll_offsets[0] = 0;
+    cur_avatar_status.vertical_motion_pitch_offset = 0;
+    cur_avatar_status.view_rotation_offset.components[2] = 0;
+    cur_avatar_status.view_rotation_offset.components[1] = 0;
+    cur_avatar_status.view_rotation_offset.components[0] = 0;
+    cur_avatar_status.reaction_rotation_offset[2] = 0;
+    cur_avatar_status.reaction_rotation_offset[1] = 0;
+    cur_avatar_status.reaction_rotation_offset[0] = 0;
+    cur_avatar_status.camera_rotation = cur_avatar_status.camera_rotation_target;
+    cur_avatar_status.movement_speed_adjustment_q12 = 0;
+    cur_avatar_status.movement_speed_adjustment_decay_latch = 0;
+    cur_avatar_status.damage_scale = KF_FIXED12_ONE;
+    cur_avatar_status.queued_magic_action.magic_id = KF_MAGIC_NONE;
+    cur_avatar_status.collision_lower_clearance = PLAYER_COLLISION_CLEARANCE_INITIAL;
+    cur_avatar_status.collision_upper_clearance = PLAYER_COLLISION_CLEARANCE_INITIAL;
 }

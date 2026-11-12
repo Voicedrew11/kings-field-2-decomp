@@ -22,7 +22,7 @@ enum {
     KF_RESOURCE_OFFSET_NO_SHIFT = 127
 };
 
-extern u8 resource_tmd_workspace[0x37000];
+extern u8 resource_tmd_arc_work[0x37000];
 
 KF_ENUM_PARAM(KfMapLayerMask, u32) map_cell_layer_mask(const VECTOR *position);
 KF_ENUM_PARAM(KfMapLayerMask, u32) map_cell_layer_mask_radius(

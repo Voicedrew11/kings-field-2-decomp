@@ -252,7 +252,7 @@ collision_evaluate_shape_records::other_layer_visited	converted	member is now a 
 collision_probe_forward_shape_0x20:return	converted	member is now a Boolean storage type	1	collision_probe_forward_shape_0x20:return
 directed_intervals_overlap:return	converted	member is now a Boolean storage type	0	directed_intervals_overlap:return
 open_screen_shade	reject	counter or arithmetic quantity (incremented/decremented)	2	open_screen_shade
-display_frame_cleared_word	reject	single value 0	1	display_frame_cleared_word
+frame_cleared_state	reject	single value 0	1	frame_cleared_state
 effect_apply_radial_magic_damage:arg1	reject	counter or arithmetic quantity (incremented/decremented)	2	effect_apply_radial_magic_damage:arg1
 effect_probe_collision_by_type:return&0xf	reject	masked bit of a wider flags or packed word (flags-domain review, not a Boolean slot)	1	effect_probe_collision_by_type:return&0xf
 effect_scatter_lower_bound:return	converted	member is now a Boolean storage type	0	effect_scatter_lower_bound:return
@@ -274,7 +274,7 @@ fixed_lerp_q12:arg0	reject	counter or arithmetic quantity (incremented/decrement
 format:return	reject	SDK/libc boundary format	1	format:return
 game_counter_decrement:return	converted	member is now a Boolean storage type	0	game_counter_decrement:return
 game_counter_increment:return	converted	member is now a Boolean storage type	0	game_counter_increment:return
-game_main_exit_flag	e1	named GAME_MAIN_RUNNING/EXIT_REQUESTED states	0	game_main_exit_flag
+main_end_flag	e1	named GAME_MAIN_RUNNING/EXIT_REQUESTED states	0	main_end_flag
 input_press_pending	converted	member is now a Boolean storage type	0	input_press_pending
 input_wait_brief_release::polls	reject	counter or arithmetic quantity (incremented/decremented)	1	input_wait_brief_release::polls
 item_id_is_71_to_80:return	converted	member is now a Boolean storage type	2	item_id_is_71_to_80:return

@@ -478,7 +478,7 @@ typedef char kf_effect_records_offset[offsetof(KfEffectState, records) == 0x680 
 typedef char kf_effect_current_magic_offset[offsetof(KfEffectState, current_magic) == 0x2a80 ? 1 : -1];
 typedef char kf_effect_current_index_offset[offsetof(KfEffectState, current_index) == 0x2a88 ? 1 : -1];
 
-extern KfEffectState effect_state;
+extern KfEffectState effect_status;
 
 int effect_magic_power(KfEffectRecord *effect);
 void effect_dispatch_magic_impact(KF_ENUM_PARAM(KfCollisionHitFlags, s32) kind,

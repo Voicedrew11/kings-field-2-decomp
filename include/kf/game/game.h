@@ -12,7 +12,7 @@ KF_ENUM_BEGIN(KfGameMainState, u32)
     GAME_MAIN_EXIT_ALTERNATE = 9
 KF_ENUM_END(KfGameMainState)
 
-extern KfGameMainState game_main_exit_flag;
+extern KfGameMainState main_end_flag;
 
 void game_main_loop(void);
 void game_shutdown(void);

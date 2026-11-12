@@ -26,7 +26,7 @@ void interpolate_collision_filter_rows(u8 type0, u8 type1, u8 type2, s32 angle, 
 
 /* Phase-one resource loading copies 0x600 words into this bank: a table of
  * shape offsets followed by the shapes. */
-#define KF_COLLISION_SHAPE_BANK bss_801c7540.shape_bank
+#define KF_COLLISION_SHAPE_BANK pl_ext_7540.shape_bank
 #define KF_COLLISION_SHAPE_BANK_BYTES 0x1800
 
 typedef struct KfCollisionShapeOffsetTable {
@@ -96,11 +96,11 @@ typedef char kf_shape_wall_record_size[sizeof(KfShapeWallRecord) == 8 ? 1 : -1];
 typedef char kf_shape_slope_record_size[sizeof(KfShapeSlopeRecord) == 12 ? 1 : -1];
 typedef char kf_shape_ledge_record_size[sizeof(KfShapeLedgeRecord) == 10 ? 1 : -1];
 
-/* A cast view of bss_801c7540.collision_cache. The field spelling compiles
+/* A cast view of pl_ext_7540.collision_cache. The field spelling compiles
  * to different register allocation in collision_evaluate_shape_records and
  * collision_sample_map_layer_height. */
 #define KF_COLLISION_CACHE \
-    (*(KfCollisionCache *)((u8 *)&bss_801c7540 + 0x11800))
+    (*(KfCollisionCache *)((u8 *)&pl_ext_7540 + 0x11800))
 #define KF_COLLISION_CACHE_CELL KF_COLLISION_CACHE.cell
 #define KF_COLLISION_CACHE_SHAPE KF_COLLISION_CACHE.shape
 #define KF_COLLISION_CACHE_LAYER KF_COLLISION_CACHE.layer

@@ -141,12 +141,26 @@ typedef struct KfCdState {
 
 typedef char kf_cd_state_size[sizeof(KfCdState) == 0x2a4 ? 1 : -1];
 
+/* One exported COMMON object in retail: the archives follow the state at
+ * +0x2a4 with no 8-byte COMMON rounding between them, and the next global
+ * starts after the whole block rounded to 8. The stream buffer's extent is
+ * provisional: the first map payload copies 0xfa00 bytes from it. */
+typedef struct KfCdMemory {
+    KfCdState state;
+    KfCdArchive archives[KF_CD_ARCHIVE_SLOTS];
+    u8 stream_work_buffer[0x11000];
+} KfCdMemory;
+
+typedef char kf_cd_memory_size[sizeof(KfCdMemory) == 0x11304 ? 1 : -1];
+typedef char kf_cd_memory_archives_offset[
+    offsetof(KfCdMemory, archives) == 0x2a4 ? 1 : -1];
+typedef char kf_cd_memory_stream_offset[
+    offsetof(KfCdMemory, stream_work_buffer) == 0x304 ? 1 : -1];
+
 extern char cd_path_prefix[5];
 extern char cd_version_suffix[3];
-extern KfCdArchive cd_archives[KF_CD_ARCHIVE_SLOTS];
-extern KfCdState cd_state;
-extern u8 cd_stream_work_buffer[];
-extern u8 DAT_800864dc;
+extern KfCdMemory cdrom_ctl;
+extern u8 startup_in_progress;
 
 s32 cd_bcd_to_int(u8 bcd);
 u32 cd_int_to_bcd(u8 value);

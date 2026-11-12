@@ -366,11 +366,11 @@ void menu_draw_location_number(void)
 
     row.position.x = 252;
     row.position.y = 205;
-    camera_x = player_state.camera_position.vx;
-    camera_z = player_state.camera_position.vz;
-    map_layer = player_state.map_layer_index;
+    camera_x = cur_avatar_status.camera_position.vx;
+    camera_z = cur_avatar_status.camera_position.vz;
+    map_layer = cur_avatar_status.map_layer_index;
     grid_z = camera_z >> KF_MAP_CELL_POSITION_SHIFT;
-    prefix = resource_state.current_map_region_id * MENU_LOCATION_REGION_PLACE
+    prefix = asset_status.current_map_region_id * MENU_LOCATION_REGION_PLACE
            + map_layer * MENU_LOCATION_LAYER_PLACE
            + (camera_x >> KF_MAP_CELL_POSITION_SHIFT) * MENU_LOCATION_CELL_X_PLACE;
     value = prefix + grid_z;
@@ -392,7 +392,7 @@ s32 menu_item_selection_controller(void)
     s32 frame;
     u8 selected_item;
 
-    count = menu_collect_masked_item_rows(game_counter_bytes, rows, values, indices,
+    count = menu_collect_masked_item_rows(event_item_counters_table, rows, values, indices,
                                           MENU_MAP_ITEM_FIRST, KF_ITEM_ID_LAST);
     menu_list_init(&menu.list, KF_MENU_WINDOW_ROOT, KF_MENU_ROOT_USE_ITEM);
     menu.list.entry_count = count;
@@ -496,15 +496,15 @@ s32 menu_collect_available_item_rows(const u8 *mask, KfMenuGlyphRow *rows,
     while (index < last) {
         if (*entry != 0) {
             *values = *entry;
-            if (index == KF_ENUM_ENCODE(u8, player_state.equipped_weapon_id)
-                || index == KF_ENUM_ENCODE(u8, player_state.equipped_head_id)
-                || index == KF_ENUM_ENCODE(u8, player_state.equipped_body_id)
-                || index == KF_ENUM_ENCODE(u8, player_state.equipped_arm_id)
-                || index == KF_ENUM_ENCODE(u8, player_state.equipped_leg_id)
-                || index == KF_ENUM_ENCODE(u8, player_state.equipped_shield_id)
-                || index == KF_ENUM_ENCODE(u8, player_state.equipped_accessory_id)
-                || index == KF_ENUM_ENCODE(u8, player_state.equipped_extra_id)
-                || index == KF_ENUM_ENCODE(u8, player_state.secondary_item_shortcut_id)) {
+            if (index == KF_ENUM_ENCODE(u8, cur_avatar_status.equipped_weapon_id)
+                || index == KF_ENUM_ENCODE(u8, cur_avatar_status.equipped_head_id)
+                || index == KF_ENUM_ENCODE(u8, cur_avatar_status.equipped_body_id)
+                || index == KF_ENUM_ENCODE(u8, cur_avatar_status.equipped_arm_id)
+                || index == KF_ENUM_ENCODE(u8, cur_avatar_status.equipped_leg_id)
+                || index == KF_ENUM_ENCODE(u8, cur_avatar_status.equipped_shield_id)
+                || index == KF_ENUM_ENCODE(u8, cur_avatar_status.equipped_accessory_id)
+                || index == KF_ENUM_ENCODE(u8, cur_avatar_status.equipped_extra_id)
+                || index == KF_ENUM_ENCODE(u8, cur_avatar_status.secondary_item_shortcut_id)) {
                 --*values;
                 }
             if (*values != 0) {
@@ -555,59 +555,59 @@ void menu_apply_item_effect(KF_ENUM_PARAM(KfObjectId, s32) item_id)
 {
     u16 current_hp;
 
-    if (game_counter_bytes[KF_ENUM_ENCODE(s32, item_id)] == 0) {
+    if (event_item_counters_table[KF_ENUM_ENCODE(s32, item_id)] == 0) {
         return;
     }
 
     if (item_id == KF_ITEM_RELIEVE_AILMENTS) {
-        if (player_state.paralysis_timer > 0) {
-            player_state.paralysis_timer = 0;
+        if (cur_avatar_status.paralysis_timer > 0) {
+            cur_avatar_status.paralysis_timer = 0;
         }
-        if (player_state.slow_timer > MENU_STATUS_RELIEF_CAP) {
-            player_state.slow_timer = MENU_STATUS_RELIEF_CAP;
+        if (cur_avatar_status.slow_timer > MENU_STATUS_RELIEF_CAP) {
+            cur_avatar_status.slow_timer = MENU_STATUS_RELIEF_CAP;
         }
         player_cap_curse_strength();
         player_cap_darkness_phase();
     } else if (item_id == KF_ITEM_RESTORE_MP_40) {
-        player_state.vitals.current_mp += 40;
+        cur_avatar_status.vitals.current_mp += 40;
     } else if (item_id == KF_ITEM_RAISE_BASE_MAGIC) {
-        player_state.base_magic++;
+        cur_avatar_status.base_magic++;
         player_recalculate_combat_stats();
     } else if (item_id == KF_ITEM_RESTORE_HP_40) {
-        player_state.vitals.current_hp += 40;
+        cur_avatar_status.vitals.current_hp += 40;
     } else if (item_id == KF_ITEM_CURE_POISON_RESTORE_HP_15) {
-        current_hp = player_state.vitals.current_hp;
-        player_state.poison_timer = 0;
-        player_state.vitals.current_hp = current_hp + 15;
+        current_hp = cur_avatar_status.vitals.current_hp;
+        cur_avatar_status.poison_timer = 0;
+        cur_avatar_status.vitals.current_hp = current_hp + 15;
     } else if (item_id == KF_ITEM_FULL_RESTORE) {
-        player_state.vitals.current_hp = player_state.vitals.maximum_hp;
-        player_state.vitals.current_mp = player_state.vitals.maximum_mp;
+        cur_avatar_status.vitals.current_hp = cur_avatar_status.vitals.maximum_hp;
+        cur_avatar_status.vitals.current_mp = cur_avatar_status.vitals.maximum_mp;
         player_clear_and_cap_status_effects();
     } else if (item_id == KF_ITEM_RESTORE_HP_100) {
-        player_state.vitals.current_hp += 100;
+        cur_avatar_status.vitals.current_hp += 100;
     } else if (item_id == KF_ITEM_RESTORE_MP_50) {
-        player_state.vitals.current_mp += 50;
+        cur_avatar_status.vitals.current_mp += 50;
     }
 
     if (item_id == KF_ITEM_CLEAR_AILMENTS) {
         player_clear_and_cap_status_effects();
     } else if (item_id == KF_ITEM_MIXED_RESTORE) {
-        player_state.vitals.current_hp += 100;
-        player_state.vitals.current_mp += 50;
+        cur_avatar_status.vitals.current_hp += 100;
+        cur_avatar_status.vitals.current_mp += 50;
         player_clear_and_cap_status_effects();
     }
 
-    if (player_state.vitals.current_hp > player_state.vitals.maximum_hp) {
-        player_state.vitals.current_hp = player_state.vitals.maximum_hp;
+    if (cur_avatar_status.vitals.current_hp > cur_avatar_status.vitals.maximum_hp) {
+        cur_avatar_status.vitals.current_hp = cur_avatar_status.vitals.maximum_hp;
     }
-    if (player_state.vitals.current_mp > player_state.vitals.maximum_mp) {
-        player_state.vitals.current_mp = player_state.vitals.maximum_mp;
+    if (cur_avatar_status.vitals.current_mp > cur_avatar_status.vitals.maximum_mp) {
+        cur_avatar_status.vitals.current_mp = cur_avatar_status.vitals.maximum_mp;
     }
 
-    game_counter_bytes[KF_ENUM_ENCODE(s32, item_id)]--;
+    event_item_counters_table[KF_ENUM_ENCODE(s32, item_id)]--;
     if ((u32)(KF_ENUM_ENCODE(s32, item_id) - KF_ENUM_ENCODE(s32, KF_ITEM_RESTORE_HP_100)) < 2 ||
         (u32)(KF_ENUM_ENCODE(s32, item_id) - KF_ENUM_ENCODE(s32, KF_ITEM_CLEAR_AILMENTS)) < 2) {
-        game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_82)]++;
+        event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_82)]++;
         }
     menu_play_sound_cue(KF_MENU_SOUND_ITEM_USED);
 }
@@ -615,13 +615,13 @@ void menu_apply_item_effect(KF_ENUM_PARAM(KfObjectId, s32) item_id)
 ADDRESS(0x80019a88, 0x6c)
 void player_clear_and_cap_status_effects(void)
 {
-    if (player_state.paralysis_timer > 0) {
-        player_state.paralysis_timer = 0;
+    if (cur_avatar_status.paralysis_timer > 0) {
+        cur_avatar_status.paralysis_timer = 0;
     }
-    if (player_state.slow_timer > MENU_STATUS_RELIEF_CAP) {
-        player_state.slow_timer = MENU_STATUS_RELIEF_CAP;
+    if (cur_avatar_status.slow_timer > MENU_STATUS_RELIEF_CAP) {
+        cur_avatar_status.slow_timer = MENU_STATUS_RELIEF_CAP;
     }
-    player_state.poison_timer = 0;
+    cur_avatar_status.poison_timer = 0;
     player_cap_curse_strength();
     player_cap_darkness_phase();
 }
@@ -629,18 +629,18 @@ void player_clear_and_cap_status_effects(void)
 ADDRESS(0x80019af4, 0x30)
 void player_cap_darkness_phase(void)
 {
-    if (player_state.darkness_phase > MENU_STATUS_RELIEF_CAP) {
-        player_state.darkness_phase = MENU_STATUS_RELIEF_CAP;
-        player_state.darkness_phase_limit = 0;
+    if (cur_avatar_status.darkness_phase > MENU_STATUS_RELIEF_CAP) {
+        cur_avatar_status.darkness_phase = MENU_STATUS_RELIEF_CAP;
+        cur_avatar_status.darkness_phase_limit = 0;
     }
 }
 
 ADDRESS(0x80019b24, 0x30)
 void player_cap_curse_strength(void)
 {
-    if (player_state.curse_strength > MENU_STATUS_RELIEF_CAP) {
-        player_state.curse_strength = MENU_STATUS_RELIEF_CAP;
-        player_state.curse_phase_limit = 0;
+    if (cur_avatar_status.curse_strength > MENU_STATUS_RELIEF_CAP) {
+        cur_avatar_status.curse_strength = MENU_STATUS_RELIEF_CAP;
+        cur_avatar_status.curse_phase_limit = 0;
     }
 }
 
@@ -656,7 +656,7 @@ void menu_show_map_preview(s32 menu_code)
     s32 u0;
 
     map_index = (menu_code - MENU_MAP_ITEM_FIRST) & 0xff;
-    map_offset = resource_state.current_map_region_id + MENU_MAP_ARCHIVE_FIRST_ENTRY;
+    map_offset = asset_status.current_map_region_id + MENU_MAP_ARCHIVE_FIRST_ENTRY;
     index = map_index * MENU_MAP_ARCHIVE_ENTRIES_PER_ITEM + map_offset;
     image = memory_allocate(cd_archive_entry_extent(KF_RESOURCE_ARCHIVE_ITEM, index, NULL));
     cd_archive_read(KF_RESOURCE_ARCHIVE_ITEM, index, (u_long *)image);
@@ -678,11 +678,11 @@ void menu_show_map_preview(s32 menu_code)
         current_poly_ft4->tpage = 0x1c;
         current_poly_ft4->clut = 0x7d25;
         setXYWH(current_poly_ft4,
-            player_state.camera_position.vx / 819 + 52,
-            212 - player_state.camera_position.vz / 819,
+            cur_avatar_status.camera_position.vx / 819 + 52,
+            212 - cur_avatar_status.camera_position.vz / 819,
             15, 15);
 
-        index = ((player_state.camera_rotation.angles[1] & KF_ANGLE_WRAP_MASK)
+        index = ((cur_avatar_status.camera_rotation.angles[1] & KF_ANGLE_WRAP_MASK)
                        + MENU_MAP_FACING_TILE_HALF_ANGLE) >> MENU_MAP_FACING_TILE_SHIFT;
         if (index == MENU_MAP_FACING_TILE_COUNT) {
             index = 0;
@@ -715,7 +715,7 @@ s32 menu_choose_magic_action(void)
     s32 count;
     s32 frame;
 
-    count = menu_collect_available_magic_rows(effect_state.magic_records, rows, values, indices,
+    count = menu_collect_available_magic_rows(effect_status.magic_records, rows, values, indices,
                                               MENU_MAGIC_ACTION_FIRST, MENU_MAGIC_ACTION_LAST);
     menu_list_init(&menu.list, KF_MENU_WINDOW_ROOT, KF_MENU_ROOT_USE_MAGIC);
     menu.list.entry_count = count;
@@ -866,21 +866,21 @@ void menu_build_equipped_label_rows(KfMenuLabelSuffix *rows)
     u8 *entry;
     s32 i;
 
-    selected[MENU_CATEGORY_WEAPON] = KF_ENUM_ENCODE(u8, player_state.equipped_weapon_id);
-    selected[MENU_CATEGORY_PRIMARY_MAGIC] = KF_ENUM_ENCODE(u8, player_state.primary_magic_shortcut_id);
-    selected[MENU_CATEGORY_ARM] = KF_ENUM_ENCODE(u8, player_state.equipped_arm_id);
-    selected[MENU_CATEGORY_HEAD] = KF_ENUM_ENCODE(u8, player_state.equipped_head_id);
-    selected[MENU_CATEGORY_BODY] = KF_ENUM_ENCODE(u8, player_state.equipped_body_id);
-    selected[MENU_CATEGORY_LEG] = KF_ENUM_ENCODE(u8, player_state.equipped_leg_id);
-    selected[MENU_CATEGORY_SHIELD] = KF_ENUM_ENCODE(u8, player_state.equipped_shield_id);
-    selected[MENU_CATEGORY_ACCESSORY] = KF_ENUM_ENCODE(u8, player_state.equipped_accessory_id);
-    selected[MENU_CATEGORY_EXTRA] = KF_ENUM_ENCODE(u8, player_state.equipped_extra_id);
-    if (player_state.secondary_magic_shortcut_id == KF_MAGIC_NONE) {
+    selected[MENU_CATEGORY_WEAPON] = KF_ENUM_ENCODE(u8, cur_avatar_status.equipped_weapon_id);
+    selected[MENU_CATEGORY_PRIMARY_MAGIC] = KF_ENUM_ENCODE(u8, cur_avatar_status.primary_magic_shortcut_id);
+    selected[MENU_CATEGORY_ARM] = KF_ENUM_ENCODE(u8, cur_avatar_status.equipped_arm_id);
+    selected[MENU_CATEGORY_HEAD] = KF_ENUM_ENCODE(u8, cur_avatar_status.equipped_head_id);
+    selected[MENU_CATEGORY_BODY] = KF_ENUM_ENCODE(u8, cur_avatar_status.equipped_body_id);
+    selected[MENU_CATEGORY_LEG] = KF_ENUM_ENCODE(u8, cur_avatar_status.equipped_leg_id);
+    selected[MENU_CATEGORY_SHIELD] = KF_ENUM_ENCODE(u8, cur_avatar_status.equipped_shield_id);
+    selected[MENU_CATEGORY_ACCESSORY] = KF_ENUM_ENCODE(u8, cur_avatar_status.equipped_accessory_id);
+    selected[MENU_CATEGORY_EXTRA] = KF_ENUM_ENCODE(u8, cur_avatar_status.equipped_extra_id);
+    if (cur_avatar_status.secondary_magic_shortcut_id == KF_MAGIC_NONE) {
         selected[MENU_CATEGORY_SECONDARY_SHORTCUT] =
-            KF_ENUM_ENCODE(u8, player_state.secondary_item_shortcut_id);
+            KF_ENUM_ENCODE(u8, cur_avatar_status.secondary_item_shortcut_id);
     } else {
         selected[MENU_CATEGORY_SECONDARY_SHORTCUT] =
-            KF_ENUM_ENCODE(u8, player_state.secondary_magic_shortcut_id);
+            KF_ENUM_ENCODE(u8, cur_avatar_status.secondary_magic_shortcut_id);
     }
 
     entry = selected;
@@ -890,7 +890,7 @@ void menu_build_equipped_label_rows(KfMenuLabelSuffix *rows)
         if (id != KF_EQUIPMENT_NONE) {
             if (i == MENU_CATEGORY_PRIMARY_MAGIC
                 || (i == MENU_CATEGORY_SECONDARY_SHORTCUT
-                    && player_state.secondary_magic_shortcut_id != KF_MAGIC_NONE)) {
+                    && cur_avatar_status.secondary_magic_shortcut_id != KF_MAGIC_NONE)) {
                 *rows = *(const KfMenuLabelSuffix *)menu_glyph_rows_extra[id].codes;
             } else {
                 *rows = *(const KfMenuLabelSuffix *)menu_glyph_rows[id].codes;
@@ -945,17 +945,17 @@ void menu_equipment_category_controller(s32 category)
     case MENU_CATEGORY_ACCESSORY:
     case MENU_CATEGORY_EXTRA:
         other_slot_item_id = KF_ENUM_ENCODE(u8, category == MENU_CATEGORY_ACCESSORY
-                                        ? player_state.equipped_extra_id
-                                        : player_state.equipped_accessory_id);
+                                        ? cur_avatar_status.equipped_extra_id
+                                        : cur_avatar_status.equipped_accessory_id);
         first = KF_ITEM_ACCESSORY_FIRST;
         if (other_slot_item_id != KF_EQUIPMENT_NONE) {
-            game_counter_bytes[other_slot_item_id]--;
+            event_item_counters_table[other_slot_item_id]--;
         }
         last = KF_ITEM_ACCESSORY_LAST;
         break;
     }
 
-    count = menu_collect_masked_item_rows(game_counter_bytes, rows, values, item_ids,
+    count = menu_collect_masked_item_rows(event_item_counters_table, rows, values, item_ids,
         first, last);
     memcpy((void *)rows[count].codes, (const void *)menu_none_option_glyphs.codes,
         sizeof(KfMenuLabelSuffix));
@@ -1046,7 +1046,7 @@ void menu_equipment_category_controller(s32 category)
 
     if ((category == MENU_CATEGORY_ACCESSORY || category == MENU_CATEGORY_ACCESSORY + 1) &&
         other_slot_item_id != KF_EQUIPMENT_NONE) {
-        game_counter_bytes[other_slot_item_id]++;
+        event_item_counters_table[other_slot_item_id]++;
         }
 }
 
@@ -1062,7 +1062,7 @@ void menu_choose_primary_magic_shortcut(void)
     s32 count;
     s32 frame;
 
-    count = menu_collect_available_magic_rows(effect_state.magic_records, rows, values, indices, 0, 13);
+    count = menu_collect_available_magic_rows(effect_status.magic_records, rows, values, indices, 0, 13);
     memcpy((void *)rows[count].codes, (const void *)menu_none_option_glyphs.codes, sizeof(rows[count].codes));
     values[count] = KF_MENU_LIST_NO_NUMBER;
     indices[count] = KF_ENUM_ENCODE(u8, KF_MAGIC_NONE);
@@ -1134,16 +1134,16 @@ void menu_item_magic_controller(void)
         magic_ids[index] = 0xff;
     }
 
-    saved_count_60 = game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_96)];
-    saved_count_61 = game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_97)];
-    game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_96)] = 0;
-    game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_97)] = 0;
-    count = menu_collect_masked_item_rows(game_counter_bytes, rows, counts, item_ids, KF_ITEM_USABLE_FIRST,
+    saved_count_60 = event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_96)];
+    saved_count_61 = event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_97)];
+    event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_96)] = 0;
+    event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_97)] = 0;
+    count = menu_collect_masked_item_rows(event_item_counters_table, rows, counts, item_ids, KF_ITEM_USABLE_FIRST,
         KF_ITEM_USABLE_LAST);
-    game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_96)] = saved_count_60;
-    game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_97)] = saved_count_61;
+    event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_96)] = saved_count_60;
+    event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_97)] = saved_count_61;
 
-    count += menu_collect_available_magic_rows(effect_state.magic_records, &rows[count],
+    count += menu_collect_available_magic_rows(effect_status.magic_records, &rows[count],
         &numbers[count], &magic_ids[count], 0, 19);
     memcpy((void *)rows[count].codes, (const void *)menu_none_option_glyphs.codes, sizeof(rows[count].codes));
     count++;
@@ -1238,7 +1238,7 @@ void menu_item_use_controller(void)
     s32 frame;
     u8 selected_item;
 
-    count = menu_collect_available_item_rows(game_counter_bytes, rows, values, indices, 0, KF_ITEM_ID_LAST);
+    count = menu_collect_available_item_rows(event_item_counters_table, rows, values, indices, 0, KF_ITEM_ID_LAST);
     menu_list_init(&menu.list, KF_MENU_WINDOW_ROOT, KF_MENU_ROOT_DROP_ITEM);
     menu.list.entry_count = count;
     menu.rows = rows;
@@ -1285,7 +1285,7 @@ void menu_item_use_controller(void)
 
     menu_release_item_model();
     if (result != KF_MENU_RESULT_CANCELLED) {
-        game_counter_bytes[result]--;
+        event_item_counters_table[result]--;
     }
 }
 
@@ -1340,7 +1340,7 @@ s32 menu_run_card_choice(void)
         for (frame = 0; frame < 30; frame++) {
             VSync(0);
         }
-        SsSeqSetVol(audio_state.sequence_id, 0, 0);
+        SsSeqSetVol(sound_status.sequence_id, 0, 0);
     }
     return result;
 }
@@ -1583,12 +1583,12 @@ void menu_options_controller(void)
     labels[1].glyphs.codes[2] = 0x05;
     labels[1].glyphs.codes[3] = 0xff;
 
-    selected[KF_MENU_OPTION_EFFECTS_ROW] = player_state.audio_effects_enabled;
-    selected[KF_MENU_OPTION_MUSIC_ROW] = player_state.audio_music_enabled;
-    selected[KF_MENU_OPTION_GAUGES_ROW] = player_state.hud_gauges_enabled;
-    selected[KF_MENU_OPTION_COMPASS_ROW] = player_state.compass_enabled;
-    selected[KF_MENU_OPTION_ITEM_PREVIEW_ROW] = player_state.item_preview_enabled;
-    selected[KF_MENU_OPTION_WALKING_BOB_ROW] = player_state.walking_bob_enabled;
+    selected[KF_MENU_OPTION_EFFECTS_ROW] = cur_avatar_status.audio_effects_enabled;
+    selected[KF_MENU_OPTION_MUSIC_ROW] = cur_avatar_status.audio_music_enabled;
+    selected[KF_MENU_OPTION_GAUGES_ROW] = cur_avatar_status.hud_gauges_enabled;
+    selected[KF_MENU_OPTION_COMPASS_ROW] = cur_avatar_status.compass_enabled;
+    selected[KF_MENU_OPTION_ITEM_PREVIEW_ROW] = cur_avatar_status.item_preview_enabled;
+    selected[KF_MENU_OPTION_WALKING_BOB_ROW] = cur_avatar_status.walking_bob_enabled;
 
     for (;;) {
         if (result != KF_MENU_RESULT_PENDING) {
@@ -1640,12 +1640,12 @@ void menu_options_controller(void)
         }
     }
 
-    player_state.audio_effects_enabled = selected[KF_MENU_OPTION_EFFECTS_ROW];
-    player_state.audio_music_enabled = selected[KF_MENU_OPTION_MUSIC_ROW];
-    player_state.hud_gauges_enabled = selected[KF_MENU_OPTION_GAUGES_ROW];
-    player_state.compass_enabled = selected[KF_MENU_OPTION_COMPASS_ROW];
-    player_state.item_preview_enabled = selected[KF_MENU_OPTION_ITEM_PREVIEW_ROW];
-    player_state.walking_bob_enabled = selected[KF_MENU_OPTION_WALKING_BOB_ROW];
+    cur_avatar_status.audio_effects_enabled = selected[KF_MENU_OPTION_EFFECTS_ROW];
+    cur_avatar_status.audio_music_enabled = selected[KF_MENU_OPTION_MUSIC_ROW];
+    cur_avatar_status.hud_gauges_enabled = selected[KF_MENU_OPTION_GAUGES_ROW];
+    cur_avatar_status.compass_enabled = selected[KF_MENU_OPTION_COMPASS_ROW];
+    cur_avatar_status.item_preview_enabled = selected[KF_MENU_OPTION_ITEM_PREVIEW_ROW];
+    cur_avatar_status.walking_bob_enabled = selected[KF_MENU_OPTION_WALKING_BOB_ROW];
 }
 
 ADDRESS(0x8001be60, 0x30c)
@@ -2751,7 +2751,7 @@ void menu_item_buy_controller(s32 kind)
     s32 frame;
     s32 cost;
     u8 selected_item;
-    u8 *counters = game_counter_bytes;
+    u8 *counters = event_item_counters_table;
 
     if (counters[KF_ENUM_ENCODE(u8, KF_OBJECT_51)] == 0) {
         menu_item_mask_pages[3][KF_ENUM_ENCODE(u8, KF_OBJECT_51)] = 1;
@@ -2792,7 +2792,7 @@ void menu_item_buy_controller(s32 kind)
         menu_update_list_input(&menu.list, indices, &confirmed, &result);
         selected_item = indices[menu.list.selected_index];
         if (confirmed == KF_TRUE) {
-            if (player_state.gold < (u32)(menu.prices[menu.list.selected_index]
+            if (cur_avatar_status.gold < (u32)(menu.prices[menu.list.selected_index]
                     * menu_item_quantity)
                     || counters[selected_item] + menu_item_quantity >= 100) {
                 menu_play_sound_cue(KF_MENU_SOUND_CANCEL);
@@ -2815,7 +2815,7 @@ void menu_item_buy_controller(s32 kind)
     menu_release_item_model();
     if (result != KF_MENU_RESULT_CANCELLED) {
         cost = menu.prices[menu.list.selected_index] * menu_item_quantity;
-        player_state.gold -= cost;
+        cur_avatar_status.gold -= cost;
         counters[result] += (u8)menu_item_quantity;
     }
 }
@@ -2852,7 +2852,7 @@ void menu_item_sell_controller(s32 kind)
     s32 payment;
     u8 selected_item;
 
-    count = menu_collect_available_item_rows(game_counter_bytes, rows, values, indices, 0, KF_ITEM_ID_LAST);
+    count = menu_collect_available_item_rows(event_item_counters_table, rows, values, indices, 0, KF_ITEM_ID_LAST);
     menu_fill_item_prices(prices, indices, 0, count, kind);
     menu_list_init(&menu.list, KF_MENU_WINDOW_SHOP, 1);
     menu.list.entry_count = count;
@@ -2907,8 +2907,8 @@ void menu_item_sell_controller(s32 kind)
     menu_release_item_model();
     if (result != KF_MENU_RESULT_CANCELLED) {
         payment = menu.prices[menu.list.selected_index] * menu_item_quantity;
-        player_state.gold += payment;
-        game_counter_bytes[result] -= (u8)menu_item_quantity;
+        cur_avatar_status.gold += payment;
+        event_item_counters_table[result] -= (u8)menu_item_quantity;
     }
 }
 
@@ -2941,7 +2941,7 @@ s32 menu_choose_inventory_item(void)
     s32 frame;
 
     menu_enter_display_state(1);
-    count = menu_collect_masked_item_rows(game_counter_bytes, rows, values, indices, 0, KF_ITEM_ID_LAST);
+    count = menu_collect_masked_item_rows(event_item_counters_table, rows, values, indices, 0, KF_ITEM_ID_LAST);
     menu_list_init(&menu.list, KF_MENU_WINDOW_TRADE, 0);
     menu.list.entry_count = count;
     menu.rows = rows;
@@ -3007,7 +3007,7 @@ void menu_item_trade_controller(void)
     u8 values[40];
     s32 prices[40];
     u8 indices[40];
-    u8 *counters = game_counter_bytes;
+    u8 *counters = event_item_counters_table;
     b32 confirmed = KF_FALSE;
     s32 result = KF_MENU_RESULT_PENDING;
     s32 count;
@@ -3149,7 +3149,7 @@ void menu_buy_masked_stock_items(void)
     u8 values[40];
     s32 prices[40];
     u8 indices[40];
-    u8 *counters = game_counter_bytes;
+    u8 *counters = event_item_counters_table;
     b32 confirmed = KF_FALSE;
     s32 result = KF_MENU_RESULT_PENDING;
     s32 count;
@@ -3191,7 +3191,7 @@ void menu_buy_masked_stock_items(void)
         menu_update_list_input(&menu.list, indices, &confirmed, &result);
         selected_item = indices[menu.list.selected_index];
         if (confirmed == KF_TRUE) {
-            if (player_state.gold < (u32)(menu.prices[menu.list.selected_index]
+            if (cur_avatar_status.gold < (u32)(menu.prices[menu.list.selected_index]
                     * menu_item_quantity)
                     || counters[selected_item] + menu_item_quantity >= 100) {
                 menu_play_sound_cue(KF_MENU_SOUND_CANCEL);
@@ -3214,7 +3214,7 @@ void menu_buy_masked_stock_items(void)
     menu_release_item_model();
     if (result != KF_MENU_RESULT_CANCELLED) {
         cost = menu.prices[menu.list.selected_index] * menu_item_quantity;
-        player_state.gold -= cost;
+        cur_avatar_status.gold -= cost;
         counters[result] += (u8)menu_item_quantity;
     }
 }
@@ -3227,7 +3227,7 @@ void menu_buy_owned_items(void)
     u8 values[40];
     s32 prices[40];
     u8 indices[40];
-    u8 *counters = game_counter_bytes;
+    u8 *counters = event_item_counters_table;
     b32 confirmed = KF_FALSE;
     s32 result = KF_MENU_RESULT_PENDING;
     s32 count;
@@ -3270,7 +3270,7 @@ void menu_buy_owned_items(void)
         menu_update_list_input(&menu.list, indices, &confirmed, &result);
         selected_item = indices[menu.list.selected_index];
         if (confirmed == KF_TRUE) {
-            if (player_state.gold < (u32)(menu.prices[menu.list.selected_index]
+            if (cur_avatar_status.gold < (u32)(menu.prices[menu.list.selected_index]
                     * menu_item_quantity)
                     || counters[selected_item] + menu_item_quantity >= 100) {
                 menu_play_sound_cue(KF_MENU_SOUND_CANCEL);
@@ -3293,7 +3293,7 @@ void menu_buy_owned_items(void)
     menu_release_item_model();
     if (result != KF_MENU_RESULT_CANCELLED) {
         cost = menu.prices[menu.list.selected_index] * menu_item_quantity;
-        player_state.gold -= cost;
+        cur_avatar_status.gold -= cost;
         counters[result] += (u8)menu_item_quantity;
     }
 }
@@ -3478,7 +3478,7 @@ void menu_draw_player_status(void)
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.x = heading.position.x + 77;
     amount.position.y = heading.position.y;
-    menu_format_number(player_state.experience, 7, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.experience, 7, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
 
@@ -3486,7 +3486,7 @@ void menu_draw_player_status(void)
     menu_copy_label_row(heading.glyphs.codes, menu_header_labels[1].codes);
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.y += row_step;
-    menu_format_number(player_state.level, 7, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.level, 7, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
 
@@ -3497,7 +3497,7 @@ void menu_draw_player_status(void)
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.x = heading.position.x + 63;
     amount.position.y += row_step;
-    menu_format_number(player_state.vitals.current_hp, 4, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.vitals.current_hp, 4, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
     amount.glyphs.codes[0] = 20;
@@ -3505,7 +3505,7 @@ void menu_draw_player_status(void)
     amount.position.x += 28;
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
     amount.position.x += 7;
-    menu_format_number(player_state.vitals.maximum_hp, 4, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.vitals.maximum_hp, 4, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
 
@@ -3514,7 +3514,7 @@ void menu_draw_player_status(void)
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.x = heading.position.x + 63;
     amount.position.y += row_step;
-    menu_format_number(player_state.vitals.current_mp, 4, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.vitals.current_mp, 4, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
     amount.glyphs.codes[0] = 20;
@@ -3522,7 +3522,7 @@ void menu_draw_player_status(void)
     amount.position.x += 28;
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
     amount.position.x += 7;
-    menu_format_number(player_state.vitals.maximum_mp, 4, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.vitals.maximum_mp, 4, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
 
@@ -3540,7 +3540,7 @@ void menu_draw_player_status(void)
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.x = heading.position.x + 84;
     amount.position.y = heading.position.y;
-    menu_format_number(player_state.physical_power, 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.physical_power, 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
 
@@ -3551,7 +3551,7 @@ void menu_draw_player_status(void)
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.x = heading.position.x + 84;
     amount.position.y = heading.position.y;
-    menu_format_number(player_state.magic, 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.magic, 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
 
@@ -3560,15 +3560,15 @@ void menu_draw_player_status(void)
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.x = heading.position.x + 56;
     amount.position.y += row_step;
-    if (player_state.paralysis_timer != 0) {
+    if (cur_avatar_status.paralysis_timer != 0) {
         menu_copy_label_row(amount.glyphs.codes, menu_header_labels[5].codes);
-    } else if (player_state.curse_strength != 0) {
+    } else if (cur_avatar_status.curse_strength != 0) {
         menu_copy_label_row(amount.glyphs.codes, menu_header_labels[6].codes);
-    } else if (player_state.slow_timer != 0) {
+    } else if (cur_avatar_status.slow_timer != 0) {
         menu_copy_label_row(amount.glyphs.codes, menu_header_labels[7].codes);
-    } else if (player_state.poison_timer != 0) {
+    } else if (cur_avatar_status.poison_timer != 0) {
         menu_copy_label_row(amount.glyphs.codes, menu_header_labels[8].codes);
-    } else if (player_state.darkness_phase != 0) {
+    } else if (cur_avatar_status.darkness_phase != 0) {
         menu_copy_label_row(amount.glyphs.codes, menu_header_labels[9].codes);
     } else {
         menu_copy_label_row(amount.glyphs.codes, menu_header_labels[10].codes);
@@ -3580,7 +3580,7 @@ void menu_draw_player_status(void)
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.x = heading.position.x + 77;
     amount.position.y += row_step;
-    menu_format_number(player_state.gold, 7, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.gold, 7, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
     menu_draw_nine_slice_panel(161, 14, 140, 205, 1, 2);
@@ -3608,7 +3608,7 @@ void menu_draw_combat_attributes(void)
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.x = label.position.x + 84;
     number.position.y = label.position.y;
-    menu_format_number(player_state.attack_components[0], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.attack_components[0], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
@@ -3620,7 +3620,7 @@ void menu_draw_combat_attributes(void)
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.attack_components[1], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.attack_components[1], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
@@ -3632,7 +3632,7 @@ void menu_draw_combat_attributes(void)
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.attack_components[2], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.attack_components[2], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
@@ -3650,7 +3650,7 @@ void menu_draw_combat_attributes(void)
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.attack_components[3], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.attack_components[3], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
@@ -3668,7 +3668,7 @@ void menu_draw_combat_attributes(void)
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.attack_components[4], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.attack_components[4], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
@@ -3687,7 +3687,7 @@ void menu_draw_combat_attributes(void)
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.attack_components[5], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.attack_components[5], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
@@ -3705,7 +3705,7 @@ void menu_draw_combat_attributes(void)
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.attack_components[6], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.attack_components[6], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
@@ -3724,7 +3724,7 @@ void menu_draw_combat_attributes(void)
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.attack_components[7], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.attack_components[7], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
@@ -3744,7 +3744,7 @@ void menu_draw_combat_attributes(void)
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.x = label.position.x + 84;
     number.position.y = label.position.y;
-    menu_format_number(player_state.combat_components[0], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.combat_components[0], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
@@ -3756,7 +3756,7 @@ void menu_draw_combat_attributes(void)
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.combat_components[1], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.combat_components[1], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
@@ -3768,7 +3768,7 @@ void menu_draw_combat_attributes(void)
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.combat_components[2], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.combat_components[2], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
@@ -3782,7 +3782,7 @@ void menu_draw_combat_attributes(void)
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.combat_components[3], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.combat_components[3], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
@@ -3800,7 +3800,7 @@ void menu_draw_combat_attributes(void)
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.combat_components[4], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.combat_components[4], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
@@ -3818,7 +3818,7 @@ void menu_draw_combat_attributes(void)
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.combat_components[5], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.combat_components[5], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
@@ -3837,7 +3837,7 @@ void menu_draw_combat_attributes(void)
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.combat_components[6], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.combat_components[6], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
@@ -3855,7 +3855,7 @@ void menu_draw_combat_attributes(void)
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.combat_components[7], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.combat_components[7], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
@@ -3874,7 +3874,7 @@ void menu_draw_combat_attributes(void)
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
     number.position.y = label.position.y;
-    menu_format_number(player_state.combat_components[8], 6, KF_FORMAT_PAD_SPACES,
+    menu_format_number(cur_avatar_status.combat_components[8], 6, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
     menu_draw_nine_slice_panel(17, 14, 140, 205, 1, 2);
@@ -4221,7 +4221,7 @@ void menu_update_item_preview(s32 item_id)
     MATRIX lit;
     MATRIX color;
 
-    if (player_state.item_preview_enabled == KF_PLAYER_OPTION_OFF || (u8)item_id == 0xff) {
+    if (cur_avatar_status.item_preview_enabled == KF_PLAYER_OPTION_OFF || (u8)item_id == 0xff) {
         return;
     }
 
@@ -4259,7 +4259,7 @@ void menu_update_item_preview(s32 item_id)
     SetRotMatrix(&rotation);
     SetTransMatrix(&rotation);
     menu_render_item_model();
-    current_poly_ft4 = (POLY_FT4 *)game_graphics_runtime.display_state.primitive_buffer->cursor;
+    current_poly_ft4 = (POLY_FT4 *)scene_display_sys.display_state.primitive_buffer->cursor;
 }
 
 ADDRESS(0x800216c0, 0x1f4)
@@ -4292,11 +4292,11 @@ void menu_draw_status_counters(s32 kind)
     amount.position.x = heading.position.x + 56;
     amount.position.y = heading.position.y;
     if (kind == KF_MENU_COUNTERS_OBJECT_96) {
-        menu_format_number(game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_96)], 7, KF_FORMAT_PAD_SPACES,
+        menu_format_number(event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_96)], 7, KF_FORMAT_PAD_SPACES,
             KF_MENU_FORMAT_STYLE_TRAILING_11,
                            amount.glyphs.codes);
     } else {
-        menu_format_number(player_state.gold, 7, KF_FORMAT_PAD_SPACES,
+        menu_format_number(cur_avatar_status.gold, 7, KF_FORMAT_PAD_SPACES,
             KF_MENU_FORMAT_STYLE_TRAILING_13, amount.glyphs.codes);
     }
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
@@ -4512,22 +4512,22 @@ void menu_render_list_mode_8_9_noop(void)
 ADDRESS(0x80022530, 0x178)
 void menu_frame_begin(void)
 {
-    game_graphics_runtime.display_state.buffer_index =
-        display_next_buffer(game_graphics_runtime.display_state.buffer_index);
-    game_graphics_runtime.display_state.primitive_buffer =
-        &game_graphics_runtime.display_state.primitive_buffers[
-            KF_ENUM_ENCODE(u8, game_graphics_runtime.display_state.buffer_index)];
-    game_graphics_runtime.display_state.ordering_table =
-        game_graphics_runtime.display_state.ordering_tables[
-            KF_ENUM_ENCODE(u8, game_graphics_runtime.display_state.buffer_index)].entries;
-    ClearOTagR(game_graphics_runtime.display_state.ordering_table,
+    scene_display_sys.display_state.buffer_index =
+        display_next_buffer(scene_display_sys.display_state.buffer_index);
+    scene_display_sys.display_state.primitive_buffer =
+        &scene_display_sys.display_state.primitive_buffers[
+            KF_ENUM_ENCODE(u8, scene_display_sys.display_state.buffer_index)];
+    scene_display_sys.display_state.ordering_table =
+        scene_display_sys.display_state.ordering_tables[
+            KF_ENUM_ENCODE(u8, scene_display_sys.display_state.buffer_index)].entries;
+    ClearOTagR(scene_display_sys.display_state.ordering_table,
         KF_GAME_ORDERING_TABLE_LENGTH);
-    game_graphics_runtime.display_state.primitive_buffer->cursor =
-        game_graphics_runtime.display_state.primitive_buffer->start;
+    scene_display_sys.display_state.primitive_buffer->cursor =
+        scene_display_sys.display_state.primitive_buffer->start;
     current_poly_ft4 = (POLY_FT4 *)
-        game_graphics_runtime.display_state.primitive_buffer->cursor;
+        scene_display_sys.display_state.primitive_buffer->cursor;
 
-    if (game_graphics_runtime.display_state.buffer_index == KF_DISPLAY_BUFFER_SECOND) {
+    if (scene_display_sys.display_state.buffer_index == KF_DISPLAY_BUFFER_SECOND) {
         menu_frame_upload_rect.x = 0;
         menu_frame_upload_rect.y = KF_MENU_UPLOAD_SECOND_BUFFER_Y;
     } else {
@@ -4555,12 +4555,12 @@ void menu_present_frame(void)
 {
     DrawSync(0);
     VSync(0);
-    PutDrawEnv(&game_graphics_runtime.display_draw_environments[
-        KF_ENUM_ENCODE(u8, game_graphics_runtime.display_state.buffer_index)]);
-    PutDispEnv(&game_graphics_runtime.display_disp_environments[
-        KF_ENUM_ENCODE(u8, game_graphics_runtime.display_state.buffer_index)]);
+    PutDrawEnv(&scene_display_sys.display_draw_environments[
+        KF_ENUM_ENCODE(u8, scene_display_sys.display_state.buffer_index)]);
+    PutDispEnv(&scene_display_sys.display_disp_environments[
+        KF_ENUM_ENCODE(u8, scene_display_sys.display_state.buffer_index)]);
     LoadImage(&menu_frame_upload_rect, menu_frame_upload_pixels);
-    DrawOTag(game_graphics_runtime.display_state.ordering_table
+    DrawOTag(scene_display_sys.display_state.ordering_table
         + (KF_GAME_ORDERING_TABLE_LENGTH - 1));
 }
 
@@ -4571,25 +4571,25 @@ void menu_enter_display_state(s32 mode)
     s16 frame_reserve[4];
 
     pool_release_all();
-    game_graphics_runtime.display_draw_environments[0].isbg = 0;
-    game_graphics_runtime.display_draw_environments[0].dfe = 0;
-    game_graphics_runtime.display_draw_environments[1].isbg = 0;
-    game_graphics_runtime.display_draw_environments[1].dfe = 0;
+    scene_display_sys.display_draw_environments[0].isbg = 0;
+    scene_display_sys.display_draw_environments[0].dfe = 0;
+    scene_display_sys.display_draw_environments[1].isbg = 0;
+    scene_display_sys.display_draw_environments[1].dfe = 0;
 
     menu_saved_primitive_buffers[0] =
-        game_graphics_runtime.display_state.primitive_buffers[0];
+        scene_display_sys.display_state.primitive_buffers[0];
     menu_saved_primitive_buffers[1] =
-        game_graphics_runtime.display_state.primitive_buffers[1];
-    game_graphics_runtime.display_state.primitive_buffers[0].end =
-        game_graphics_runtime.display_state.primitive_buffers[0].start + 0x6400;
-    game_graphics_runtime.display_state.primitive_buffers[1].start =
-        game_graphics_runtime.display_state.primitive_buffers[0].end;
-    game_graphics_runtime.display_state.primitive_buffers[1].end =
-        game_graphics_runtime.display_state.primitive_buffers[1].start + 0x6400;
+        scene_display_sys.display_state.primitive_buffers[1];
+    scene_display_sys.display_state.primitive_buffers[0].end =
+        scene_display_sys.display_state.primitive_buffers[0].start + 0x6400;
+    scene_display_sys.display_state.primitive_buffers[1].start =
+        scene_display_sys.display_state.primitive_buffers[0].end;
+    scene_display_sys.display_state.primitive_buffers[1].end =
+        scene_display_sys.display_state.primitive_buffers[1].start + 0x6400;
     menu_frame_upload_pixels = (u_long *)
-        game_graphics_runtime.display_state.primitive_buffers[1].end;
+        scene_display_sys.display_state.primitive_buffers[1].end;
 
-    if (game_graphics_runtime.display_state.buffer_index == KF_DISPLAY_BUFFER_SECOND) {
+    if (scene_display_sys.display_state.buffer_index == KF_DISPLAY_BUFFER_SECOND) {
         menu_frame_upload_rect.x = 0;
         menu_frame_upload_rect.y = KF_MENU_UPLOAD_SECOND_BUFFER_Y;
     } else {
@@ -4601,9 +4601,9 @@ void menu_enter_display_state(s32 mode)
     StoreImage(&menu_frame_upload_rect, menu_frame_upload_pixels);
     DrawSync(0);
 
-    menu_saved_music_enabled = player_state.audio_music_enabled;
-    if (player_state.audio_music_enabled == KF_PLAYER_OPTION_ON && audio_state.sequence_active == KF_TRUE) {
-        SsSeqPause(audio_state.sequence_id);
+    menu_saved_music_enabled = cur_avatar_status.audio_music_enabled;
+    if (cur_avatar_status.audio_music_enabled == KF_PLAYER_OPTION_ON && sound_status.sequence_active == KF_TRUE) {
+        SsSeqPause(sound_status.sequence_id);
     }
 }
 
@@ -4612,27 +4612,27 @@ void menu_exit_display_state(b32 stop_sequence)
 {
     KfPlayerOption music_enabled;
 
-    game_graphics_runtime.display_state.primitive_buffers[0] =
+    scene_display_sys.display_state.primitive_buffers[0] =
         menu_saved_primitive_buffers[0];
-    game_graphics_runtime.display_state.primitive_buffers[1] =
+    scene_display_sys.display_state.primitive_buffers[1] =
         menu_saved_primitive_buffers[1];
-    game_graphics_runtime.display_draw_environments[0].isbg = 1;
-    game_graphics_runtime.display_draw_environments[0].dfe = 1;
-    game_graphics_runtime.display_draw_environments[1].isbg = 1;
-    game_graphics_runtime.display_draw_environments[1].dfe = 1;
+    scene_display_sys.display_draw_environments[0].isbg = 1;
+    scene_display_sys.display_draw_environments[0].dfe = 1;
+    scene_display_sys.display_draw_environments[1].isbg = 1;
+    scene_display_sys.display_draw_environments[1].dfe = 1;
 
     if (stop_sequence == KF_TRUE) {
         audio_stop_sequence();
     } else {
-        music_enabled = player_state.audio_music_enabled;
+        music_enabled = cur_avatar_status.audio_music_enabled;
         if (music_enabled != menu_saved_music_enabled) {
             if (music_enabled == KF_PLAYER_OPTION_OFF) {
                 audio_stop_sequence();
             } else {
                 audio_start_sequence();
             }
-        } else if (music_enabled == KF_PLAYER_OPTION_ON && audio_state.sequence_active == KF_TRUE) {
-            SsSeqReplay(audio_state.sequence_id);
+        } else if (music_enabled == KF_PLAYER_OPTION_ON && sound_status.sequence_active == KF_TRUE) {
+            SsSeqReplay(sound_status.sequence_id);
         }
     }
 }
@@ -4654,9 +4654,9 @@ void primitive_buffer_begin_poly_ft4(void)
 ADDRESS(0x80022a28, 0x50)
 void primitive_buffer_commit_poly_ft4(s32 depth)
 {
-    AddPrim((void *)&game_graphics_runtime.display_state.ordering_table[depth], (void *)current_poly_ft4);
+    AddPrim((void *)&scene_display_sys.display_state.ordering_table[depth], (void *)current_poly_ft4);
     current_poly_ft4++;
-    game_graphics_runtime.display_state.primitive_buffer->cursor = (u8 *)current_poly_ft4;
+    scene_display_sys.display_state.primitive_buffer->cursor = (u8 *)current_poly_ft4;
 }
 
 ADDRESS(0x80022a78, 0xa8)
@@ -4753,7 +4753,7 @@ s32 menu_load_item_model(u8 item_id)
     u8 *allocation;
 
     menu_item_quantity = 1;
-    if (player_state.item_preview_enabled == KF_PLAYER_OPTION_OFF) {
+    if (cur_avatar_status.item_preview_enabled == KF_PLAYER_OPTION_OFF) {
         return 0;
     }
 
@@ -4774,7 +4774,7 @@ ADDRESS(0x80022d80, 0x44)
 void menu_release_item_model(void)
 {
     if (menu_item_model_allocation_pending == KF_TRUE) {
-        memory_free((u8 *)game_graphics_runtime.tmd_state.slots[KF_TMD_SLOT_MENU_ITEM]);
+        memory_free((u8 *)scene_display_sys.tmd_state.slots[KF_TMD_SLOT_MENU_ITEM]);
         menu_item_model_allocation_pending = KF_FALSE;
     }
 }

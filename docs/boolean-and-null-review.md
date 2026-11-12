@@ -71,7 +71,7 @@ domain:
   `KfPlayerOption`, and they feed `render_model_rows[].state`.
 - `menu_format_number` padding mode (KF1 `KfFormatPaddingMode`).
 - The OPEN title, banner and prompt phases, and `main::state`.
-- `game_main_exit_flag`; `KfCdRequest.stream_complete` and `phase`.
+- `main_end_flag`; `KfCdRequest.stream_complete` and `phase`.
 - The trajectory mode (`actor_start_ballistic_motion`,
   `trajectory_solve_time_angle`).
 - The drop source of `map_object_spawn_effect`.

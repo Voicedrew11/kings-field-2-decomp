@@ -848,7 +848,7 @@ typedef char kf_actor_state_active_actor_count_offset[
 typedef char kf_actor_state_update_frame_count_offset[
     offsetof(KfActorStateGame, actor_update_frame_count) == 0x93c4 ? 1 : -1];
 
-extern KfActorStateGame actor_state;
+extern KfActorStateGame actor_status;
 
 /* One 16-byte actor placement record from a map archive; the loader copies
  * KF_ACTOR_CAPACITY consecutive records into the actor pool. */

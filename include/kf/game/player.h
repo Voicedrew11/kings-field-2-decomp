@@ -568,12 +568,12 @@ typedef char kf_player_turn_step_limit_offset[
 typedef char kf_player_movement_step_limit_offset[
     offsetof(KfPlayerState, movement_step_limit) == 0x144 ? 1 : -1];
 
-extern KfPlayerLevelGrowth player_level_growth_table[KF_PLAYER_LEVEL_GROWTH_COUNT];
-extern KfPlayerState player_state;
+extern KfPlayerLevelGrowth player_lv_grow_list[KF_PLAYER_LEVEL_GROWTH_COUNT];
+extern KfPlayerState cur_avatar_status;
 extern KfPlayerMagicIdSequence player_magic_id_sequence;
-extern KfBss801c7540 bss_801c7540;
-extern KfWeaponRecordGame player_weapon_records[18];
-extern KfEquipmentRecord player_equipment_records[KF_EQUIPMENT_RECORD_COUNT];
+extern KfBss801c7540 pl_ext_7540;
+extern KfWeaponRecordGame g_weapon_table[18];
+extern KfEquipmentRecord item_gear_recs[KF_EQUIPMENT_RECORD_COUNT];
 
 b32 player_move_horizontal(s32 heading, s32 distance);
 void player_recalculate_combat_stats(void);

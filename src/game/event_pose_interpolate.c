@@ -41,7 +41,7 @@ DATA(0x800688ac, 0x8, ".data")
 u8 event_magic_unlock_ids_5e[8] = {18, 19, 11, 12, 0xff, 0, 0, 0};
 
 DATA(0x8009b52c, 0x78, ".bss")
-u8 game_counter_bytes[KF_ITEM_ID_COUNT];
+u8 event_item_counters_table[KF_ITEM_ID_COUNT];
 
 typedef void (*KfEventCommandCallback)(const VECTOR *position,
                                        const KfPlayerViewRotation *rotation,
@@ -76,11 +76,11 @@ void scene_position_from_camera_offset(s32 x, s32 y, s32 z, s32 pitch, s32 yaw,
     angles.y = yaw;
     angles.z = 0;
     vector_rotate_yxz(&angles, &offset, output);
-    output->vx += player_state.camera_position.vx;
+    output->vx += cur_avatar_status.camera_position.vx;
     y_position = output->vy - KF_PLAYER_CAMERA_EYE_OFFSET;
-    camera_y = height_offset + player_state.camera_position.vy;
+    camera_y = height_offset + cur_avatar_status.camera_position.vy;
     output->vy = y_position + camera_y;
-    output->vz += player_state.camera_position.vz;
+    output->vz += cur_avatar_status.camera_position.vz;
 }
 
 ADDRESS(0x80046d18, 0xcc)
@@ -159,7 +159,7 @@ ADDRESS(0x80046ee4, 0x11c)
 u8 *event_target_stream_resolve_cursor(KfActor *actor)
 {
     KfTargetCandidate *candidate =
-        actor_state.target_groups[actor->group_index].targets[0].pointer;
+        actor_status.target_groups[actor->group_index].targets[0].pointer;
     u8 *cursor = candidate->word_14.bytes;
 
     for (;;) {
@@ -178,12 +178,12 @@ u8 *event_target_stream_resolve_cursor(KfActor *actor)
 use_fallback:
             return candidate->word_14.bytes + candidate->word_10.bytes.fallback_offset;
         }
-        if (event_state.control.bytes[cursor[1]] == cursor[2]) {
+        if (cur_evt_state.control.bytes[cursor[1]] == cursor[2]) {
             u8 offset = event_target_stream_find_marker(candidate, cursor[3]);
             if (candidate->word_10.bytes.fallback_offset < offset) {
                 candidate->word_10.bytes.fallback_offset = offset;
             }
-            event_state.control.fields.stream_actor_definition_id = actor->definition_id;
+            cur_evt_state.control.fields.stream_actor_definition_id = actor->definition_id;
             candidate->word_12.bytes.marker_state = 0;
             goto use_fallback;
         }
@@ -195,7 +195,7 @@ ADDRESS(0x80047000, 0x444)
 void event_target_stream_execute(KfActor *actor)
 {
     KfTargetCandidate *candidate =
-        actor_state.target_groups[actor->group_index].targets[0].pointer;
+        actor_status.target_groups[actor->group_index].targets[0].pointer;
     u8 *cursor;
     s32 repeat;
     b32 restore_state;
@@ -212,10 +212,10 @@ void event_target_stream_execute(KfActor *actor)
     restore_state = KF_FALSE;
     repeat = 0;
     if (candidate->word_10.bytes.fallback_offset == 0) {
-        event_state.control.fields.stream_actor_definition_id = actor->definition_id;
+        cur_evt_state.control.fields.stream_actor_definition_id = actor->definition_id;
     }
     cursor = event_target_stream_resolve_cursor(actor);
-    if (event_state.control.fields.stream_actor_definition_id != actor->definition_id &&
+    if (cur_evt_state.control.fields.stream_actor_definition_id != actor->definition_id &&
         candidate->word_12.bytes.marker_state == 1) {
         while (*cursor++ != KF_EVENT_STREAM_REWIND_MARKER) {
         }
@@ -237,7 +237,7 @@ void event_target_stream_execute(KfActor *actor)
             continue;
         }
         case KF_EVENT_STREAM_BRANCH:
-            if (event_state.control.bytes[cursor[1]] == cursor[2]) {
+            if (cur_evt_state.control.bytes[cursor[1]] == cursor[2]) {
                 candidate->word_10.bytes.fallback_offset = event_target_stream_find_marker(candidate, cursor[3]);
                 cursor = candidate->word_14.bytes + candidate->word_10.bytes.fallback_offset;
             } else {
@@ -254,7 +254,7 @@ void event_target_stream_execute(KfActor *actor)
         case KF_EVENT_STREAM_CALLBACK:
             cursor++;
             candidate->word_10.bytes.fallback_offset++;
-            ((void (*)(KfActor *, s32))resource_state.active_table[4])(actor, *cursor);
+            ((void (*)(KfActor *, s32))asset_status.active_table[4])(actor, *cursor);
             break;
         case KF_EVENT_STREAM_REPEAT:
             cursor++;
@@ -262,13 +262,13 @@ void event_target_stream_execute(KfActor *actor)
             repeat = *cursor;
             break;
         case KF_EVENT_STREAM_RESET_MARKER:
-            event_state.control.fields.stream_actor_definition_id = actor->definition_id;
+            cur_evt_state.control.fields.stream_actor_definition_id = actor->definition_id;
             cursor++;
             candidate->word_10.bytes.fallback_offset++;
             candidate->word_12.bytes.marker_state = 0;
             continue;
         case KF_EVENT_STREAM_SET_CONTROL:
-            event_state.control.bytes[cursor[1]] = cursor[2];
+            cur_evt_state.control.bytes[cursor[1]] = cursor[2];
             cursor += 2;
             candidate->word_10.bytes.fallback_offset += 2;
             break;
@@ -301,7 +301,7 @@ void event_target_stream_execute(KfActor *actor)
     }
 
 after_script:
-    old_counter = game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_83)];
+    old_counter = event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_83)];
     switch (candidate->word_12.bytes.post_stream_menu_action & KF_EVENT_POST_STREAM_MENU_MASK) {
     case KF_EVENT_POST_STREAM_BUY_SELL:
         player_render_frame_and_release_pool();
@@ -325,17 +325,17 @@ after_script:
         }
         break;
     }
-    if (game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_83)] < old_counter) {
-        event_state.control.fields.counter_53_decreased = 1;
+    if (event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_83)] < old_counter) {
+        cur_evt_state.control.fields.counter_53_decreased = 1;
     }
-    event_state.control.fields.stream_actor_definition_id = actor->definition_id;
+    cur_evt_state.control.fields.stream_actor_definition_id = actor->definition_id;
     if (restore_state && candidate->word_10.bytes.completion_animation_id != KF_ANIMATION_CLIP_NONE) {
         actor_animation_seek_phase(actor, candidate->word_10.bytes.completion_animation_id, 0,
                       KF_ACTOR_ANIMATION_PHASE_MAX,
                       candidate->word_0e.value);
         actor->animation_id = saved_state;
     }
-    event_state.interaction_handled = KF_TRUE;
+    cur_evt_state.interaction_handled = KF_TRUE;
     player_clear_motion();
 }
 
@@ -346,7 +346,7 @@ void event_spawn_effect_object(KfMapObject *event, KF_ENUM_PARAM(KfObjectId, s32
                                                          KF_MAP_OBJECT_EVENT_POOL_SIZE, -1);
 
     /* The byte store wraps pool slots 0x17c..0x18b to offsets 0..15. */
-    event->tail.event_effect.effect_object_index = (object - map_object_state.objects) - 0x7c;
+    event->tail.event_effect.effect_object_index = (object - map_objects_slots.objects) - 0x7c;
     object->object_id = object_id;
     object->tail.fields.unknown_38 = KF_MAP_OBJECT_EVENT_DISARMED;
 }
@@ -360,7 +360,7 @@ void event_scene_command_dispatch(const VECTOR *position,
     s32 object_control_offset;
     const u8 *magic_ids;
 
-    event_state.interaction_handled = KF_FALSE;
+    cur_evt_state.interaction_handled = KF_FALSE;
     switch (command) {
     case KF_OBJECT_99:
     case KF_OBJECT_100:
@@ -381,20 +381,20 @@ void event_scene_command_dispatch(const VECTOR *position,
             if (index == -1) {
                 break;
             }
-            object = &map_object_state.objects[index];
+            object = &map_objects_slots.objects[index];
             status = map_object_check_and_consume_marker(object, KF_ENUM_ENCODE(s32, command));
             switch (status) {
             case KF_MAP_OBJECT_MARKER_CONSUMED:
                 audio_play_sound_64();
-                event_state.interaction_handled = KF_TRUE;
+                cur_evt_state.interaction_handled = KF_TRUE;
                 break;
             case KF_MAP_OBJECT_MARKER_MISMATCH:
                 notify_enqueue(object->tail.notification.linked_notification);
-                event_state.interaction_handled = KF_TRUE;
+                cur_evt_state.interaction_handled = KF_TRUE;
                 break;
             case KF_MAP_OBJECT_MARKER_REFUSED:
                 notify_enqueue(KF_NOTIFICATION_4);
-                event_state.interaction_handled = KF_TRUE;
+                cur_evt_state.interaction_handled = KF_TRUE;
                 break;
             case KF_MAP_OBJECT_MARKER_NOT_APPLICABLE:
             default:
@@ -416,7 +416,7 @@ object_control_action:
         index = map_object_find_interaction_target(0, position, 800, 1700,
                                rotation->angles[1], 512);
         if (index != -1) {
-            KfMapObject *object = &map_object_state.objects[index];
+            KfMapObject *object = &map_objects_slots.objects[index];
 
             if (object->object_id == KF_OBJECT_189) {
                 if (object->tail.event_effect.pending_event_command != KF_OBJECT_NONE) {
@@ -424,17 +424,17 @@ object_control_action:
                 }
                 object->tail.event_effect.pending_event_command = command;
                 object->action_timer = 0;
-                ((KfEventControlObjectSlot *)&event_state.control.bytes[object_control_offset])->object_index =
-                    object - map_object_state.objects;
-                ((KfEventControlObjectSlot *)&event_state.control.bytes[object_control_offset])->resource_id =
-                    resource_state.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION];
-                event_state.interaction_handled = KF_TRUE;
+                ((KfEventControlObjectSlot *)&cur_evt_state.control.bytes[object_control_offset])->object_index =
+                    object - map_objects_slots.objects;
+                ((KfEventControlObjectSlot *)&cur_evt_state.control.bytes[object_control_offset])->resource_id =
+                    asset_status.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION];
+                cur_evt_state.interaction_handled = KF_TRUE;
                 game_counter_decrement(command);
                 object->extra_40.bytes[0] = KF_MAP_OBJECT_LATCH_CLEAR;
                 event_spawn_effect_object(object, command);
             } else if (map_object_check_and_consume_marker(object, KF_ENUM_ENCODE(s32, command)) == KF_MAP_OBJECT_MARKER_MISMATCH) {
                 notify_enqueue(object->tail.notification.linked_notification);
-                event_state.interaction_handled = KF_TRUE;
+                cur_evt_state.interaction_handled = KF_TRUE;
             }
         }
         break;
@@ -454,20 +454,20 @@ transition_action: {
         s16 yaw;
 
         /* The retail gate checks only the low byte of the saved object index. */
-        if (resource_state.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION] == 7 ||
-            event_state.control.bytes[object_control_offset] == 0xff ||
-            player_state.vitals.current_mp < 10) {
+        if (asset_status.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION] == 7 ||
+            cur_evt_state.control.bytes[object_control_offset] == 0xff ||
+            cur_avatar_status.vitals.current_mp < 10) {
             break;
         }
-        player_state.vitals.current_mp -= 10;
+        cur_avatar_status.vitals.current_mp -= 10;
         render_frames_with_color_overlay(KF_COLOR_OVERLAY_ADD, 0, KF_FIXED12_ONE, 256);
         actor_disable_type3_transition_actors();
-        previous_value = ((KfEventControlObjectSlot *)&event_state.control.bytes[object_control_offset])->resource_id;
+        previous_value = ((KfEventControlObjectSlot *)&cur_evt_state.control.bytes[object_control_offset])->resource_id;
         do {
             cd_request_yield();
             resource_advance_transition();
-        } while (resource_state.transition_active);
-        if (previous_value != resource_state.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION]) {
+        } while (asset_status.transition_active);
+        if (previous_value != asset_status.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION]) {
             resource_request_transition(previous_value, previous_value, previous_value,
                           KF_RESOURCE_REQUEST_KEEP, KF_RESOURCE_REQUEST_KEEP, KF_RESOURCE_OFFSET_NO_SHIFT, KF_RESOURCE_OFFSET_NO_SHIFT, KF_RESOURCE_OFFSET_NO_SHIFT);
         } else {
@@ -477,27 +477,27 @@ transition_action: {
         do {
             cd_request_yield();
             resource_advance_transition();
-        } while (resource_state.transition_active);
+        } while (asset_status.transition_active);
         cd_request_wait_idle();
 
-        object_index = ((KfEventControlObjectSlot *)&event_state.control.bytes[object_control_offset])->object_index;
-        object = &map_object_state.objects[object_index];
+        object_index = ((KfEventControlObjectSlot *)&cur_evt_state.control.bytes[object_control_offset])->object_index;
+        object = &map_objects_slots.objects[object_index];
         angle_to_forward_xz(object->rotation.vy, &forward);
         vector2i_scale_shift11(1024, &forward);
-        player_state.death_state = KF_PLAYER_REACTION_NORMAL;
-        player_state.view_rotation_offset.components[2] = 0;
-        player_state.view_rotation_offset.components[1] = 0;
-        player_state.view_rotation_offset.components[0] = 0;
-        player_state.camera_rotation = player_state.camera_rotation_target;
-        player_state.camera_position.vx = object->position.vx + forward.x;
-        player_state.camera_position.vz = object->position.vz + forward.z;
-        player_state.camera_position.vy = object->position.vy;
+        cur_avatar_status.death_state = KF_PLAYER_REACTION_NORMAL;
+        cur_avatar_status.view_rotation_offset.components[2] = 0;
+        cur_avatar_status.view_rotation_offset.components[1] = 0;
+        cur_avatar_status.view_rotation_offset.components[0] = 0;
+        cur_avatar_status.camera_rotation = cur_avatar_status.camera_rotation_target;
+        cur_avatar_status.camera_position.vx = object->position.vx + forward.x;
+        cur_avatar_status.camera_position.vz = object->position.vz + forward.z;
+        cur_avatar_status.camera_position.vy = object->position.vy;
         yaw = object->rotation.vy + KF_ANGLE_HALF_TURN;
-        event_state.interaction_handled = KF_TRUE;
-        player_state.camera_rotation_target.angles[1] = yaw;
-        player_state.camera_rotation.angles[1] = yaw;
+        cur_evt_state.interaction_handled = KF_TRUE;
+        cur_avatar_status.camera_rotation_target.angles[1] = yaw;
+        cur_avatar_status.camera_rotation.angles[1] = yaw;
         render_frames_with_color_overlay(KF_COLOR_OVERLAY_ADD, KF_FIXED12_ONE, KF_FIXED12_ONE, 0);
-        if (game_graphics_runtime.asset_registry_entries[0x181] == NULL) {
+        if (scene_display_sys.asset_registry_entries[0x181] == NULL) {
             resource_tmd_queue_read(KF_RESOURCE_ARCHIVE_MO, 0x101, 0x181);
         }
         render_frames_with_color_overlay(KF_COLOR_OVERLAY_ADD, KF_FIXED12_ONE, 0, -256);
@@ -510,42 +510,42 @@ transition_action: {
         index = map_object_find_interaction_target(0, position, 800, 1700,
                                rotation->angles[1], 512);
         if (index != -1) {
-            KfMapObject *object = &map_object_state.objects[index];
+            KfMapObject *object = &map_objects_slots.objects[index];
 
             if (object->object_id == KF_OBJECT_184) {
                 if (object->tail.event_effect.pending_event_command == KF_OBJECT_NONE) {
                     object->tail.event_effect.pending_event_command = command;
                     object->action_timer = 0;
-                    event_state.interaction_handled = KF_TRUE;
+                    cur_evt_state.interaction_handled = KF_TRUE;
                     game_counter_decrement(command);
                     event_spawn_effect_object(object, command);
                 }
             } else if (map_object_check_and_consume_marker(object, KF_ENUM_ENCODE(s32, command)) == KF_MAP_OBJECT_MARKER_MISMATCH) {
                 notify_enqueue(object->tail.notification.linked_notification);
-                event_state.interaction_handled = KF_TRUE;
+                cur_evt_state.interaction_handled = KF_TRUE;
             }
         }
         break;
     case KF_OBJECT_84:
-        player_state.map_marker_visual_effect_timer = 1200;
+        cur_avatar_status.map_marker_visual_effect_timer = 1200;
         game_counter_decrement(KF_OBJECT_84);
-        event_state.interaction_handled = KF_TRUE;
+        cur_evt_state.interaction_handled = KF_TRUE;
         break;
     case KF_OBJECT_88:
         index = map_object_find_interaction_target(0, position, 800, 1700,
                                rotation->angles[1], 512);
         if (index != -1) {
-            KfMapObject *object = &map_object_state.objects[index];
+            KfMapObject *object = &map_objects_slots.objects[index];
 
             if (object->object_id == KF_OBJECT_157) {
                 map_object_apply_marker_signal(object->tail.marker.marker_id);
             }
-            event_state.interaction_handled = KF_TRUE;
+            cur_evt_state.interaction_handled = KF_TRUE;
         }
         audio_play_sound_at_volume_100(8);
         break;
     case KF_OBJECT_89: {
-        KfMapObject *scan = map_object_state.objects;
+        KfMapObject *scan = map_objects_slots.objects;
         KfMapObject *nearest = NULL;
         s32 nearest_distance = 999999;
         s32 remaining = KF_MAP_OBJECT_CAPACITY - 1;
@@ -567,7 +567,7 @@ transition_action: {
                 }
             }
             distance = vector_distance_between_with_reach(&object->position, 25000,
-                                     &player_state.camera_position, 0, 0);
+                                     &cur_avatar_status.camera_position, 0, 0);
             if (distance >= 0 && distance < nearest_distance) {
                 nearest = object;
                 nearest_distance = distance;
@@ -580,10 +580,10 @@ transition_action: {
             sound_position.vx = nearest->position.vx;
             sound_position.vz = nearest->position.vz;
             sound_position.vy = nearest->position.vy +
-                4 * (nearest->position.vy - audio_state.listener_position.vy);
+                4 * (nearest->position.vy - sound_status.listener_position.vy);
             audio_play_spatial_range(0x8009, &nearest->position, 0x6e,
                                      25000, 29000, 0);
-            event_state.interaction_handled = KF_TRUE;
+            cur_evt_state.interaction_handled = KF_TRUE;
         }
         break;
     }
@@ -615,7 +615,7 @@ magic_action: {
             if (magic_id == KF_MAGIC_NONE) {
                 goto invoke_callback;
             }
-            magic_record = &effect_state.magic_records[KF_ENUM_ENCODE(s32, magic_id)];
+            magic_record = &effect_status.magic_records[KF_ENUM_ENCODE(s32, magic_id)];
             if (magic_record->menu_available == 0) {
                 magic_record->menu_available = 1;
                 break;
@@ -623,7 +623,7 @@ magic_action: {
         }
         object = map_object_effect_pool_acquire(
             KF_MAP_OBJECT_SCATTER_POOL_FIRST, KF_MAP_OBJECT_EFFECT_POOL_SIZE,
-            map_object_state.spawn_sequence_pool_15e);
+            map_objects_slots.spawn_sequence_pool_15e);
         map_object_reset(object);
         game_counter_decrement(command);
         object->object_id = command;
@@ -635,11 +635,11 @@ magic_action: {
         object->rotation.vy = 0;
         object->rotation.vx = 0;
 
-        scene_position_from_camera_offset(0, 200, 1500, player_state.camera_rotation.angles[0],
-                      player_state.camera_rotation.angles[1], 0, 0,
+        scene_position_from_camera_offset(0, 200, 1500, cur_avatar_status.camera_rotation.angles[0],
+                      cur_avatar_status.camera_rotation.angles[1], 0, 0,
                       &far_position);
-        scene_position_from_camera_offset(0, 200, 1000, player_state.camera_rotation.angles[0],
-                      player_state.camera_rotation.angles[1], 0, 0,
+        scene_position_from_camera_offset(0, 200, 1000, cur_avatar_status.camera_rotation.angles[0],
+                      cur_avatar_status.camera_rotation.angles[1], 0, 0,
                       &near_position);
         spin = 0;
         for (fraction = 0; fraction < KF_FIXED12_ONE; fraction += 64) {
@@ -680,7 +680,7 @@ decay_update:
         }
         object->object_id = KF_OBJECT_NONE;
         notify_enqueue(KF_NOTIFICATION_1);
-        event_state.interaction_handled = KF_TRUE;
+        cur_evt_state.interaction_handled = KF_TRUE;
         break;
     }
     case KF_OBJECT_82:
@@ -691,7 +691,7 @@ decay_update:
             if (index == -1) {
                 break;
             }
-            if (map_object_state.objects[index].object_id != KF_OBJECT_195) {
+            if (map_objects_slots.objects[index].object_id != KF_OBJECT_195) {
                 break;
             }
         }
@@ -699,11 +699,11 @@ decay_update:
             notify_enqueue(KF_NOTIFICATION_22);
             game_counter_decrement(KF_OBJECT_82);
         }
-        event_state.interaction_handled = KF_TRUE;
+        cur_evt_state.interaction_handled = KF_TRUE;
         break;
     case KF_OBJECT_85: {
         KF_ENUM_STORAGE(KfMapLayerMask, s32) side =
-            player_state.map_layer_index == 0 ? KF_MAP_LAYER_FIRST : KF_MAP_LAYER_SECOND;
+            cur_avatar_status.map_layer_index == 0 ? KF_MAP_LAYER_FIRST : KF_MAP_LAYER_SECOND;
         s32 actor_distance;
         KfActor *actor = actor_find_best_in_cone(position, rotation->angles[1],
                                        rotation->angles[0], 8000, 500, 500,
@@ -711,19 +711,19 @@ decay_update:
 
         if (actor != NULL && actor->current_map_layer == side) {
             menu_show_transition_image(KF_RESOURCE_ARCHIVE_ITEM, actor->definition_id + 240);
-            event_state.interaction_handled = KF_TRUE;
+            cur_evt_state.interaction_handled = KF_TRUE;
             break;
         }
         {
             s32 remaining;
             KfMapObject *scan;
 
-            for (scan = map_object_state.objects,
+            for (scan = map_objects_slots.objects,
                  remaining = KF_MAP_OBJECT_CAPACITY - 1;
                  remaining != -1; remaining--, scan++) {
                 KfMapObject *object = scan;
 
-                if (map_object_state.templates[KF_ENUM_ENCODE(u16,
+                if (map_objects_slots.templates[KF_ENUM_ENCODE(u16,
                                                               object->object_id)].collision_kind != KF_MAP_OBJECT_OP_SCENE_INSPECT ||
                     object->extra_40.saved_layer.layer_mask != side) {
                     continue;
@@ -733,7 +733,7 @@ decay_update:
                                   object->tail.scene_inspect.region_width,
                                   object->tail.scene_inspect.region_depth, 0x8000)) {
                     menu_show_transition_image(KF_RESOURCE_ARCHIVE_ITEM, object->tail.scene_inspect.transition_image_id + 510);
-                    event_state.interaction_handled = KF_TRUE;
+                    cur_evt_state.interaction_handled = KF_TRUE;
                     break;
                 }
             }
@@ -742,13 +742,13 @@ decay_update:
     }
     case KF_OBJECT_86:
         game_counter_decrement(KF_OBJECT_86);
-        player_state.full_mp_timer = 900;
-        event_state.interaction_handled = KF_TRUE;
+        cur_avatar_status.full_mp_timer = 900;
+        cur_evt_state.interaction_handled = KF_TRUE;
         break;
     case KF_OBJECT_87:
         game_counter_decrement(KF_OBJECT_87);
-        player_state.magic_boost_timer = 900;
-        event_state.interaction_handled = KF_TRUE;
+        cur_avatar_status.magic_boost_timer = 900;
+        cur_evt_state.interaction_handled = KF_TRUE;
         player_recalculate_combat_stats();
         break;
     default:
@@ -757,9 +757,9 @@ decay_update:
     }
 
 invoke_callback:
-    ((KfEventCommandCallback)resource_state.active_table[2])(
+    ((KfEventCommandCallback)asset_status.active_table[2])(
         position, rotation, command);
-    if (!event_state.interaction_handled) {
+    if (!cur_evt_state.interaction_handled) {
         notify_enqueue(KF_NOTIFICATION_NOTHING_HAPPENS);
     }
     player_clear_motion();
@@ -767,8 +767,8 @@ invoke_callback:
 ADDRESS(0x80048124, 0x54)
 b32 game_counter_decrement(KF_ENUM_PARAM(KfObjectId, s32) index)
 {
-    if (game_counter_bytes[KF_ENUM_ENCODE(s32, index)] != 0) {
-        game_counter_bytes[KF_ENUM_ENCODE(s32, index)]--;
+    if (event_item_counters_table[KF_ENUM_ENCODE(s32, index)] != 0) {
+        event_item_counters_table[KF_ENUM_ENCODE(s32, index)]--;
         return KF_FALSE;
     }
 
@@ -778,9 +778,9 @@ b32 game_counter_decrement(KF_ENUM_PARAM(KfObjectId, s32) index)
 ADDRESS(0x80048178, 0x90)
 b32 game_counter_increment(KF_ENUM_PARAM(KfObjectId, s32) index)
 {
-    if (game_counter_bytes[KF_ENUM_ENCODE(s32, index)] < 99) {
-        game_counter_bytes[KF_ENUM_ENCODE(s32, index)]++;
-        resource_state.active_table[6]();
+    if (event_item_counters_table[KF_ENUM_ENCODE(s32, index)] < 99) {
+        event_item_counters_table[KF_ENUM_ENCODE(s32, index)]++;
+        asset_status.active_table[6]();
         return KF_FALSE;
     }
 
@@ -842,7 +842,7 @@ void event_map_object_interact(KfMapObject *object, ...)
         spawned_id = spawn_object_id;
         object = map_object_effect_pool_acquire(
             KF_MAP_OBJECT_SCATTER_POOL_FIRST, KF_MAP_OBJECT_EFFECT_POOL_SIZE,
-            map_object_state.spawn_sequence_pool_15e);
+            map_objects_slots.spawn_sequence_pool_15e);
         map_object_reset(object);
         object->object_id = KF_ENUM_DECODE(KF_ENUM_PROMOTED(KfObjectId), spawn_object_id);
         object->layer_mask = KF_MAP_LAYER_BOTH;
@@ -853,7 +853,7 @@ void event_map_object_interact(KfMapObject *object, ...)
         object->tail.fields.unknown_38 = KF_MAP_OBJECT_EVENT_ARMED;
     }
 
-    object_template = &map_object_state.templates[KF_ENUM_ENCODE(u16, object->object_id)];
+    object_template = &map_objects_slots.templates[KF_ENUM_ENCODE(u16, object->object_id)];
     initial_render_depth_offset = object->render_depth_offset;
     if (object->tail.fields.unknown_38 != KF_MAP_OBJECT_EVENT_ARMED) {
         return;
@@ -861,13 +861,13 @@ void event_map_object_interact(KfMapObject *object, ...)
     if (object_template->kind == KF_MAP_OBJECT_KIND_GOLD) {
         notify_enqueue(KF_NOTIFICATION_PAYLOAD_ID, object->tail.gold_reward.gold_amount);
         object->object_id = KF_OBJECT_NONE;
-        player_state.gold += object->tail.gold_reward.gold_amount;
+        cur_avatar_status.gold += object->tail.gold_reward.gold_amount;
         return;
     }
 
     if (object->action == KF_MAP_OBJECT_OP_OFFSET_MOTION && object->object_id == KF_OBJECT_103) {
-        KfMapObject *child = &map_object_state.objects[object->extra_40.object_index];
-        KfMapObject *next = &map_object_state.objects[
+        KfMapObject *child = &map_objects_slots.objects[object->extra_40.object_index];
+        KfMapObject *next = &map_objects_slots.objects[
             child->tail.fields.unknown_3a.bytes.high];
         if (next->action == KF_MAP_OBJECT_OP_SIGNAL_DOOR && next->action_timer != 0) {
             return;
@@ -877,7 +877,7 @@ void event_map_object_interact(KfMapObject *object, ...)
         object->object_id = KF_OBJECT_13;
     }
 
-    first_yaw = player_state.camera_rotation.angles[0] & KF_ANGLE_WRAP_MASK;
+    first_yaw = cur_avatar_status.camera_rotation.angles[0] & KF_ANGLE_WRAP_MASK;
     target_yaw = first_yaw;
     if (first_yaw < 0x800) {
         if (first_yaw > 0x100) {
@@ -891,7 +891,7 @@ void event_map_object_interact(KfMapObject *object, ...)
 
     if (spawned_id != -1) {
         scene_position_from_camera_offset(0, 500, 1500, target_yaw,
-                      player_state.camera_rotation.angles[1],
+                      cur_avatar_status.camera_rotation.angles[1],
                       object_template->params.pose.height_offset,
                       object_template->params.pose.depth_offset,
                       &object->position);
@@ -899,7 +899,7 @@ void event_map_object_interact(KfMapObject *object, ...)
         first_angles = object->rotation;
         first_position = object->position;
         scene_position_from_camera_offset(0, 500, 1500, target_yaw,
-                      player_state.camera_rotation.angles[1],
+                      cur_avatar_status.camera_rotation.angles[1],
                       object_template->params.pose.height_offset,
                       object_template->params.pose.depth_offset,
                       &next_position);
@@ -914,11 +914,11 @@ void event_map_object_interact(KfMapObject *object, ...)
                           fraction);
             object->render_depth_offset = value_approach(
                 initial_render_depth_offset, target_render_depth_offset, fraction);
-            player_state.camera_rotation.angles[0] = angle_lerp_shortest_q12(
+            cur_avatar_status.camera_rotation.angles[0] = angle_lerp_shortest_q12(
                 first_yaw, target_yaw, fraction);
             cd_request_service_vab();
             cd_request_service_stream();
-            render_game_frame(NULL, (const SVECTOR *)&player_state.camera_rotation);
+            render_game_frame(NULL, (const SVECTOR *)&cur_avatar_status.camera_rotation);
         }
     }
     object->render_depth_offset = target_render_depth_offset;
@@ -933,7 +933,7 @@ void event_map_object_interact(KfMapObject *object, ...)
         hold_steps = hold_steps < 0x100 ? hold_steps + 0x40 : hold_steps;
         cd_request_service_vab();
         cd_request_service_stream();
-        render_game_frame(NULL, (const SVECTOR *)&player_state.camera_rotation);
+        render_game_frame(NULL, (const SVECTOR *)&cur_avatar_status.camera_rotation);
     }
 
 button_pressed:
@@ -944,18 +944,18 @@ button_pressed:
         switch (object->object_id) {
         case KF_OBJECT_117: {
             s32 amount = ((rand() * 6) >> 15) + 4;
-            if (game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_117)] < 99 - amount) {
-                game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_117)] += amount;
+            if (event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_117)] < 99 - amount) {
+                event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_117)] += amount;
             } else {
-                game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_117)] = 99;
+                event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_117)] = 99;
             }
             break;
         }
         case KF_OBJECT_118:
-            if (game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_118)] < 95) {
-                game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_118)] += 4;
+            if (event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_118)] < 95) {
+                event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_118)] += 4;
             } else {
-                game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_118)] = 99;
+                event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_118)] = 99;
             }
             break;
         default:
@@ -963,7 +963,7 @@ button_pressed:
         }
         buttons = 1;
         scene_position_from_camera_offset(-500, 500, 0, target_yaw,
-                      player_state.camera_rotation.angles[1], 0, 0,
+                      cur_avatar_status.camera_rotation.angles[1], 0, 0,
                       &first_position);
         first_angles = object->rotation;
         initial_render_depth_offset = 0;
@@ -979,23 +979,23 @@ return_pose:
     while (!angle_within_tolerance(object->rotation.vy,
                                    first_angles.vy, 0x80)) {
         object->rotation.vy = (object->rotation.vy + 0x100) & KF_ANGLE_WRAP_MASK;
-        render_game_frame(NULL, (const SVECTOR *)&player_state.camera_rotation);
+        render_game_frame(NULL, (const SVECTOR *)&cur_avatar_status.camera_rotation);
     }
     object->rotation.vy = first_angles.vy;
 
 interpolate_back:
     next_angles = object->rotation;
     next_position = object->position;
-    target_yaw = player_state.camera_rotation.angles[0];
+    target_yaw = cur_avatar_status.camera_rotation.angles[0];
     for (fraction = 0; fraction <= KF_FIXED12_ONE; fraction += 0x200) {
         scene_pose_interpolate(object, &next_position,
                       &first_position, &next_angles, &first_angles,
                       fraction);
-        player_state.camera_rotation.angles[0] = angle_lerp_shortest_q12(
+        cur_avatar_status.camera_rotation.angles[0] = angle_lerp_shortest_q12(
             target_yaw, first_yaw, fraction);
         object->render_depth_offset = value_approach(
             target_render_depth_offset, initial_render_depth_offset, fraction);
-        render_game_frame(NULL, (const SVECTOR *)&player_state.camera_rotation);
+        render_game_frame(NULL, (const SVECTOR *)&cur_avatar_status.camera_rotation);
     }
     if (buttons) {
         object->object_id = KF_OBJECT_NONE;
@@ -1018,16 +1018,16 @@ void event_world_dispatch_interaction(const VECTOR *position,
     probe.vx = position->vx;
     probe.vy = position->vy + 500;
     probe.vz = position->vz;
-    event_state.interaction_handled = KF_FALSE;
+    cur_evt_state.interaction_handled = KF_FALSE;
     if (collision_probe_forward_shape_0x20(&probe, (const struct KfEulerAngles *)rotation)) {
         color_overlay_transition(0x400, 0, 0, 0, 0x80, 0xa0, 0xff);
-        player_state.vitals.current_hp = player_state.vitals.maximum_hp;
+        cur_avatar_status.vitals.current_hp = cur_avatar_status.vitals.maximum_hp;
         color_overlay_transition(0x400, 0x80, 0xa0, 0xff, 0, 0, 0);
     }
 
     object_index = actor_find_overlap_excluding_target_type3(probe.vx, probe.vy, probe.vz, 0x578, 0xc80);
     if (object_index != KF_ACTOR_INDEX_NONE) {
-        KfActor *actor = &actor_state.actors[object_index];
+        KfActor *actor = &actor_status.actors[object_index];
         s32 angle = vector_xz_to_angle(actor->position.vx - probe.vx,
                                        actor->position.vz - probe.vz);
         if (angle_within_tolerance(rotation->angles[1], angle, 300)) {
@@ -1036,8 +1036,8 @@ void event_world_dispatch_interaction(const VECTOR *position,
     }
 
     object_index = 0;
-    objects = map_object_state.objects;
-    templates = map_object_state.templates;
+    objects = map_objects_slots.objects;
+    templates = map_objects_slots.templates;
     for (;; object_index++) {
         KfMapObject *object;
         KF_ENUM_STORAGE(KfObjectId, u16) object_id;
@@ -1052,7 +1052,7 @@ void event_world_dispatch_interaction(const VECTOR *position,
         kind = objects[object_index].action;
         object = &objects[object_index];
         object_id = object->object_id;
-        event_state.interaction_handled = KF_TRUE;
+        cur_evt_state.interaction_handled = KF_TRUE;
         kind = templates[KF_ENUM_ENCODE(u16, object_id)].collision_kind;
         switch (kind) {
         case KF_MAP_OBJECT_OP_EFFECT_EMITTER:
@@ -1120,7 +1120,7 @@ void event_world_dispatch_interaction(const VECTOR *position,
                     break;
                 }
                 if (object->tail.marker.marker_id == KF_ENUM_ENCODE(u8, KF_OBJECT_15)
-                    && game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_15)] != 0) {
+                    && event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_15)] != 0) {
                     object->action_timer = 1;
                     break;
                 }
@@ -1170,7 +1170,7 @@ void event_world_dispatch_interaction(const VECTOR *position,
             }
             break;
         case KF_MAP_OBJECT_OP_PLAYER_REACTION:
-            if (player_state.death_state == KF_PLAYER_REACTION_NORMAL) {
+            if (cur_avatar_status.death_state == KF_PLAYER_REACTION_NORMAL) {
                 KfMapObjectRecord40 *record;
                 player_begin_view_reaction(object_index);
                 record = object->extra_40.record;
@@ -1185,11 +1185,11 @@ void event_world_dispatch_interaction(const VECTOR *position,
             break;
         case KF_MAP_OBJECT_OP_RESTORE_POINT:
             color_overlay_transition(0x200, 0, 0, 0, 0x80, 0xc8, 0xff);
-            player_state.vitals.current_hp = player_state.vitals.maximum_hp;
+            cur_avatar_status.vitals.current_hp = cur_avatar_status.vitals.maximum_hp;
             color_overlay_transition(0x200, 0x80, 0xc8, 0xff, 0, 0, 0);
             break;
         case KF_MAP_OBJECT_OP_SAVE_POINT:
-            event_world_state_save_slot(resource_state.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION]);
+            event_world_state_save_slot(asset_status.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION]);
             player_render_frame_and_release_pool();
             menu_card_save_browser();
             break;
@@ -1198,7 +1198,7 @@ void event_world_dispatch_interaction(const VECTOR *position,
 
 invoke_callback:
     ((void (*)(const VECTOR *, const KfPlayerViewRotation *))
-        resource_state.active_table[0])(&probe, rotation);
+        asset_status.active_table[0])(&probe, rotation);
 }
 
 
@@ -1218,7 +1218,7 @@ enum {
 
 
 DATA(0x801b3084, 0x3918, ".bss")
-KfEventState event_state;
+KfEventState cur_evt_state;
 
 ADDRESS(0x8004905c, 0xb0)
 void event_state_initialize(void)
@@ -1227,35 +1227,35 @@ void event_state_initialize(void)
     s32 index;
     KfEventControlObjectSlot *object_slots;
 
-    repeat_store_word(event_state.control.clear_words, 0,
-                      sizeof(event_state.control.clear_words) / sizeof(u32));
-    repeat_store_word(event_state.arena.clear_words, 0,
-                      sizeof(event_state.arena.clear_words) / sizeof(u32));
-    object_slots = event_state.control.fields.object_slots;
+    repeat_store_word(cur_evt_state.control.clear_words, 0,
+                      sizeof(cur_evt_state.control.clear_words) / sizeof(u32));
+    repeat_store_word(cur_evt_state.arena.clear_words, 0,
+                      sizeof(cur_evt_state.arena.clear_words) / sizeof(u32));
+    object_slots = cur_evt_state.control.fields.object_slots;
     object_slots[2].object_index = KF_EVENT_CONTROL_OBJECT_NONE;
     object_slots[1].object_index = KF_EVENT_CONTROL_OBJECT_NONE;
     object_slots[0].object_index = KF_EVENT_CONTROL_OBJECT_NONE;
-    memory_arena_initialize_blocks(&event_state.arena.first_block,
-                                   sizeof(event_state.arena.bytes));
-    offset = event_state.saved_offsets;
+    memory_arena_initialize_blocks(&cur_evt_state.arena.first_block,
+                                   sizeof(cur_evt_state.arena.bytes));
+    offset = cur_evt_state.saved_offsets;
     for (index = KF_EVENT_SAVED_SLOT_COUNT - 1; index != -1; index--) {
         *offset++ = KF_EVENT_SAVED_OFFSET_NONE;
     }
-    repeat_store_word((u32 *)game_counter_bytes, 0,
-                      sizeof(game_counter_bytes) / sizeof(u32));
-    game_counter_bytes[KF_ENUM_ENCODE(u8, KF_OBJECT_0)] = 1;
+    repeat_store_word((u32 *)event_item_counters_table, 0,
+                      sizeof(event_item_counters_table) / sizeof(u32));
+    event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_0)] = 1;
 }
 
 ADDRESS(0x8004910c, 0x30)
 void callback_invoke_slot_04_zero(void)
 {
-    ((void (*)(s32))resource_state.active_table[1])(0);
+    ((void (*)(s32))asset_status.active_table[1])(0);
 }
 
 ADDRESS(0x8004913c, 0x50)
 void event_saved_offsets_decode(u8 **pointers)
 {
-    u16 *offset = event_state.saved_offsets;
+    u16 *offset = cur_evt_state.saved_offsets;
     s32 index = KF_EVENT_SAVED_SLOT_COUNT - 1;
     u16 absent = KF_EVENT_SAVED_OFFSET_NONE;
 
@@ -1264,7 +1264,7 @@ void event_saved_offsets_decode(u8 **pointers)
         if (value == absent) {
             *pointers = NULL;
         } else {
-            *pointers = value + event_state.arena.bytes;
+            *pointers = value + cur_evt_state.arena.bytes;
         }
         pointers++;
     }
@@ -1273,7 +1273,7 @@ void event_saved_offsets_decode(u8 **pointers)
 ADDRESS(0x8004918c, 0x70)
 void event_arena_owner_pointers_add_delta(s32 delta)
 {
-    KfMemoryBlock *block = &event_state.arena.first_block;
+    KfMemoryBlock *block = &cur_evt_state.arena.first_block;
 
     if (block->kind != KF_MEMORY_BLOCK_END) {
         do {
@@ -1293,7 +1293,7 @@ void event_arena_owner_pointers_add_delta(s32 delta)
 ADDRESS(0x800491fc, 0x4c)
 void event_saved_offsets_encode(u8 **pointers)
 {
-    u16 *offset = event_state.saved_offsets;
+    u16 *offset = cur_evt_state.saved_offsets;
     s32 index;
 
     for (index = KF_EVENT_SAVED_SLOT_COUNT - 1; index != -1; index--) {
@@ -1302,7 +1302,7 @@ void event_saved_offsets_encode(u8 **pointers)
         if (value == NULL) {
             *offset = KF_EVENT_SAVED_OFFSET_NONE;
         } else {
-            *offset = (u16)(value - event_state.arena.bytes);
+            *offset = (u16)(value - cur_evt_state.arena.bytes);
         }
         offset++;
     }
@@ -1311,7 +1311,7 @@ void event_saved_offsets_encode(u8 **pointers)
 ADDRESS(0x80049248, 0x70)
 void event_arena_owner_pointers_subtract_delta(s32 delta)
 {
-    KfMemoryBlock *block = &event_state.arena.first_block;
+    KfMemoryBlock *block = &cur_evt_state.arena.first_block;
 
     if (block->kind != KF_MEMORY_BLOCK_END) {
         do {
@@ -1334,7 +1334,7 @@ void event_world_state_save_slot(s32 save_slot)
     u8 *saved[KF_EVENT_SAVED_SLOT_COUNT];
     u8 payload[3072];
     u8 *write = payload;
-    KfActor *actor = actor_state.actors;
+    KfActor *actor = actor_status.actors;
     KfTargetGroup *group;
     KfMapObject *object;
     s32 index;
@@ -1355,8 +1355,8 @@ void event_world_state_save_slot(s32 save_slot)
     }
     *write++ = KF_EVENT_WORLD_SAVE_LIST_END;
 
-    group = actor_state.target_groups;
-    for (index = 0; index < (s32)(sizeof(actor_state.target_groups) / sizeof(actor_state.target_groups[0]));
+    group = actor_status.target_groups;
+    for (index = 0; index < (s32)(sizeof(actor_status.target_groups) / sizeof(actor_status.target_groups[0]));
          group++, index++) {
         KfTargetCandidate *candidate;
         if (group->definition_id == KF_TARGET_GROUP_DEFINITION_END) {
@@ -1371,7 +1371,7 @@ void event_world_state_save_slot(s32 save_slot)
     }
     *write++ = KF_EVENT_WORLD_SAVE_LIST_END;
 
-    object = map_object_state.objects;
+    object = map_objects_slots.objects;
     for (index = 0; index < KF_MAP_OBJECT_CAPACITY; object++, index++) {
         KF_ENUM_PROMOTED(KfObjectId) object_id = object->object_id;
         KF_ENUM_PROMOTED(KfMapObjectOperation) kind;
@@ -1379,7 +1379,7 @@ void event_world_state_save_slot(s32 save_slot)
             *write++ = KF_EVENT_WORLD_SAVE_EMPTY;
             continue;
         }
-        kind = map_object_state.templates[KF_ENUM_ENCODE(s32, object_id)].collision_kind;
+        kind = map_objects_slots.templates[KF_ENUM_ENCODE(s32, object_id)].collision_kind;
         /* Save packets carry the low byte of the 16-bit template ID. */
         switch (kind) {
         case KF_MAP_OBJECT_OP_ITEM_PICKUP:
@@ -1469,7 +1469,7 @@ void event_world_state_save_slot(s32 save_slot)
         memory_block_release(block);
     }
     size = (write - payload + 3) & ~3;
-    block = memory_arena_allocate_block(&event_state.arena.first_block,
+    block = memory_arena_allocate_block(&cur_evt_state.arena.first_block,
                                         size, &saved[save_slot]);
     if (block != NULL) {
         resource_copy_words((u32 *)block, (const u32 *)payload, size >> 2);
@@ -1498,7 +1498,7 @@ void event_world_state_restore_slot(s32 save_slot)
         if (actor_index == KF_EVENT_WORLD_SAVE_LIST_END) {
             break;
         }
-        actor = &actor_state.actors[actor_index];
+        actor = &actor_status.actors[actor_index];
         actor->lifecycle = KF_ENUM_DECODE(KF_ENUM_PROMOTED(KfActorLifecycle), *stream++);
     }
 
@@ -1509,13 +1509,13 @@ void event_world_state_restore_slot(s32 save_slot)
         if (group_index == KF_EVENT_WORLD_SAVE_LIST_END) {
             break;
         }
-        group = &actor_state.target_groups[group_index];
+        group = &actor_status.target_groups[group_index];
         candidate = group->targets[0].pointer;
         candidate->word_10.bytes.fallback_offset = *stream++;
         candidate->word_12.bytes.marker_state = *stream++;
     }
 
-    object = map_object_state.objects;
+    object = map_objects_slots.objects;
     for (index = 0; index < KF_MAP_OBJECT_CAPACITY; object++, index++) {
         u8 opcode = *stream++;
         u16 x;
@@ -1610,73 +1610,73 @@ void card_payload_capture_game_state(u8 *buffer)
     KfCardSavePayload *payload = (KfCardSavePayload *)buffer;
     KfCardPlayerSnapshot *saved = &payload->player;
     u8 *magic_flag = payload->magic_menu_available;
-    KfMagicRecord *record = effect_state.magic_records;
+    KfMagicRecord *record = effect_status.magic_records;
     s32 i;
 
-    memcpy((void *)buffer, (const void *)resource_state.active_resource_ids,
-        sizeof resource_state.active_resource_ids);
-    memcpy((void *)&payload->camera_position, (const void *)&player_state.camera_position,
+    memcpy((void *)buffer, (const void *)asset_status.active_resource_ids,
+        sizeof asset_status.active_resource_ids);
+    memcpy((void *)&payload->camera_position, (const void *)&cur_avatar_status.camera_position,
         sizeof payload->camera_position);
     memcpy((void *)(buffer + KF_CARD_SAVE_ROTATION_OFFSET),
-        (const void *)&player_state.camera_rotation_target, sizeof player_state.camera_rotation_target);
+        (const void *)&cur_avatar_status.camera_rotation_target, sizeof cur_avatar_status.camera_rotation_target);
 
-    saved->experience = player_state.experience;
-    saved->next_level_experience = player_state.next_level_experience;
-    saved->gold = player_state.gold;
-    saved->map_layer_index = player_state.map_layer_index;
-    saved->vitals.maximum_hp = player_state.vitals.maximum_hp;
-    saved->vitals.current_hp = player_state.vitals.current_hp;
-    saved->vitals.maximum_mp = player_state.vitals.maximum_mp;
-    saved->vitals.current_mp = player_state.vitals.current_mp;
-    saved->base_physical_power = player_state.base_physical_power;
-    saved->base_magic = player_state.base_magic;
-    saved->physical_power_training = player_state.physical_power_training;
-    saved->magic_training = player_state.magic_training;
-    saved->poison_timer = player_state.poison_timer;
-    saved->curse_strength = player_state.curse_strength;
-    saved->curse_phase_limit = player_state.curse_phase_limit;
-    saved->darkness_phase = player_state.darkness_phase;
-    saved->darkness_phase_limit = player_state.darkness_phase_limit;
-    saved->slow_timer = player_state.slow_timer;
-    saved->paralysis_timer = player_state.paralysis_timer;
-    saved->defense_boost_timer = player_state.defense_boost_timer;
-    saved->attack_boost_timer = player_state.attack_boost_timer;
-    saved->magic_tint_phase = player_state.magic_tint_phase;
-    saved->magic_tint_phase_limit = player_state.magic_tint_phase_limit;
-    saved->map_marker_visual_effect_timer = player_state.map_marker_visual_effect_timer;
-    saved->full_mp_timer = player_state.full_mp_timer;
-    saved->magic_boost_timer = player_state.magic_boost_timer;
-    saved->level = player_state.level;
-    saved->unknown_09 = player_state.unknown_09;
-    saved->equipped_ids[0] = player_state.equipped_head_id;
-    saved->equipped_ids[1] = player_state.equipped_body_id;
-    saved->equipped_ids[2] = player_state.equipped_arm_id;
-    saved->equipped_ids[3] = player_state.equipped_leg_id;
-    saved->equipped_ids[4] = player_state.equipped_shield_id;
-    saved->equipped_ids[5] = player_state.equipped_accessory_id;
-    saved->equipped_ids[6] = player_state.equipped_extra_id;
-    saved->primary_magic_shortcut_id = player_state.primary_magic_shortcut_id;
-    saved->secondary_magic_shortcut_id = player_state.secondary_magic_shortcut_id;
-    saved->secondary_item_shortcut_id = player_state.secondary_item_shortcut_id;
-    saved->equipped_weapon_id = player_state.equipped_weapon_id;
-    saved->audio_effects_enabled = player_state.audio_effects_enabled;
-    saved->audio_music_enabled = player_state.audio_music_enabled;
-    saved->hud_gauges_enabled = player_state.hud_gauges_enabled;
-    saved->compass_enabled = player_state.compass_enabled;
-    saved->item_preview_enabled = player_state.item_preview_enabled;
-    saved->walking_bob_enabled = player_state.walking_bob_enabled;
+    saved->experience = cur_avatar_status.experience;
+    saved->next_level_experience = cur_avatar_status.next_level_experience;
+    saved->gold = cur_avatar_status.gold;
+    saved->map_layer_index = cur_avatar_status.map_layer_index;
+    saved->vitals.maximum_hp = cur_avatar_status.vitals.maximum_hp;
+    saved->vitals.current_hp = cur_avatar_status.vitals.current_hp;
+    saved->vitals.maximum_mp = cur_avatar_status.vitals.maximum_mp;
+    saved->vitals.current_mp = cur_avatar_status.vitals.current_mp;
+    saved->base_physical_power = cur_avatar_status.base_physical_power;
+    saved->base_magic = cur_avatar_status.base_magic;
+    saved->physical_power_training = cur_avatar_status.physical_power_training;
+    saved->magic_training = cur_avatar_status.magic_training;
+    saved->poison_timer = cur_avatar_status.poison_timer;
+    saved->curse_strength = cur_avatar_status.curse_strength;
+    saved->curse_phase_limit = cur_avatar_status.curse_phase_limit;
+    saved->darkness_phase = cur_avatar_status.darkness_phase;
+    saved->darkness_phase_limit = cur_avatar_status.darkness_phase_limit;
+    saved->slow_timer = cur_avatar_status.slow_timer;
+    saved->paralysis_timer = cur_avatar_status.paralysis_timer;
+    saved->defense_boost_timer = cur_avatar_status.defense_boost_timer;
+    saved->attack_boost_timer = cur_avatar_status.attack_boost_timer;
+    saved->magic_tint_phase = cur_avatar_status.magic_tint_phase;
+    saved->magic_tint_phase_limit = cur_avatar_status.magic_tint_phase_limit;
+    saved->map_marker_visual_effect_timer = cur_avatar_status.map_marker_visual_effect_timer;
+    saved->full_mp_timer = cur_avatar_status.full_mp_timer;
+    saved->magic_boost_timer = cur_avatar_status.magic_boost_timer;
+    saved->level = cur_avatar_status.level;
+    saved->unknown_09 = cur_avatar_status.unknown_09;
+    saved->equipped_ids[0] = cur_avatar_status.equipped_head_id;
+    saved->equipped_ids[1] = cur_avatar_status.equipped_body_id;
+    saved->equipped_ids[2] = cur_avatar_status.equipped_arm_id;
+    saved->equipped_ids[3] = cur_avatar_status.equipped_leg_id;
+    saved->equipped_ids[4] = cur_avatar_status.equipped_shield_id;
+    saved->equipped_ids[5] = cur_avatar_status.equipped_accessory_id;
+    saved->equipped_ids[6] = cur_avatar_status.equipped_extra_id;
+    saved->primary_magic_shortcut_id = cur_avatar_status.primary_magic_shortcut_id;
+    saved->secondary_magic_shortcut_id = cur_avatar_status.secondary_magic_shortcut_id;
+    saved->secondary_item_shortcut_id = cur_avatar_status.secondary_item_shortcut_id;
+    saved->equipped_weapon_id = cur_avatar_status.equipped_weapon_id;
+    saved->audio_effects_enabled = cur_avatar_status.audio_effects_enabled;
+    saved->audio_music_enabled = cur_avatar_status.audio_music_enabled;
+    saved->hud_gauges_enabled = cur_avatar_status.hud_gauges_enabled;
+    saved->compass_enabled = cur_avatar_status.compass_enabled;
+    saved->item_preview_enabled = cur_avatar_status.item_preview_enabled;
+    saved->walking_bob_enabled = cur_avatar_status.walking_bob_enabled;
 
     for (i = 63; i != -1; --i) {
         *magic_flag++ = record->menu_available;
         ++record;
     }
-    memcpy((void *)payload->game_counters, (const void *)game_counter_bytes,
+    memcpy((void *)payload->game_counters, (const void *)event_item_counters_table,
         sizeof payload->game_counters);
-    memcpy((void *)payload->event_control, (const void *)event_state.control.bytes,
+    memcpy((void *)payload->event_control, (const void *)cur_evt_state.control.bytes,
         sizeof payload->event_control);
-    memcpy((void *)payload->event_arena, (const void *)event_state.arena.bytes,
+    memcpy((void *)payload->event_arena, (const void *)cur_evt_state.arena.bytes,
         sizeof payload->event_arena);
-    memcpy((void *)payload->saved_event_offsets, (const void *)event_state.saved_offsets,
+    memcpy((void *)payload->saved_event_offsets, (const void *)cur_evt_state.saved_offsets,
         sizeof payload->saved_event_offsets);
 }
 
@@ -1686,76 +1686,76 @@ void card_payload_restore_game_state(const u8 *buffer)
     const KfCardSavePayload *payload = (const KfCardSavePayload *)buffer;
     const KfCardPlayerSnapshot *saved = &payload->player;
     const u8 *magic_flag = payload->magic_menu_available;
-    KfMagicRecord *record = effect_state.magic_records;
+    KfMagicRecord *record = effect_status.magic_records;
     s32 i;
 
-    memcpy((void *)resource_state.active_resource_ids, (const void *)buffer,
-        sizeof resource_state.active_resource_ids);
-    resource_state.active_resource_ids[KF_RESOURCE_SLOT_TMD] = resource_state.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION];
-    resource_state.active_resource_ids[KF_RESOURCE_SLOT_TIM] = resource_state.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION];
-    resource_state.active_resource_ids[KF_RESOURCE_SLOT_VAB] = resource_state.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION];
-    resource_state.active_resource_ids[KF_RESOURCE_SLOT_SEQUENCE] = resource_state.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION];
-    memcpy((void *)&player_state.camera_position, (const void *)&payload->camera_position,
-        sizeof player_state.camera_position);
-    memcpy((void *)&player_state.camera_rotation_target,
-        (const void *)(buffer + KF_CARD_SAVE_ROTATION_OFFSET), sizeof player_state.camera_rotation_target);
+    memcpy((void *)asset_status.active_resource_ids, (const void *)buffer,
+        sizeof asset_status.active_resource_ids);
+    asset_status.active_resource_ids[KF_RESOURCE_SLOT_TMD] = asset_status.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION];
+    asset_status.active_resource_ids[KF_RESOURCE_SLOT_TIM] = asset_status.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION];
+    asset_status.active_resource_ids[KF_RESOURCE_SLOT_VAB] = asset_status.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION];
+    asset_status.active_resource_ids[KF_RESOURCE_SLOT_SEQUENCE] = asset_status.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION];
+    memcpy((void *)&cur_avatar_status.camera_position, (const void *)&payload->camera_position,
+        sizeof cur_avatar_status.camera_position);
+    memcpy((void *)&cur_avatar_status.camera_rotation_target,
+        (const void *)(buffer + KF_CARD_SAVE_ROTATION_OFFSET), sizeof cur_avatar_status.camera_rotation_target);
 
-    player_state.experience = saved->experience;
-    player_state.next_level_experience = saved->next_level_experience;
-    player_state.gold = saved->gold;
-    player_state.map_layer_index = saved->map_layer_index;
-    player_state.vitals.maximum_hp = saved->vitals.maximum_hp;
-    player_state.vitals.current_hp = saved->vitals.current_hp;
-    player_state.vitals.maximum_mp = saved->vitals.maximum_mp;
-    player_state.vitals.current_mp = saved->vitals.current_mp;
-    player_state.base_physical_power = saved->base_physical_power;
-    player_state.base_magic = saved->base_magic;
-    player_state.physical_power_training = saved->physical_power_training;
-    player_state.magic_training = saved->magic_training;
-    player_state.poison_timer = saved->poison_timer;
-    player_state.curse_strength = saved->curse_strength;
-    player_state.curse_phase_limit = saved->curse_phase_limit;
-    player_state.darkness_phase = saved->darkness_phase;
-    player_state.darkness_phase_limit = saved->darkness_phase_limit;
-    player_state.slow_timer = saved->slow_timer;
-    player_state.paralysis_timer = saved->paralysis_timer;
-    player_state.defense_boost_timer = saved->defense_boost_timer;
-    player_state.attack_boost_timer = saved->attack_boost_timer;
-    player_state.magic_tint_phase = saved->magic_tint_phase;
-    player_state.magic_tint_phase_limit = saved->magic_tint_phase_limit;
-    player_state.map_marker_visual_effect_timer = saved->map_marker_visual_effect_timer;
-    player_state.full_mp_timer = saved->full_mp_timer;
-    player_state.magic_boost_timer = saved->magic_boost_timer;
-    player_state.level = saved->level;
-    player_state.unknown_09 = saved->unknown_09;
-    player_state.equipped_head_id = saved->equipped_ids[0];
-    player_state.equipped_body_id = saved->equipped_ids[1];
-    player_state.equipped_arm_id = saved->equipped_ids[2];
-    player_state.equipped_leg_id = saved->equipped_ids[3];
-    player_state.equipped_shield_id = saved->equipped_ids[4];
-    player_state.equipped_accessory_id = saved->equipped_ids[5];
-    player_state.equipped_extra_id = saved->equipped_ids[6];
-    player_state.primary_magic_shortcut_id = saved->primary_magic_shortcut_id;
-    player_state.secondary_magic_shortcut_id = saved->secondary_magic_shortcut_id;
-    player_state.secondary_item_shortcut_id = saved->secondary_item_shortcut_id;
-    player_state.equipped_weapon_id = saved->equipped_weapon_id;
-    player_state.audio_effects_enabled = saved->audio_effects_enabled;
-    player_state.audio_music_enabled = saved->audio_music_enabled;
-    player_state.hud_gauges_enabled = saved->hud_gauges_enabled;
-    player_state.compass_enabled = saved->compass_enabled;
-    player_state.item_preview_enabled = saved->item_preview_enabled;
-    player_state.walking_bob_enabled = saved->walking_bob_enabled;
+    cur_avatar_status.experience = saved->experience;
+    cur_avatar_status.next_level_experience = saved->next_level_experience;
+    cur_avatar_status.gold = saved->gold;
+    cur_avatar_status.map_layer_index = saved->map_layer_index;
+    cur_avatar_status.vitals.maximum_hp = saved->vitals.maximum_hp;
+    cur_avatar_status.vitals.current_hp = saved->vitals.current_hp;
+    cur_avatar_status.vitals.maximum_mp = saved->vitals.maximum_mp;
+    cur_avatar_status.vitals.current_mp = saved->vitals.current_mp;
+    cur_avatar_status.base_physical_power = saved->base_physical_power;
+    cur_avatar_status.base_magic = saved->base_magic;
+    cur_avatar_status.physical_power_training = saved->physical_power_training;
+    cur_avatar_status.magic_training = saved->magic_training;
+    cur_avatar_status.poison_timer = saved->poison_timer;
+    cur_avatar_status.curse_strength = saved->curse_strength;
+    cur_avatar_status.curse_phase_limit = saved->curse_phase_limit;
+    cur_avatar_status.darkness_phase = saved->darkness_phase;
+    cur_avatar_status.darkness_phase_limit = saved->darkness_phase_limit;
+    cur_avatar_status.slow_timer = saved->slow_timer;
+    cur_avatar_status.paralysis_timer = saved->paralysis_timer;
+    cur_avatar_status.defense_boost_timer = saved->defense_boost_timer;
+    cur_avatar_status.attack_boost_timer = saved->attack_boost_timer;
+    cur_avatar_status.magic_tint_phase = saved->magic_tint_phase;
+    cur_avatar_status.magic_tint_phase_limit = saved->magic_tint_phase_limit;
+    cur_avatar_status.map_marker_visual_effect_timer = saved->map_marker_visual_effect_timer;
+    cur_avatar_status.full_mp_timer = saved->full_mp_timer;
+    cur_avatar_status.magic_boost_timer = saved->magic_boost_timer;
+    cur_avatar_status.level = saved->level;
+    cur_avatar_status.unknown_09 = saved->unknown_09;
+    cur_avatar_status.equipped_head_id = saved->equipped_ids[0];
+    cur_avatar_status.equipped_body_id = saved->equipped_ids[1];
+    cur_avatar_status.equipped_arm_id = saved->equipped_ids[2];
+    cur_avatar_status.equipped_leg_id = saved->equipped_ids[3];
+    cur_avatar_status.equipped_shield_id = saved->equipped_ids[4];
+    cur_avatar_status.equipped_accessory_id = saved->equipped_ids[5];
+    cur_avatar_status.equipped_extra_id = saved->equipped_ids[6];
+    cur_avatar_status.primary_magic_shortcut_id = saved->primary_magic_shortcut_id;
+    cur_avatar_status.secondary_magic_shortcut_id = saved->secondary_magic_shortcut_id;
+    cur_avatar_status.secondary_item_shortcut_id = saved->secondary_item_shortcut_id;
+    cur_avatar_status.equipped_weapon_id = saved->equipped_weapon_id;
+    cur_avatar_status.audio_effects_enabled = saved->audio_effects_enabled;
+    cur_avatar_status.audio_music_enabled = saved->audio_music_enabled;
+    cur_avatar_status.hud_gauges_enabled = saved->hud_gauges_enabled;
+    cur_avatar_status.compass_enabled = saved->compass_enabled;
+    cur_avatar_status.item_preview_enabled = saved->item_preview_enabled;
+    cur_avatar_status.walking_bob_enabled = saved->walking_bob_enabled;
 
     for (i = 63; i != -1; --i) {
         record->menu_available = *magic_flag++;
         ++record;
     }
-    memcpy((void *)game_counter_bytes, (const void *)payload->game_counters,
+    memcpy((void *)event_item_counters_table, (const void *)payload->game_counters,
         sizeof payload->game_counters);
-    memcpy((void *)event_state.control.bytes, (const void *)payload->event_control,
+    memcpy((void *)cur_evt_state.control.bytes, (const void *)payload->event_control,
         sizeof payload->event_control);
-    memcpy((void *)event_state.arena.bytes, (const void *)payload->event_arena,
+    memcpy((void *)cur_evt_state.arena.bytes, (const void *)payload->event_arena,
         sizeof payload->event_arena);
-    memcpy((void *)event_state.saved_offsets, (const void *)payload->saved_event_offsets,
+    memcpy((void *)cur_evt_state.saved_offsets, (const void *)payload->saved_event_offsets,
         sizeof payload->saved_event_offsets);
 }

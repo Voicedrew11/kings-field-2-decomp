@@ -448,7 +448,7 @@ GAME.EXE	0x8003a4e0	0x29ce0	0x30	0x30	1	function	ghidra-analysis			Ghidra-12.0.4
 GAME.EXE	0x8003a510	0x29d10	0x2c	0x2c	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 GAME.EXE	0x8003a53c	0x29d3c	0x38	0x38	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 GAME.EXE	0x8003a574	0x29d74	0x31c	0x31c	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
-GAME.EXE	0x8003a890	0x2a090	0xbc	0xbc	1	function	manual-retail-disasm			asm;cfg;actor_state;game-calls	complete actor-group scan prologue through jr ra delay slot; prior coverage-gap string was decoded instructions
+GAME.EXE	0x8003a890	0x2a090	0xbc	0xbc	1	function	manual-retail-disasm			asm;cfg;actor_status;game-calls	complete actor-group scan prologue through jr ra delay slot; prior coverage-gap string was decoded instructions
 GAME.EXE	0x8003a94c	0x2a14c	0x80	0x80	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 GAME.EXE	0x8003a9cc	0x2a1cc	0x684	0x684	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary
 GAME.EXE	0x8003b050	0x2a850	0x2fc	0x2fc	1	function	ghidra-analysis			Ghidra-12.0.4/ghidra_psx_ldr-2026.07.08	machine-assisted WIP boundary

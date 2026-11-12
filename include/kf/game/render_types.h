@@ -77,7 +77,7 @@ KF_ENUM_BEGIN(KfRenderQueueMode, u8)
     KF_RENDER_QUEUE_TEXTURED = 0xff
 KF_ENUM_END(KfRenderQueueMode)
 
-/* Row of game_graphics_runtime.collision_rows (colour matrix, light matrix,
+/* Row of scene_display_sys.collision_rows (colour matrix, light matrix,
  * fog and back colour). Map-cell layers select rows 0..0x3f through their low
  * six bits; the fixed rows from 0x40 light HUD models, effects, actors and
  * map-placed models. NONE disables an object's override blend. Rows without a

@@ -8,13 +8,13 @@
  * Inventory items, equipment, death drops and map objects share one ID
  * namespace (KF1 KfObjectId). Item use passes the inventory ID unchanged as
  * the scene command (event_scene_command_dispatch), which decrements
- * game_counter_bytes[id] and can store it as a map object's ID
+ * event_item_counters_table[id] and can store it as a map object's ID
  * (event_spawn_effect_object); pickups increment the counter of the object's
- * own ID; actor death drops spawn map objects by ID. game_counter_bytes
+ * own ID; actor death drops spawn map objects by ID. event_item_counters_table
  * covers IDs 0..119; map-object templates extend the namespace to 319, so
  * the domain is a halfword while byte fields keep their byte storage.
  *
- * Weapons are 0..17 (player_weapon_records) and equipment records start at
+ * Weapons are 0..17 (g_weapon_table) and equipment records start at
  * 21. Members without behavioural evidence keep their decimal encoding as a
  * WIP name. Behaviour seen in the consumers: using 77..80 returns an 82,
  * and using 82 at object 195 yields a 77; 84 starts the map-marker effect,
@@ -102,7 +102,7 @@ KF_ENUM_BEGIN(KfObjectId, u16)
     KF_OBJECT_PLACEMENT_NONE = 0xffff
 KF_ENUM_END(KfObjectId)
 
-/* Inventory ID ranges: game_counter_bytes and the per-item menu tables cover
+/* Inventory ID ranges: event_item_counters_table and the per-item menu tables cover
  * KF_ITEM_ID_COUNT IDs. The equipment menu lists one inclusive range per
  * category, the item-use menu the usable range, and menu_buy_owned_items
  * the key items that map-object markers consume. */

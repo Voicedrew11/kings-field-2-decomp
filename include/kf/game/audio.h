@@ -125,7 +125,7 @@ typedef char kf_game_audio_params_239_offset[
 typedef char kf_game_audio_stream_slots_offset[
     offsetof(KfGameAudioState, vab_stream_slots) == 0xe64 ? 1 : -1];
 
-extern KfGameAudioState audio_state;
+extern KfGameAudioState sound_status;
 
 void audio_initialize_runtime(void);
 void audio_shutdown(void);

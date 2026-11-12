@@ -68,7 +68,7 @@ DATA(0x8006e5b0, 0x4, ".sdata")
 s32 DAT_8006e5b0 = 0x158;
 
 DATA(0x80199574, 0x4, ".bss")
-KfGameMainState game_main_exit_flag;
+KfGameMainState main_end_flag;
 
 
 enum { GAME_INITIAL_MASTER_VOLUME = 0x7f };
@@ -98,26 +98,26 @@ void game_main_loop(void)
     SVECTOR camera_rotation;
     KfGameMainState exit_requested;
 
-    repeat_store_word((u32 *)&resource_state, 0,
-        sizeof resource_state / sizeof(u32));
-    repeat_store_word((u32 *)&game_graphics_runtime, 0,
-        sizeof game_graphics_runtime / sizeof(u32));
-    repeat_store_word((u32 *)&player_state, 0,
-        sizeof player_state / sizeof(u32));
-    repeat_store_word((u32 *)&event_state, 0,
-        sizeof event_state / sizeof(u32));
-    repeat_store_word((u32 *)&bss_801c7540, 0,
-        sizeof bss_801c7540 / sizeof(u32));
-    repeat_store_word((u32 *)&map_object_state, 0,
-        sizeof map_object_state / sizeof(u32));
-    repeat_store_word((u32 *)&actor_state, 0,
-        sizeof actor_state / sizeof(u32));
-    repeat_store_word((u32 *)&effect_state, 0,
-        sizeof effect_state / sizeof(u32));
-    repeat_store_word((u32 *)&audio_state, 0,
-        sizeof audio_state / sizeof(u32));
+    repeat_store_word((u32 *)&asset_status, 0,
+        sizeof asset_status / sizeof(u32));
+    repeat_store_word((u32 *)&scene_display_sys, 0,
+        sizeof scene_display_sys / sizeof(u32));
+    repeat_store_word((u32 *)&cur_avatar_status, 0,
+        sizeof cur_avatar_status / sizeof(u32));
+    repeat_store_word((u32 *)&cur_evt_state, 0,
+        sizeof cur_evt_state / sizeof(u32));
+    repeat_store_word((u32 *)&pl_ext_7540, 0,
+        sizeof pl_ext_7540 / sizeof(u32));
+    repeat_store_word((u32 *)&map_objects_slots, 0,
+        sizeof map_objects_slots / sizeof(u32));
+    repeat_store_word((u32 *)&actor_status, 0,
+        sizeof actor_status / sizeof(u32));
+    repeat_store_word((u32 *)&effect_status, 0,
+        sizeof effect_status / sizeof(u32));
+    repeat_store_word((u32 *)&sound_status, 0,
+        sizeof sound_status / sizeof(u32));
 
-    DAT_800864dc = KF_TRUE;
+    startup_in_progress = KF_TRUE;
     cd_initialize();
     display_initialize();
     audio_initialize_runtime();
@@ -128,9 +128,9 @@ void game_main_loop(void)
     event_state_initialize();
     memory_card_initialize();
     reset_collision_rows_and_overlay();
-    game_graphics_runtime.collision_rotation_dirty = KF_TRUE;
+    scene_display_sys.collision_rotation_dirty = KF_TRUE;
     refresh_collision_row_rotations();
-    DAT_800864dc = KF_FALSE;
+    startup_in_progress = KF_FALSE;
     setRECT(&clear_rect, 0, 0, 0x140, 0x1e0);
     ClearImage(&clear_rect, 0, 0, 0);
     SsSetMVol(GAME_INITIAL_MASTER_VOLUME, GAME_INITIAL_MASTER_VOLUME);
@@ -151,14 +151,14 @@ void game_main_loop(void)
                                    KF_GAME_RESOURCE_ARENA_CAPACITY);
     render_frames_with_color_overlay(KF_COLOR_OVERLAY_SUBTRACT | KF_COLOR_OVERLAY_FRONT,
                                      0x1000, 0, -128);
-    game_main_exit_flag = GAME_MAIN_RUNNING;
+    main_end_flag = GAME_MAIN_RUNNING;
     do {
         reset_collision_rows_and_overlay();
         map_object_update_actions();
         player_update_frame();
         actor_update_frame();
         effect_pool_sweep();
-        player_state.force_actor_lifecycle_refresh = KF_FALSE;
+        cur_avatar_status.force_actor_lifecycle_refresh = KF_FALSE;
         callback_invoke_slot_04_zero();
         resource_advance_transition();
         player_get_camera_pose(&camera_position, &camera_rotation);
@@ -168,13 +168,13 @@ void game_main_loop(void)
         cd_request_service_vab();
         render_game_frame(&camera_position, &camera_rotation);
         exit_requested = GAME_MAIN_EXIT_REQUESTED;
-    } while (game_main_exit_flag == GAME_MAIN_RUNNING);
+    } while (main_end_flag == GAME_MAIN_RUNNING);
 
     game_shutdown();
     /* PSX.EXE owns the fixed next-overlay mailbox. */
-    if (game_main_exit_flag == exit_requested) {
+    if (main_end_flag == exit_requested) {
         *KF_OVERLAY_MAILBOX = KF_OVERLAY_END;
-    } else if (game_main_exit_flag == GAME_MAIN_EXIT_ALTERNATE) {
+    } else if (main_end_flag == GAME_MAIN_EXIT_ALTERNATE) {
         *KF_OVERLAY_MAILBOX = KF_OVERLAY_OPEN;
         *KF_OVERLAY_MAILBOX_FLAG = KF_ENUM_ENCODE(u8, exit_requested);
     }

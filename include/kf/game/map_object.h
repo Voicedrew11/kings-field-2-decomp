@@ -946,7 +946,7 @@ typedef char kf_map_object_state_counter_873e_offset[
 typedef char kf_map_object_state_counter_8742_offset[
     offsetof(KfMapObjectStateGame, placement_drop_sequence) == 0x8742 ? 1 : -1];
 
-extern KfMapObjectStateGame map_object_state;
+extern KfMapObjectStateGame map_objects_slots;
 
 void map_object_start_action_if_idle(KfMapObject *object, KfMapObjectOperation action);
 void map_object_initialize_from_placements(const KfMapObjectPlacement *placements);

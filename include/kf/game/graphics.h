@@ -293,12 +293,12 @@ typedef char kf_clip_evector_color_offset[
 typedef char kf_clip_evector_uv_offset[
     offsetof(EVECTOR, txuv) == 32 ? 1 : -1];
 
-extern KfGraphicsRuntimeGame game_graphics_runtime;
+extern KfGraphicsRuntimeGame scene_display_sys;
 extern KfCollisionDefaultRow collision_default_rows[KF_COLLISION_ROW_COUNT];
 /* Primitive memory the display reset splits into the two primitive buffers. */
-extern u8 display_primitive_memory[KF_DISPLAY_BUFFER_COUNT * KF_GAME_PRIMITIVE_BUFFER_BYTES];
+extern u8 ot_packet_memory[KF_DISPLAY_BUFFER_COUNT * KF_GAME_PRIMITIVE_BUFFER_BYTES];
 /* Cleared with the per-frame counters; no other reference is known yet. */
-extern s32 display_frame_cleared_word;
+extern s32 frame_cleared_state;
 extern RECT menu_transition_rect;
 s32 menu_fade_transition(s32 level, s32 step);
 

@@ -51,6 +51,8 @@ from scripts.kf.sema.image import RetailImage
 
 SECTOR = 0x800
 SLOT_SIZE = 12
+# KfCdMemory.archives: the slots follow the 0x2a4-byte CD state in cdrom_ctl.
+ARCHIVES_OFFSET = 0x2A4
 # Slots assigned by func_80015d58, which opens every archive at startup.
 SLOTS = {
     "MO.T": 0,
@@ -65,7 +67,7 @@ SLOTS = {
 BASE_SECTORS = {name: 4_425 + slot * 20_011 for name, slot in SLOTS.items()}
 
 # Oracle-owned RAM: inside .bss that no admitted code touches, below the
-# cd_archives slots at 0x801b6004 and the stack at 0x801ff000.
+# cdrom_ctl archive slots at 0x801b6004 and the stack at 0x801ff000.
 NAME_VA = 0x80070000
 HEAP_VA = 0x80071000
 DEST_VA = 0x80080000
@@ -293,7 +295,7 @@ def compare_machines(label: str, retail: RunResult, candidate: RunResult) -> Non
 def check_open(retail: RetailImage, symbols: GameSymbols, rust: RustCodec,
                name: str, archive: bytes) -> int:
     slot = SLOTS[name]
-    slot_va = symbols.datum("cd_archives")[0] + slot * SLOT_SIZE
+    slot_va = symbols.datum("cdrom_ctl")[0] + ARCHIVES_OFFSET + slot * SLOT_SIZE
     table, size_block = rust.call("archive-open", archive[:SECTOR])
     table_size = struct.unpack("<I", size_block)[0]
     path = b"COM\\" + name.encode()
@@ -329,7 +331,7 @@ def check_read(retail: RetailImage, symbols: GameSymbols, rust: RustCodec,
     )
     count = struct.unpack("<I", count_block)[0]
     require(f"read {name}[{index}]", holds == b"\x01", "entry checksum fails in Rust")
-    slot_va = symbols.datum("cd_archives")[0] + slot * SLOT_SIZE
+    slot_va = symbols.datum("cdrom_ctl")[0] + ARCHIVES_OFFSET + slot * SLOT_SIZE
     table_size = (struct.unpack_from("<H", archive)[0] + 1) * 2
     slot_bytes = struct.pack("<I", HEAP_VA) + location_bytes(base) + struct.pack("<I", len(archive))
     memory = (

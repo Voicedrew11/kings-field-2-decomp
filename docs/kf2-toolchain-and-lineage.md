@@ -191,7 +191,7 @@ Lane B5 traced these further links:
   parameter REG_EQUIV note, and with it the live-length doubling, applies
   only when the declared and passed modes match. A 32-bit stack parameter is
   doubled and a promoted narrow one is not.
-- **Value reads of constant addresses.** `player_state.camera_position.vx`
+- **Value reads of constant addresses.** `cur_avatar_status.camera_position.vx`
   used as a value goes through `memory_address`. That forces the address into
   a CSE-shared pseudo, which loop.c hoists in insn order. A pointer local set
   before the loop instead fixes the order by source position
@@ -443,7 +443,7 @@ external; don't commit them.
    `addu sp; j ra; nop` epilogue fails every framed function; the kit's real
    `CC1PSX.EXE` 2.6.0 emits the same epilogue). No unit gains under 2.4.1, but
    it alone reproduces `menu_fade_transition` exactly: 2.5.7 keeps the
-   `game_graphics_runtime+0x10024` ordering-table address as a loop-movable
+   `scene_display_sys+0x10024` ordering-table address as a loop-movable
    pseudo, which spends one loop-invariant motion and changes which constants
    are hoisted. 2.4.1 also reproduces the retail register choice in
    `render_textured_quad` except one folded constant. It loses 2.5.7 forms that

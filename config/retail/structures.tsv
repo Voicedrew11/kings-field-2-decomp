@@ -24,7 +24,7 @@ KfAudioVabSlot	0x8	supported	game/audio.h;audio_acquire_vab_stream_slot;audio_in
 KfAudioVabStreamSlot	0x08	supported	game/audio.h;audio_acquire_vab_stream_slot;audio_vab_stream_callback	stream slot state and transfer buffer
 KfAudioVoiceHandle	0x04	supported	game/audio.h;GAME 0x80014124/0x8001414c/0x80014364	four-byte handle stride; original typedef spelling unproved
 KfAudioVoiceParams	0x0a	supported	game/audio.h;GAME 0x80013fc8-0x80013fe0;GAME 0x80014214-0x80014224	ten-byte parameter stride; original typedef spelling unproved
-KfAudioVoiceState	0xa28	supported	game/audio.h;audio_allocate_voice_handle;audio_key_on	ten voice handles followed by 256 sound parameter rows inside audio_state
+KfAudioVoiceState	0xa28	supported	game/audio.h;audio_allocate_voice_handle;audio_key_on	ten voice handles followed by 256 sound parameter rows inside sound_status
 KfBss801c7540	0x11844	supported	asm;game_main_loop startup clear;map-cell and collision-cache xrefs	layout from the reconstructed header
 KfCardAssets	0x120	supported	game/card.h;memory_card_write_slot;retail bytes at 0x80066680	initialized card-file title followed by one 16-color icon palette per save slot
 KfCardHeader	0x280	supported	game/card.h;GAME 0x80022990/0x80022994;GAME 0x80023054-0x800230d0	640-byte copied card-file header prefix; reserved spans and original typedef spelling unproved
@@ -38,11 +38,11 @@ KfCdRequest	0x28	supported	game/cd.h;asm;cd_initialize;func_80017d54	one queued 
 KfCdRequestPayload	0x08	supported	game/cd.h;cd_request_service_stream;audio_vab_stream_callback	overlaid image rectangle and VAB stream payload
 KfCdRequestPayloadVab	0x08	supported	game/cd.h;audio_vab_stream_callback	VAB stream phase and slot state
 KfCdState	0x2a4	supported	game/cd.h;asm;cd_initialize;cd_close_events;cd_read_sectors	CD events, VSync counters and request ring
-KfCollisionCache	0x44	candidate	game/player.h;GAME 0x8002b67c and 0x8002b874 direct field references;focused strict matches	Typed interior view at bss_801c7540+0x11800; equipment-record boundary and original object ownership unresolved
+KfCollisionCache	0x44	candidate	game/player.h;GAME 0x8002b67c and 0x8002b874 direct field references;focused strict matches	Typed interior view at pl_ext_7540+0x11800; equipment-record boundary and original object ownership unresolved
 KfCollisionDefaultRow	0x2c	supported	game/graphics.h;asm;collision defaults	44-byte initialized collision default row
 KfCollisionDefaultTail	0x6	supported	game/graphics.h;asm;collision defaults	six-byte default filter tail
 KfCollisionFilterPayload	0x2c	supported	game/graphics.h;asm;collision filter query	44-byte collision filter payload view
-KfCollisionHeights	0x14	supported	game/player.h;collision_evaluate_shape_records base pointer at bss_801c7540+0x1180c	Height results inside KfCollisionCache; original object ownership unresolved
+KfCollisionHeights	0x14	supported	game/player.h;collision_evaluate_shape_records base pointer at pl_ext_7540+0x1180c	Height results inside KfCollisionCache; original object ownership unresolved
 KfCollisionKinds	0x4	supported	game/graphics.h;asm;collision query	three collision-kind bytes and pad
 KfCollisionMaskPoint	0x08	supported	game/render_mask.h;GAME 0x8002bfd4/0x8002bfe0 lw;GAME 0x8002c968-0x8002c9f4 corner walk	Two 32-bit map-mask coordinates in the rasterizer call view; original standalone type unproved
 KfCollisionMotion	0x12	supported	game/graphics.h;asm;collision rows	nine signed motion halfwords
@@ -90,7 +90,7 @@ KfEventControlFields	0x40	supported	game/event_state.h;event_state_initialize;ev
 KfEventControlObjectSlot	0x04	supported	game/event_state.h;event_scene_command_dispatch;map_object_update_actions	object index, resource ID, and unresolved final byte
 KfEventState	0x3918	supported	game/event_state.h;game_main_loop startup clear;func_800482f8;save pointer helpers	control region, memory arena and ten saved offsets
 KfFloorItem	0x18	supported	game headers;asm;xrefs	layout from the reconstructed header
-KfGameAudioState	0xe9c	supported	game/audio.h;audio_initialize_runtime;audio_key_on;audio_state startup clear	0xe9c-byte GAME audio state: sequence, listener, VAB slots, voices and stream slots
+KfGameAudioState	0xe9c	supported	game/audio.h;audio_initialize_runtime;audio_key_on;sound_status startup clear	0xe9c-byte GAME audio state: sequence, listener, VAB slots, voices and stream slots
 KfGpuGT3	0x28	supported	game/tmd_packets.h;SDK POLY_GT3;render_enqueue_map	SDK and packed views of one GT3 GPU packet
 KfGpuGT3Packed	0x28	supported	game/tmd_packets.h;SDK POLY_GT3;render_enqueue_map	40-byte packed GT3 GPU packet view
 KfGpuGT4	0x34	supported	game/tmd_packets.h;SDK POLY_GT4;render_enqueue_map	SDK and packed views of one GT4 GPU packet
@@ -181,7 +181,7 @@ KfPlayerViewRotationOffset	0x8	supported	game/player.h;player_reset_view;player_
 KfPlayerVitals	0x08	supported	asm;xrefs;KF1 player.h counterpart	layout from the reconstructed header
 KfPoolRecord	0x14	supported	game headers;asm;xrefs	layout from the reconstructed header
 KfPrimitiveBuffer	0x0c	supported	game headers;asm;xrefs	layout from the reconstructed header
-KfQueuedMagicAction	0x04	supported	game/player.h;GAME 0x80027230-0x800273e4;player_update_frame	four byte fields at player_state+0xd1..0xd4; original standalone object/typedef unproved
+KfQueuedMagicAction	0x04	supported	game/player.h;GAME 0x80027230-0x800273e4;player_update_frame	four byte fields at cur_avatar_status+0xd1..0xd4; original standalone object/typedef unproved
 KfRenderGridState	0x24c	supported	asm;build_camera_map_cell_layer_masks;func_80030f5c	scan origin, fog threshold, and contiguous 24-by-24 map mask grid
 KfRenderMaskScanState	0x20	supported	asm;update_current_map_cell_layer_mask;build_camera_map_cell_layer_masks	observed 32-byte window and layer-mask scan state
 KfRenderModelRow	0x24	supported	asm;retail row bytes;func_80031024;render_game_frame	36-byte mutable model render row

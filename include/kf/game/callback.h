@@ -64,7 +64,7 @@ typedef char kf_resource_state_tmd_object_limit_active_offset[offsetof(KfResourc
 typedef char kf_resource_state_transition_offset_offset[offsetof(KfResourceState, transition_offset) == 0x17 ? 1 : -1];
 typedef char kf_resource_state_sequence_fade_volume_offset[offsetof(KfResourceState, sequence_fade_volume) == 0x1a ? 1 : -1];
 
-extern KfResourceState resource_state;
+extern KfResourceState asset_status;
 extern KfCallback callback_default_table[32];
 
 void callback_invoke_slot_04_zero(void);

@@ -67,15 +67,15 @@ void render_frames_with_color_overlay(KF_ENUM_PARAM(KfColorOverlayControl, s32) 
 ADDRESS(0x80037c0c, 0x1df4)
 void map_object_update_actions(void)
 {
-    KfMapObject *object = map_object_state.objects;
+    KfMapObject *object = map_objects_slots.objects;
     s32 remaining = KF_MAP_OBJECT_CAPACITY;
 
     do {
         KfMapObjectTemplate *object_template;
         if (object->action != KF_MAP_OBJECT_OP_NONE) {
-            map_object_state.current_collision_object = object;
-            object_template = &map_object_state.templates[KF_ENUM_ENCODE(u16, object->object_id)];
-            map_object_state.current_template = object_template;
+            map_objects_slots.current_collision_object = object;
+            object_template = &map_objects_slots.templates[KF_ENUM_ENCODE(u16, object->object_id)];
+            map_objects_slots.current_template = object_template;
 
             switch (object->action) {
             case KF_MAP_OBJECT_OP_LIFT_DOOR:
@@ -208,8 +208,8 @@ void map_object_update_actions(void)
                     s16 previous;
                     if ((object->collision_flags & KF_MAP_OBJECT_FLAG_RENDERED) != KF_MAP_OBJECT_FLAGS_NONE) {
                         s32 bearing = vector_xz_to_angle(
-                            player_state.camera_position.vx - object->position.vx,
-                            player_state.camera_position.vz - object->position.vz);
+                            cur_avatar_status.camera_position.vx - object->position.vx,
+                            cur_avatar_status.camera_position.vz - object->position.vz);
                         if ((u32)((bearing - object->extra_40.hinge.base_yaw) & KF_ANGLE_WRAP_MASK) <= KF_ANGLE_HALF_TURN) {
                             object->render_depth_offset = -200;
                         } else {
@@ -217,11 +217,11 @@ void map_object_update_actions(void)
                         }
                     }
                     if (object->tail.cell_copy.linked_object_index != 0xff) {
-                        linked = &map_object_state.objects[object->tail.cell_copy.linked_object_index];
+                        linked = &map_objects_slots.objects[object->tail.cell_copy.linked_object_index];
                         if ((linked->collision_flags & KF_MAP_OBJECT_FLAG_RENDERED) != KF_MAP_OBJECT_FLAGS_NONE) {
                             s32 bearing = vector_xz_to_angle(
-                                player_state.camera_position.vx - linked->position.vx,
-                                player_state.camera_position.vz - linked->position.vz);
+                                cur_avatar_status.camera_position.vx - linked->position.vx,
+                                cur_avatar_status.camera_position.vz - linked->position.vz);
                             if ((u32)((bearing - object->extra_40.hinge.base_yaw) & KF_ANGLE_WRAP_MASK) <= KF_ANGLE_HALF_TURN) {
                                 linked->render_depth_offset = 0xf0;
                             } else {
@@ -389,7 +389,7 @@ void map_object_update_actions(void)
                 case 0: {
                     u16 linked_index = object->tail.linked_property.linked_object_index;
                     if (linked_index != KF_MAP_OBJECT_INDEX_NONE) {
-                        KfMapObject *linked = &map_object_state.objects[linked_index];
+                        KfMapObject *linked = &map_objects_slots.objects[linked_index];
                         linked->render_depth_offset += 200;
                     }
                     if (object->tail.marker.marker_id == KF_MAP_OBJECT_MARKER_TRIGGERED) {
@@ -552,7 +552,7 @@ void map_object_update_actions(void)
                 case 2: {
                     if (object->extra_40.layer_fade.delay_frames_left-- == 0) {
                         KfMapOccupancyCell *row =
-                            bss_801c7540.map_cells[object->position.vz >> KF_MAP_CELL_POSITION_SHIFT];
+                            pl_ext_7540.map_cells[object->position.vz >> KF_MAP_CELL_POSITION_SHIFT];
                         KfMapOccupancyCell *cell =
                             &row[object->position.vx >> KF_MAP_CELL_POSITION_SHIFT];
                         KfMapOccupancyLayer *layer = &cell->layer[0];
@@ -584,7 +584,7 @@ void map_object_update_actions(void)
                     object->lighting_blend_q12 += 256;
                     if (object->lighting_blend_q12 >= KF_FIXED12_ONE) {
                         KfMapOccupancyCell *row =
-                            bss_801c7540.map_cells[object->position.vz >> KF_MAP_CELL_POSITION_SHIFT];
+                            pl_ext_7540.map_cells[object->position.vz >> KF_MAP_CELL_POSITION_SHIFT];
                         KfMapOccupancyCell *cell =
                             &row[object->position.vx >> KF_MAP_CELL_POSITION_SHIFT];
                         KfMapOccupancyLayer *layer = &cell->layer[0];
@@ -691,7 +691,7 @@ void map_object_update_actions(void)
             case KF_MAP_OBJECT_OP_ITEM_CONTAINER: {
                 u16 linked_index = object->tail.linked_property.linked_object_index;
                 if (linked_index != KF_MAP_OBJECT_INDEX_NONE) {
-                    KfMapObject *linked = &map_object_state.objects[linked_index];
+                    KfMapObject *linked = &map_objects_slots.objects[linked_index];
                     if (linked->object_id != KF_OBJECT_NONE) {
                         linked->layer_mask = KF_MAP_LAYER_NONE;
                         linked->tail.fields.unknown_38 = KF_MAP_OBJECT_EVENT_DISARMED;
@@ -807,7 +807,7 @@ void map_object_update_actions(void)
             }
 
             case KF_MAP_OBJECT_OP_RECALL_SOCKET: {
-                KfMapObject *target = &map_object_state.objects[380 + object->tail.event_effect.effect_object_index];
+                KfMapObject *target = &map_objects_slots.objects[380 + object->tail.event_effect.effect_object_index];
                 if (object->action_timer != 0 && target->object_id == KF_OBJECT_NONE) {
                     u32 sentinel_offset;
                     switch (object->tail.event_effect.pending_event_command) {
@@ -823,7 +823,7 @@ void map_object_update_actions(void)
                     default:
                         goto no_sentinel;
                     }
-                    ((KfEventControlObjectSlot *)&event_state.control.bytes[sentinel_offset])->object_index = 0xffff;
+                    ((KfEventControlObjectSlot *)&cur_evt_state.control.bytes[sentinel_offset])->object_index = 0xffff;
                 no_sentinel:
                     object->tail.event_effect.pending_event_command = KF_OBJECT_NONE;
                     object->action_timer = 0;
@@ -835,9 +835,9 @@ void map_object_update_actions(void)
             }
 
             case KF_MAP_OBJECT_OP_DOOR_SOCKET: {
-                KfMapObject *target = &map_object_state.objects[380 + object->tail.event_effect.effect_object_index];
+                KfMapObject *target = &map_objects_slots.objects[380 + object->tail.event_effect.effect_object_index];
                 if (object->action_timer != 0 && target->object_id == KF_OBJECT_NONE) {
-                    KfMapObject *linked = &map_object_state.objects[object->tail.event_effect.linked_object_index];
+                    KfMapObject *linked = &map_objects_slots.objects[object->tail.event_effect.linked_object_index];
                     object->tail.event_effect.pending_event_command = KF_OBJECT_NONE;
                     object->action_timer = 0;
                     linked->tail.fields.unknown_38 &= ~object->tail.event_effect.linked_object_flag_mask;
@@ -845,21 +845,21 @@ void map_object_update_actions(void)
                 if (map_object_step_offset_motion(object, target,
                                   &map_object_motion_door_socket_start_offset,
                                   &map_object_motion_door_socket_end_offset, KF_FALSE, 20)) {
-                    KfMapObject *linked = &map_object_state.objects[object->tail.event_effect.linked_object_index];
+                    KfMapObject *linked = &map_objects_slots.objects[object->tail.event_effect.linked_object_index];
                     linked->tail.fields.unknown_38 |= object->tail.event_effect.linked_object_flag_mask;
                 }
                 break;
             }
 
             case KF_MAP_OBJECT_OP_RESTORE_POINT:
-                if ((s32)(object->extra_40.next_sound_frame - cd_state.frame_count) < 0) {
-                    object->extra_40.next_sound_frame = cd_state.frame_count + 30;
+                if ((s32)(object->extra_40.next_sound_frame - cdrom_ctl.state.frame_count) < 0) {
+                    object->extra_40.next_sound_frame = cdrom_ctl.state.frame_count + 30;
                     map_object_play_spatial_sound(object, 0xee);
                 }
                 break;
 
             case KF_MAP_OBJECT_OP_GROW_ITEM: {
-                KfMapObject *linked = &map_object_state.objects[object->tail.scale_link.linked_object_index];
+                KfMapObject *linked = &map_objects_slots.objects[object->tail.scale_link.linked_object_index];
                 switch (object->action_timer) {
                 case 0:
                     map_object_sample_world_vertex(object, 2, &linked->position);
@@ -882,7 +882,7 @@ void map_object_update_actions(void)
                     }
                     break;
                 case 1: {
-                    s32 chance = game_counter_bytes[KF_ENUM_ENCODE(u8, KF_ITEM_FULL_RESTORE)];
+                    s32 chance = event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_FULL_RESTORE)];
                     if (chance < 16 && rand() >= chance * 2048) {
                         s16 scale = linked->scale.vz + 1;
                         linked->scale.vz = scale;
@@ -996,13 +996,13 @@ void map_object_update_actions(void)
                         }
                         switch (object->tail.region_action.operation_flags & KF_MAP_OBJECT_REGION_OPERATION_MASK) {
                         case KF_MAP_OBJECT_REGION_CALLBACK:
-                            ((void (*)(KfMapObject *))resource_state.active_table[3])(object);
+                            ((void (*)(KfMapObject *))asset_status.active_table[3])(object);
                             break;
                         case KF_MAP_OBJECT_REGION_SIGNAL:
                             map_object_apply_marker_signal(object->tail.region_action.operand);
                             break;
                         case KF_MAP_OBJECT_REGION_SET_CONTROL:
-                            event_state.control.bytes[0x40 + object->tail.region_action.operand] =
+                            cur_evt_state.control.bytes[0x40 + object->tail.region_action.operand] =
                                 object->tail.region_action.assigned_value;
                             break;
                         }
@@ -1020,7 +1020,7 @@ void map_object_update_actions(void)
                                    object->tail.transition.region_depth,
                                    object->position.vy)) {
                     if (object->extra_40.bytes[0] == KF_MAP_OBJECT_LATCH_CLEAR) {
-                        KfMapObject *candidate = map_object_state.objects;
+                        KfMapObject *candidate = map_objects_slots.objects;
                         s32 count = KF_MAP_OBJECT_CAPACITY;
                         audio_play_sound(0x14, 0x6e);
                         render_frames_with_color_overlay(KF_COLOR_OVERLAY_ADD, 0, KF_FIXED12_ONE, 0x100);
@@ -1030,22 +1030,22 @@ void map_object_update_actions(void)
                             }
                             candidate++;
                         } while (--count != 0);
-                        map_cell_add_layer_occupancy(player_state.camera_position.vx,
-                                       player_state.camera_position.vz, 800, -1);
-                        player_state.camera_position.vx =
+                        map_cell_add_layer_occupancy(cur_avatar_status.camera_position.vx,
+                                       cur_avatar_status.camera_position.vz, 800, -1);
+                        cur_avatar_status.camera_position.vx =
                             object->tail.transition.destination_cell_x * KF_MAP_CELL_SIZE + KF_MAP_CELL_SIZE / 2;
-                        player_state.camera_position.vz =
+                        cur_avatar_status.camera_position.vz =
                             object->tail.transition.destination_cell_z * KF_MAP_CELL_SIZE + KF_MAP_CELL_SIZE / 2;
-                        player_state.map_layer_index =
+                        cur_avatar_status.map_layer_index =
                             object->tail.transition.destination_layer_code == 1 ? 0 : 5;
-                        player_state.camera_rotation_target.angles[1] =
+                        cur_avatar_status.camera_rotation_target.angles[1] =
                             -((u32)object->tail.transition.destination_yaw_code * 16);
                         player_sync_position_to_map();
-                        player_state.camera_rotation.angles[1] =
-                            player_state.camera_rotation_target.angles[1] +
-                            player_state.reaction_rotation_offset[1] +
-                            player_state.view_rotation_offset.components[1] +
-                            player_state.camera_yaw_roll_offsets[0];
+                        cur_avatar_status.camera_rotation.angles[1] =
+                            cur_avatar_status.camera_rotation_target.angles[1] +
+                            cur_avatar_status.reaction_rotation_offset[1] +
+                            cur_avatar_status.view_rotation_offset.components[1] +
+                            cur_avatar_status.camera_yaw_roll_offsets[0];
                         render_frames_with_color_overlay(KF_COLOR_OVERLAY_ADD, KF_FIXED12_ONE, 0, -0x100);
                         render_set_color_overlay(KF_COLOR_OVERLAY_OFF, 0, 0, 0);
                     }
@@ -1056,12 +1056,12 @@ void map_object_update_actions(void)
                 break;
 
             default:
-                ((void (*)(void))resource_state.active_table[9])();
+                ((void (*)(void))asset_status.active_table[9])();
                 break;
             }
         }
         object++;
     } while (--remaining != 0);
 
-    map_object_state.current_collision_object = NULL;
+    map_objects_slots.current_collision_object = NULL;
 }

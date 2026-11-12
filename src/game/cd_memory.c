@@ -42,20 +42,13 @@ DATA(0x8006e5bc, 0x3, ".sdata")
 char cd_version_suffix[3] = ";1";
 
 DATA(0x800864dc, 0x1, ".bss")
-u8 DAT_800864dc;
+u8 startup_in_progress;
 
 DATA(0x8009bfe4, 0x5f000, ".bss")
-u8 game_resource_arena[KF_GAME_RESOURCE_ARENA_CAPACITY];
+u8 g_resource_space[KF_GAME_RESOURCE_ARENA_CAPACITY];
 
-DATA(0x801b6ca4, 0x2a4, ".bss")
-KfCdState cd_state;
-DATA(0x801b6f48, 0x60, ".bss")
-KfCdArchive cd_archives[KF_CD_ARCHIVE_SLOTS];
-
-/* Provisional extent: the first map payload copies 0xfa00 bytes from this
- * buffer, while the following BSS identity begins at 0x801c7fac. */
-DATA(0x801b6fa8, 0x11000, ".bss")
-u8 cd_stream_work_buffer[0x11000];
+DATA(0x801b6ca4, 0x11304, ".bss")
+KfCdMemory cdrom_ctl;
 
 ADDRESS(0x80016f50, 0xc)
 void cd_stream_mark_complete(KfCdRequest *request)
@@ -66,7 +59,7 @@ void cd_stream_mark_complete(KfCdRequest *request)
 ADDRESS(0x80016f5c, 0x30)
 void cd_map_stream_read(s32 slot, s32 entry)
 {
-    cd_archive_read_chunked(slot, entry, cd_stream_work_buffer,
+    cd_archive_read_chunked(slot, entry, cdrom_ctl.stream_work_buffer,
         cd_stream_mark_complete);
 }
 
@@ -90,7 +83,7 @@ void cd_request_service_stream(void)
     s32 consumed;
 
     EnterCriticalSection();
-    request = cd_state.current;
+    request = cdrom_ctl.state.current;
     if (request->kind != KF_CD_REQUEST_IMAGE_STREAM
         || request->stream_complete != KF_CD_STREAM_CHUNK_READY) {
         goto leave_critical;
@@ -447,8 +440,8 @@ void cd_request_yield(void)
 ADDRESS(0x80017850, 0x30)
 void cd_vsync_handler(void)
 {
-    cd_state.vsync_count++;
-    cd_state.frame_count++;
+    cdrom_ctl.state.vsync_count++;
+    cdrom_ctl.state.frame_count++;
 }
 
 ADDRESS(0x80017880, 0x60)
@@ -456,11 +449,11 @@ void cd_wait_two_vsyncs(void)
 {
     for (;;) {
         EnterCriticalSection();
-        if (cd_state.vsync_count < 2) {
+        if (cdrom_ctl.state.vsync_count < 2) {
             ExitCriticalSection();
             VSync(0);
         } else {
-            cd_state.vsync_count = 0;
+            cdrom_ctl.state.vsync_count = 0;
             ExitCriticalSection();
             break;
         }
@@ -475,10 +468,10 @@ void cd_request_advance(KfCdRequest *request)
     next->kind = KF_CD_REQUEST_IDLE;
     next->phase = KF_CD_REQUEST_PHASE_SEEK;
     next++;
-    if (next == cd_state.requests + KF_CD_REQUEST_CAPACITY) {
+    if (next == cdrom_ctl.state.requests + KF_CD_REQUEST_CAPACITY) {
         next -= KF_CD_REQUEST_CAPACITY;
     }
-    cd_state.current = next;
+    cdrom_ctl.state.current = next;
     if (next->kind != KF_CD_REQUEST_IDLE) {
         CdSeekP(&next->location);
     } else {
@@ -489,7 +482,7 @@ void cd_request_advance(KfCdRequest *request)
 ADDRESS(0x8001794c, 0x14c)
 void cd_complete_handler(void)
 {
-    KfCdRequest *request = cd_state.current;
+    KfCdRequest *request = cdrom_ctl.state.current;
 
     switch (request->kind) {
     case KF_CD_REQUEST_IDLE:
@@ -532,7 +525,7 @@ void cd_complete_handler(void)
 ADDRESS(0x80017a98, 0x7c)
 void cd_data_ready_handler(void)
 {
-    KfCdRequest *request = cd_state.current;
+    KfCdRequest *request = cdrom_ctl.state.current;
 
     if (request->kind != KF_CD_REQUEST_IDLE &&
         request->kind == KF_CD_REQUEST_SECTOR_CALLBACK) {
@@ -601,12 +594,12 @@ void cd_request_wait_idle(void)
 {
     for (;;) {
         EnterCriticalSection();
-        if (cd_state.current == cd_state.tail && cd_state.current->kind == KF_CD_REQUEST_IDLE) {
+        if (cdrom_ctl.state.current == cdrom_ctl.state.tail && cdrom_ctl.state.current->kind == KF_CD_REQUEST_IDLE) {
             break;
         }
         ExitCriticalSection();
         cd_request_yield();
-        if (DAT_800864dc) {
+        if (startup_in_progress) {
             func_8001883c();
             func_8001883c();
             func_8001883c();
@@ -650,7 +643,7 @@ ADDRESS(0x80017e04, 0x118)
 KfCdRequest *cd_request_enqueue(KF_ENUM_PARAM(KfCdRequestKind, s32) kind, CdlLOC *location, u32 byte_size,
     u_long *destination, KfCdRequestCallback on_complete)
 {
-    KfCdRequest *request = cd_state.tail;
+    KfCdRequest *request = cdrom_ctl.state.tail;
 
     cd_request_wait_done(request);
     EnterCriticalSection();
@@ -661,11 +654,11 @@ KfCdRequest *cd_request_enqueue(KF_ENUM_PARAM(KfCdRequestKind, s32) kind, CdlLOC
     request->destination = destination;
     request->sector_count = (byte_size + KF_CD_SECTOR_BYTES - 1) >> KF_CD_SECTOR_SHIFT;
     request->on_complete = on_complete;
-    cd_state.tail = cd_state.tail + 1;
-    if (cd_state.tail == cd_state.requests + KF_CD_REQUEST_CAPACITY) {
-        cd_state.tail = cd_state.requests;
+    cdrom_ctl.state.tail = cdrom_ctl.state.tail + 1;
+    if (cdrom_ctl.state.tail == cdrom_ctl.state.requests + KF_CD_REQUEST_CAPACITY) {
+        cdrom_ctl.state.tail = cdrom_ctl.state.requests;
     }
-    if (cd_state.current == request) {
+    if (cdrom_ctl.state.current == request) {
         ExitCriticalSection();
     CdSeekP(location);
     } else {
@@ -677,7 +670,7 @@ KfCdRequest *cd_request_enqueue(KF_ENUM_PARAM(KfCdRequestKind, s32) kind, CdlLOC
 ADDRESS(0x80017f1c, 0x88)
 u32 cd_archive_entry_extent(u16 slot, u16 entry, CdlLOC *location)
 {
-    KfCdArchive *archive = &cd_archives[slot];
+    KfCdArchive *archive = &cdrom_ctl.archives[slot];
     u32 start = archive->sector_offsets[entry];
 
     if (location != NULL) {
@@ -720,7 +713,7 @@ ADDRESS(0x800180a0, 0xc4)
 void cd_archive_read_chunked(u16 slot, u16 entry, u8 *destination,
     KfCdRequestCallback on_complete)
 {
-    KfCdRequest *request = cd_state.tail;
+    KfCdRequest *request = cdrom_ctl.state.tail;
     CdlLOC location;
     u32 size;
 
@@ -744,7 +737,7 @@ void cd_archive_read_chunked(u16 slot, u16 entry, u8 *destination,
 ADDRESS(0x80018164, 0x44)
 u32 cd_archive_entry_size(u16 slot, u16 entry)
 {
-    u16 *offsets = cd_archives[slot].sector_offsets;
+    u16 *offsets = cdrom_ctl.archives[slot].sector_offsets;
     u32 start = offsets[entry];
     u32 end = offsets[entry + 1];
 
@@ -767,15 +760,15 @@ void cd_read_sectors(CdlLOC *location, u_long *destination, s32 sector_count)
     s32 result;
 
     cd_request_wait_idle();
-    DisableEvent(cd_state.error_event);
-    DisableEvent(cd_state.complete_event);
-    DisableEvent(cd_state.data_ready_event);
+    DisableEvent(cdrom_ctl.state.error_event);
+    DisableEvent(cdrom_ctl.state.complete_event);
+    DisableEvent(cdrom_ctl.state.data_ready_event);
     CdPause();
     for (; attempt < CD_READ_ATTEMPTS; attempt++) {
         CdControl(CdlSetloc, (u_char *)location, NULL);
         CdRead(sector_count, destination, CdlModeSpeed);
         while ((result = CdReadSync(CD_READ_SYNC_POLL, NULL)) > 0) {
-            if (DAT_800864dc) {
+            if (startup_in_progress) {
                 func_8001883c();
             }
         }
@@ -785,9 +778,9 @@ void cd_read_sectors(CdlLOC *location, u_long *destination, s32 sector_count)
             break;
         }
     }
-    EnableEvent(cd_state.error_event);
-    EnableEvent(cd_state.complete_event);
-    EnableEvent(cd_state.data_ready_event);
+    EnableEvent(cdrom_ctl.state.error_event);
+    EnableEvent(cdrom_ctl.state.complete_event);
+    EnableEvent(cdrom_ctl.state.data_ready_event);
     if (failed == KF_TRUE) {
         cd_report_error(KF_CD_ERROR_READ);
     }
@@ -818,7 +811,7 @@ void cd_extent_read_into(u_long *destination, KfCdExtent *extent, u32 size)
 ADDRESS(0x800183a0, 0x94)
 void cd_archive_read(u16 slot, u16 entry, u_long *destination)
 {
-    KfCdArchive *archive = &cd_archives[slot];
+    KfCdArchive *archive = &cdrom_ctl.archives[slot];
     u16 *offsets = archive->sector_offsets;
     s32 sector_count = offsets[entry + 1] - offsets[entry];
     CdlLOC location;
@@ -885,7 +878,7 @@ void cd_archive_open(u16 slot, const char *name)
     u16 table[(KF_CD_SECTOR_BYTES + 0x40) / 2];
     CdlFILE file;
     char path[CD_PATH_BYTES];
-    KfCdArchive *archive = &cd_archives[slot];
+    KfCdArchive *archive = &cdrom_ctl.archives[slot];
 
     memcpy((void *)path, (const void *)cd_path_prefix, sizeof cd_path_prefix);
     strcat(path, name);
@@ -907,27 +900,27 @@ void cd_initialize(void)
     s32 index;
 
     EnterCriticalSection();
-    cd_state.vsync_count = 0;
-    cd_state.vsync_event = OpenEvent(CD_EVENT_CLASS_VSYNC_COUNTER, CD_EVENT_SPEC_INTERRUPT,
+    cdrom_ctl.state.vsync_count = 0;
+    cdrom_ctl.state.vsync_event = OpenEvent(CD_EVENT_CLASS_VSYNC_COUNTER, CD_EVENT_SPEC_INTERRUPT,
         CD_EVENT_MODE_INTERRUPT, cd_vsync_handler);
-    EnableEvent(cd_state.vsync_event);
-    cd_state.frame_count = 0;
-    request = cd_state.requests;
+    EnableEvent(cdrom_ctl.state.vsync_event);
+    cdrom_ctl.state.frame_count = 0;
+    request = cdrom_ctl.state.requests;
     for (index = 0; index < KF_CD_REQUEST_CAPACITY; index++) {
         request->kind = KF_CD_REQUEST_IDLE;
         request->phase = KF_CD_REQUEST_PHASE_SEEK;
         request++;
     }
-    cd_state.tail = cd_state.current = cd_state.requests;
-    cd_state.error_event = OpenEvent(CD_EVENT_CLASS_CDROM, CD_EVENT_SPEC_ERROR,
+    cdrom_ctl.state.tail = cdrom_ctl.state.current = cdrom_ctl.state.requests;
+    cdrom_ctl.state.error_event = OpenEvent(CD_EVENT_CLASS_CDROM, CD_EVENT_SPEC_ERROR,
         CD_EVENT_MODE_INTERRUPT, cd_error_handler);
-    cd_state.complete_event = OpenEvent(CD_EVENT_CLASS_CDROM, CD_EVENT_SPEC_COMPLETE,
+    cdrom_ctl.state.complete_event = OpenEvent(CD_EVENT_CLASS_CDROM, CD_EVENT_SPEC_COMPLETE,
         CD_EVENT_MODE_INTERRUPT, cd_complete_handler);
-    cd_state.data_ready_event = OpenEvent(CD_EVENT_CLASS_CDROM, CD_EVENT_SPEC_DATA_READY,
+    cdrom_ctl.state.data_ready_event = OpenEvent(CD_EVENT_CLASS_CDROM, CD_EVENT_SPEC_DATA_READY,
         CD_EVENT_MODE_INTERRUPT, cd_data_ready_handler);
-    EnableEvent(cd_state.error_event);
-    EnableEvent(cd_state.complete_event);
-    EnableEvent(cd_state.data_ready_event);
+    EnableEvent(cdrom_ctl.state.error_event);
+    EnableEvent(cdrom_ctl.state.complete_event);
+    EnableEvent(cdrom_ctl.state.data_ready_event);
     ExitCriticalSection();
 }
 
@@ -935,9 +928,9 @@ ADDRESS(0x800187cc, 0x68)
 void cd_close_events(void)
 {
     EnterCriticalSection();
-    CloseEvent(cd_state.vsync_event);
-    CloseEvent(cd_state.error_event);
-    CloseEvent(cd_state.complete_event);
-    CloseEvent(cd_state.data_ready_event);
+    CloseEvent(cdrom_ctl.state.vsync_event);
+    CloseEvent(cdrom_ctl.state.error_event);
+    CloseEvent(cdrom_ctl.state.complete_event);
+    CloseEvent(cdrom_ctl.state.data_ready_event);
     ExitCriticalSection();
 }

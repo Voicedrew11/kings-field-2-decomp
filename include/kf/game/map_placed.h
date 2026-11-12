@@ -28,7 +28,7 @@ typedef struct KfMapPlacedSource {
     s16 height_offset;
 } KfMapPlacedSource;
 
-/* Twenty-four-byte runtime rows at game_graphics_runtime +0x170f0. */
+/* Twenty-four-byte runtime rows at scene_display_sys +0x170f0. */
 typedef struct KfMapPlacedEntry {
     u16 model_index;
     KfMapLayerMask layer_mask;

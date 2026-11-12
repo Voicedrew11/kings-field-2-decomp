@@ -27,8 +27,8 @@ typedef struct KfMemoryBlock {
 typedef char kf_memory_block_size[sizeof(KfMemoryBlock) == 12 ? 1 : -1];
 
 #define KF_GAME_RESOURCE_ARENA_CAPACITY 0x5f000
-extern u8 game_resource_arena[KF_GAME_RESOURCE_ARENA_CAPACITY];
-#define KF_GAME_RESOURCE_ARENA_BASE ((KfMemoryBlock *)game_resource_arena)
+extern u8 g_resource_space[KF_GAME_RESOURCE_ARENA_CAPACITY];
+#define KF_GAME_RESOURCE_ARENA_BASE ((KfMemoryBlock *)g_resource_space)
 
 void memory_arena_free(KfMemoryBlock *block);
 void memory_arena_coalesce_free(KfMemoryBlock *block);

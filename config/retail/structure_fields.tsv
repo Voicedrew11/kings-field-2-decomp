@@ -244,7 +244,7 @@ KfCollisionCache	0x00	0x04	cell	KfMapOccupancyCell *	supported	game/collision_ca
 KfCollisionCache	0x04	0x04	shape	KfMapOccupancyLayer *	supported	game/collision_cache.h;GAME 0x80045ee0 lw;collision_probe_forward_shape_0x20	selected occupancy-layer pointer; containing BSS ownership remains WIP
 KfCollisionCache	0x8	0x2	unknown_08	u8[2]	opaque	game/player.h	layout span without a supported meaning
 KfCollisionCache	0x0a	0x02	layer	u16	supported	game/collision_cache.h;GAME 0x8002aa10/0x8002aa28/0x8002aa7c sh	selected layer byte offset within the two-layer cell
-KfCollisionCache	0x0c	0x14	heights	KfCollisionHeights	supported	game/collision_cache.h;collision_evaluate_shape_records base pointer at bss_801c7540+0x1180c	height results addressed through one pointer by the shape evaluator
+KfCollisionCache	0x0c	0x14	heights	KfCollisionHeights	supported	game/collision_cache.h;collision_evaluate_shape_records base pointer at pl_ext_7540+0x1180c	height results addressed through one pointer by the shape evaluator
 KfCollisionCache	0x20	0x4	flags	KfCollisionHitFlags	candidate	game/player.h	KfCollisionCache member from reconstructed header
 KfCollisionCache	0x24	0x4	actor_index	s32	candidate	game/player.h	KfCollisionCache member from reconstructed header
 KfCollisionCache	0x28	0x4	object_index	s32	supported	game/player.h;map_cell_apply_rotated_pattern;map_cell_copy_rotated_fields;map_object_set_cell_marker	object_index access in exact source
@@ -297,7 +297,7 @@ KfEffectKind105Attachment	0x00	0x01	parent_index	u8	supported	GAME 0x80044300/0x
 KfEffectKind105Attachment	0x01	0x01	actor_index	u8	supported	GAME 0x800441e8 lbu;effect_construct_record kind 105	Actor record index or 0xff unbound sentinel
 KfEffectKind105Attachment	0x02	0x02	vertex_index	s16	supported	GAME 0x80044210 lh;effect_construct_record kind 105	Animation vertex index passed to actor sampler
 KfEffectKind106Children	0x0	0x1	children_remaining	u8	supported	game/effect.h;effect_update_dispatch	children_remaining access in exact source
-KfEffectKind109Target	0x0	0x1	effect_index	u8	candidate	GAME 0x8004162c lbu/0x80041638 sb;GAME 0x80045b6c lbu	Index into effect_state.records for kind-109 target motion
+KfEffectKind109Target	0x0	0x1	effect_index	u8	candidate	GAME 0x8004162c lbu/0x80041638 sb;GAME 0x80045b6c lbu	Index into effect_status.records for kind-109 target motion
 KfEffectKind10Targeting	0x00	0x01	actor_index	u8	supported	GAME 0x80044da8 lbu;GAME 0x80044eb4 sb	Actor record selected for kind-10 emission
 KfEffectKind10Targeting	0x01	0x01	emissions_remaining	u8	supported	GAME 0x800409cc sb;GAME 0x80044d78/0x80044e14 lbu	Remaining targeted child emissions
 KfEffectKind111Target	0x0	0x2	actor_index	s16	supported	game/effect.h;effect_construct_record;effect_update_dispatch	actor_index access in exact source
@@ -308,7 +308,7 @@ KfEffectKind12Aim	0x02	0x02	scale	s16	supported	GAME 0x80040d9c sh;GAME 0x80043d
 KfEffectKind12Aim	0x04	0x02	turn_step	s16	supported	GAME 0x80040da8 sh;GAME 0x80043d4c lh	Angular step passed to effect_aim_and_move
 KfEffectKind12Aim	0x06	0x02	close_scale	s16	supported	GAME 0x80040db4 sh;GAME 0x80043d64 lh	Close-range scale passed to effect_aim_and_move
 KfEffectKind1Stage	0x0	0x1	collision_stage	KfEffectStage	supported	game/effect.h;effect_construct_record;effect_update_dispatch	collision_stage access in exact source
-KfEffectKind23Attachment	0x00	0x02	actor_index	s16	supported	GAME 0x800415dc sh;GAME 0x80042940 lh	Signed actor index selecting actor_state.actors during kind-23 attachment
+KfEffectKind23Attachment	0x00	0x02	actor_index	s16	supported	GAME 0x800415dc sh;GAME 0x80042940 lh	Signed actor index selecting actor_status.actors during kind-23 attachment
 KfEffectKind23Attachment	0x02	0x02	vertex_index	s16	supported	GAME 0x800415e8 sh;GAME 0x80042984 lh	Signed animation vertex index passed to actor_sample_rotated_animation_vertex
 KfEffectKind23Attachment	0x04	0x02	release_animation_phase	u16	supported	GAME 0x800415f8 sh;GAME 0x80042a88 lhu	Unsigned actor animation phase threshold releasing the attached effect
 KfEffectKind26Stage	0x0	0x1	stage	KF_ENUM_STORAGE(KfEffectStage, s8)	supported	effect_update_dispatch signed switch on payload byte 0	travel until blocked, then shrink
@@ -317,7 +317,7 @@ KfEffectKind2Scale	0x02	0x02	scale_step	s16	supported	game/effect.h;GAME 0x80043
 KfEffectKind2Scale	0x04	0x02	radial_damage_parameter	s16	supported	game/effect.h;GAME 0x80043c78 lh;effect_update_dispatch	Passed as signed halfword to radial magic damage
 KfEffectKind42Countdown	0x0	0x1	ticks_remaining	s8	supported	game/effect.h;effect_construct_record;effect_update_dispatch	ticks_remaining access in exact source
 KfEffectKind46State	0x00	0x01	phase	KF_ENUM_STORAGE(KfEffectStage, s8)	supported	GAME 0x80042df0 lb;GAME 0x80042ebc sb	Kind-46 state switch from zero to one after linked effect expires
-KfEffectKind46State	0x01	0x01	linked_effect_index	s8	supported	GAME 0x80042dc8 lb;effect_construct_record kind 46	Signed index into effect_state.records
+KfEffectKind46State	0x01	0x01	linked_effect_index	s8	supported	GAME 0x80042dc8 lb;effect_construct_record kind 46	Signed index into effect_status.records
 KfEffectKind46State	0x02	0x02	age_q12	u16	supported	GAME 0x80042ec0 sh;GAME 0x80042ed0 lh;GAME 0x80042edc lhu	Fade interpolation age advanced by 512 to 4096
 KfEffectKind50Stage	0x0	0x1	stage	KF_ENUM_STORAGE(KfEffectStage, s8)	candidate	game/effect.h	KfEffectKind50Stage member from reconstructed header
 KfEffectKind5Fanout	0x00	0x01	initial_child_count	u8	supported	GAME 0x80043fd8 sb;GAME 0x800440f4/0x8004416c lbu	Initial number of kind-105 children for hit fraction
@@ -364,7 +364,7 @@ KfEffectRecord	0x8	0x1	render_flags	KfEffectRenderFlags	candidate	game/effect.h;
 KfEffectRecord	0x9	0x1	render_queue_mode	KfRenderQueueMode	candidate	game/effect.h;asm 0x8003259c/0x80040468;render_world_model consumer;render_types.h	0xff constructor default selects textured queue; constructor/update value 1 selects blended queue; renderer also handles 0xfe clipped mode
 KfEffectRecord	0xa	0x1	map_layer_mask	KfMapLayerMask	candidate	game/effect.h;asm 0x8004037c/0x800423ec;render_scene_and_update_resources	constructor default 3 selects both layers; collision step selects 1 or 2; renderer masks map-cell visibility and passes layer to render_world_model
 KfEffectRecord	0xb	0x1	cooldown	u8	supported	game/effect.h;asm;effect pool;game_main_loop startup clear	checked effect-pool field; semantic meaning provisional
-KfEffectRecord	0xc	0x1	lighting_override_index	KfLightingIndex	candidate	game/effect.h;asm 0x80032bbc/0x80040464;render_world_model consumer;render_types.h	0xff disables lighting-row override; other values index game_graphics_runtime.collision_rows during model rendering
+KfEffectRecord	0xc	0x1	lighting_override_index	KfLightingIndex	candidate	game/effect.h;asm 0x80032bbc/0x80040464;render_world_model consumer;render_types.h	0xff disables lighting-row override; other values index scene_display_sys.collision_rows during model rendering
 KfEffectRecord	0xd	0x1	midpoint_collision_enabled	b8	candidate	game/effect.h;asm 0x8004049c/0x80042308/0x80042430;effect constructor and collision helpers	constructor enables midpoint collision for fast motion and kinds 4/7/49; collision step probes midpoint and backtrack uses stored half-step
 KfEffectRecord	0xe	0x2	updates_remaining	s16	supported	game/effect.h;asm;effect pool;game_main_loop startup clear	checked effect-pool field; semantic meaning provisional
 KfEffectRecord	0x10	0x2	lighting_blend_q12	s16	candidate	game/effect.h;GAME 0x80032d58;render_world_model arg 11	constructor uses 0/0x1000; runtime ramps by 256 to 4096; renderer passes signed halfword as lighting blend
@@ -718,7 +718,7 @@ KfMapObjectTailInitialRotationView	0x9	0x3	unknown_3d	u8[3]	opaque	game/map_obje
 KfMapObjectTailLinkedPropertyView	0x0	0x4	unknown_34	u32	opaque	game/map_object.h	first tail word remains unresolved for linked property actions
 KfMapObjectTailLinkedPropertyView	0x4	0x1	unknown_38	u8	opaque	game/map_object.h	marker command state shared with other actions
 KfMapObjectTailLinkedPropertyView	0x5	0x1	unknown_39	u8	opaque	game/map_object.h	adjacent byte remains unresolved
-KfMapObjectTailLinkedPropertyView	0x6	0x2	linked_object_index	u16	supported	GAME 0x800355d8;map_object_set_property;map_object_update_actions	halfword indexes map_object_state.objects; 0xffff sentinel
+KfMapObjectTailLinkedPropertyView	0x6	0x2	linked_object_index	u16	supported	GAME 0x800355d8;map_object_set_property;map_object_update_actions	halfword indexes map_objects_slots.objects; 0xffff sentinel
 KfMapObjectTailLinkedPropertyView	0x8	0x4	unknown_3c	u32	opaque	game/map_object.h	remaining action-specific tail bytes
 KfMapObjectTailMarkerView	0x0	0x4	unknown_34	u32	opaque	game/map_object.h	first tail word remains action-specific
 KfMapObjectTailMarkerView	0x4	0x1	marker_id	u8	supported	GAME 0x800367c4..0x80036894 lbu/sb;map_object_apply_marker_signal;map_object_check_and_consume_marker	incoming marker identifier compared and consumed for marker-driven actions
@@ -756,7 +756,7 @@ KfMapObjectTailResourceTriggerView	0xb	0x1	unknown_3f	u8	opaque	game/map_object.
 KfMapObjectTailScaleLinkView	0x0	0x4	unknown_34	u32	opaque	game/map_object.h	first tail word remains unresolved for action 19
 KfMapObjectTailScaleLinkView	0x4	0x1	scale_step_code	u8	supported	GAME 0x8003869c/0x800386cc lbu;map_object_update_actions	shifted by five for linked-object scale; 0xff sentinel
 KfMapObjectTailScaleLinkView	0x5	0x1	unknown_39	u8	opaque	game/map_object.h	adjacent byte remains unresolved
-KfMapObjectTailScaleLinkView	0x6	0x2	linked_object_index	u16	supported	GAME 0x8003860c lhu;map_object_state.objects	halfword indexes 68-byte map-object records
+KfMapObjectTailScaleLinkView	0x6	0x2	linked_object_index	u16	supported	GAME 0x8003860c lhu;map_objects_slots.objects	halfword indexes 68-byte map-object records
 KfMapObjectTailScaleLinkView	0x8	0x4	unknown_3c	u32	opaque	game/map_object.h	remaining action-specific tail bytes
 KfMapObjectTailScatteredEffectView	0x0	0x4	unknown_34	u32	opaque	game/map_object.h	layout span without a supported meaning
 KfMapObjectTailScatteredEffectView	0x4	0x2	unknown_38	u8[2]	opaque	game/map_object.h;event_map_object_interact;event_spawn_effect_object;event_world_dispatch_interaction	layout span without a supported meaning
@@ -898,7 +898,7 @@ KfPlayerMagicSpawnFields	0x0	0x2	x	s16	candidate	game/player.h	KfPlayerMagicSpaw
 KfPlayerMagicSpawnFields	0x2	0x2	y	s16	candidate	game/player.h	KfPlayerMagicSpawnFields member from reconstructed header
 KfPlayerMagicSpawnFields	0x4	0x2	z	s16	candidate	game/player.h	KfPlayerMagicSpawnFields member from reconstructed header
 KfPlayerMagicSpawnFields	0x6	0x2	effect_kind	KF_ENUM_STORAGE(KfEffectKind, s16)	supported	game/player.h;player_dispatch_magic_effect	effect_kind access in exact source
-KfPlayerMagicSpawnRecord	0x00	0x08	offset	SVECTOR	supported	GAME 0x8002601c-0x80026038;GAME 0x800260c8-0x800260e4	Full eight-byte copy into player_state.magic_origin_offset
+KfPlayerMagicSpawnRecord	0x00	0x08	offset	SVECTOR	supported	GAME 0x8002601c-0x80026038;GAME 0x800260c8-0x800260e4	Full eight-byte copy into cur_avatar_status.magic_origin_offset
 KfPlayerMagicSpawnRecord	0x0	0x8	fields	KfPlayerMagicSpawnFields	candidate	game/player.h	KfPlayerMagicSpawnRecord member from reconstructed header
 KfPlayerMovementSpeed	0x00	0x02	unsigned_value	u16	supported	asm;player_update_vertical_motion	view bob phase reads lhu
 KfPlayerMovementSpeed	0x00	0x02	signed_value	s16	supported	asm;player_update_vertical_motion	falling threshold reads lh
@@ -1010,7 +1010,7 @@ KfPlayerState	0x116	0x02	unknown_116	u8[2]	opaque	game/player.h;GAME player_rese
 KfPlayerState	0x118	0x08	magic_origin_offset	SVECTOR	supported	asm;player_probe_view_target_and_vectors;player_select_magic_action;player_dispatch_magic_effect	magic effect origin offset rotated by the player camera orientation
 KfPlayerState	0x120	0x04	collision_lower_clearance	s32	supported	asm;player_update_collision_bounds;player_reset_view	lower collision clearance; set to 10000 by view reset
 KfPlayerState	0x124	0x04	collision_upper_clearance	s32	supported	asm;player_update_collision_bounds;player_reset_view	upper collision clearance; set to 10000 by view reset
-KfPlayerState	0x128	0x02	map_layer_index	u16	supported	asm;player_move_horizontal;player_sync_position_to_map;render_world_model;player_weapon_render;event_state save/restore	map-cell layer selected from collision result and used by map probes, rendering and save snapshots
+KfPlayerState	0x128	0x02	map_layer_index	u16	supported	asm;player_move_horizontal;player_sync_position_to_map;render_world_model;player_weapon_render;cur_evt_state save/restore	map-cell layer selected from collision result and used by map probes, rendering and save snapshots
 KfPlayerState	0x12a	0x02	strafe_velocity	s16	supported	asm;xrefs;KF1 player.h counterpart	member used by reconstructed code
 KfPlayerState	0x12c	0x02	forward_velocity	s16	supported	asm;xrefs;KF1 player.h counterpart	member used by reconstructed code
 KfPlayerState	0x12e	0x02	movement_speed	KfPlayerMovementSpeed	supported	asm;player_update_vertical_motion;KF1 player.h counterpart	dual signed and unsigned reads of one motion-speed halfword
@@ -1026,7 +1026,7 @@ KfPlayerState	0x140	0x04	pad_buttons	KfPlayerPadButtons	supported	asm;player_upd
 KfPlayerState	0x144	0x04	movement_step_limit	s32	supported	asm;player_update_horizontal_motion;KF1 player_update.c	signed full-word movement acceleration limit
 KfPlayerState	0x148	0x04	turn_step_limit	s32	supported	asm;player_update_camera_rotation;KF1 player_update.c	signed full-word turn step and low-halfword clamp value
 KfPlayerState	0x14c	0x14	reaction	KfPlayerReactionOverlay	supported	asm;player_apply_map_object_reaction;player_begin_view_reaction;player_begin_moving_damage_reaction	overlapping death, camera and position reaction views
-KfPlayerViewReaction	0x00	0x01	map_object_index	u8	supported	player_apply_map_object_reaction;player_update_frame;event_pose_interpolate	indexes map_object_state.objects during map-object follow and approach reactions
+KfPlayerViewReaction	0x00	0x01	map_object_index	u8	supported	player_apply_map_object_reaction;player_update_frame;event_pose_interpolate	indexes map_objects_slots.objects during map-object follow and approach reactions
 KfPlayerViewReaction	0x01	0x01	approach_step	u8	supported	player_begin_view_reaction;player_update_frame	map-object camera approach step; increments until the transition after step 31
 KfPlayerViewReaction	0x02	0x08	rotation	KfPlayerViewRotation	supported	asm;player_get_camera_pose	camera rotation response
 KfPlayerViewReaction	0x0a	0x06	unknown_0a	u8[6]	opaque	game/player.h;retail GAME player reaction	offset and width observed; meaning unresolved

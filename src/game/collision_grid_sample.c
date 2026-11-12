@@ -20,7 +20,7 @@ s32 collision_sample_map_cell_layer(s32 x, s32 y, s32 z)
         (u32)z < KF_MAP_WORLD_GRID_SIDE << KF_MAP_CELL_POSITION_SHIFT) {
         u16 height;
 
-        cell = &bss_801c7540.map_cells[
+        cell = &pl_ext_7540.map_cells[
             z >> KF_MAP_CELL_POSITION_SHIFT][x >> KF_MAP_CELL_POSITION_SHIFT];
         height = (u16)-(y >> KF_MAP_CELL_ELEVATION_SHIFT);
         if (cell->layer[0].elevation > cell->layer[1].elevation) {

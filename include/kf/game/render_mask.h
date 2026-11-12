@@ -45,7 +45,7 @@ typedef struct KfMapMaskShapePair {
 
 typedef char kf_map_mask_shape_pair_size[sizeof(KfMapMaskShapePair) == 4 ? 1 : -1];
 
-extern KfRenderMaskScanState render_mask_scan_state;
+extern KfRenderMaskScanState render_masks_scan_state;
 extern KfMapMaskShapePair map_mask_pitch_shape_pairs[7];
 
 void clear_map_cell_layer_masks(void);

@@ -9,7 +9,7 @@ enum { FLOOR_ITEM_VRAM_PIXEL_BYTES = sizeof(u16) };
 ADDRESS(0x8002db64, 0x3c)
 KfFloorItem *floor_item_find_free(void)
 {
-    KfFloorItem *item = game_graphics_runtime.floor_items;
+    KfFloorItem *item = scene_display_sys.floor_items;
     s32 remaining = KF_FLOOR_ITEM_CAPACITY;
 
     do {
@@ -57,7 +57,7 @@ void floor_item_capture_image(s32 x, s32 y, u8 update_interval, u8 row_step,
 ADDRESS(0x8002dc78, 0x164)
 void floor_item_update_textures(void)
 {
-    KfFloorItem *item = game_graphics_runtime.floor_items;
+    KfFloorItem *item = scene_display_sys.floor_items;
     s32 remaining = KF_FLOOR_ITEM_CAPACITY - 1;
     RECT rect;
 

@@ -80,7 +80,7 @@ typedef char kf_event_state_arena_offset[
 typedef char kf_event_state_saved_offsets_offset[
     offsetof(KfEventState, saved_offsets) == 0x3904 ? 1 : -1];
 
-extern KfEventState event_state;
+extern KfEventState cur_evt_state;
 
 void event_scene_command_dispatch(const VECTOR *position,
                                   const struct KfPlayerViewRotation *rotation,

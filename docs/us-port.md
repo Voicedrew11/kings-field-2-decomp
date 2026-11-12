@@ -11,7 +11,7 @@ is the `kf init` directory (it holds `PSX.EXE`, a copy of `SLUS_001.58`) and
 PSX 1/1 exact. GAME data modules match 5/16 (menu_root's .data is exact); the
 rest is mostly the COMMON-bucket placement upstream also lacks
 (`kf common-order`). PSX, OPEN and END relink; GAME does not, because it
-references extern-only `.bss` and PSX-image symbols (`DAT_800864dc`,
+references extern-only `.bss` and PSX-image symbols (`startup_in_progress`,
 `player_magic_attack_masks`, `DAT_800102f0`, `DAT_800102f8`) that no GAME
 unit defines.
 
