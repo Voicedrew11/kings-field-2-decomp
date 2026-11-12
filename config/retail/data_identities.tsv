@@ -530,25 +530,25 @@ OPEN.EXE	0x800a65e8	0x8	_spu_rev_reserve_wa	global	bss	u8[8]	LIBSPU S_INI.OBJ	su
 OPEN.EXE	0x800a65f0	0x8	_svm_orev1	global	bss	u8[8]	LIBSND VMANAGER.OBJ	supported	native XDEF COMMON size eight;10 VMANAGER text symbol pairs decode retail address	SDK voice-manager reverb state; member types unresolved
 OPEN.EXE	0x800a65f8	0x8	_svm_orev2	global	bss	u8[8]	LIBSND VMANAGER.OBJ	supported	native XDEF COMMON size eight;10 VMANAGER text symbol pairs decode retail address	SDK voice-manager reverb state; member types unresolved
 OPEN.EXE	0x800a6608	0x8	_spu_keyoff_bit	global	bss	u8[8]	LIBSPU S_INI.OBJ	supported	archive XBSS size 0x8;S_INI section patch and retail raw pair	SDK private SPU state; internal field type unresolved
-OPEN.EXE	0x800a6628	0x4	audio_title_sequence_data	global	bss	u_long *	opening	supported	asm;xrefs;main/opening_open_audio/title drawing;Psy-Q LIBSND.H SsSeqOpen(unsigned long*,short)	title SEQ copied from OP.D for SsSeqOpen
-OPEN.EXE	0x800a6630	0x4	audio_movie_sequence_data	global	bss	u_long *	opening	supported	asm;xrefs;main/opening_open_audio/title drawing;Psy-Q LIBSND.H SsSeqOpen(unsigned long*,short)	movie SEQ copied from OP.D for SsSeqOpen
+OPEN.EXE	0x800a6628	0x4	title_music_buf	global	bss	u_long *	opening	supported	asm;xrefs;main/opening_open_audio/title drawing;Psy-Q LIBSND.H SsSeqOpen(unsigned long*,short)	title SEQ copied from OP.D for SsSeqOpen
+OPEN.EXE	0x800a6630	0x4	movie_snd_score	global	bss	u_long *	opening	supported	asm;xrefs;main/opening_open_audio/title drawing;Psy-Q LIBSND.H SsSeqOpen(unsigned long*,short)	movie SEQ copied from OP.D for SsSeqOpen
 OPEN.EXE	0x800a6638	0x8	_spu_trans_mode	global	bss	u8[8]	LIBSPU S_INI.OBJ	supported	archive XBSS size 0x8;S_INI section patch and retail raw pair	SDK private SPU state; internal field type unresolved
-OPEN.EXE	0x800a6650	0x2	audio_vab_id	global	bss	short	opening	supported	asm;xrefs;main/opening_open_audio/title drawing	SsVabOpenHead result
+OPEN.EXE	0x800a6650	0x2	bank_handle	global	bss	short	opening	supported	asm;xrefs;main/opening_open_audio/title drawing	SsVabOpenHead result
 OPEN.EXE	0x800a6658	0x8	dec_pt	global	bss	u8[8]	LIBPRESS VLC2.OBJ	supported	native XDEF COMMON size eight;13 VLC2 text HI16/LO16 pairs decode retail address	MDEC VLC decoder state; member type unresolved
 OPEN.EXE	0x800a6660	0x4	audio_vab_header	global	bss	u8 *	opening	supported	asm;xrefs;main/opening_open_audio/title drawing	VAB header copied from OP.D for SsVabOpenHead
-OPEN.EXE	0x800a6668	0x4	display_current	global	bss	KfDisplayBuffer *	display	supported	asm;xrefs;display_initialize/display_begin_frame	buffer being drawn
+OPEN.EXE	0x800a6668	0x4	opening_cdb	global	bss	KfDisplayBuffer *	display	supported	asm;xrefs;display_initialize/display_begin_frame	buffer being drawn
 OPEN.EXE	0x800a6748	0x8	_snd_seq_no_tick	global	bss	u8[8]	LIBSND SSINIT.OBJ	supported	native LIBSND SSINIT.OBJ XDEF COMMON requests 8 bytes;4 SSINIT text HI16/LO16 pair(s) decode retail address	vendor sequence state; original element type and member layout unresolved
 OPEN.EXE	0x800a6758	0x800	MarkCallback	global	bss	u8[2048]	LIBSND SSINIT.OBJ	supported	native LIBSND SSINIT.OBJ XDEF COMMON requests 2048 bytes;1 SSINIT text HI16/LO16 pair(s) decode retail address	vendor sequence state; original element type and member layout unresolved
-OPEN.EXE	0x800a6f58	0x2	audio_title_sequence_id	global	bss	short	opening	supported	asm;xrefs;main/opening_open_audio/title drawing	SsSeqOpen result for the title music
-OPEN.EXE	0x800a6f60	0x2	audio_movie_sequence_id	global	bss	short	opening	supported	asm;xrefs;main/opening_open_audio/title drawing	SsSeqOpen result for the movie music
+OPEN.EXE	0x800a6f58	0x2	title_music	global	bss	short	opening	supported	asm;xrefs;main/opening_open_audio/title drawing	SsSeqOpen result for the title music
+OPEN.EXE	0x800a6f60	0x2	intro_score	global	bss	short	opening	supported	asm;xrefs;main/opening_open_audio/title drawing	SsSeqOpen result for the movie music
 OPEN.EXE	0x800a6fa0	0x8	_snd_ev_flag	global	bss	u8[8]	LIBSND SSINIT.OBJ	supported	native LIBSND SSINIT.OBJ XDEF COMMON requests 8 bytes;1 SSINIT text HI16/LO16 pair(s) decode retail address	vendor sequence state; original element type and member layout unresolved
-OPEN.EXE	0x800a6fa8	0x4	opening_data	global	bss	u8 *	opening	supported	asm;xrefs;main/opening_open_audio/title drawing	malloc'd OP.D image
+OPEN.EXE	0x800a6fa8	0x4	op_file	global	bss	u8 *	opening	supported	asm;xrefs;main/opening_open_audio/title drawing	malloc'd OP.D image
 OPEN.EXE	0x800a6fb0	0x8	_spu_fd	global	bss	u8[8]	LIBSPU S_INI.OBJ	supported	archive XBSS size 8;four _SpuInit/SpuStart/SpuQuit raw HI16/LO16 pairs	SDK SPU descriptor workspace; first word read and written, tail use unresolved
 OPEN.EXE	0x800a6fc0	0x8	dc_type	global	bss	u8[8]	LIBPRESS VLC2.OBJ	supported	native XDEF COMMON size eight;6 VLC2 text HI16/LO16 pairs decode retail address	MDEC VLC decoder state; member type unresolved
-OPEN.EXE	0x800a6fd0	0x20e8	display_buffers	global	bss	KfDisplayBuffer[2]	display	supported	asm;xrefs;display_initialize/display_begin_frame	double-buffered draw/display environments and ordering tables
+OPEN.EXE	0x800a6fd0	0x20e8	op_bufs	global	bss	KfDisplayBuffer[2]	display	supported	asm;xrefs;display_initialize/display_begin_frame	double-buffered draw/display environments and ordering tables
 OPEN.EXE	0x800a90c8	0x8	bs_curt	global	bss	u8[8]	LIBPRESS VLC2.OBJ	supported	native XDEF COMMON size eight;18 VLC2 text HI16/LO16 pairs decode retail address	MDEC VLC decoder state; member type unresolved
-OPEN.EXE	0x800a90d8	0x4000	display_primitives	global	bss	u8[2][0x2000]	display	supported	asm;xrefs;display_initialize/display_begin_frame	per-buffer primitive storage
-OPEN.EXE	0x800ad0d8	0x1	display_fade_level	global	bss	u8	opening	supported	asm;xrefs;main/opening_open_audio/title drawing	darkening applied by primitive_buffer_commit_poly_ft4; cleared per frame
+OPEN.EXE	0x800a90d8	0x4000	draw_packets	global	bss	u8[2][0x2000]	display	supported	asm;xrefs;display_initialize/display_begin_frame	per-buffer primitive storage
+OPEN.EXE	0x800ad0d8	0x1	open_screen_shade	global	bss	u8	opening	supported	asm;xrefs;main/opening_open_audio/title drawing	darkening applied by primitive_buffer_commit_poly_ft4; cleared per frame
 OPEN.EXE	0x800ad0f0	0x8	PadIdentifier	global	bss	u8[8]	LIBETC PAD.OBJ	supported	native LIBETC PAD.OBJ XDEF COMMON PadIdentifier requests eight bytes;PadInit text HI16/LO16 symbol pair at +0x8 resolves retail address	SDK pad identifier workspace; original element type unresolved
 OPEN.EXE	0x800ad0f8	0x8	_spu_keystat	global	bss	u8[8]	LIBSPU S_INI.OBJ	supported	archive XBSS size 0x8;S_INI section patch and retail raw pair	SDK private SPU state; internal field type unresolved
 OPEN.EXE	0x800ad108	0x8	dec_used	global	bss	u8[8]	LIBPRESS VLC2.OBJ	supported	native XDEF COMMON size eight;17 VLC2 text HI16/LO16 pairs decode retail address	MDEC VLC decoder state; member type unresolved
@@ -558,11 +558,11 @@ OPEN.EXE	0x800ad148	0x8	_spu_rev_flag	global	bss	u8[8]	LIBSPU S_INI.OBJ	supporte
 OPEN.EXE	0x800ad150	0x10	_svm_vab_used	global	bss	u8[0x10]	LIBSND VM_G.OBJ	supported	native VM_G.OBJ XBSS symbol size 0x10;two VS_VAB.OBJ XREF pairs decode retail base 0x800ad150;fits adjacent BSS identities	SDK voice-manager VAB usage state; original element type and linker allocation form unresolved
 OPEN.EXE	0x800ad160	0x8	_snd_seq_tick_mode	global	bss	u8[8]	LIBSND SSINIT.OBJ	supported	native LIBSND SSINIT.OBJ XDEF COMMON requests 8 bytes;6 SSINIT text HI16/LO16 pair(s) decode retail address	vendor sequence state; original element type and member layout unresolved
 OPEN.EXE	0x800ad168	0x8	CD_cbsync	global	bss	u8[8]	LIBCD BIOS.OBJ	supported	native XDEF COMMON CD_cbsync requests eight bytes;two BIOS text HI16/LO16 pairs decode retail address	SDK CD callback state; original member types unresolved
-OPEN.EXE	0x800ad170	0x4	current_poly_ft4	global	bss	POLY_FT4 *	display	supported	asm;xrefs;display_initialize/display_begin_frame	next primitive slot in the current buffer
+OPEN.EXE	0x800ad170	0x4	cur_poly	global	bss	POLY_FT4 *	display	supported	asm;xrefs;display_initialize/display_begin_frame	next primitive slot in the current buffer
 OPEN.EXE	0x800ad180	0x18	_spu_rev_attr	global	bss	u8[0x18]	LIBSPU S_INI.OBJ	supported	archive XBSS size 0x18;S_INI section patch and retail raw pair	SDK private SPU state; internal field type unresolved
 OPEN.EXE	0x800ad1a0	0x8	dc_y	global	bss	u8[8]	LIBPRESS VLC2.OBJ	supported	native XDEF COMMON size eight;3 VLC2 text HI16/LO16 pairs decode retail address	MDEC VLC decoder state; member type unresolved
 OPEN.EXE	0x800ad1a8	0x8	VBLANK_MINUS	global	bss	u8[8]	LIBSND SSINIT.OBJ	supported	native LIBSND SSINIT.OBJ XDEF COMMON requests 8 bytes;5 SSINIT text HI16/LO16 pair(s) decode retail address	vendor sequence state; original element type and member layout unresolved
-OPEN.EXE	0x800ad1b0	0x158	audio_sequence_table	global	bss	char[344]	audio	supported	asm;xrefs;audio_initialize	SsSetTableSize work area: 2 sequences x 1 track
+OPEN.EXE	0x800ad1b0	0x158	seq_table	global	bss	char[344]	audio	supported	asm;xrefs;audio_initialize	SsSetTableSize work area: 2 sequences x 1 track
 OPEN.EXE	0x800ad308	0x80	_ss_score	global	bss	u8[128]	LIBSND SSINIT.OBJ	supported	native LIBSND SSINIT.OBJ XDEF COMMON requests 128 bytes;2 SSINIT text HI16/LO16 pair(s) decode retail address	vendor sequence state; original element type and member layout unresolved
 OPEN.EXE	0x800ad388	0x8	CD_cbready	global	bss	u8[8]	LIBCD BIOS.OBJ	supported	native XDEF COMMON CD_cbready requests eight bytes;six BIOS text HI16/LO16 pairs decode retail address	SDK CD callback state; original member types unresolved
 OPEN.EXE	0x800ad390	0x8	_snd_seq_s_max	global	bss	u8[8]	LIBSND SSINIT.OBJ	supported	native LIBSND SSINIT.OBJ XDEF COMMON requests 8 bytes;3 SSINIT text HI16/LO16 pair(s) decode retail address	vendor sequence state; original element type and member layout unresolved

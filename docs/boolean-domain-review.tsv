@@ -251,7 +251,7 @@ collision_evaluate_shape_records::base_floor_hit	converted	member is now a Boole
 collision_evaluate_shape_records::other_layer_visited	converted	member is now a Boolean storage type	0	collision_evaluate_shape_records::other_layer_visited
 collision_probe_forward_shape_0x20:return	converted	member is now a Boolean storage type	1	collision_probe_forward_shape_0x20:return
 directed_intervals_overlap:return	converted	member is now a Boolean storage type	0	directed_intervals_overlap:return
-display_fade_level	reject	counter or arithmetic quantity (incremented/decremented)	2	display_fade_level
+open_screen_shade	reject	counter or arithmetic quantity (incremented/decremented)	2	open_screen_shade
 display_frame_cleared_word	reject	single value 0	1	display_frame_cleared_word
 effect_apply_radial_magic_damage:arg1	reject	counter or arithmetic quantity (incremented/decremented)	2	effect_apply_radial_magic_damage:arg1
 effect_probe_collision_by_type:return&0xf	reject	masked bit of a wider flags or packed word (flags-domain review, not a Boolean slot)	1	effect_probe_collision_by_type:return&0xf

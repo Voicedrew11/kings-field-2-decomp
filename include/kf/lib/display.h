@@ -29,6 +29,11 @@ typedef char kf_display_buffer_size[sizeof(KfDisplayBuffer) == 0x1074 ? 1 : -1];
 #define display_buffers disp_db
 #define display_primitives ending_draw_primitive_pool
 #define current_poly_ft4 ending_current_poly_ft4
+#elif defined(KF_OPEN)
+#define display_current opening_cdb
+#define display_buffers op_bufs
+#define display_primitives draw_packets
+#define current_poly_ft4 cur_poly
 #endif
 
 extern KfDisplayBuffer display_buffers[2];
@@ -36,7 +41,7 @@ extern KfDisplayBuffer *display_current;
 extern u8 display_primitives[2][KF_PRIMITIVE_BUFFER_BYTES];
 extern POLY_FT4 *current_poly_ft4;
 /* OPEN.EXE only: darkening applied to committed quads; cleared per frame. */
-extern u8 display_fade_level;
+extern u8 open_screen_shade;
 
 void display_initialize(void);
 void display_begin_frame(void);

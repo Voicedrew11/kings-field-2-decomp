@@ -35,9 +35,9 @@ DATA(0x8003e714, 0x4, ".sdata")
 u8 *overlay_next_request = (u8 *)0x800102f0;
 
 DATA(0x800a6fa8, 0x4, ".bss")
-u8 *opening_data;
+u8 *op_file;
 DATA(0x800ad0d8, 0x1, ".bss")
-u8 display_fade_level;
+u8 open_screen_shade;
 
 ADDRESS(0x80011ae0, 0x4e0)
 void main(void)
@@ -57,8 +57,8 @@ void main(void)
     PadInit(0);
     ExitCriticalSection();
     audio_vab_header = (u8 *)malloc(KF_OPENING_VAB_HEADER_BYTES);
-    audio_title_sequence_data = (u_long *)malloc(KF_OPENING_TITLE_SEQUENCE_BYTES);
-    audio_movie_sequence_data = (u_long *)malloc(KF_OPENING_MOVIE_SEQUENCE_BYTES);
+    title_music_buf = (u_long *)malloc(KF_OPENING_TITLE_SEQUENCE_BYTES);
+    movie_snd_score = (u_long *)malloc(KF_OPENING_MOVIE_SEQUENCE_BYTES);
     audio_initialize();
     display_initialize();
     display_current = &display_buffers[0];
@@ -81,8 +81,8 @@ void main(void)
         opening_open_audio();
     }
     SsSetMVol(OPENING_MASTER_VOLUME, OPENING_MASTER_VOLUME);
-    SsSeqSetVol(audio_title_sequence_id, KF_OPENING_SEQUENCE_VOLUME, KF_OPENING_SEQUENCE_VOLUME);
-    SsSeqPlay(audio_title_sequence_id, SSPLAY_PLAY, 1);
+    SsSeqSetVol(title_music, KF_OPENING_SEQUENCE_VOLUME, KF_OPENING_SEQUENCE_VOLUME);
+    SsSeqPlay(title_music, SSPLAY_PLAY, 1);
     for (;;) {
         display_begin_frame();
         if (state == KF_OPENING_STATE_TITLE_FADE_IN) {
@@ -146,9 +146,9 @@ void main(void)
         primitive_buffer_commit_poly_ft4(OPENING_CLOSE_OT_DEPTH);
         display_present_frame();
     }
-    SsSeqClose(audio_title_sequence_id);
-    SsSeqClose(audio_movie_sequence_id);
-    SsVabClose(audio_vab_id);
+    SsSeqClose(title_music);
+    SsSeqClose(intro_score);
+    SsVabClose(bank_handle);
     SsEnd();
     PadStop();
     ResetGraph(KF_GPU_RESET_KEEP_DISPLAY);
@@ -162,7 +162,7 @@ void opening_fade_out(KfTitleMode prompt_mode)
 
     do {
         display_begin_frame();
-        display_fade_level = level;
+        open_screen_shade = level;
         opening_draw_title(KF_TITLE_SHOW);
         opening_draw_banner(KF_TITLE_SHOW);
         opening_draw_prompt(prompt_mode);
@@ -175,8 +175,8 @@ void opening_fade_out(KfTitleMode prompt_mode)
         }
         level += OPENING_FADE_STEP;
     } while (level < OPENING_FADE_END);
-    SsSeqStop(audio_title_sequence_id);
-    SsSeqSetVol(audio_title_sequence_id, 0, 0);
+    SsSeqStop(title_music);
+    SsSeqSetVol(title_music, 0, 0);
     SsSetMVol(0, 0);
 }
 
@@ -199,9 +199,9 @@ void opening_load_data(void)
     }
     while (PadRead(1) != 0) {
     }
-    opening_data = (u8 *)malloc(OPENING_DATA_BYTES);
+    op_file = (u8 *)malloc(OPENING_DATA_BYTES);
     for (attempt = OPENING_LOAD_ATTEMPTS - 1; attempt != -1; attempt--) {
-        if (cd_file_load_into((u_long *)opening_data, file_name) == KF_CD_LOADED) {
+        if (cd_file_load_into((u_long *)op_file, file_name) == KF_CD_LOADED) {
             break;
         }
     }

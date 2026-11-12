@@ -46,11 +46,11 @@ enum {
     KF_OPENING_SEQUENCE_VOLUME = 64
 };
 
-extern u8 *opening_data;
-extern u_long *audio_title_sequence_data;
-extern u_long *audio_movie_sequence_data;
-extern short audio_title_sequence_id;
-extern short audio_movie_sequence_id;
+extern u8 *op_file;
+extern u_long *title_music_buf;
+extern u_long *movie_snd_score;
+extern short title_music;
+extern short intro_score;
 
 void opening_fade_out(KfTitleMode prompt_mode);
 void opening_load_data(void);

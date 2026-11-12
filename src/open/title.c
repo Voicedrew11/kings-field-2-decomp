@@ -186,7 +186,7 @@ KfOpeningChoice opening_poll_pad(const KfTitleMode *prompt_mode, s32 *idle_frame
         || (buttons & PADRleft && !(pad_previous_buttons & PADRleft))
         || (buttons & PADstart && !(pad_previous_buttons & PADstart))
         || (buttons & PADselect && !(pad_previous_buttons & PADselect))) {
-        audio_play_voice(audio_vab_id, CHOICE_VOICE_PROGRAM, 0, CHOICE_VOICE_NOTE,
+        audio_play_voice(bank_handle, CHOICE_VOICE_PROGRAM, 0, CHOICE_VOICE_NOTE,
             CHOICE_VOICE_VOLUME, CHOICE_VOICE_VOLUME);
         choice = KF_OPENING_START_GAME;
     }
@@ -202,18 +202,18 @@ void primitive_buffer_begin_poly_ft4(void)
     setRGB0(current_poly_ft4, PRIMITIVE_BRIGHTNESS, PRIMITIVE_BRIGHTNESS, PRIMITIVE_BRIGHTNESS);
 }
 
-/* Darkens the quad by display_fade_level, then links it at DEPTH. */
+/* Darkens the quad by open_screen_shade, then links it at DEPTH. */
 ADDRESS(0x800139d4, 0xcc)
 void primitive_buffer_commit_poly_ft4(s32 depth)
 {
     u8 level;
 
-    if (display_fade_level != 0) {
+    if (open_screen_shade != 0) {
         level = current_poly_ft4->r0;
-        if (level < display_fade_level) {
+        if (level < open_screen_shade) {
             level = 0;
         } else {
-            level -= display_fade_level;
+            level -= open_screen_shade;
         }
         setRGB0(current_poly_ft4, level, level, level);
     }

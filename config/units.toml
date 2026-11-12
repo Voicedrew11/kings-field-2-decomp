@@ -225,6 +225,7 @@ unit = "open.main"
 image = "OPEN.EXE"
 source = "src/open/main.c"
 profile = "probe-gcc257-o2-plain-g8"
+defines = ["KF_OPEN"]
 
 [[unit]]
 unit = "open.display_init"
@@ -245,12 +246,14 @@ unit = "open.audio"
 image = "OPEN.EXE"
 source = "src/open/audio.c"
 profile = "probe-gcc257-o2-plain-g8"
+defines = ["KF_OPEN"]
 
 [[unit]]
 unit = "open.title"
 image = "OPEN.EXE"
 source = "src/open/title.c"
 profile = "probe-gcc257-o2-plain-g8"
+defines = ["KF_OPEN"]
 
 [[unit]]
 unit = "open.display_frame"
@@ -271,12 +274,14 @@ unit = "open.resources"
 image = "OPEN.EXE"
 source = "src/open/resources.c"
 profile = "probe-gcc257-o2-plain"
+defines = ["KF_OPEN"]
 
 [[unit]]
 unit = "open.movie"
 image = "OPEN.EXE"
 source = "src/open/movie.c"
 profile = "probe-gcc257-o2-plain-g8"
+defines = ["KF_OPEN"]
 
 [[unit]]
 unit = "end.main"

@@ -21,39 +21,39 @@ enum {
 };
 
 DATA(0x800a6628, 0x4, ".bss")
-u_long *audio_title_sequence_data;
+u_long *title_music_buf;
 DATA(0x800a6630, 0x4, ".bss")
-u_long *audio_movie_sequence_data;
+u_long *movie_snd_score;
 DATA(0x800a6650, 0x2, ".bss")
-short audio_vab_id;
+short bank_handle;
 DATA(0x800a6660, 0x4, ".bss")
 u8 *audio_vab_header;
 DATA(0x800a6f58, 0x2, ".bss")
-short audio_title_sequence_id;
+short title_music;
 DATA(0x800a6f60, 0x2, ".bss")
-short audio_movie_sequence_id;
+short intro_score;
 
 ADDRESS(0x80012348, 0x2f0)
 void opening_open_audio(void)
 {
-    u8 *cursor = opening_data;
+    u8 *cursor = op_file;
 
     tim_upload_images(cursor);
     cursor += OPENING_IMAGE_BYTES;
     memcpy((void *)audio_vab_header, (const void *)cursor, KF_OPENING_VAB_HEADER_BYTES);
     cursor += KF_OPENING_VAB_HEADER_BYTES;
-    audio_vab_id = SsVabOpenHead(audio_vab_header, -1);
-    if (audio_vab_id != -1 && SsVabTransBody(cursor, audio_vab_id) == audio_vab_id) {
+    bank_handle = SsVabOpenHead(audio_vab_header, -1);
+    if (bank_handle != -1 && SsVabTransBody(cursor, bank_handle) == bank_handle) {
         SsVabTransCompleted(SS_WAIT_COMPLETED);
     }
     cursor += OPENING_VAB_BODY_BYTES;
-    memcpy((void *)audio_title_sequence_data, (const void *)cursor, KF_OPENING_TITLE_SEQUENCE_BYTES);
+    memcpy((void *)title_music_buf, (const void *)cursor, KF_OPENING_TITLE_SEQUENCE_BYTES);
     cursor += KF_OPENING_TITLE_SEQUENCE_BYTES;
-    memcpy((void *)audio_movie_sequence_data, (const void *)cursor, KF_OPENING_MOVIE_SEQUENCE_BYTES);
-    audio_title_sequence_id = SsSeqOpen(audio_title_sequence_data, audio_vab_id);
-    audio_movie_sequence_id = SsSeqOpen(audio_movie_sequence_data, audio_vab_id);
+    memcpy((void *)movie_snd_score, (const void *)cursor, KF_OPENING_MOVIE_SEQUENCE_BYTES);
+    title_music = SsSeqOpen(title_music_buf, bank_handle);
+    intro_score = SsSeqOpen(movie_snd_score, bank_handle);
     DrawSync(0);
-    free((void *)opening_data);
+    free((void *)op_file);
 }
 
 enum {
