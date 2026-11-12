@@ -43,6 +43,7 @@ from pathlib import Path
 from elftools.elf.elffile import ELFFile
 
 from scripts.kf.delink import image_key
+from scripts.kf.linked_symbols import linked_addresses
 from scripts.kf.manifest import Manifest, Unit, load as load_manifest
 from scripts.kf.mips_elf import R_MIPS_32
 from scripts.kf.paths import BUILD, RETAIL_CONFIG
@@ -323,7 +324,47 @@ def _data_placement_issues(path: Path, unit: Unit) -> list[tuple[str, dict]]:
             for issue in result.issues if issue.get("section") != ".text"]
 
 
-def diff_unit(unit: Unit, delink_dir: Path, objdiff_dir: Path) -> UnitDataDiff | None:
+def linked_common_proof(unit: Unit, recon: Elf,
+                        linked: dict[str, int] | None) -> frozenset[str]:
+    """COMMON requests the current link placed at their exact source claims.
+
+    An object cannot place COMMON; PSYLINK does, by symbol-hash bucket. Only
+    when every request of the unit is a claimed global .bss datum that the
+    current, source-hash-checked link put at its claimed address (with at
+    least its claimed extent) is the retail placement proven. Otherwise
+    nothing is proven and the unresolved verdict stands.
+    """
+    if not linked or not recon.common_requests:
+        return frozenset()
+    claims = {datum.symbol: datum for datum in unit.data
+              if datum.section_name == ".bss" and datum.scope == "global"}
+    for request in recon.common_requests:
+        claim = claims.get(request.name)
+        if (claim is None or linked.get(request.name) != claim.va
+                or request.size < claim.size):
+            return frozenset()
+    return frozenset(request.name for request in recon.common_requests)
+
+
+def _proven_issue(label: str, issue: dict, proven: frozenset[str]) -> bool:
+    """Whether a placement issue only restates COMMON placement the link proved."""
+    kind = issue.get("kind")
+    if label == "reconstruction" and kind == "unresolved-common-placement":
+        return issue.get("symbol") in proven
+    if label == "reconstruction" and kind == "owned-symbol-layout":
+        return (issue.get("symbol") in proven
+                and issue.get("actual_section") == "SHN_COMMON"
+                and issue.get("expected_section") == ".bss"
+                and issue.get("actual_size", 0) >= issue.get("expected_size", 1))
+    if label == "target" and kind == "conflicting-section-bases":
+        claims = issue.get("claims", ())
+        return (issue.get("section") == ".bss" and bool(claims)
+                and all(claim.get("symbol") in proven for claim in claims))
+    return False
+
+
+def diff_unit(unit: Unit, delink_dir: Path, objdiff_dir: Path,
+              linked: dict[str, int] | None = None) -> UnitDataDiff | None:
     key, object_name = image_key(unit.image), unit.object_name
     target = delink_dir / key / "modules" / object_name
     base = objdiff_dir / key / "base" / object_name
@@ -351,13 +392,19 @@ def diff_unit(unit: Unit, delink_dir: Path, objdiff_dir: Path) -> UnitDataDiff |
         section.name for elf in (retail, recon) for section in elf.sections.values()
         if section.type == 8 and section.flags & 2  # allocated NOBITS, including custom names
     }
+    proven = linked_common_proof(unit, recon, linked)
     for name in sorted(bss_names):
         bss = _diff_bss(retail, recon, name, unit)
+        if bss is not None and bss.status == "unresolved-common-placement" and proven:
+            bss = SectionDiff(name, bss.retail_size, bss.recon_size, "match",
+                              "COMMON placed at every claim by the current link")
         if bss is not None:
             result.diffs.append(bss)
     by_section = {diff.name: diff for diff in result.diffs}
     for label, path in (("target", target), ("reconstruction", base)):
         for name, issue in _data_placement_issues(path, unit):
+            if _proven_issue(label, issue, proven):
+                continue
             diff = by_section.get(name)
             if diff is None:
                 rt, rc = retail.sections.get(name), recon.sections.get(name)
@@ -379,6 +426,7 @@ def diff_image(
 ) -> tuple[list[UnitDataDiff], list[ArtifactFailure]]:
     results: list[UnitDataDiff] = []
     failures: list[ArtifactFailure] = []
+    linked = linked_addresses(image)
     for unit in manifest.units:
         if unit.image != image:
             continue
@@ -391,7 +439,7 @@ def diff_image(
                 image, unit.unit, "missing " + ", ".join(missing)
             ))
             continue
-        diff = diff_unit(unit, delink_dir, objdiff_dir)
+        diff = diff_unit(unit, delink_dir, objdiff_dir, linked)
         if diff is not None:
             results.append(diff)
     return results, failures

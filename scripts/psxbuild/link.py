@@ -36,7 +36,7 @@ BOOT_STARTUP = '2MBYTE.OBJ'
 OVERLAY_STARTUP = 'NONE2.OBJ'
 # The retail OPEN/END text puts NONE2 immediately before the movie units.
 # GAME's startup placement is still unresolved and keeps the append order.
-OVERLAY_STARTUP_AFTER_UNITS = {'OPEN.EXE': 8, 'END.EXE': 6}
+OVERLAY_STARTUP_BEFORE_UNIT = {'OPEN.EXE': 'open.movie', 'END.EXE': 'end.movie'}
 MALLOC_OBJECT_SHA256 = '628e405fd0e3acfff2ce9d4a15d481f0aa36398c14e9eae0a82b7ff0a86a74c9'
 # Every overlay links the Release 2.5 allocator object after the startup.
 ALLOCATOR_IMAGES = ('GAME.EXE', 'OPEN.EXE', 'END.EXE')
@@ -170,7 +170,9 @@ def build_image(name, root, units, compile_one, *, repo, load_address, bounds_so
         if report['boot_startup']:
             object_inputs.append(f'\tinclude "{BOOT_STARTUP}"')
         if report['startup']:
-            startup_after = OVERLAY_STARTUP_AFTER_UNITS.get(name, len(object_inputs))
+            units = [u['unit'] for u in report['units']]
+            before = OVERLAY_STARTUP_BEFORE_UNIT.get(name)
+            startup_after = units.index(before) if before in units else len(object_inputs)
             object_inputs.insert(startup_after, f'\tinclude "{OVERLAY_STARTUP}"')
             report['startup']['after_source_units'] = startup_after
         commands = [f'\torg ${load_address:08x}',

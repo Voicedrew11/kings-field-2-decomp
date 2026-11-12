@@ -285,8 +285,18 @@ decided the current GAME, OPEN and END layouts:
   in the KF1 project. The native build follows that order exactly, so a game
   COMMON object reaches its retail address only if its source name falls in
   the bucket interval its SDK neighbours bound. `kf common-order` reports
-  which curated names do not; this is the remaining layout difference in
-  all three overlays.
+  which curated names do not. Curated identities only bound that interval
+  loosely: unidentified SDK COMMON (from the linked `.SYM`) tightens it, and
+  retail may hold game COMMON nothing references (US END keeps one 8-byte
+  slot before its screen buffers). Names chosen to fit are WIP spellings,
+  not recovered ones; a shared OPEN/END source spells per-image names under
+  `KF_END` where the two intervals do not overlap.
+- `kf verify data` accepts a unit's COMMON placement only when the current
+  link's `.SYM` (`scripts/kf/linked_symbols.py`) puts every request at its
+  claim, and the link report's input hashes all match the working tree.
+- The US PSX, OPEN and END headers name the "North America area"; both
+  available CPE2X builds write only the Japan marker, so those 20 header
+  bytes differ until the US converter is found.
 
 ### Runtime smoke test
 
