@@ -27,7 +27,7 @@ enum {
     OPENING_MOVIE_BUTTON_PRESSED = 2
 };
 
-RODATA(0x80011008, 0x38)
+RODATA(0x80011008, 0x37)
 
 /* The tutorial's anim(): decodes one opening movie (OP0-OP2.S) at 320
  * pixels, stops on a button, then restores the 640-pixel title display. */

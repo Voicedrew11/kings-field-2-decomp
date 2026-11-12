@@ -29,7 +29,7 @@ enum {
     OPENING_CLOSE_DISPLAY_WIDTH = 320
 };
 
-RODATA(0x80011000, 0x8)
+RODATA(0x80011000, 0x6)
 
 DATA(0x8003e714, 0x4, ".sdata")
 u8 *overlay_next_request = (u8 *)0x800102f0;

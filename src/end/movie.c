@@ -12,7 +12,7 @@ enum {
     ENDING_MDEC_16BIT_MODE = 2
 };
 
-RODATA(0x80011000, 0x1f)
+RODATA(0x80011000, 0x2b)
 
 /* US END: plays ED0.S or ED1.S. ED1 then waits 150 counted periods of six
  * VSyncs each, advancing StrFrame once per period, before stopping the drive. */

@@ -17,5 +17,7 @@ GAME.EXE	0x8006e984	memory_card_unreferenced_word_3	0x8	fixed	GCC 2.5.7 ASM_OUTP
 GAME.EXE	0x8006e98c	memory_card_buffer	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
 OPEN.EXE	0x8003ea50	Rewind_Switch	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
 OPEN.EXE	0x8003ea58	StrFrame	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
+OPEN.EXE	0x8003ea60	movie_last_frame	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride;MALLOC.OBJ .sbss starts 8 bytes later
 END.EXE	0x800399f4	Rewind_Switch	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
 END.EXE	0x800399fc	StrFrame	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride
+END.EXE	0x80039a04	movie_last_frame	0x8	fixed	GCC 2.5.7 ASM_OUTPUT_LOCAL rounds the 4-byte static to an 8-byte .lcomm request;retail eight-byte stride;MALLOC.OBJ .sbss starts 8 bytes later
