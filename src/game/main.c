@@ -173,10 +173,10 @@ void game_main_loop(void)
     game_shutdown();
     /* PSX.EXE owns the fixed next-overlay mailbox. */
     if (game_main_exit_flag == exit_requested) {
-        DAT_800102f0 = KF_OVERLAY_END;
+        *KF_OVERLAY_MAILBOX = KF_OVERLAY_END;
     } else if (game_main_exit_flag == GAME_MAIN_EXIT_ALTERNATE) {
-        DAT_800102f0 = KF_OVERLAY_OPEN;
-        DAT_800102f8 = KF_ENUM_ENCODE(u8, exit_requested);
+        *KF_OVERLAY_MAILBOX = KF_OVERLAY_OPEN;
+        *KF_OVERLAY_MAILBOX_FLAG = KF_ENUM_ENCODE(u8, exit_requested);
     }
 }
 

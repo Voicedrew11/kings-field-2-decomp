@@ -2018,10 +2018,7 @@ GAME.EXE	0x8001398c	0x318c		mips26	reachable-code	0x800342d8	load	render_game_fr
 GAME.EXE	0x80013994	0x3194	0x80013998	mips_hi16_lo16	reachable-code	0x80199574	bss	game_main_exit_flag	lui+lw	v0	paired-reviewed	reviewed	us-port:scan;byte-validated
 GAME.EXE	0x800139a8	0x31a8		mips26	reachable-code	0x80013a08	load	game_shutdown	jal		control-flow	candidate	us-port:scan;byte-validated
 GAME.EXE	0x800139b0	0x31b0	0x800139b4	mips_hi16_lo16	reachable-code	0x80199574	bss	game_main_exit_flag	lui+lw	v1	paired-reviewed	reviewed	us-port:scan;byte-validated
-GAME.EXE	0x800139c8	0x31c8	0x800139cc	mips_hi16_lo16	reachable-code	0x800102f0	load		lui+sb	v0	paired-reviewed	reviewed	us-port:scan;byte-validated
 GAME.EXE	0x800139d0	0x31d0		mips26	reachable-code	0x800139f0	load		j		control-flow	candidate	us-port:scan;byte-validated
-GAME.EXE	0x800139e0	0x31e0	0x800139e4	mips_hi16_lo16	reachable-code	0x800102f0	load		lui+sb	zero	paired-reviewed	reviewed	us-port:scan;byte-validated
-GAME.EXE	0x800139e8	0x31e8	0x800139ec	mips_hi16_lo16	reachable-code	0x800102f8	load		lui+sb	s2	paired-reviewed	reviewed	us-port:scan;byte-validated
 GAME.EXE	0x80013a10	0x3210		mips26	reachable-code	0x80013c50	load	audio_shutdown	jal		control-flow	reviewed	manual:audio
 GAME.EXE	0x80013a18	0x3218		mips26	reachable-code	0x800187cc	load	cd_close_events	jal		control-flow	reviewed	manual:audio
 GAME.EXE	0x80013a20	0x3220		mips26	reachable-code	0x8005f58c	load	PadStop	jal		control-flow	reviewed	manual:audio

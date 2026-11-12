@@ -60,6 +60,9 @@ static RECT player_status_texture_row_2 = {0x240, 0x11a, 16, 1};
 DATA(0x8006e5fc, 0x8, ".sdata")
 static RECT player_status_texture_row_3 = {0x240, 0x118, 16, 1};
 
+DATA(0x8006e994, 0x8, ".sbss")
+static u16 player_magic_attack_masks[4];
+
 
 
 DATA(0x8007682c, 0x4b0, ".bss")

@@ -14,11 +14,12 @@ enum {
 };
 
 extern u8 *overlay_next_request;
-/* US GAME stores the request and a flag byte through relocated symbols. */
-extern u8 DAT_800102f0;
+/* PSX.EXE's own definition of the flag byte beside the mailbox. */
 extern u8 DAT_800102f8;
-/* US OPEN reads the same flag byte through an unrelocated constant pointer;
- * when it is 1, OPEN skips the opening movies. */
+/* The overlays link without PSX.EXE's symbols, so GAME stores the request and
+ * the flag, and US OPEN reads the flag (1 skips the opening movies), through
+ * unrelocated constant addresses. */
+#define KF_OVERLAY_MAILBOX ((u8 *)0x800102f0)
 #define KF_OVERLAY_MAILBOX_FLAG ((u8 *)0x800102f8)
 
 /* End of the program's linked .bss. GAME retail loads it as a relocated

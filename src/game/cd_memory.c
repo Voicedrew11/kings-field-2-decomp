@@ -41,6 +41,9 @@ char cd_path_prefix[5] = "\\CD\\";
 DATA(0x8006e5bc, 0x3, ".sdata")
 char cd_version_suffix[3] = ";1";
 
+DATA(0x800864dc, 0x1, ".bss")
+u8 DAT_800864dc;
+
 DATA(0x8009bfe4, 0x5f000, ".bss")
 u8 game_resource_arena[KF_GAME_RESOURCE_ARENA_CAPACITY];
 
