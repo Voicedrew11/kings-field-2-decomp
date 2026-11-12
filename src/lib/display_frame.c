@@ -1,9 +1,14 @@
 #include <kf/lib/address.h>
 #include <kf/lib/display.h>
 
-DATA_AT("OPEN", 0x800ad170, 0x4, ".bss")
+/* END spells it differently; see <kf/lib/display.h>. */
+#ifdef KF_END
 DATA_AT("END", 0x800a80b4, 0x4, ".bss")
+POLY_FT4 *ending_current_poly_ft4;
+#else
+DATA_AT("OPEN", 0x800ad170, 0x4, ".bss")
 POLY_FT4 *current_poly_ft4;
+#endif
 
 ADDRESS_AT("OPEN", 0x80013aa0, 0x64)
 ADDRESS_AT("END", 0x80011bf4, 0x60)

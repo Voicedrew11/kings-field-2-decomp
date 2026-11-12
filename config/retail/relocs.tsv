@@ -15516,14 +15516,14 @@ END.EXE	0x800119d4	0x11d4		mips26	reachable-code	0x8001a938	load		jal		control-f
 END.EXE	0x800119dc	0x11dc		mips26	reachable-code	0x800128e4	load		jal		control-flow	candidate	us-port:scan;byte-validated
 END.EXE	0x800119e4	0x11e4		mips26	reachable-code	0x80011ba8	load	audio_initialize	jal		control-flow	candidate	us-port:scan;byte-validated
 END.EXE	0x800119ec	0x11ec		mips26	reachable-code	0x80011a68	load	display_initialize	jal		control-flow	candidate	us-port:scan;byte-validated
-END.EXE	0x800119f4	0x11f4	0x800119f8	mips_hi16_lo16	reachable-code	0x800a1ef4	bss	display_buffers	lui+addiu	s0	paired-reviewed	reviewed	us-port:scan;byte-validated
-END.EXE	0x800119fc	0x11fc	0x80011a00	mips_hi16_lo16	reachable-code	0x800a15ac	bss	display_current	lui+sw	s0	paired-reviewed	reviewed	us-port:scan;byte-validated
+END.EXE	0x800119f4	0x11f4	0x800119f8	mips_hi16_lo16	reachable-code	0x800a1ef4	bss	disp_db	lui+addiu	s0	paired-reviewed	reviewed	us-port:scan;byte-validated
+END.EXE	0x800119fc	0x11fc	0x80011a00	mips_hi16_lo16	reachable-code	0x800a15ac	bss	ed_cdb	lui+sw	s0	paired-reviewed	reviewed	us-port:scan;byte-validated
 END.EXE	0x80011a04	0x1204		mips26	reachable-code	0x80013dd8	load		jal		control-flow	candidate	us-port:scan;byte-validated
-END.EXE	0x80011a0c	0x120c	0x80011a10	mips_hi16_lo16	reachable-code	0x800a15ac	bss	display_current	lui+lw	a0	paired-reviewed	reviewed	us-port:scan;byte-validated
+END.EXE	0x80011a0c	0x120c	0x80011a10	mips_hi16_lo16	reachable-code	0x800a15ac	bss	ed_cdb	lui+lw	a0	paired-reviewed	reviewed	us-port:scan;byte-validated
 END.EXE	0x80011a14	0x1214		mips26	reachable-code	0x80013ef8	load		jal		control-flow	candidate	us-port:scan;byte-validated
-END.EXE	0x80011a20	0x1220	0x80011a24	mips_hi16_lo16	reachable-code	0x800a15ac	bss	display_current	lui+sw	s0	paired-reviewed	reviewed	us-port:scan;byte-validated
+END.EXE	0x80011a20	0x1220	0x80011a24	mips_hi16_lo16	reachable-code	0x800a15ac	bss	ed_cdb	lui+sw	s0	paired-reviewed	reviewed	us-port:scan;byte-validated
 END.EXE	0x80011a28	0x1228		mips26	reachable-code	0x80013dd8	load		jal		control-flow	candidate	us-port:scan;byte-validated
-END.EXE	0x80011a30	0x1230	0x80011a34	mips_hi16_lo16	reachable-code	0x800a15ac	bss	display_current	lui+lw	a0	paired-reviewed	reviewed	us-port:scan;byte-validated
+END.EXE	0x80011a30	0x1230	0x80011a34	mips_hi16_lo16	reachable-code	0x800a15ac	bss	ed_cdb	lui+lw	a0	paired-reviewed	reviewed	us-port:scan;byte-validated
 END.EXE	0x80011a38	0x1238		mips26	reachable-code	0x80013ef8	load		jal		control-flow	candidate	us-port:scan;byte-validated
 END.EXE	0x80011a40	0x1240		mips26	reachable-code	0x80011cc4	load	ending_play_movie	jal		control-flow	candidate	us-port:scan;byte-validated
 END.EXE	0x80011a48	0x1248		mips26	reachable-code	0x80011cc4	load	ending_play_movie	jal		control-flow	candidate	us-port:scan;byte-validated
@@ -15534,7 +15534,7 @@ END.EXE	0x80011a84	0x1284		mips26	reachable-code	0x80016bfc	load		jal		control-f
 END.EXE	0x80011a90	0x1290		mips26	reachable-code	0x80016aa0	load		jal		control-flow	candidate	us-port:scan;byte-validated
 END.EXE	0x80011a98	0x1298		mips26	reachable-code	0x80016ab8	load		jal		control-flow	candidate	us-port:scan;byte-validated
 END.EXE	0x80011aa8	0x12a8		mips26	reachable-code	0x800169ec	load		jal		control-flow	candidate	us-port:scan;byte-validated
-END.EXE	0x80011ab4	0x12b4	0x80011ab8	mips_hi16_lo16	reachable-code	0x800a1ef4	bss	display_buffers	lui+addiu	a0	paired-reviewed	reviewed	us-port:scan;byte-validated
+END.EXE	0x80011ab4	0x12b4	0x80011ab8	mips_hi16_lo16	reachable-code	0x800a1ef4	bss	disp_db	lui+addiu	a0	paired-reviewed	reviewed	us-port:scan;byte-validated
 END.EXE	0x80011ac4	0x12c4		mips26	reachable-code	0x80015e80	load		jal		control-flow	candidate	us-port:scan;byte-validated
 END.EXE	0x80011ad0	0x12d0	0x80011ad4	mips_hi16_lo16	reachable-code	0x800a2f68	bss		lui+addiu	a0	paired-reviewed	reviewed	us-port:scan;byte-validated
 END.EXE	0x80011ae0	0x12e0		mips26	reachable-code	0x80015e80	load		jal		control-flow	candidate	us-port:scan;byte-validated
@@ -15553,24 +15553,24 @@ END.EXE	0x80011b64	0x1364	0x80011b68	mips_hi16_lo16	reachable-code	0x800a2f81	bs
 END.EXE	0x80011b6c	0x136c	0x80011b70	mips_hi16_lo16	reachable-code	0x800a2f82	bss		lui+sb	v0	paired-reviewed	reviewed	us-port:scan;byte-validated
 END.EXE	0x80011b74	0x1374	0x80011b78	mips_hi16_lo16	reachable-code	0x800a2f83	bss		lui+sb	v0	paired-reviewed	reviewed	us-port:scan;byte-validated
 END.EXE	0x80011b7c	0x137c		mips26	reachable-code	0x80013acc	load		jal		control-flow	candidate	us-port:scan;byte-validated
-END.EXE	0x80011b84	0x1384	0x80011b88	mips_hi16_lo16	reachable-code	0x800a3ff4	bss	display_primitives	lui+addiu	v0	paired-reviewed	reviewed	us-port:scan;byte-validated
+END.EXE	0x80011b84	0x1384	0x80011b88	mips_hi16_lo16	reachable-code	0x800a3ff4	bss	ending_draw_primitive_pool	lui+addiu	v0	paired-reviewed	reviewed	us-port:scan;byte-validated
 END.EXE	0x80011bb0	0x13b0		mips26	reachable-code	0x8001b3f4	load		jal		control-flow	candidate	us-port:scan;byte-validated
 END.EXE	0x80011bc0	0x13c0		mips26	reachable-code	0x80022ec8	load		jal		control-flow	candidate	us-port:scan;byte-validated
 END.EXE	0x80011bd0	0x13d0		mips26	reachable-code	0x8001bc1c	load		jal		control-flow	candidate	us-port:scan;byte-validated
 END.EXE	0x80011bdc	0x13dc		mips26	reachable-code	0x8001bbc4	load		jal		control-flow	candidate	us-port:scan;byte-validated
-END.EXE	0x80011bf4	0x13f4	0x80011bf8	mips_hi16_lo16	reachable-code	0x800a15ac	bss	display_current	lui+lw		paired-reviewed	reviewed	manual:display
-END.EXE	0x80011c00	0x1400	0x80011c04	mips_hi16_lo16	reachable-code	0x800a1ef4	bss	display_buffers	lui+addiu		paired-reviewed	reviewed	manual:display
-END.EXE	0x80011c14	0x1414	0x80011c18	mips_hi16_lo16	reachable-code	0x800a15ac	bss	display_current	lui+sw		paired-reviewed	reviewed	manual:display
+END.EXE	0x80011bf4	0x13f4	0x80011bf8	mips_hi16_lo16	reachable-code	0x800a15ac	bss	ed_cdb	lui+lw		paired-reviewed	reviewed	manual:display
+END.EXE	0x80011c00	0x1400	0x80011c04	mips_hi16_lo16	reachable-code	0x800a1ef4	bss	disp_db	lui+addiu		paired-reviewed	reviewed	manual:display
+END.EXE	0x80011c14	0x1414	0x80011c18	mips_hi16_lo16	reachable-code	0x800a15ac	bss	ed_cdb	lui+sw		paired-reviewed	reviewed	manual:display
 END.EXE	0x80011c20	0x1420		mips26	reachable-code	0x80013c70	load		jal		control-flow	candidate	investigation:relocs.tsv
-END.EXE	0x80011c28	0x1428	0x80011c2c	mips_hi16_lo16	reachable-code	0x800a15ac	bss	display_current	lui+lw		paired-reviewed	reviewed	manual:display
-END.EXE	0x80011c3c	0x143c	0x80011c40	mips_hi16_lo16	reachable-code	0x800a80b4	bss	current_poly_ft4	lui+sw		paired-reviewed	reviewed	manual:display
+END.EXE	0x80011c28	0x1428	0x80011c2c	mips_hi16_lo16	reachable-code	0x800a15ac	bss	ed_cdb	lui+lw		paired-reviewed	reviewed	manual:display
+END.EXE	0x80011c3c	0x143c	0x80011c40	mips_hi16_lo16	reachable-code	0x800a80b4	bss	ending_current_poly_ft4	lui+sw		paired-reviewed	reviewed	manual:display
 END.EXE	0x80011c5c	0x145c		mips26	reachable-code	0x80013b0c	load		jal		control-flow	candidate	investigation:relocs.tsv
 END.EXE	0x80011c64	0x1464		mips26	reachable-code	0x8001b154	load		jal		control-flow	candidate	investigation:relocs.tsv
-END.EXE	0x80011c6c	0x146c	0x80011c70	mips_hi16_lo16	reachable-code	0x800a15ac	bss	display_current	lui+lw		paired-reviewed	reviewed	manual:display
+END.EXE	0x80011c6c	0x146c	0x80011c70	mips_hi16_lo16	reachable-code	0x800a15ac	bss	ed_cdb	lui+lw		paired-reviewed	reviewed	manual:display
 END.EXE	0x80011c74	0x1474		mips26	reachable-code	0x80013dd8	load		jal		control-flow	candidate	investigation:relocs.tsv
-END.EXE	0x80011c7c	0x147c	0x80011c80	mips_hi16_lo16	reachable-code	0x800a15ac	bss	display_current	lui+lw		paired-reviewed	reviewed	manual:display
+END.EXE	0x80011c7c	0x147c	0x80011c80	mips_hi16_lo16	reachable-code	0x800a15ac	bss	ed_cdb	lui+lw		paired-reviewed	reviewed	manual:display
 END.EXE	0x80011c84	0x1484		mips26	reachable-code	0x80013ef8	load		jal		control-flow	candidate	investigation:relocs.tsv
-END.EXE	0x80011c8c	0x148c	0x80011c90	mips_hi16_lo16	reachable-code	0x800a15ac	bss	display_current	lui+lw		paired-reviewed	reviewed	manual:display
+END.EXE	0x80011c8c	0x148c	0x80011c90	mips_hi16_lo16	reachable-code	0x800a15ac	bss	ed_cdb	lui+lw		paired-reviewed	reviewed	manual:display
 END.EXE	0x80011c94	0x1494		mips26	reachable-code	0x80013d80	load		jal		control-flow	candidate	investigation:relocs.tsv
 END.EXE	0x80011cb4	0x14b4	0x80011cb8	mips_hi16_lo16	reachable-code	0x8003975c	load		lui+addiu	gp	paired-reachable	candidate	investigation:relocs.tsv
 END.EXE	0x80011cbc	0x14bc		mips26	reachable-code	0x800119a4	load		j		control-flow	candidate	investigation:relocs.tsv
@@ -15586,8 +15586,8 @@ END.EXE	0x80011d34	0x1534	0x80011d38	mips_hi16_lo16	reachable-code	0x80039a04	lo
 END.EXE	0x80011d3c	0x153c		mips26	reachable-code	0x80011ea0	load	strSetDefDecEnv	jal		control-flow	candidate	us-port:scan;byte-validated
 END.EXE	0x80011d44	0x1544		mips26	reachable-code	0x80011f5c	load	strInit	jal		control-flow	candidate	us-port:scan;byte-validated
 END.EXE	0x80011d4c	0x154c		mips26	reachable-code	0x800120dc	load	strNextVlc	jal		control-flow	candidate	us-port:scan;byte-validated
-END.EXE	0x80011d54	0x1554	0x80011d58	mips_hi16_lo16	reachable-code	0x800a1ef4	bss	display_buffers	lui+addiu	v0	paired-reviewed	reviewed	us-port:scan;byte-validated
-END.EXE	0x80011d5c	0x155c	0x80011d60	mips_hi16_lo16	reachable-code	0x800a15ac	bss	display_current	lui+sw	v0	paired-reviewed	reviewed	us-port:scan;byte-validated
+END.EXE	0x80011d54	0x1554	0x80011d58	mips_hi16_lo16	reachable-code	0x800a1ef4	bss	disp_db	lui+addiu	v0	paired-reviewed	reviewed	us-port:scan;byte-validated
+END.EXE	0x80011d5c	0x155c	0x80011d60	mips_hi16_lo16	reachable-code	0x800a15ac	bss	ed_cdb	lui+sw	v0	paired-reviewed	reviewed	us-port:scan;byte-validated
 END.EXE	0x80011d64	0x1564	0x80011d68	mips_hi16_lo16	reachable-code	0x800399fc	load	StrFrame	lui+sw	zero	paired-reviewed	reviewed	us-port:scan;byte-validated
 END.EXE	0x80011d6c	0x156c	0x80011d70	mips_hi16_lo16	reachable-code	0x8009d76c	bss	dec	lui+addiu	s0	paired-reviewed	reviewed	us-port:scan;byte-validated
 END.EXE	0x80011d74	0x1574		mips26	reachable-code	0x80011bf4	load	display_begin_frame	jal		control-flow	candidate	us-port:scan;byte-validated

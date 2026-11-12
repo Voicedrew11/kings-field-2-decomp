@@ -21,17 +21,26 @@ enum {
 #endif
 #define DISPLAY_CLEARS_BACKGROUND 1
 
-DATA_AT("OPEN", 0x800a6668, 0x4, ".bss")
+/* END spells these differently; see <kf/lib/display.h>. */
+#ifdef KF_END
 DATA_AT("END", 0x800a15ac, 0x4, ".bss")
+KfDisplayBuffer *ed_cdb;
+
+DATA_AT("END", 0x800a1ef4, 0x20e8, ".bss")
+KfDisplayBuffer disp_db[2];
+
+DATA_AT("END", 0x800a3ff4, 0x4000, ".bss")
+u8 ending_draw_primitive_pool[2][KF_PRIMITIVE_BUFFER_BYTES];
+#else
+DATA_AT("OPEN", 0x800a6668, 0x4, ".bss")
 KfDisplayBuffer *display_current;
 
 DATA_AT("OPEN", 0x800a6fd0, 0x20e8, ".bss")
-DATA_AT("END", 0x800a1ef4, 0x20e8, ".bss")
 KfDisplayBuffer display_buffers[2];
 
 DATA_AT("OPEN", 0x800a90d8, 0x4000, ".bss")
-DATA_AT("END", 0x800a3ff4, 0x4000, ".bss")
 u8 display_primitives[2][KF_PRIMITIVE_BUFFER_BYTES];
+#endif
 
 ADDRESS_AT("OPEN", 0x80012180, 0x13c)
 ADDRESS_AT("END", 0x80011a68, 0x140)

@@ -7,7 +7,13 @@ enum {
 };
 
 /* US END links no sequence player, so only OPEN owns the table. */
-#ifndef KF_END
+#ifdef KF_END
+/* Unreferenced: retail END reserves an exported COMMON slot between
+ * _svm_stereo_mono and the screen buffers, where JP END kept its VAB id.
+ * Its name and type are unknown; this one fits PSYLINK's bucket order. */
+DATA_AT("END", 0x800a1eec, 0x2, ".bss")
+s16 end_vab;
+#else
 DATA_AT("OPEN", 0x800ad1b0, 0x158, ".bss")
 char audio_sequence_table[SS_SEQ_TABSIZ * KF_AUDIO_SEQUENCE_CAPACITY * KF_AUDIO_TRACKS_PER_SEQUENCE];
 #endif
