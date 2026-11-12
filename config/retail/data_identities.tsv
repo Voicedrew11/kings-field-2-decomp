@@ -9,7 +9,6 @@ PSX.EXE	0x80010268	0x4	overlay_index	global	load	long	bootstrap	supported	asm;xr
 PSX.EXE	0x8001026c	0x4	overlay_next_request	global	load	u8 *	bootstrap	supported	asm;xrefs;PSX main	points at the fixed byte 0x800102f8 that GAME writes (GAME 0x8001396c) to select the next overlay
 PSX.EXE	0x80010270	0x4	DAT_80010270	unknown	bss	undefined4	2MBYTE.OBJ	supported	pinned 2MBYTE.OBJ .sbss 4-byte reservation;sectbase patches;PSX.MAP;retail stup1 xrefs	startup-object .sbss word; original C subobject name and scope unresolved
 PSX.EXE	0x80010274	0x3c	overlay_header	global	bss	struct EXEC	bootstrap	supported	asm;xrefs;PSX main	EXEC header shared by Load and Exec
-PSX.EXE	0x800102f8	0x1	DAT_800102f8	global	bss	u8	bootstrap	address-only	asm;xrefs;PSX main clears it;US GAME 0x800139e8 sets it;US OPEN main reads it	flag byte beside the overlay mailbox; semantic name unresolved
 GAME.EXE	0x80011058	0x1c	resource_transition_phase_switch_rodata	unknown	load	pointer[7]	resource_startup	supported	retail words;phase bound 0..6;resource_advance_transition jr table;source RODATA claim	compiler phase switch table; original TU owner remains unresolved
 GAME.EXE	0x80011098	0x1c	menu_root_switch_rodata	unknown	load	pointer[7]	menu_root	supported	retail words;seven case blocks;menu_run_root_controller jr table	compiler switch table inside the menu controller unit
 GAME.EXE	0x800110b8	0x24	menu_equipment_first_switch_rodata	unknown	load	pointer[9]	menu_root	supported	retail words;bounded jr;in-function case targets	compiler switch table within equipment category controller unit

@@ -11,7 +11,6 @@ PSX.EXE	0x8001005c	0x85c		mips26	reachable-code	0x80010204	load		jal		control-fl
 PSX.EXE	0x80010064	0x864	0x80010068	mips_hi16_lo16	reachable-code	0x8001026c	load	overlay_next_request	lui+lw	v0	paired-reviewed	reviewed	us-port:scan;byte-validated
 PSX.EXE	0x8001006c	0x86c	0x80010070	mips_hi16_lo16	reachable-code	0x80010254	load	overlay_path_table	lui+addiu	s1	paired-reviewed	reviewed	us-port:scan;byte-validated
 PSX.EXE	0x80010074	0x874	0x80010078	mips_hi16_lo16	reachable-code	0x80010294	load		lui+addiu	s0	paired-reviewed	reviewed	us-port:scan;byte-validated
-PSX.EXE	0x80010080	0x880	0x80010084	mips_hi16_lo16	reachable-code	0x800102f8	load	DAT_800102f8	lui+sb	zero	paired-reviewed	reviewed	us-port:scan;byte-validated
 PSX.EXE	0x80010088	0x888	0x8001008c	mips_hi16_lo16	reachable-code	0x80010268	load	overlay_index	lui+lw	v0	paired-reviewed	reviewed	us-port:scan;byte-validated
 PSX.EXE	0x800100a0	0x8a0	0x800100a4	mips_hi16_lo16	reachable-code	0x80010274	load	overlay_header	lui+addiu	a1	paired-reviewed	reviewed	us-port:scan;byte-validated
 PSX.EXE	0x800100a8	0x8a8		mips26	reachable-code	0x80010224	load		jal		control-flow	candidate	us-port:scan;byte-validated
