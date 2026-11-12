@@ -46,10 +46,10 @@ _Derived from ignored outputs made by the native Psy-Q executable chain. `kf bui
 
 | Image | Same-offset file bytes | Island-aligned load bytes | Nonzero load bytes | Data modules exact |
 | :---- | --------------------: | -----------------------: | -----------------: | -----------------: |
-| `PSX.EXE` | — | — | — | 0 / 1 |
-| `GAME.EXE` | — | — | — | 5 / 16 |
-| `OPEN.EXE` | — | — | — | 3 / 8 |
-| `END.EXE` | — | — | — | 1 / 5 |
+| `PSX.EXE` | — | — | — | — |
+| `GAME.EXE` | — | — | — | — |
+| `OPEN.EXE` | — | — | — | — |
+| `END.EXE` | — | — | — | — |
 
 The three byte columns show similarity, not differences. Island scores allow moved regions and
 small internal edits; unmatched bytes lower the score and no addresses are masked.
