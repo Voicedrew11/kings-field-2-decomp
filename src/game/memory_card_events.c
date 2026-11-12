@@ -13,7 +13,7 @@
 RODATA(0x80011104, 0x22)
 
 DATA(0x80067564, 0x10, ".data")
-char memory_card_file_prefix[16] = "BISLPS-00069";
+char memory_card_file_prefix[16] = "BASLUS-00158";
 
 enum {
     CARD_FILENAME_PREFIX_LENGTH = 12,
@@ -162,7 +162,7 @@ void memory_card_stop(void)
 ADDRESS(0x800230c4, 0xec)
 s32 memory_card_probe_temporary_file(void)
 {
-    char path[26] = "bu00:BISLPS-00069TEMP    ";
+    char path[26] = "bu00:BASLUS-00158TEMP    ";
     s32 status;
     s32 handle;
 

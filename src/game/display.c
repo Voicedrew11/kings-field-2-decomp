@@ -51,11 +51,11 @@ enum {
 DATA(0x800676f4, 0x7e, ".data")
 KfNotificationQuad notification_quads[7] = {
     {KF_SPRITE_HIDDEN, 0, 0, 127, 14, 96, 203, 127, 14, 0x7f24, 0x1b},
-    {KF_SPRITE_HIDDEN, 0, 0, 127, 14, 110, 203, 127, 14, 0x7f24, 0x1b},
-    {KF_SPRITE_HIDDEN, 240, 0, 7, 14, 90, 203, 7, 13, 0x7f64, 0x1d},
-    {KF_SPRITE_HIDDEN, 240, 0, 7, 14, 80, 203, 7, 13, 0x7f64, 0x1d},
-    {KF_SPRITE_HIDDEN, 240, 0, 7, 14, 70, 203, 7, 13, 0x7f64, 0x1d},
-    {KF_SPRITE_HIDDEN, 240, 0, 7, 14, 60, 203, 7, 13, 0x7f64, 0x1d},
+    {KF_SPRITE_HIDDEN, 0, 0, 127, 14, 160, 203, 127, 14, 0x7f24, 0x1b},
+    {KF_SPRITE_HIDDEN, 240, 0, 7, 14, 143, 203, 7, 14, 0x7f64, 0x1d},
+    {KF_SPRITE_HIDDEN, 240, 0, 7, 14, 134, 203, 7, 14, 0x7f64, 0x1d},
+    {KF_SPRITE_HIDDEN, 240, 0, 7, 14, 125, 203, 7, 14, 0x7f64, 0x1d},
+    {KF_SPRITE_HIDDEN, 240, 0, 7, 14, 116, 203, 7, 14, 0x7f64, 0x1d},
     {KF_SPRITE_END, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 

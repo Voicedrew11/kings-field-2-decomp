@@ -38,7 +38,7 @@ DATA(0x800688a4, 0x8, ".data")
 u8 event_magic_unlock_ids_5d[8] = {4, 17, 5, 6, 0xff, 0, 0, 0};
 
 DATA(0x800688ac, 0x8, ".data")
-u8 event_magic_unlock_ids_5e[8] = {18, 19, 11, 12, 0xff, 0xff, 0xff, 0xff};
+u8 event_magic_unlock_ids_5e[8] = {18, 19, 11, 12, 0xff, 0, 0, 0};
 
 DATA(0x8009b52c, 0x78, ".bss")
 u8 game_counter_bytes[KF_ITEM_ID_COUNT];
