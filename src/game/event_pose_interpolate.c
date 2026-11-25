@@ -133,6 +133,14 @@ void actor_animation_seek_phase(KfActor *actor, KfAnimationClip state, u16 phase
     render_game_frame(NULL, NULL);
 }
 
+/* candidate->word_12.bytes.marker_state: CLEAR means no rewind is pending;
+ * REWIND_ARMED is set when a rewind marker is executed, so a different actor
+ * resuming the stream skips to the marker's continuation. */
+enum {
+    EVENT_MARKER_CLEAR = 0,
+    EVENT_MARKER_REWIND_ARMED = 1
+};
+
 ADDRESS(0x80046e88, 0x5c)
 u8 event_target_stream_find_marker(const KfTargetCandidate *candidate, u8 marker)
 {
@@ -184,7 +192,7 @@ use_fallback:
                 candidate->word_10.bytes.fallback_offset = offset;
             }
             cur_evt_state.control.fields.stream_actor_definition_id = actor->definition_id;
-            candidate->word_12.bytes.marker_state = 0;
+            candidate->word_12.bytes.marker_state = EVENT_MARKER_CLEAR;
             goto use_fallback;
         }
         cursor += 4;
@@ -216,18 +224,18 @@ void event_target_stream_execute(KfActor *actor)
     }
     cursor = event_target_stream_resolve_cursor(actor);
     if (cur_evt_state.control.fields.stream_actor_definition_id != actor->definition_id &&
-        candidate->word_12.bytes.marker_state == 1) {
+        candidate->word_12.bytes.marker_state == EVENT_MARKER_REWIND_ARMED) {
         while (*cursor++ != KF_EVENT_STREAM_REWIND_MARKER) {
         }
         cursor++;
         candidate->word_10.bytes.fallback_offset = cursor - candidate->word_14.bytes;
-        candidate->word_12.bytes.marker_state = 0;
+        candidate->word_12.bytes.marker_state = EVENT_MARKER_CLEAR;
     }
 
     for (;;) {
         switch (*cursor) {
         case KF_EVENT_STREAM_REWIND_MARKER:
-            candidate->word_12.bytes.marker_state = 1;
+            candidate->word_12.bytes.marker_state = EVENT_MARKER_REWIND_ARMED;
             /* The two rewind opcodes share their byte-count operand. */
         case KF_EVENT_STREAM_REWIND:
         {
@@ -265,7 +273,7 @@ void event_target_stream_execute(KfActor *actor)
             cur_evt_state.control.fields.stream_actor_definition_id = actor->definition_id;
             cursor++;
             candidate->word_10.bytes.fallback_offset++;
-            candidate->word_12.bytes.marker_state = 0;
+            candidate->word_12.bytes.marker_state = EVENT_MARKER_CLEAR;
             continue;
         case KF_EVENT_STREAM_SET_CONTROL:
             cur_evt_state.control.bytes[cursor[1]] = cursor[2];
@@ -1174,8 +1182,8 @@ void event_world_dispatch_interaction(const VECTOR *position,
                 KfMapObjectRecord40 *record;
                 player_begin_view_reaction(object_index);
                 record = object->extra_40.record;
-                if (record->reaction_mode == 1) {
-                    record->reaction_mode = 5;
+                if (record->reaction_mode == KF_MAP_OBJECT_REACTION_ARMED) {
+                    record->reaction_mode = KF_MAP_OBJECT_REACTION_TRIGGERED;
                 }
             }
             break;

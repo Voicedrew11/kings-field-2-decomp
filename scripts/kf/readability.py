@@ -360,7 +360,13 @@ def _placeholder_parameters(source: Source) -> Iterator[Finding]:
 # --------------------------------------------------------------------------- #
 
 _NUMBER = r"-?(?:0x[0-9A-Fa-f]+|\d+)[uUlL]*\b(?![.\w])"
-_STATE_FIELD = r"(?:->|\.)\s*\w*(?:state|mode|kind|step|phase|action|type)\b"
+#: Members named like states that hold a continuous value instead: q12 cycle
+#: positions and oscillator angles, whose zero is a position, not a state.
+#: A `*_step` member is an increment; only a bare `step` names a state.
+CONTINUOUS_PHASE_FIELDS = ("animation_phase", "walking_bob_phase", "magic_tint_phase",
+                           "darkness_phase", "secondary_hit_phase")
+_STATE_FIELD = (r"(?:->|\.)\s*(?!(?:" + "|".join(CONTINUOUS_PHASE_FIELDS) + r")\b)"
+                r"(?:\w*(?:state|mode|kind|phase|action|type)|step)\b")
 _BIT_OP = r"(?<=[\w)\]])\s*(?<![&|])[&|^]=?(?![&|=])\s*~?\s*\(?\s*"
 
 

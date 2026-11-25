@@ -43,7 +43,8 @@ enum {
 
 enum {
     KF_PLAYER_CHARGE_FULL = 5000,
-    KF_WEAPON_ATTACK_INACTIVE = -1
+    KF_WEAPON_ATTACK_INACTIVE = -1,
+    KF_WEAPON_ATTACK_START = 0
 };
 
 /* player_cap_status_components groups: FIRST caps curse and slow, SECOND

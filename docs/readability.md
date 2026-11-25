@@ -35,7 +35,7 @@ table or a named definition already has a home.
 | numbered functions | yes | `resource_transition_set_phase_3` | a name for what differs between the variants |
 | placeholder parameters | yes | `arg3`, `unknown` | a name from the uses and the call sites |
 | raw case labels | yes | `case 4:` | `case KF_..._NAME:` |
-| raw state values | yes | `record->phase = 2` | an enum value |
+| raw state values | yes | `record->phase = 2` | an enum value (`*_step` increments and the continuous phases in `CONTINUOUS_PHASE_FIELDS` are skipped) |
 | raw bit masks | yes | `flags & 0x40` | a named flag (masks of the form 2^k-1 are truncations and are skipped) |
 | raw hex literals | yes | `0x140`, `0x2000` | a named constant, or a derivation (`sizeof`, a shift, a field width) |
 | literal element fills | yes | 4+ consecutive `a[N] = literal;` | a table or string, if the match allows |

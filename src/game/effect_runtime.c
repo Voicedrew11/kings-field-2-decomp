@@ -279,6 +279,24 @@ void effect_pool_initialize_fixed(KfEffectRecord *record, KfEffectRenderId rende
     record->position.vz = 0;
 }
 
+/* record->phase set for every newly constructed effect record. */
+enum {
+    EFFECT_PHASE_INITIAL = 0,
+};
+
+/* record->phase of a KF_EFFECT_KIND_23 record. */
+enum {
+    EFFECT_KIND23_PHASE_FLIGHT = 0,
+    EFFECT_KIND23_PHASE_ATTACHED = 9,
+};
+
+/* record->phase of a KF_EFFECT_KIND_100 record. Spawned records start at 2
+ * and skip the first two gravity ticks; the meaning of phases 0 to 3 is not
+ * verified. */
+enum {
+    EFFECT_KIND100_PHASE_PRE_HOMING_DROP = 2,
+};
+
 ADDRESS(0x80041040, 0x13e4)
 KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectType type, KfEffectKind kind,
                               const VECTOR *position,
@@ -308,7 +326,7 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
         record->direction.vy = 0;
         record->direction.vx = 0;
     }
-    record->phase = 0;
+    record->phase = EFFECT_PHASE_INITIAL;
     record->damage_multiplier_tenths = damage_multiplier_tenths;
     record->scale_z = KF_FIXED12_ONE;
     record->scale_y = KF_FIXED12_ONE;
@@ -1019,7 +1037,7 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
         record->direction.vz = 0;
         record->direction.vy = 0;
         record->direction.vx = 0;
-        record->phase = 9;
+        record->phase = EFFECT_KIND23_PHASE_ATTACHED;
         record->cache_tail.payload.kind23.actor_index = va[1];
         record->cache_tail.payload.kind23.vertex_index = va[2];
         third_parameter = va[3];
@@ -1215,7 +1233,7 @@ void effect_spawn_zero_direction(KfEffectRecord *record, s32 mode)
     spawned = effect_construct_record(10, record->type, KF_EFFECT_KIND_100, &position,
                             &effect_zero_direction, &direction);
     if (spawned != NULL) {
-        spawned->phase = 2;
+        spawned->phase = EFFECT_KIND100_PHASE_PRE_HOMING_DROP;
     }
 }
 
@@ -1420,6 +1438,7 @@ void effect_spawn_radial_ring(s32 count, s32 radius, s32 vertical_angle, s32 ver
 
 /* record->phase of a KF_EFFECT_KIND_12 record. */
 enum {
+    EFFECT_KIND12_PHASE_START = 0,
     EFFECT_KIND12_PHASE_LAUNCH_CHILD = 100,
     EFFECT_KIND12_PHASE_CHILD_HANDOFF = 101,
     EFFECT_KIND12_PHASE_RESET = 102,
@@ -1448,6 +1467,7 @@ enum {
 enum {
     EFFECT_KIND10_PHASE_TARGETING = 0,
     EFFECT_KIND10_PHASE_EXPAND = 1,
+    EFFECT_KIND10_PHASE_CHILD_WAIT = 2,
     EFFECT_KIND10_PHASE_ACTIVATE = 5,
 };
 
@@ -1458,6 +1478,44 @@ enum {
     EFFECT_KIND6_PHASE_HOLD_ACTOR = 2,
     EFFECT_KIND6_PHASE_RELEASE_COUNTDOWN = 3,
     EFFECT_KIND6_PHASE_BURST = 4,
+};
+
+/* record->phase of a KF_EFFECT_KIND_7 or KF_EFFECT_KIND_49 record. */
+enum {
+    EFFECT_KIND7_PHASE_AWAIT_IMPACT = 0,
+    EFFECT_KIND7_PHASE_GROWING = 1,
+};
+
+/* record->phase of a KF_EFFECT_KIND_13 or KF_EFFECT_KIND_32 record. */
+enum {
+    EFFECT_KIND13_PHASE_AWAIT_IMPACT = 0,
+    EFFECT_KIND13_PHASE_GROWING = 1,
+};
+
+/* record->phase of a KF_EFFECT_KIND_0 record. */
+enum {
+    EFFECT_KIND0_PHASE_AIRBORNE = 0,
+    EFFECT_KIND0_PHASE_LANDED = 1,
+};
+
+/* record->phase of a KF_EFFECT_KIND_103 or KF_EFFECT_KIND_121 record. */
+enum {
+    EFFECT_KIND103_PHASE_COUNTDOWN = 0,
+    EFFECT_KIND103_PHASE_FALL = 1,
+    EFFECT_KIND103_PHASE_SHRINK = 2,
+};
+
+/* record->phase of a KF_EFFECT_KIND_105 record. */
+enum {
+    EFFECT_KIND105_PHASE_HOMING = 0,
+    EFFECT_KIND105_PHASE_ATTACHED = 1,
+    EFFECT_KIND105_PHASE_RELEASED = 2,
+};
+
+/* record->phase of a KF_EFFECT_KIND_107 record. */
+enum {
+    EFFECT_KIND107_PHASE_AWAIT_RELEASE = 0,
+    EFFECT_KIND107_PHASE_FOLLOW = 1,
 };
 
 ADDRESS(0x80043388, 0x367c)
@@ -1540,7 +1598,7 @@ void effect_update_dispatch(void)
             effect_scatter_lower_bound(&record->position, 3, 400, 0x2000, 0x2000, 0x400);
             effect_collision_backtrack();
             effect_apply_current_magic_backstep(collision);
-            record->phase = 1;
+            record->phase = EFFECT_KIND7_PHASE_GROWING;
             goto shared_growth_update;
         }
         if (initial_phase >= 3) {
@@ -1560,7 +1618,7 @@ void effect_update_dispatch(void)
         }
         effect_collision_backtrack();
         effect_apply_current_magic_backstep(collision);
-        record->phase = 1;
+        record->phase = EFFECT_KIND13_PHASE_GROWING;
         goto shared_growth_update;
     kind13_no_collision:
         effect_spawn_at_lower_bound(&record->position, 0x2000, 0x2000, 500);
@@ -1610,7 +1668,7 @@ void effect_update_dispatch(void)
                 actor_compute_target_direction(actor, &cur_avatar_status.camera_position,
                                650, &record->position, &record->direction,
                                KF_ACTOR_PITCH_TRACK_TARGET, 0x400, 5);
-                record->phase = 0;
+                record->phase = EFFECT_KIND23_PHASE_FLIGHT;
                 record->updates_remaining = 50;
             }
             break;
@@ -1979,7 +2037,7 @@ void effect_update_dispatch(void)
                     record->type = KF_EFFECT_SLOT_FREE;
                 } else {
                     s32 collision_height = pl_ext_7540.collision_cache.heights.result;
-                    record->phase = 1;
+                    record->phase = EFFECT_KIND0_PHASE_LANDED;
                     record->direction.vy = -200;
                     record->position.vy = collision_height;
                 }
@@ -1994,7 +2052,7 @@ void effect_update_dispatch(void)
         VECTOR spawn_position;
         s32 distance;
 
-        if (record->phase == 2) {
+        if (record->phase == EFFECT_KIND103_PHASE_SHRINK) {
             record->scale_x = record->scale_x - 128;
             record->scale_y = record->scale_x;
             if (record->scale_x <= 0) {
@@ -2024,7 +2082,7 @@ void effect_update_dispatch(void)
                     goto kind103_spawn;
                 }
             }
-            record->phase = 1;
+            record->phase = EFFECT_KIND103_PHASE_FALL;
         }
         if (initial_phase == 1) {
             record->direction.vy -= 70;
@@ -2043,7 +2101,7 @@ void effect_update_dispatch(void)
                 SVECTOR spawn_direction;
 
             kind103_spawn:
-                record->phase = 2;
+                record->phase = EFFECT_KIND103_PHASE_SHRINK;
                 spawn_position.vx = record->position.vx;
                 spawn_position.vz = record->position.vz;
                 /* Retail has no visible write to this stack direction. */
@@ -2057,7 +2115,7 @@ void effect_update_dispatch(void)
             }
         } else if (initial_phase == 0) {
             if ((s16)record->cache_tail.payload.kind103.remaining-- <= 0) {
-                record->phase = 1;
+                record->phase = EFFECT_KIND103_PHASE_FALL;
             }
         }
         for (index = 3; index != -1; index--) {
@@ -2186,7 +2244,7 @@ void effect_update_dispatch(void)
             record->rotation.vy += 64;
             break;
         default:
-            if (record->phase == 0) {
+            if (record->phase == EFFECT_KIND12_PHASE_START) {
                 effect_play_spatial_sound(record, 0x29);
             }
             record->phase++;
@@ -2325,11 +2383,11 @@ void effect_update_dispatch(void)
                     attachment->parent_index != effect_status.current_index) {
                     continue;
                 }
-                if (child->phase == 1) {
+                if (child->phase == EFFECT_KIND105_PHASE_ATTACHED) {
                     child->updates_remaining = 1;
                     matches++;
                 } else {
-                    child->phase = 2;
+                    child->phase = EFFECT_KIND105_PHASE_RELEASED;
                 }
             }
             if (record->cache_tail.payload.kind5.actor_index != KF_EFFECT_TARGET_ACTOR_NONE) {
@@ -2401,7 +2459,7 @@ void effect_update_dispatch(void)
             if (linked_fanout->children_remaining != 0) {
                 --linked_fanout->children_remaining;
             }
-            record->phase = 1;
+            record->phase = EFFECT_KIND105_PHASE_ATTACHED;
         } else {
             if (motion == KF_EFFECT_MOTION_BLOCKED &&
                 (pl_ext_7540.collision_cache.flags & KF_COLLISION_HIT_SHAPE_MASK) != KF_COLLISION_HIT_NONE) {
@@ -2420,7 +2478,7 @@ void effect_update_dispatch(void)
          * no defining pad store is visible on this path. */
         record->position = next_position;
         if (record->updates_remaining < 2) {
-            record->phase = 2;
+            record->phase = EFFECT_KIND105_PHASE_RELEASED;
             record->updates_remaining = (rand() >> 12) + 16;
             record->direction.vx = vertex_offset.vx >> 1;
             record->direction.vy = vertex_offset.vy >> 1;
@@ -2671,7 +2729,7 @@ void effect_update_dispatch(void)
                                                 KF_EFFECT_KIND_10,
                                       &record->position, NULL,
                                       &record->rotation);
-                child->phase = 2;
+                child->phase = EFFECT_KIND10_PHASE_CHILD_WAIT;
                 effect_play_spatial_sound(record, 0x17);
             }
             /* fall through */
@@ -2904,11 +2962,11 @@ void effect_update_dispatch(void)
         s32 frame_index;
 
         if (initial_phase == 0 && selected->phase >= 3) {
-            record->phase = 1;
+            record->phase = EFFECT_KIND107_PHASE_FOLLOW;
             record->updates_remaining =
                 record->cache_tail.payload.trail_child.lag_index * 3;
         }
-        if (selected->phase == 4) {
+        if (selected->phase == EFFECT_KIND6_PHASE_BURST) {
             record->type = KF_EFFECT_SLOT_FREE;
             break;
         }

@@ -37,6 +37,9 @@ s32 thing_update_1(KfThing *thing, s32 arg3)
     switch (thing->state) {
     case 3:
         thing->phase = 2;
+        thing->yaw_step = 0;
+        thing->animation_phase = 0;
+        thing->step = 1;
         if (thing->flags & 0x40) {
             goto done;
         }
@@ -104,7 +107,8 @@ class LiteralAndFlowMetricTest(unittest.TestCase):
     def test_literals(self) -> None:
         results = scan_sample()
         self.assertEqual(labels(results, "raw case labels"), ["case 3:"])
-        self.assertEqual(labels(results, "raw state values"), ["->phase = 2"])
+        self.assertEqual(labels(results, "raw state values"),
+                         ["->phase = 2", "->step = 1"])  # rates and cycle positions skip
         self.assertEqual(labels(results, "raw bit masks"), ["& 0x40"])  # 0xff truncates
         self.assertEqual(labels(results, "raw hex literals"), ["0x40", "0xff", "0x14", "0x200"])
         self.assertEqual(labels(results, "literal element fills"), ["4 element stores"])

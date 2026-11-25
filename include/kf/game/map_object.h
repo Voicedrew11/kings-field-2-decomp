@@ -797,6 +797,16 @@ typedef union KfMapObjectTail {
 } KfMapObjectTail;
 typedef char kf_map_object_tail_size[sizeof(KfMapObjectTail) == 12 ? 1 : -1];
 
+/* KfMapObjectRecord40.reaction_mode: ROTATE applies the rotation kick in
+ * player_apply_map_object_reaction; any other value recovers the player's
+ * position instead. ARMED and TRIGGERED are the view-reaction steps that
+ * event_world_dispatch_interaction advances (ARMED -> TRIGGERED). */
+enum {
+    KF_MAP_OBJECT_REACTION_ROTATE = 0,
+    KF_MAP_OBJECT_REACTION_ARMED = 1,
+    KF_MAP_OBJECT_REACTION_TRIGGERED = 5
+};
+
 /* The +0x40 word points to this heap record while the object runs the player
  * reaction action; other actions keep byte state there. Only this prefix is
  * observed, and the record's complete extent is unresolved. */

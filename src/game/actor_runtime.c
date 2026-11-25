@@ -118,6 +118,13 @@ void actor_set_lifecycle_and_home_position(KfActor *actor)
     actor_set_home_position(actor);
 }
 
+/* state_70.signed_state while the target type is KF_ACTOR_TARGET_3. */
+enum {
+    ACTOR_DEATH_STATE_ANIMATE = 0,
+    ACTOR_DEATH_STATE_ANIMATION_END = 15,
+    ACTOR_DEATH_STATE_PARKED = 99,
+};
+
 ADDRESS(0x80039c58, 0xd0)
 void actor_disable_type3_transition_actors(void)
 {
@@ -129,7 +136,7 @@ void actor_disable_type3_transition_actors(void)
             actor->lifecycle == KF_ACTOR_LIFECYCLE_ACTIVE &&
             actor->target_type == KF_ACTOR_TARGET_3 &&
             actor->target_action_state == KF_ACTOR_TARGET_ACTION_RETARGET_BLOCKED &&
-            (actor->state_70.signed_state != 0 ||
+            (actor->state_70.signed_state != ACTOR_DEATH_STATE_ANIMATE ||
              actor->animation_phase > KF_ACTOR_ANIMATION_PHASE_PERIOD / 2)) {
             ((void (*)(KfActor *))asset_status.active_table[19])(actor);
             actor_set_lifecycle_and_home_position(actor);
@@ -328,7 +335,7 @@ s32 actor_score_target_candidate(KfTargetCandidate *target, s32 player_distance)
         if (target->word_0e.value < player_distance) {
             break;
         }
-        if (cur_avatar_status.weapon_attack_phase == -1) {
+        if (cur_avatar_status.weapon_attack_phase == KF_WEAPON_ATTACK_INACTIVE) {
             break;
         }
         angle = vector_xz_to_angle(cur_avatar_status.camera_position.vx - actor->position.vx,
@@ -643,6 +650,20 @@ typedef void (*KfMagicRecipientCallback)(KfActor *actor, s32 amount,
     u16 magic_06, u16 magic_08, u16 magic_0a, u16 magic_0c,
     u16 magic_0e, u16 magic_10, u16 magic_12, u16 magic_14);
 
+/* state_70.signed_state while the target type is KF_ACTOR_TARGET_19. */
+enum {
+    ACTOR_WEAPON_REACT_STATE_LEAD_IN = 0,
+    ACTOR_WEAPON_REACT_STATE_AWAIT_WEAPON_IDLE = 16,
+    ACTOR_WEAPON_REACT_STATE_FINISH = 32,
+};
+
+/* state_70.signed_state while the target type is KF_ACTOR_TARGET_21. */
+enum {
+    ACTOR_AMBUSH_STATE_WAIT_FOR_PLAYER = 0,
+    ACTOR_AMBUSH_STATE_EMERGE = 1,
+    ACTOR_AMBUSH_STATE_HOLD_TIMER = 2,
+};
+
 ADDRESS(0x8003a9cc, 0x684)
 void actor_apply_magic_to_actor(s32 actor_index, u16 power, u16 magic_06,
     u16 magic_08, u16 magic_0a, u16 magic_0c, u16 magic_0e,
@@ -669,10 +690,10 @@ void actor_apply_magic_to_actor(s32 actor_index, u16 power, u16 magic_06,
         return;
     }
     if (actor->target_type == KF_ACTOR_TARGET_21) {
-        if (actor->state_70.signed_state != 0) {
+        if (actor->state_70.signed_state != ACTOR_AMBUSH_STATE_WAIT_FOR_PLAYER) {
             return;
         }
-        actor->state_70.signed_state = 1;
+        actor->state_70.signed_state = ACTOR_AMBUSH_STATE_EMERGE;
         return;
     }
     if (actor->target_type == KF_ACTOR_TARGET_26) {
@@ -713,7 +734,8 @@ void actor_apply_magic_to_actor(s32 actor_index, u16 power, u16 magic_06,
         }
     }
     if (mode == KF_ACTOR_DAMAGE_PHYSICAL) {
-        if (actor->target_type == KF_ACTOR_TARGET_19 && actor->state_70.signed_state == 0x10) {
+        if (actor->target_type == KF_ACTOR_TARGET_19 &&
+            actor->state_70.signed_state == ACTOR_WEAPON_REACT_STATE_AWAIT_WEAPON_IDLE) {
             goto update_motion;
         }
     } else if (mode == KF_ACTOR_DAMAGE_MAGIC) {
@@ -1327,6 +1349,12 @@ KF_ENUM_PARAM(KfCollisionHitFlags, s32) actor_move_with_collision(SVECTOR *motio
     return result;
 }
 
+/* motion.ballistic.phase: flight step counter, cleared when the flight ends. */
+enum {
+    ACTOR_BALLISTIC_PHASE_RESET = 0,
+    ACTOR_BALLISTIC_PHASE_LAUNCH = 1,
+};
+
 ADDRESS(0x8003c258, 0x9c)
 s32 actor_start_ballistic_motion(KF_ENUM_PARAM(KfTrajectoryMode, s32) mode, s32 target_x,
     s32 target_y, s32 target_z, s32 trajectory_parameter, s32 trajectory_speed)
@@ -1341,7 +1369,7 @@ s32 actor_start_ballistic_motion(KF_ENUM_PARAM(KfTrajectoryMode, s32) mode, s32 
         return KF_ENUM_ENCODE(s32, KF_TRAJECTORY_UNREACHABLE);
     }
     actor->vertical_motion_state = KF_ACTOR_VERTICAL_MOTION_BALLISTIC;
-    actor->motion.ballistic.phase = 1;
+    actor->motion.ballistic.phase = ACTOR_BALLISTIC_PHASE_LAUNCH;
     actor->ballistic_acceleration = trajectory_parameter;
     actor->ballistic_origin_y = actor->position.vy;
     return result;
@@ -1459,7 +1487,7 @@ reset_vertical_motion_state:
                           0x1000, 10, &actor->position);
         }
         actor->vertical_motion_state = KF_ACTOR_VERTICAL_MOTION_VELOCITY;
-        actor->motion.ballistic.phase = 0;
+        actor->motion.ballistic.phase = ACTOR_BALLISTIC_PHASE_RESET;
         return;
     }
     case KF_ACTOR_VERTICAL_MOTION_SUSPENDED:
@@ -1817,6 +1845,11 @@ enum {
     ACTOR_SCRIPT_TWO_VERTEX_EFFECT = 0x8004
 };
 
+/* record->phase of the KF_EFFECT_KIND_29 and KF_EFFECT_KIND_31 records spawned here. */
+enum {
+    ACTOR_AIMED_EFFECT_PHASE_INITIAL = 0,
+};
+
 /* The script gives either three signed coordinates, two vertex indices and a
  * blend fraction, or one vertex index. The final pointer is used by the
  * coordinate form when an effect kind consumes an extra script halfword. */
@@ -2103,7 +2136,7 @@ void actor_dispatch_group_effect(KF_ENUM_PARAM(KfEffectKind, s32) kind, s32 dama
         if (effect != NULL) {
             effect->cache_tail.payload.ballistic.origin_y = position.vy;
             effect->updates_remaining = 0x32;
-            effect->phase = 0;
+            effect->phase = ACTOR_AIMED_EFFECT_PHASE_INITIAL;
         }
         break;
     default:
@@ -2176,20 +2209,6 @@ enum {
     ACTOR_PARTNER_TURN_STATE_UNWIND = 3,
 };
 
-/* state_70.signed_state while the target type is KF_ACTOR_TARGET_19. */
-enum {
-    ACTOR_WEAPON_REACT_STATE_LEAD_IN = 0,
-    ACTOR_WEAPON_REACT_STATE_AWAIT_WEAPON_IDLE = 16,
-    ACTOR_WEAPON_REACT_STATE_FINISH = 32,
-};
-
-/* state_70.signed_state while the target type is KF_ACTOR_TARGET_21. */
-enum {
-    ACTOR_AMBUSH_STATE_WAIT_FOR_PLAYER = 0,
-    ACTOR_AMBUSH_STATE_EMERGE = 1,
-    ACTOR_AMBUSH_STATE_HOLD_TIMER = 2,
-};
-
 /* state_70.signed_state while the target type is KF_ACTOR_TARGET_26. */
 enum {
     ACTOR_RISE_STATE_AWAIT_OBJECT = 0,
@@ -2201,6 +2220,31 @@ enum {
     ACTOR_RETURN_STATE_MOVE_HOME = 0,
     ACTOR_RETURN_STATE_TURN_HOME_YAW = 1,
     ACTOR_RETURN_STATE_RESIZE = 2,
+};
+
+/* state_70.signed_state while the target type is KF_ACTOR_TARGET_13 or KF_ACTOR_TARGET_17. */
+enum {
+    ACTOR_TRACK_STATE_FACE_PLAYER = 0,
+    ACTOR_TRACK_STATE_FACE_AWAY = 1,
+};
+
+/* state_70.signed_state while the target type is KF_ACTOR_TARGET_20. */
+enum {
+    ACTOR_PACE_STATE_DONE = 0,
+    ACTOR_PACE_STATE_LAST_PASS = 1,
+};
+
+/* For KF_ACTOR_TARGET_23 and KF_ACTOR_TARGET_25, state_70.signed_state holds the
+ * animation phase of the next cue; it restarts here after the last one. */
+enum {
+    ACTOR_REPEATED_ATTACK_FIRST_CUE_PHASE = 0,
+    ACTOR_SCRIPT_FIRST_CUE_PHASE = 0,
+};
+
+/* tail_72.signed_state countdown start values, decremented in case29_shared_motion. */
+enum {
+    ACTOR_RISE_DESCEND_TIMER_START = 8,
+    ACTOR_ASCENDING_SPIN_TIMER_START = 16,
 };
 
 ADDRESS(0x8003debc, 0x248c)
@@ -2268,10 +2312,10 @@ void actor_update_behavior(void)
         if (actor->target_action_state == KF_ACTOR_TARGET_ACTION_ENTRY) {
             actor->target_action_state = KF_ACTOR_TARGET_ACTION_RETARGET_BLOCKED;
             actor_set_animation(target->animation_id);
-            actor->state_70.signed_state = 0;
+            actor->state_70.signed_state = ACTOR_DEATH_STATE_ANIMATE;
             actor->flags &= ~KF_ACTOR_FLAG_MAP_OBJECT_ATTACHED;
         }
-        if (actor->state_70.signed_state == 0) {
+        if (actor->state_70.signed_state == ACTOR_DEATH_STATE_ANIMATE) {
             if (actor->animation_phase >= 0x400 &&
                 (actor->flags & KF_ACTOR_FLAG_EFFECT_ANIMATION_HOLD) != KF_ACTOR_FLAGS_NONE) {
                 break;
@@ -2304,12 +2348,12 @@ void actor_update_behavior(void)
             }
             if (actor->animation_phase >= KF_ACTOR_ANIMATION_PHASE_MAX ||
                 target->animation_step == 0) {
-                actor->state_70.signed_state = 15;
+                actor->state_70.signed_state = ACTOR_DEATH_STATE_ANIMATION_END;
             }
         } else {
             s32 current_state = actor->state_70.signed_state;
 
-            if (current_state == 99) {
+            if (current_state == ACTOR_DEATH_STATE_PARKED) {
                 break;
             }
             actor->state_70.signed_state++;
@@ -2508,7 +2552,7 @@ void actor_update_behavior(void)
         if (actor->target_action_state == KF_ACTOR_TARGET_ACTION_ENTRY) {
             actor->target_action_state = KF_ACTOR_TARGET_ACTION_RETARGET_BLOCKED;
             actor_set_animation_if_changed(target->animation_id);
-            actor->state_70.signed_state = 0;
+            actor->state_70.signed_state = ACTOR_TRACK_STATE_FACE_PLAYER;
         }
         delta_x = cur_avatar_status.camera_position.vx - actor->position.vx;
         delta_y = cur_avatar_status.camera_position.vy - actor->position.vy - 1600;
@@ -2521,13 +2565,13 @@ void actor_update_behavior(void)
             actor->tail_72.angles.x = 512;
         }
         if (distance >= target->word_16.value) {
-            actor->state_70.signed_state = 0;
+            actor->state_70.signed_state = ACTOR_TRACK_STATE_FACE_PLAYER;
             actor->target_action_state = KF_ACTOR_TARGET_ACTION_RETARGET_ALLOWED;
         } else if (distance <= target->word_14.value) {
-            actor->state_70.signed_state = 1;
+            actor->state_70.signed_state = ACTOR_TRACK_STATE_FACE_AWAY;
             actor->target_action_state = KF_ACTOR_TARGET_ACTION_RETARGET_BLOCKED;
         }
-        if (actor->state_70.signed_state == 0) {
+        if (actor->state_70.signed_state == ACTOR_TRACK_STATE_FACE_PLAYER) {
             actor_turn_and_move_along_euler_angles(&actor->tail_72.angles, target->word_0c.value,
                           target->word_0e.value,
                           group->movement_step,
@@ -2699,7 +2743,7 @@ void actor_update_behavior(void)
         if (actor_animation_crossed_phase(actor, actor->state_70.signed_state)) {
             actor->state_70.signed_state += target->repeated_attack_phase_step;
             if (target->word_26.unsigned_value < actor->state_70.signed_state) {
-                actor->state_70.signed_state = 0;
+                actor->state_70.signed_state = ACTOR_REPEATED_ATTACK_FIRST_CUE_PHASE;
             }
             actor_try_damage_player_in_cone(0, target->word_0e.bytes.low,
                            target->word_0e.bytes.high,
@@ -2939,7 +2983,7 @@ void actor_update_behavior(void)
             }
             break;
         case ACTOR_WEAPON_REACT_STATE_AWAIT_WEAPON_IDLE:
-            if (cur_avatar_status.weapon_attack_phase == -1) {
+            if (cur_avatar_status.weapon_attack_phase == KF_WEAPON_ATTACK_INACTIVE) {
                 actor->state_70.signed_state = ACTOR_WEAPON_REACT_STATE_FINISH;
             }
             break;
@@ -2963,12 +3007,12 @@ void actor_update_behavior(void)
                           target->word_10.value, 1000,
                           KF_ACTOR_MOVE_AVOID_LEDGE | KF_ACTOR_MOVE_SLIDE_KEEP_SPEED) !=
             KF_COLLISION_HIT_NONE) {
-            actor->state_70.signed_state = 1;
+            actor->state_70.signed_state = ACTOR_PACE_STATE_LAST_PASS;
         }
         actor_advance_animation_wrapped(actor, target->animation_step);
         if (actor->animation_phase >= KF_ACTOR_ANIMATION_PHASE_MAX - target->animation_step) {
             actor->state_70.signed_state--;
-            if (actor->state_70.signed_state == 0) {
+            if (actor->state_70.signed_state == ACTOR_PACE_STATE_DONE) {
                 actor->animation_phase = KF_ACTOR_ANIMATION_PHASE_MAX;
                 actor_reset_target_and_reselect();
             }
@@ -3055,7 +3099,7 @@ void actor_update_behavior(void)
                 break;
             }
             actor->state_70.signed_state = ACTOR_RISE_STATE_DESCEND;
-            actor->tail_72.signed_state = 8;
+            actor->tail_72.signed_state = ACTOR_RISE_DESCEND_TIMER_START;
             actor->collision_radius = group->collision_radius;
             actor->collision_height = group->collision_height;
             actor->position.vy += 2048;
@@ -3091,7 +3135,7 @@ void actor_update_behavior(void)
             actor->state_70.signed_state += target->word_12.value;
             repeat = 1;
             if (target->word_10.value < actor->state_70.signed_state) {
-                actor->state_70.signed_state = 0;
+                actor->state_70.signed_state = ACTOR_SCRIPT_FIRST_CUE_PHASE;
             }
             cursor = ((const KfTargetCandidateAction25 *)target)->stream +
                 (s16)actor->tail_72.script.word_index;
@@ -3213,7 +3257,7 @@ void actor_update_behavior(void)
             actor->target_action_state = KF_ACTOR_TARGET_ACTION_RETARGET_BLOCKED;
             actor_set_animation(target->animation_id);
             actor_suspend_vertical_motion();
-            actor->tail_72.signed_state = 16;
+            actor->tail_72.signed_state = ACTOR_ASCENDING_SPIN_TIMER_START;
         }
         actor->rotation.x += 128;
         actor->rotation.y += 64;
@@ -3326,7 +3370,7 @@ void actor_update_behavior(void)
             if (other->target_type == KF_ACTOR_TARGET_3) {
                 actor->target_type = KF_ACTOR_TARGET_3;
                 actor->target_action_state = KF_ACTOR_TARGET_ACTION_RETARGET_BLOCKED;
-                actor->state_70.signed_state = 99;
+                actor->state_70.signed_state = ACTOR_DEATH_STATE_PARKED;
                 goto behavior_done;
             }
         } else {

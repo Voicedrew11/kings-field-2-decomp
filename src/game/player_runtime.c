@@ -1165,7 +1165,7 @@ void player_begin_weapon_attack(KF_ENUM_PARAM(KfAnimationClip, s32) mode)
     }
 
     cur_avatar_status.weapon_attack_mode = mode;
-    cur_avatar_status.weapon_attack_phase = 0;
+    cur_avatar_status.weapon_attack_phase = KF_WEAPON_ATTACK_START;
     if (mode == KF_ANIMATION_CLIP_FIRST) {
         cur_avatar_status.weapon_attack_window = cur_avatar_status.equipped_weapon_record->normal_attack_end_phase;
         cur_avatar_status.weapon_next_sound_phase = cur_avatar_status.equipped_weapon_record->normal_attack_sound_phase;
@@ -1543,7 +1543,9 @@ b32 player_meets_weapon_magic_power_requirement(void)
 
 enum {
     WEAPON_ATTACK_EVENT_DISABLED_PHASE = 5000,
-    WEAPON_EFFECT_HELD_PHASE = 99
+    WEAPON_EFFECT_HELD_PHASE = 99,
+    /* Phase a held weapon effect takes when the charged shot is released. */
+    WEAPON_EFFECT_LAUNCHED_PHASE = 0
 };
 
 ADDRESS(0x8002700c, 0x1c4)
@@ -1715,7 +1717,7 @@ void player_update_weapon_attack(void)
                 return;
             }
             if (effect != NULL) {
-                effect->phase = 0;
+                effect->phase = WEAPON_EFFECT_LAUNCHED_PHASE;
                 pitch_yaw_to_forward_vector(
                     (const struct KfEulerAngles *)&effect->rotation,
                     &effect->direction);
@@ -1725,7 +1727,7 @@ void player_update_weapon_attack(void)
                 effect->cache_tail.payload.ballistic.origin_y = effect->position.vy;
             }
             cur_avatar_status.weapon_attack_mode = KF_ANIMATION_CLIP_SECOND;
-            cur_avatar_status.weapon_attack_phase = 0;
+            cur_avatar_status.weapon_attack_phase = KF_WEAPON_ATTACK_START;
             return;
         case KF_ANIMATION_CLIP_SECOND:
             cur_avatar_status.weapon_attack_phase = phase + 400;
@@ -2842,7 +2844,7 @@ void player_handle_interaction_and_menu(void)
     }
     if (!((cur_avatar_status.pad_buttons.current & DAT_8006e56c)
           && !(cur_avatar_status.pad_buttons.halves.previous & DAT_8006e56c))
-        || cur_avatar_status.weapon_attack_phase != -1) {
+        || cur_avatar_status.weapon_attack_phase != KF_WEAPON_ATTACK_INACTIVE) {
         return;
     }
 
@@ -2911,7 +2913,7 @@ void player_apply_map_object_reaction(KfMapObject *object)
     cur_avatar_status.view_rotation_offset.components[1] = 0;
     cur_avatar_status.view_rotation_offset.components[2] = 0;
 
-    if (record->reaction_mode == 0) {
+    if (record->reaction_mode == KF_MAP_OBJECT_REACTION_ROTATE) {
         SVECTOR rotation;
         rotation.vx = (record->reaction_rotation_vector.vx * record->reaction_rotation_scale_q15) >> 15;
         rotation.vy = ((record->reaction_rotation_vector.vy * record->reaction_rotation_scale_q15) >> 15) + 512;
