@@ -111,6 +111,28 @@ enum {
     KF_MAP_OBJECT_CAPACITY = 0x18c
 };
 
+/* Map object sentinels and clearance sizes shared by the update and
+ * initialization code. */
+enum {
+    KF_MAP_OBJECT_ROTATION_CODE_NONE = 0xff,
+    KF_MAP_OBJECT_LINK_NONE = 0xff,
+    KF_MAP_OBJECT_HAZARD_NO_CELL_MARKER = 0xff,
+    KF_MAP_OBJECT_SIGNAL_NONE = 0xff,
+    KF_MAP_OBJECT_EXTRA_FILL_BYTE = 0xff,
+    KF_MAP_OBJECT_RESOURCE_LOCAL_X_UNSET = 0xff,
+    KF_MAP_OBJECT_RESOURCE_OFFSET_UNSET = 0x7f,
+    /* Keeps the fraction of a q12 phase, wrapping it to one unit. */
+    KF_MAP_OBJECT_PHASE_WRAP_MASK = KF_FIXED12_ONE - 1,
+    KF_MAP_OBJECT_SIGNAL_DOOR_CLEARANCE_RADIUS = 0x1130,
+    KF_MAP_OBJECT_DOOR_CLEARANCE_HEIGHT = 0xc80,
+    /* One height step, in world units, for a layer fade or a raised sequence unit. */
+    KF_MAP_OBJECT_RAISE_STEP = 0x100,
+    KF_MAP_LAYER_FADE_SHAPE_TRANSITION = 0x74,
+    KF_MAP_LAYER_FADE_SHAPE_HIDDEN = 0x75,
+    /* Render depth offset of a hinge's far side. */
+    KF_MAP_OBJECT_HINGE_DEPTH_FAR = 0xf0
+};
+
 /* Template collision byte, copied into the object: NEAR_CLIP picks the
  * clipping enqueue near the camera, RADIUS_VISIBLE tests a cell radius
  * instead of the object's own cell, ANY_ANGLE accepts interactions from

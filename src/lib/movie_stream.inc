@@ -37,7 +37,7 @@ void strInit(CdlLOC *loc)
     Rewind_Switch = KF_FALSE;
     DecDCToutCallback(strCallback);
     StSetRing(Ring_Buff, RING_SIZE);
-    StSetStream(0, 1, 0x0fffffff, NULL, NULL);
+    StSetStream(0, 1, STR_FRAME_ANY, NULL, NULL);
     strKickCD(loc);
 }
 

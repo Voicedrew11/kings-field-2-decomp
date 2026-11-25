@@ -106,6 +106,10 @@ void scene_pose_interpolate(
         ((delta) + (actor)->animation_phase) & KF_ACTOR_ANIMATION_PHASE_MAX; \
 } while (0)
 
+enum {
+    /* Clears the low bit of the step so the half step used by the phase tolerance is exact. */
+    ACTOR_ANIMATION_STEP_EVEN_MASK = 0xfffe
+};
 ADDRESS(0x80046de4, 0xa4)
 void actor_animation_seek_phase(KfActor *actor, KfAnimationClip state, u16 phase, s32 target_phase,
                                 s32 phase_step)
@@ -118,7 +122,7 @@ void actor_animation_seek_phase(KfActor *actor, KfAnimationClip state, u16 phase
         return;
     }
 
-    step = phase_step & 0xfffe;
+    step = phase_step & ACTOR_ANIMATION_STEP_EVEN_MASK;
     half_step = (u32)step >> 1;
     final_phase = target_phase - half_step;
     actor->animation_id = state;
@@ -354,11 +358,18 @@ void event_spawn_effect_object(KfMapObject *event, KF_ENUM_PARAM(KfObjectId, s32
                                                          KF_MAP_OBJECT_EVENT_POOL_SIZE, -1);
 
     /* The byte store wraps pool slots 0x17c..0x18b to offsets 0..15. */
-    event->tail.event_effect.effect_object_index = (object - map_objects_slots.objects) - 0x7c;
+    event->tail.event_effect.effect_object_index = (object - map_objects_slots.objects) - (KF_MAP_OBJECT_EVENT_POOL_FIRST - (1 << 8));
     object->object_id = object_id;
     object->tail.fields.unknown_38 = KF_MAP_OBJECT_EVENT_DISARMED;
 }
 
+enum {
+    /* Control byte of an object slot with no saved object: the low byte of KF_EVENT_CONTROL_OBJECT_NONE. */
+    EVENT_CONTROL_OBJECT_LOW_NONE = KF_EVENT_CONTROL_OBJECT_NONE & 0xff,
+    /* Scene sound cue and its volume. */
+    EVENT_SCENE_SOUND_ID = 0x8009,
+    EVENT_SCENE_SOUND_VOLUME = 0x6e
+};
 ADDRESS(0x800474d0, 0xc54)
 void event_scene_command_dispatch(const VECTOR *position,
                                   const KfPlayerViewRotation *rotation,
@@ -463,7 +474,7 @@ transition_action: {
 
         /* The retail gate checks only the low byte of the saved object index. */
         if (asset_status.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION] == 7 ||
-            cur_evt_state.control.bytes[object_control_offset] == 0xff ||
+            cur_evt_state.control.bytes[object_control_offset] == EVENT_CONTROL_OBJECT_LOW_NONE ||
             cur_avatar_status.vitals.current_mp < 10) {
             break;
         }
@@ -505,8 +516,8 @@ transition_action: {
         cur_avatar_status.camera_rotation_target.angles[1] = yaw;
         cur_avatar_status.camera_rotation.angles[1] = yaw;
         render_frames_with_color_overlay(KF_COLOR_OVERLAY_ADD, KF_FIXED12_ONE, KF_FIXED12_ONE, 0);
-        if (scene_display_sys.asset_registry_entries[0x181] == NULL) {
-            resource_tmd_queue_read(KF_RESOURCE_ARCHIVE_MO, 0x101, 0x181);
+        if (scene_display_sys.asset_registry_entries[KF_MO_ON_DEMAND_MODEL_SLOT] == NULL) {
+            resource_tmd_queue_read(KF_RESOURCE_ARCHIVE_MO, KF_MO_ON_DEMAND_MODEL_ENTRY, KF_MO_ON_DEMAND_MODEL_SLOT);
         }
         render_frames_with_color_overlay(KF_COLOR_OVERLAY_ADD, KF_FIXED12_ONE, 0, -256);
         render_set_color_overlay(KF_COLOR_OVERLAY_OFF, 0, 0, 0);
@@ -589,7 +600,7 @@ transition_action: {
             sound_position.vz = nearest->position.vz;
             sound_position.vy = nearest->position.vy +
                 4 * (nearest->position.vy - sound_status.listener_position.vy);
-            audio_play_spatial_range(0x8009, &nearest->position, 0x6e,
+            audio_play_spatial_range(EVENT_SCENE_SOUND_ID, &nearest->position, EVENT_SCENE_SOUND_VOLUME,
                                      25000, 29000, 0);
             cur_evt_state.interaction_handled = KF_TRUE;
         }
@@ -739,7 +750,7 @@ decay_update:
                 if (player_camera_within_map_region(object->position.vx >> KF_MAP_CELL_POSITION_SHIFT,
                                   object->position.vz >> KF_MAP_CELL_POSITION_SHIFT,
                                   object->tail.scene_inspect.region_width,
-                                  object->tail.scene_inspect.region_depth, 0x8000)) {
+                                  object->tail.scene_inspect.region_depth, KF_MAP_REGION_HEIGHT_ANY)) {
                     menu_show_transition_image(KF_RESOURCE_ARCHIVE_ITEM, object->tail.scene_inspect.transition_image_id + 510);
                     cur_evt_state.interaction_handled = KF_TRUE;
                     break;
@@ -812,17 +823,29 @@ void color_overlay_transition(s32 step, s32 first, s32 second, s32 third,
         current_first = fixed_lerp_q12(first, target_first, fraction);
         current_second = fixed_lerp_q12(second, target_second, fraction);
         current_third = fixed_lerp_q12(third, target_third, fraction);
-        accumulate_color_overlay(current_first, current_second, current_third, 0x800);
+        accumulate_color_overlay(current_first, current_second, current_third, KF_FIXED12_ONE / 2);
         render_game_frame(NULL, NULL);
         fraction += step;
     } while (fraction < KF_FIXED12_ONE);
 
     reset_collision_rows_and_overlay();
-    accumulate_color_overlay(target_first, target_second, target_third, 0x800);
+    accumulate_color_overlay(target_first, target_second, target_third, KF_FIXED12_ONE / 2);
     render_game_frame(NULL, NULL);
 }
 
 
+enum {
+    /* Camera yaw bounds used by the pose preview. */
+    EVENT_POSE_YAW_SNAP_LOW = 0x100,
+    EVENT_POSE_YAW_SNAP_HIGH = 0xf00,
+    /* Per-frame spin, and hold progress that saturates at EVENT_POSE_HOLD_LIMIT. */
+    EVENT_POSE_SPIN_STEP = 0x40,
+    EVENT_POSE_HOLD_STEP = 0x40,
+    EVENT_POSE_HOLD_LIMIT = 0x100,
+    /* Return-to-rest angle tolerance and per-frame rotation step. */
+    EVENT_POSE_RETURN_TOLERANCE = 0x80,
+    EVENT_POSE_RETURN_STEP = 0x100
+};
 ADDRESS(0x8004831c, 0x6e0)
 void event_map_object_interact(KfMapObject *object, ...)
 {
@@ -887,12 +910,12 @@ void event_map_object_interact(KfMapObject *object, ...)
 
     first_yaw = cur_avatar_status.camera_rotation.angles[0] & KF_ANGLE_WRAP_MASK;
     target_yaw = first_yaw;
-    if (first_yaw < 0x800) {
-        if (first_yaw > 0x100) {
-            target_yaw = 0x100;
+    if (first_yaw < KF_ANGLE_HALF_TURN) {
+        if (first_yaw > EVENT_POSE_YAW_SNAP_LOW) {
+            target_yaw = EVENT_POSE_YAW_SNAP_LOW;
         }
-    } else if (first_yaw < 0xf00) {
-        target_yaw = 0xf00;
+    } else if (first_yaw < EVENT_POSE_YAW_SNAP_HIGH) {
+        target_yaw = EVENT_POSE_YAW_SNAP_HIGH;
     }
     previous_buttons = PadRead(1);
     target_render_depth_offset = (-object_template->params.pose.depth_offset) / 4 - 200;
@@ -916,7 +939,7 @@ void event_map_object_interact(KfMapObject *object, ...)
         /* Retail copies the unassigned button word here. hold_steps starts at 0
            and the loop breaks only at 0x100, so this value is never observed. */
         for (fraction = 0, previous_buttons = buttons; fraction <= KF_FIXED12_ONE;
-             fraction += 0x200) {
+             fraction += KF_FIXED12_ONE / 8) {
             scene_pose_interpolate(object, &first_position,
                           &next_position, &first_angles, &next_angles,
                           fraction);
@@ -933,12 +956,12 @@ void event_map_object_interact(KfMapObject *object, ...)
 
     for (;;) {
         buttons = PadRead(1);
-        if (previous_buttons == 0 && buttons != 0 && hold_steps == 0x100) {
+        if (previous_buttons == 0 && buttons != 0 && hold_steps == EVENT_POSE_HOLD_LIMIT) {
             break;
         }
         previous_buttons = buttons;
-        object->rotation.vy += 0x40;
-        hold_steps = hold_steps < 0x100 ? hold_steps + 0x40 : hold_steps;
+        object->rotation.vy += EVENT_POSE_SPIN_STEP;
+        hold_steps = hold_steps < EVENT_POSE_HOLD_LIMIT ? hold_steps + EVENT_POSE_HOLD_STEP : hold_steps;
         cd_request_service_vab();
         cd_request_service_stream();
         render_game_frame(NULL, (const SVECTOR *)&cur_avatar_status.camera_rotation);
@@ -985,8 +1008,8 @@ button_pressed:
 return_pose:
     buttons = 0;
     while (!angle_within_tolerance(object->rotation.vy,
-                                   first_angles.vy, 0x80)) {
-        object->rotation.vy = (object->rotation.vy + 0x100) & KF_ANGLE_WRAP_MASK;
+                                   first_angles.vy, EVENT_POSE_RETURN_TOLERANCE)) {
+        object->rotation.vy = (object->rotation.vy + EVENT_POSE_RETURN_STEP) & KF_ANGLE_WRAP_MASK;
         render_game_frame(NULL, (const SVECTOR *)&cur_avatar_status.camera_rotation);
     }
     object->rotation.vy = first_angles.vy;
@@ -995,7 +1018,7 @@ interpolate_back:
     next_angles = object->rotation;
     next_position = object->position;
     target_yaw = cur_avatar_status.camera_rotation.angles[0];
-    for (fraction = 0; fraction <= KF_FIXED12_ONE; fraction += 0x200) {
+    for (fraction = 0; fraction <= KF_FIXED12_ONE; fraction += KF_FIXED12_ONE / 8) {
         scene_pose_interpolate(object, &next_position,
                       &first_position, &next_angles, &first_angles,
                       fraction);
@@ -1014,6 +1037,21 @@ finish:
     player_clear_motion();
 }
 
+enum {
+    /* Full-intensity colour channel, used as the third colour of each flash. */
+    EVENT_FLASH_CHANNEL_MAX = 0xff,
+    EVENT_HEAL_FLASH_FIRST = 0x80,
+    EVENT_HEAL_FLASH_SECOND = 0xa0,
+    EVENT_RESTORE_FLASH_FIRST = 0x80,
+    EVENT_RESTORE_FLASH_SECOND = 0xc8,
+    /* Actor overlap probe radius and height. */
+    EVENT_INTERACT_ACTOR_RADIUS = 0x578,
+    EVENT_INTERACT_ACTOR_HEIGHT = 0xc80,
+    /* Angle gate for hinged and sliding container interactions. */
+    EVENT_HINGED_CONTAINER_ANGLE_TOLERANCE = 0x155,
+    /* Added to a screen-image value to select the item archive image. */
+    EVENT_SCREEN_IMAGE_ID_BASE = 0x78
+};
 ADDRESS(0x800489fc, 0x660)
 void event_world_dispatch_interaction(const VECTOR *position,
                                       const KfPlayerViewRotation *rotation)
@@ -1028,12 +1066,12 @@ void event_world_dispatch_interaction(const VECTOR *position,
     probe.vz = position->vz;
     cur_evt_state.interaction_handled = KF_FALSE;
     if (collision_probe_forward_shape_0x20(&probe, (const struct KfEulerAngles *)rotation)) {
-        color_overlay_transition(0x400, 0, 0, 0, 0x80, 0xa0, 0xff);
+        color_overlay_transition(KF_FIXED12_ONE / 4, 0, 0, 0, EVENT_HEAL_FLASH_FIRST, EVENT_HEAL_FLASH_SECOND, EVENT_FLASH_CHANNEL_MAX);
         cur_avatar_status.vitals.current_hp = cur_avatar_status.vitals.maximum_hp;
-        color_overlay_transition(0x400, 0x80, 0xa0, 0xff, 0, 0, 0);
+        color_overlay_transition(KF_FIXED12_ONE / 4, EVENT_HEAL_FLASH_FIRST, EVENT_HEAL_FLASH_SECOND, EVENT_FLASH_CHANNEL_MAX, 0, 0, 0);
     }
 
-    object_index = actor_find_overlap_excluding_target_type3(probe.vx, probe.vy, probe.vz, 0x578, 0xc80);
+    object_index = actor_find_overlap_excluding_target_type3(probe.vx, probe.vy, probe.vz, EVENT_INTERACT_ACTOR_RADIUS, EVENT_INTERACT_ACTOR_HEIGHT);
     if (object_index != KF_ACTOR_INDEX_NONE) {
         KfActor *actor = &actor_status.actors[object_index];
         s32 angle = vector_xz_to_angle(actor->position.vx - probe.vx,
@@ -1078,7 +1116,7 @@ void event_world_dispatch_interaction(const VECTOR *position,
         case KF_MAP_OBJECT_OP_ITEM_CONTAINER:
         case KF_MAP_OBJECT_OP_HIDDEN_ITEM_CONTAINER: {
             u16 linked_index = object->tail.linked_property.linked_object_index;
-            if (linked_index == 0xffff ||
+            if (linked_index == KF_MAP_OBJECT_INDEX_NONE ||
                 objects[linked_index].object_id == KF_OBJECT_NONE) {
                 notify_enqueue(object->tail.notification.default_notification);
                 break;
@@ -1094,7 +1132,7 @@ void event_world_dispatch_interaction(const VECTOR *position,
                 linked->layer_mask = KF_MAP_LAYER_NONE;
                 linked->tail.fields.unknown_38 = KF_MAP_OBJECT_EVENT_DISARMED;
                 if (result_id == KF_OBJECT_NONE) {
-                    object->tail.linked_property.linked_object_index = 0xffff;
+                    object->tail.linked_property.linked_object_index = KF_MAP_OBJECT_INDEX_NONE;
                 }
             }
             break;
@@ -1144,7 +1182,7 @@ void event_world_dispatch_interaction(const VECTOR *position,
         case KF_MAP_OBJECT_OP_HINGED_CONTAINER:
         case KF_MAP_OBJECT_OP_SLIDING_CONTAINER:
             if (!angle_within_tolerance(rotation->angles[1],
-                                        object->rotation.vy + KF_ANGLE_HALF_TURN, 0x155)) {
+                                        object->rotation.vy + KF_ANGLE_HALF_TURN, EVENT_HINGED_CONTAINER_ANGLE_TOLERANCE)) {
                 break;
             }
             /* Kind five enters the same state handler without the angle gate. */
@@ -1152,7 +1190,7 @@ void event_world_dispatch_interaction(const VECTOR *position,
             switch (object->tail.marker.marker_id) {
             case KF_MAP_OBJECT_MARKER_TRIGGERED: {
                 u16 linked_index = object->tail.linked_property.linked_object_index;
-                if (linked_index != 0xffff) {
+                if (linked_index != KF_MAP_OBJECT_INDEX_NONE) {
                     goto check_linked_object;
                 }
             notify_six:
@@ -1189,12 +1227,12 @@ void event_world_dispatch_interaction(const VECTOR *position,
             break;
         case KF_MAP_OBJECT_OP_SCREEN_IMAGE:
         case KF_MAP_OBJECT_OP_HIDDEN_SCREEN_IMAGE:
-            menu_show_transition_image(KF_RESOURCE_ARCHIVE_ITEM, object->tail.pair_38.value_38 + 0x78);
+            menu_show_transition_image(KF_RESOURCE_ARCHIVE_ITEM, object->tail.pair_38.value_38 + EVENT_SCREEN_IMAGE_ID_BASE);
             break;
         case KF_MAP_OBJECT_OP_RESTORE_POINT:
-            color_overlay_transition(0x200, 0, 0, 0, 0x80, 0xc8, 0xff);
+            color_overlay_transition(KF_FIXED12_ONE / 8, 0, 0, 0, EVENT_RESTORE_FLASH_FIRST, EVENT_RESTORE_FLASH_SECOND, EVENT_FLASH_CHANNEL_MAX);
             cur_avatar_status.vitals.current_hp = cur_avatar_status.vitals.maximum_hp;
-            color_overlay_transition(0x200, 0x80, 0xc8, 0xff, 0, 0, 0);
+            color_overlay_transition(KF_FIXED12_ONE / 8, EVENT_RESTORE_FLASH_FIRST, EVENT_RESTORE_FLASH_SECOND, EVENT_FLASH_CHANNEL_MAX, 0, 0, 0);
             break;
         case KF_MAP_OBJECT_OP_SAVE_POINT:
             event_world_state_save_slot(asset_status.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION]);
@@ -1486,6 +1524,10 @@ void event_world_state_save_slot(s32 save_slot)
     }
 }
 
+enum {
+    /* Action timer set once a restored object's position is applied. */
+    EVENT_RESTORED_ACTION_TIMER = 0x63
+};
 ADDRESS(0x80049710, 0x378)
 void event_world_state_restore_slot(s32 save_slot)
 {
@@ -1564,7 +1606,7 @@ apply_position:
             object->position.vx = x << 2;
             object->position.vz = z << 2;
             object->position.vy = (s16)y;
-            object->action_timer = 0x63;
+            object->action_timer = EVENT_RESTORED_ACTION_TIMER;
             collision_sample_map_cell_layer(object->position.vx, object->position.vy,
                            object->position.vz);
             object->layer_mask = KF_COLLISION_CACHE_LAYER == 0 ? KF_MAP_LAYER_FIRST : KF_MAP_LAYER_SECOND;

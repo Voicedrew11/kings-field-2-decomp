@@ -90,6 +90,23 @@ void main(void)
     game_main_loop();
 }
 
+enum {
+    MAIN_CLEAR_RECT_WIDTH = 0x140,
+    MAIN_CLEAR_RECT_HEIGHT = 0x1e0,
+    MAIN_FLOOR_CAPTURE_1_X = 0x140,
+    MAIN_FLOOR_CAPTURE_1_Y = 0x100,
+    MAIN_FLOOR_CAPTURE_2_X = 0x198,
+    MAIN_FLOOR_CAPTURE_2_Y = 0x1c0,
+    MAIN_FLOOR_CAPTURE_3_X = 0x1a0,
+    MAIN_FLOOR_CAPTURE_3_Y = 0x1c0,
+    MAIN_FLOOR_CAPTURE_4_X = 0x150,
+    MAIN_FLOOR_CAPTURE_4_Y = 0x140,
+    MAIN_FLOOR_CAPTURE_5_X = 0x150,
+    MAIN_FLOOR_CAPTURE_5_Y = 0x100,
+    MAIN_FLOOR_CAPTURE_LARGE_SIZE = 0x40,
+    MAIN_FLOOR_CAPTURE_SMALL_SIZE = 0x20
+};
+
 ADDRESS(0x8001369c, 0x36c)
 void game_main_loop(void)
 {
@@ -131,7 +148,7 @@ void game_main_loop(void)
     scene_display_sys.collision_rotation_dirty = KF_TRUE;
     refresh_collision_row_rotations();
     startup_in_progress = KF_FALSE;
-    setRECT(&clear_rect, 0, 0, 0x140, 0x1e0);
+    setRECT(&clear_rect, 0, 0, MAIN_CLEAR_RECT_WIDTH, MAIN_CLEAR_RECT_HEIGHT);
     ClearImage(&clear_rect, 0, 0, 0);
     SsSetMVol(GAME_INITIAL_MASTER_VOLUME, GAME_INITIAL_MASTER_VOLUME);
     if (menu_card_browser() != -1) {
@@ -140,17 +157,17 @@ void game_main_loop(void)
     resource_run_initial_transition();
     player_sync_position_to_map();
 
-    floor_item_capture_image(0x140, 0x100, 0, 1, KF_FLOOR_ITEM_SCROLLING_IMAGE, 0x40, 0x40);
-    floor_item_capture_image(0x198, 0x1c0, 0, 1, KF_FLOOR_ITEM_SCROLLING_IMAGE, 0x20, 0x20);
-    floor_item_capture_image(0x1a0, 0x1c0, 0, 4, KF_FLOOR_ITEM_SCROLLING_IMAGE, 0x20, 0x20);
-    floor_item_capture_image(0x150, 0x140, 0, 2, KF_FLOOR_ITEM_SCROLLING_IMAGE, 0x40, 0x40);
-    floor_item_capture_image(0x150, 0x100, 0, 4, KF_FLOOR_ITEM_SCROLLING_IMAGE, 0x40, 0x40);
+    floor_item_capture_image(MAIN_FLOOR_CAPTURE_1_X, MAIN_FLOOR_CAPTURE_1_Y, 0, 1, KF_FLOOR_ITEM_SCROLLING_IMAGE, MAIN_FLOOR_CAPTURE_LARGE_SIZE, MAIN_FLOOR_CAPTURE_LARGE_SIZE);
+    floor_item_capture_image(MAIN_FLOOR_CAPTURE_2_X, MAIN_FLOOR_CAPTURE_2_Y, 0, 1, KF_FLOOR_ITEM_SCROLLING_IMAGE, MAIN_FLOOR_CAPTURE_SMALL_SIZE, MAIN_FLOOR_CAPTURE_SMALL_SIZE);
+    floor_item_capture_image(MAIN_FLOOR_CAPTURE_3_X, MAIN_FLOOR_CAPTURE_3_Y, 0, 4, KF_FLOOR_ITEM_SCROLLING_IMAGE, MAIN_FLOOR_CAPTURE_SMALL_SIZE, MAIN_FLOOR_CAPTURE_SMALL_SIZE);
+    floor_item_capture_image(MAIN_FLOOR_CAPTURE_4_X, MAIN_FLOOR_CAPTURE_4_Y, 0, 2, KF_FLOOR_ITEM_SCROLLING_IMAGE, MAIN_FLOOR_CAPTURE_LARGE_SIZE, MAIN_FLOOR_CAPTURE_LARGE_SIZE);
+    floor_item_capture_image(MAIN_FLOOR_CAPTURE_5_X, MAIN_FLOOR_CAPTURE_5_Y, 0, 4, KF_FLOOR_ITEM_SCROLLING_IMAGE, MAIN_FLOOR_CAPTURE_LARGE_SIZE, MAIN_FLOOR_CAPTURE_LARGE_SIZE);
 
     /* The fixed arena base and exit word have unresolved original owners. */
     memory_arena_initialize_blocks(KF_GAME_RESOURCE_ARENA_BASE,
                                    KF_GAME_RESOURCE_ARENA_CAPACITY);
     render_frames_with_color_overlay(KF_COLOR_OVERLAY_SUBTRACT | KF_COLOR_OVERLAY_FRONT,
-                                     0x1000, 0, -128);
+                                     KF_FIXED12_ONE, 0, -128);
     main_end_flag = GAME_MAIN_RUNNING;
     do {
         reset_collision_rows_and_overlay();

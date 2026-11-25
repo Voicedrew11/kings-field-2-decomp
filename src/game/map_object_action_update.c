@@ -145,6 +145,30 @@ enum {
     MAP_OBJECT_FALL_AND_TIP_DONE = 99,
 };
 
+enum {
+    MAP_OBJECT_LIFT_DOOR_CLEARANCE_RADIUS = 0x700,
+    MAP_OBJECT_HINGED_OPEN_ANGLE = 0xa00,
+    /* Hinge angle below which the container's event is armed. */
+    MAP_OBJECT_HINGED_ARM_ANGLE = 0xc00,
+    MAP_OBJECT_SLIDING_OPEN_ANGLE = 0xd44,
+    /* Scale applied to the one-off kick that starts a sliding container. */
+    MAP_OBJECT_SLIDING_KICK_SCALE = 0xa0,
+    MAP_OBJECT_SLIDING_SETTLE_STEP = 0x32,
+    MAP_OBJECT_CELL_COPY_SOUND = 0x44,
+    MAP_OBJECT_LAYER_FADE_SOUND = 0xe3,
+    MAP_OBJECT_HAZARD_WARNING_SOUND = 0x4e,
+    MAP_OBJECT_RESTORE_POINT_SOUND = 0xee,
+    /* scale_step_code value once a grown item has been released. */
+    MAP_OBJECT_GROW_STEP_DONE = 0xff,
+    MAP_OBJECT_FALL_SPIN_STEP = 0x100,
+    MAP_OBJECT_BOUNCE_SPIN_STEP = 0xa0,
+    MAP_OBJECT_WARP_SOUND = 0x14,
+    MAP_OBJECT_WARP_SOUND_VOLUME = 0x6e,
+    MAP_OBJECT_WARP_FADE_STEP = 0x100,
+    /* Event control bytes that a region action's operand indexes from. */
+    MAP_OBJECT_REGION_CONTROL_BASE = 0x40
+};
+
 ADDRESS(0x80037c0c, 0x1df4)
 void map_object_update_actions(void)
 {
@@ -178,7 +202,7 @@ void map_object_update_actions(void)
                     break;
                 case MAP_OBJECT_LIFT_DOOR_WAIT_CLEAR:
                     if (collision_query_world(object->position.vx, object->position.vy,
-                                       object->position.vz, 0x700, 0xc80,
+                                       object->position.vz, MAP_OBJECT_LIFT_DOOR_CLEARANCE_RADIUS, KF_MAP_OBJECT_DOOR_CLEARANCE_HEIGHT,
                                        KF_COLLISION_QUERY_ACTORS_INCLUDE_TYPE3 | KF_COLLISION_QUERY_PLAYER) == KF_COLLISION_HIT_NONE) {
                         map_cell_apply_rotated_pattern(object->layer_mask, object->position.vx,
                                       object->position.vz, object->rotation.vy,
@@ -244,7 +268,7 @@ void map_object_update_actions(void)
                     u8 phase_byte = object->tail.marker.marker_id;
                     if ((phase_byte < 150 || phase_byte >= 199 || !(phase_byte & 1)) &&
                         collision_query_world(object->position.vx, object->position.vy,
-                                       object->position.vz, 0x1130, 0xc80,
+                                       object->position.vz, KF_MAP_OBJECT_SIGNAL_DOOR_CLEARANCE_RADIUS, KF_MAP_OBJECT_DOOR_CLEARANCE_HEIGHT,
                                        KF_COLLISION_QUERY_ACTORS_INCLUDE_TYPE3 | KF_COLLISION_QUERY_PLAYER) == KF_COLLISION_HIT_NONE) {
                         object->action_timer = MAP_OBJECT_SIGNAL_DOOR_CLOSING;
                         map_cell_copy_rotated_fields(object->layer_mask,
@@ -294,17 +318,17 @@ void map_object_update_actions(void)
                         if ((u32)((bearing - object->extra_40.hinge.base_yaw) & KF_ANGLE_WRAP_MASK) <= KF_ANGLE_HALF_TURN) {
                             object->render_depth_offset = -200;
                         } else {
-                            object->render_depth_offset = 0xf0;
+                            object->render_depth_offset = KF_MAP_OBJECT_HINGE_DEPTH_FAR;
                         }
                     }
-                    if (object->tail.cell_copy.linked_object_index != 0xff) {
+                    if (object->tail.cell_copy.linked_object_index != KF_MAP_OBJECT_LINK_NONE) {
                         linked = &map_objects_slots.objects[object->tail.cell_copy.linked_object_index];
                         if ((linked->collision_flags & KF_MAP_OBJECT_FLAG_RENDERED) != KF_MAP_OBJECT_FLAGS_NONE) {
                             s32 bearing = vector_xz_to_angle(
                                 cur_avatar_status.camera_position.vx - linked->position.vx,
                                 cur_avatar_status.camera_position.vz - linked->position.vz);
                             if ((u32)((bearing - object->extra_40.hinge.base_yaw) & KF_ANGLE_WRAP_MASK) <= KF_ANGLE_HALF_TURN) {
-                                linked->render_depth_offset = 0xf0;
+                                linked->render_depth_offset = KF_MAP_OBJECT_HINGE_DEPTH_FAR;
                             } else {
                                 linked->render_depth_offset = -200;
                             }
@@ -384,7 +408,7 @@ void map_object_update_actions(void)
                 switch (object->action_timer) {
                 case MAP_OBJECT_HINGED_CONTAINER_INITIAL:
                     if (object->tail.marker.marker_id == KF_MAP_OBJECT_MARKER_TRIGGERED) {
-                        object->rotation.vx = 0xa00;
+                        object->rotation.vx = MAP_OBJECT_HINGED_OPEN_ANGLE;
                         object->action_timer = MAP_OBJECT_HINGED_CONTAINER_SETTLED;
                     } else {
                         map_object_set_property(object->tail.linked_property.linked_object_index, KF_MAP_OBJECT_PROPERTY_CLEAR_LAYER_AND_STATE);
@@ -402,15 +426,15 @@ void map_object_update_actions(void)
                     }
                     break;
                 case MAP_OBJECT_HINGED_CONTAINER_SWINGING: {
-                    s32 velocity = angle_velocity_step(0xa00, object->rotation.vx,
+                    s32 velocity = angle_velocity_step(MAP_OBJECT_HINGED_OPEN_ANGLE, object->rotation.vx,
                                                         object->extra_40.angular_velocity_x, 8, 4);
                     s32 angle = ((u16)object->rotation.vx + velocity) & KF_ANGLE_WRAP_MASK;
                     object->extra_40.angular_velocity_x = velocity;
                     object->rotation.vx = angle;
-                    if (angle < 0xc00) {
+                    if (angle < MAP_OBJECT_HINGED_ARM_ANGLE) {
                         map_object_set_property(object->tail.linked_property.linked_object_index, KF_MAP_OBJECT_PROPERTY_ARM_EVENT);
                     }
-                    if (object->extra_40.angular_velocity_x == 0 && object->rotation.vx == 0xa00) {
+                    if (object->extra_40.angular_velocity_x == 0 && object->rotation.vx == MAP_OBJECT_HINGED_OPEN_ANGLE) {
                         object->action_timer = MAP_OBJECT_HINGED_CONTAINER_SETTLED;
                     }
                     break;
@@ -423,9 +447,9 @@ void map_object_update_actions(void)
                 case MAP_OBJECT_SLIDING_CONTAINER_INITIAL:
                     if (object->tail.marker.marker_id == KF_MAP_OBJECT_MARKER_TRIGGERED) {
                         struct KfVecXZi displacement;
-                        object->rotation.vx = 0xd44;
+                        object->rotation.vx = MAP_OBJECT_SLIDING_OPEN_ANGLE;
                         angle_to_forward_xz(object->rotation.vy + KF_ANGLE_HALF_TURN, &displacement);
-                        vector2i_scale_shift11(0xa0, &displacement);
+                        vector2i_scale_shift11(MAP_OBJECT_SLIDING_KICK_SCALE, &displacement);
                         object->position.vx += displacement.x;
                         object->position.vz += displacement.z;
                         object->action_timer = MAP_OBJECT_SLIDING_CONTAINER_SETTLING;
@@ -457,8 +481,8 @@ void map_object_update_actions(void)
                     break;
                 }
                 case MAP_OBJECT_SLIDING_CONTAINER_SETTLING:
-                    object->rotation.vx = angle_approach(object->rotation.vx, 0xd44, 0x32);
-                    if (object->rotation.vx == 0xd44) {
+                    object->rotation.vx = angle_approach(object->rotation.vx, MAP_OBJECT_SLIDING_OPEN_ANGLE, MAP_OBJECT_SLIDING_SETTLE_STEP);
+                    if (object->rotation.vx == MAP_OBJECT_SLIDING_OPEN_ANGLE) {
                         object->action_timer = MAP_OBJECT_SLIDING_CONTAINER_SETTLED;
                     }
                     break;
@@ -579,11 +603,11 @@ void map_object_update_actions(void)
                     switch (object->tail.action_88_cell_copy.transition_mode) {
                     case KF_MAP_OBJECT_CELL_COPY_REVERT:
                         object->action_timer = MAP_OBJECT_CELL_COPY_TOGGLE_FADE_BACK;
-                        map_object_play_spatial_sound(object, 0x44);
+                        map_object_play_spatial_sound(object, MAP_OBJECT_CELL_COPY_SOUND);
                         break;
                     case KF_MAP_OBJECT_CELL_COPY_HOLD:
                         object->action_timer = MAP_OBJECT_CELL_COPY_TOGGLE_FADE_IN;
-                        map_object_play_spatial_sound(object, 0x44);
+                        map_object_play_spatial_sound(object, MAP_OBJECT_CELL_COPY_SOUND);
                         break;
                     default:
                         break;
@@ -641,8 +665,8 @@ void map_object_update_actions(void)
                         if (object->layer_mask != KF_MAP_LAYER_FIRST) {
                             layer = &cell->layer[1];
                         }
-                        layer->collision_shape_id = 0x74;
-                        map_object_play_spatial_sound(object, 0xe3);
+                        layer->collision_shape_id = KF_MAP_LAYER_FADE_SHAPE_TRANSITION;
+                        map_object_play_spatial_sound(object, MAP_OBJECT_LAYER_FADE_SOUND);
                     }
                     break;
                 }
@@ -656,7 +680,7 @@ void map_object_update_actions(void)
                     break;
                 case MAP_OBJECT_LAYER_FADE_IN_DELAY: {
                     if (object->extra_40.layer_fade.delay_frames_left-- == 0) {
-                        map_object_play_spatial_sound(object, 0xe3);
+                        map_object_play_spatial_sound(object, MAP_OBJECT_LAYER_FADE_SOUND);
                         object->action_timer = MAP_OBJECT_LAYER_FADE_IN;
                     }
                     break;
@@ -674,7 +698,7 @@ void map_object_update_actions(void)
                         if (object->layer_mask != KF_MAP_LAYER_FIRST) {
                             layer = &cell->layer[1];
                         }
-                        layer->collision_shape_id = 0x75;
+                        layer->collision_shape_id = KF_MAP_LAYER_FADE_SHAPE_HIDDEN;
                         object->layer_mask = KF_MAP_LAYER_NONE;
                     }
                     break;
@@ -816,7 +840,7 @@ void map_object_update_actions(void)
                                                           object_template->params.collision.sound_id);
                         } else if (object->phase_q12 >= 1500 &&
                                    object->phase_q12 < 1500 + increment) {
-                            map_object_play_spatial_sound(object, 0x4e);
+                            map_object_play_spatial_sound(object, MAP_OBJECT_HAZARD_WARNING_SOUND);
                         }
                     }
                     if (object->tail.collision_probe.marker_trigger_state == KF_MAP_OBJECT_PROBE_STOPPED &&
@@ -837,7 +861,7 @@ void map_object_update_actions(void)
                         }
                         map_object_play_spatial_sound(object,
                                                       object_template->params.collision.sound_id);
-                        object->phase_q12 &= 0xfff;
+                        object->phase_q12 &= KF_MAP_OBJECT_PHASE_WRAP_MASK;
                     }
                     {
                         VECTOR position;
@@ -904,7 +928,7 @@ void map_object_update_actions(void)
                     default:
                         goto no_sentinel;
                     }
-                    ((KfEventControlObjectSlot *)&cur_evt_state.control.bytes[sentinel_offset])->object_index = 0xffff;
+                    ((KfEventControlObjectSlot *)&cur_evt_state.control.bytes[sentinel_offset])->object_index = KF_EVENT_CONTROL_OBJECT_NONE;
                 no_sentinel:
                     object->tail.event_effect.pending_event_command = KF_OBJECT_NONE;
                     object->action_timer = 0;
@@ -935,7 +959,7 @@ void map_object_update_actions(void)
             case KF_MAP_OBJECT_OP_RESTORE_POINT:
                 if ((s32)(object->extra_40.next_sound_frame - cdrom_ctl.state.frame_count) < 0) {
                     object->extra_40.next_sound_frame = cdrom_ctl.state.frame_count + 30;
-                    map_object_play_spatial_sound(object, 0xee);
+                    map_object_play_spatial_sound(object, MAP_OBJECT_RESTORE_POINT_SOUND);
                 }
                 break;
 
@@ -947,7 +971,7 @@ void map_object_update_actions(void)
                     if (linked->position.vy != object->position.vy) {
                         s16 scale;
                         linked->rotation = object->rotation;
-                        if (object->tail.scale_link.scale_step_code == 0xff) {
+                        if (object->tail.scale_link.scale_step_code == MAP_OBJECT_GROW_STEP_DONE) {
                             goto start_action_19;
                         }
                         linked->object_id = KF_ITEM_FULL_RESTORE;
@@ -978,7 +1002,7 @@ void map_object_update_actions(void)
                     break;
                 }
             start_action_19:
-                object->tail.scale_link.scale_step_code = 0xff;
+                object->tail.scale_link.scale_step_code = MAP_OBJECT_GROW_STEP_DONE;
                 linked->tail.fields.unknown_38 = KF_MAP_OBJECT_EVENT_ARMED;
                 map_object_start_action_if_idle(linked, KF_MAP_OBJECT_OP_BOUNCE);
                 object->action_timer = MAP_OBJECT_GROW_ITEM_WAIT_PICKUP;
@@ -1011,8 +1035,8 @@ void map_object_update_actions(void)
                 case MAP_OBJECT_FALL_AND_TIP_TIPPING:
                     object->rotation.vz += object->tail.motion.motion_velocity.value;
                     object->tail.motion.motion_velocity.value += 16;
-                    if (object->rotation.vz >= 0x400) {
-                        object->rotation.vz = 0x400;
+                    if (object->rotation.vz >= KF_ANGLE_QUARTER_TURN) {
+                        object->rotation.vz = KF_ANGLE_QUARTER_TURN;
                         object->action_timer = MAP_OBJECT_FALL_AND_TIP_DONE;
                     }
                     break;
@@ -1026,7 +1050,7 @@ void map_object_update_actions(void)
                                                  object_template->interaction_height);
                     object->layer_mask = KF_COLLISION_CACHE_LAYER == 0 ? KF_MAP_LAYER_FIRST : KF_MAP_LAYER_SECOND;
                     object->position.vy += 20;
-                    object->rotation.vy = (object->rotation.vy + 0x100) & KF_ANGLE_WRAP_MASK;
+                    object->rotation.vy = (object->rotation.vy + MAP_OBJECT_FALL_SPIN_STEP) & KF_ANGLE_WRAP_MASK;
                     if (object->position.vy >= floor_y) {
                         object->position.vy = floor_y;
                         object->action_timer = 99;
@@ -1044,7 +1068,7 @@ void map_object_update_actions(void)
                     object->position.vy += object->tail.motion.motion_velocity.signed_value;
                     effect_spawn_at_lower_bound(&object->position, KF_FIXED12_ONE, 6000, 300);
                     object->rotation.vx = (object->rotation.vx +
-                        (object->action_timer == 0 ? 0xa0 : -0xa0)) & KF_ANGLE_WRAP_MASK;
+                        (object->action_timer == 0 ? MAP_OBJECT_BOUNCE_SPIN_STEP : -MAP_OBJECT_BOUNCE_SPIN_STEP)) & KF_ANGLE_WRAP_MASK;
                     object->tail.motion.motion_velocity.value += 30;
                     velocity = object->tail.motion.motion_velocity.signed_value;
                     if (velocity >= 0 && object->position.vy >= floor_y) {
@@ -1058,7 +1082,7 @@ void map_object_update_actions(void)
                     }
                 } else if (object->action_timer == 2) {
                     object->rotation.vx = angle_approach(object->rotation.vx,
-                                                         object->rotation.pad, 0xa0);
+                                                         object->rotation.pad, MAP_OBJECT_BOUNCE_SPIN_STEP);
                     if (object->rotation.vx == object->rotation.pad) {
                         object->action_timer = 99;
                     }
@@ -1083,7 +1107,7 @@ void map_object_update_actions(void)
                             map_object_apply_marker_signal(object->tail.region_action.operand);
                             break;
                         case KF_MAP_OBJECT_REGION_SET_CONTROL:
-                            cur_evt_state.control.bytes[0x40 + object->tail.region_action.operand] =
+                            cur_evt_state.control.bytes[MAP_OBJECT_REGION_CONTROL_BASE + object->tail.region_action.operand] =
                                 object->tail.region_action.assigned_value;
                             break;
                         }
@@ -1103,8 +1127,8 @@ void map_object_update_actions(void)
                     if (object->extra_40.bytes[0] == KF_MAP_OBJECT_LATCH_CLEAR) {
                         KfMapObject *candidate = map_objects_slots.objects;
                         s32 count = KF_MAP_OBJECT_CAPACITY;
-                        audio_play_sound(0x14, 0x6e);
-                        render_frames_with_color_overlay(KF_COLOR_OVERLAY_ADD, 0, KF_FIXED12_ONE, 0x100);
+                        audio_play_sound(MAP_OBJECT_WARP_SOUND, MAP_OBJECT_WARP_SOUND_VOLUME);
+                        render_frames_with_color_overlay(KF_COLOR_OVERLAY_ADD, 0, KF_FIXED12_ONE, MAP_OBJECT_WARP_FADE_STEP);
                         do {
                             if (candidate->action == KF_MAP_OBJECT_OP_WARP) {
                                 candidate->extra_40.bytes[0] = KF_MAP_OBJECT_LATCH_SET;
@@ -1127,13 +1151,13 @@ void map_object_update_actions(void)
                             cur_avatar_status.reaction_rotation_offset[1] +
                             cur_avatar_status.view_rotation_offset.components[1] +
                             cur_avatar_status.camera_yaw_roll_offsets[0];
-                        render_frames_with_color_overlay(KF_COLOR_OVERLAY_ADD, KF_FIXED12_ONE, 0, -0x100);
+                        render_frames_with_color_overlay(KF_COLOR_OVERLAY_ADD, KF_FIXED12_ONE, 0, -MAP_OBJECT_WARP_FADE_STEP);
                         render_set_color_overlay(KF_COLOR_OVERLAY_OFF, 0, 0, 0);
                     }
                 } else {
                     object->extra_40.bytes[0] = KF_MAP_OBJECT_LATCH_CLEAR;
                 }
-                object->phase_q12 = (object->phase_q12 + 64) & 0xfff;
+                object->phase_q12 = (object->phase_q12 + 64) & KF_MAP_OBJECT_PHASE_WRAP_MASK;
                 break;
 
             default:

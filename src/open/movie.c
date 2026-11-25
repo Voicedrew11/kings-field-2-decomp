@@ -16,7 +16,10 @@ enum {
     OPENING_FADE_OUT_START = 127,
     OPENING_MDEC_16BIT_MODE = 2,
     OPENING_MOVIE_DISPLAY_WIDTH = 320,
-    OPENING_TITLE_DISPLAY_WIDTH = 640
+    OPENING_TITLE_DISPLAY_WIDTH = 640,
+    OPENING_OP0_LAST_FRAME = 0x89,
+    OPENING_OP1_LAST_FRAME = 0x10c,
+    OPENING_OP2_LAST_FRAME = 0x43f
 };
 
 /* Results: the movie played through, PADstart skipped the sequence, or
@@ -56,11 +59,11 @@ s32 opening_play_movie(s32 movie)
         return;
     }
     if (movie == 0) {
-        movie_last_frame = 0x89;
+        movie_last_frame = OPENING_OP0_LAST_FRAME;
     } else if (movie == 1) {
-        movie_last_frame = 0x10c;
+        movie_last_frame = OPENING_OP1_LAST_FRAME;
     } else {
-        movie_last_frame = 0x43f;
+        movie_last_frame = OPENING_OP2_LAST_FRAME;
     }
     for (volume = 0; volume < OPENING_VOLUME_RAMP_END; volume += OPENING_VOLUME_STEP) {
         VSync(0);

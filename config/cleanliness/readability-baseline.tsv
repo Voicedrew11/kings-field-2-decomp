@@ -10,9 +10,9 @@ numbered functions	3
 placeholder parameters	0
 raw case labels	0
 raw state values	0
-raw bit masks	5
-raw hex literals	601
-literal element fills	27
+raw bit masks	0
+raw hex literals	0
+literal element fills	24
 gotos	237
 unlisted gotos	0
 long functions	27

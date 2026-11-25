@@ -63,7 +63,14 @@ enum {
     SWEEP_PHASES = 13,
     SWEEP_PHASE_DONE = 127,
     SWEEP_FRAME_LIMIT = 88,
-    SWEEP_OT_DEPTH = 200
+    SWEEP_OT_DEPTH = 200,
+    /* CLUT row (y) of the fade-in phase and of the sweep phases; each CLUT row is 64 entries. */
+    SWEEP_CLUT_ROW_FADE_IN = 0x1eb,
+    SWEEP_CLUT_ROW_PHASE = 0x1ec,
+    SWEEP_RECT_X = 0xc0,
+    SWEEP_BAR_Y = 0x66,
+    SWEEP_LABEL_Y = 0x8a,
+    SWEEP_LABEL_V = 0xe7
 };
 
 /* The sweep rows spell the CLUT as row * 64 + 1 (getClut(16, row)); retail
@@ -96,9 +103,9 @@ s32 func_80012638(s32 mode)
         for (i = 0; i < SWEEP_ROWS; i++) {
             primitive_buffer_begin_poly_ft4();
             setTPage(current_poly_ft4, 0, 1, 896, 0);
-            current_poly_ft4->clut = (0x1eb - i) * 64 + 1;
+            current_poly_ft4->clut = (SWEEP_CLUT_ROW_FADE_IN - i) * 64 + 1;
             setRGB0(current_poly_ft4, (u8)DAT_8003e718, (u8)DAT_8003e718, (u8)DAT_8003e718);
-            setXYWH(current_poly_ft4, 0xc0 + i * 2, 102 + i, 255, 36);
+            setXYWH(current_poly_ft4, SWEEP_RECT_X + i * 2, 102 + i, 255, 36);
             setUVWH(current_poly_ft4, 0, 160, 255, 72);
             primitive_buffer_commit_poly_ft4(SWEEP_OT_DEPTH - i);
         }
@@ -106,9 +113,9 @@ s32 func_80012638(s32 mode)
         for (i = 0; i < SWEEP_PHASES - DAT_8003e71c; i++) {
             primitive_buffer_begin_poly_ft4();
             setTPage(current_poly_ft4, 0, 1, 896, 0);
-            current_poly_ft4->clut = (0x1ec - DAT_8003e71c - i) * 64 + 1;
+            current_poly_ft4->clut = (SWEEP_CLUT_ROW_PHASE - DAT_8003e71c - i) * 64 + 1;
             setRGB0(current_poly_ft4, (u8)DAT_8003e718, (u8)DAT_8003e718, (u8)DAT_8003e718);
-            setXYWH(current_poly_ft4, 0xc0 + i * 2, 102 + i, 255, 36);
+            setXYWH(current_poly_ft4, SWEEP_RECT_X + i * 2, 102 + i, 255, 36);
             setUVWH(current_poly_ft4, 0, 160, 255, 72);
             primitive_buffer_commit_poly_ft4(SWEEP_OT_DEPTH - i);
         }
@@ -122,7 +129,7 @@ s32 func_80012638(s32 mode)
         setTPage(current_poly_ft4, 0, 1, 896, 0);
         current_poly_ft4->clut = getClut(16, 480);
         setRGB0(current_poly_ft4, (u8)DAT_8003e718, (u8)DAT_8003e718, (u8)DAT_8003e718);
-        setXYWH(current_poly_ft4, 0xc0, 0x66, 255, 36);
+        setXYWH(current_poly_ft4, SWEEP_RECT_X, SWEEP_BAR_Y, 255, 36);
         setUVWH(current_poly_ft4, 0, 160, 255, 72);
         primitive_buffer_commit_poly_ft4(SWEEP_OT_DEPTH);
         if (mode == 1 || DAT_8003e720 >= SWEEP_FRAME_LIMIT) {
@@ -139,8 +146,8 @@ s32 func_80012638(s32 mode)
                 i = DAT_8003e718;
             }
             setRGB0(current_poly_ft4, i, i, i);
-            setXYWH(current_poly_ft4, 0xc0, 0x8a, 255, 12);
-            setUVWH(current_poly_ft4, 0, 0xe7, 255, 24);
+            setXYWH(current_poly_ft4, SWEEP_RECT_X, SWEEP_LABEL_Y, 255, 12);
+            setUVWH(current_poly_ft4, 0, SWEEP_LABEL_V, 255, 24);
             primitive_buffer_commit_poly_ft4(SWEEP_OT_DEPTH);
         }
     }

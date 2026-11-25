@@ -5,12 +5,17 @@
 #include <kf/lib/math.h>
 #include <psyq/sdk.h>
 
-enum { AUDIO_WRAPPER_VOLUME = 100 };
+enum {
+    AUDIO_WRAPPER_VOLUME = 100,
+    AUDIO_SOUND_MARKER_CONSUMED = 0x40,
+    /* Object index that collision_probe_forward_shape_0x20 accepts. */
+    KF_COLLISION_PROBE_OBJECT_INDEX = 0x20
+};
 
 ADDRESS(0x80046b5c, 0x24)
 void audio_play_marker_consumed_sound(void)
 {
-    audio_play_sound(0x40, AUDIO_WRAPPER_VOLUME);
+    audio_play_sound(AUDIO_SOUND_MARKER_CONSUMED, AUDIO_WRAPPER_VOLUME);
 }
 
 ADDRESS(0x80046b80, 0x20)
@@ -29,5 +34,5 @@ b32 collision_probe_forward_shape_0x20(const VECTOR *position, const struct KfEu
     collision_probe_floor_height(x, position->vy, z,
         KF_PLAYER_COLLISION_RADIUS, KF_PLAYER_HEIGHT);
     selected_layer = KF_COLLISION_CACHE_SHAPE;
-    return selected_layer->object_index == 0x20;
+    return selected_layer->object_index == KF_COLLISION_PROBE_OBJECT_INDEX;
 }

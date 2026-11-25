@@ -17,6 +17,11 @@ typedef struct {
     KfBool isdone;
 } DECENV;
 
+/* StSetStream frame argument that accepts any frame of the stream. */
+enum {
+    STR_FRAME_ANY = 0x0fffffff
+};
+
 typedef char kf_decenv_size[sizeof(DECENV) == 0x30 ? 1 : -1];
 
 void strSetDefDecEnv(void);

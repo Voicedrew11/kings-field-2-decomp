@@ -113,6 +113,34 @@ void player_restore_equipment_effects(void)
     player_recalculate_combat_stats();
 }
 
+enum {
+    PLAYER_DAMAGE_Q16_HALF = 1 << 15,
+    PLAYER_VIEW_TARGET_MAX_DISTANCE = 0x55f0,
+    PLAYER_VIEW_TARGET_YAW_LIMIT = 0x200,
+    PLAYER_VIEW_TARGET_PITCH_LIMIT = 0x200,
+    /* KF_EFFECT_KIND_2 payload: max_scale, scale_step, radial_damage_parameter. */
+    PLAYER_MAGIC_KIND2_MAX_SCALE = KF_FIXED12_ONE,
+    PLAYER_MAGIC_KIND2_SCALE_STEP = KF_FIXED12_ONE / 16,
+    PLAYER_MAGIC_KIND2_RADIAL_DAMAGE = KF_FIXED12_ONE,
+    PLAYER_VERTICAL_IMPACT_DIVISOR = 0x1ccf0,
+    PLAYER_MAGIC_ATTACK_MASK_FULL = 0xffff,
+    PLAYER_DARKNESS_PHASE_SCALE = 0xc00,
+    PLAYER_DARKNESS_FILTER_ANGLE = 0xef9,
+    PLAYER_MAGIC_TINT_PHASE_SCALE = 0xe10,
+    PLAYER_PARALYSIS_OVERLAY_SCALE = 3 * KF_FIXED12_ONE / 4,
+    PLAYER_RESET_CAMERA_HEIGHT = 0x2480,
+    PLAYER_RESET_CAMERA_X = 0x1e000,
+    PLAYER_RESET_CAMERA_Z = 0x22000,
+    PLAYER_RELOAD_OPTIONAL_RESOURCE = 0x43,
+    PLAYER_STATUS_TEXTURE_X = 0x240,
+    PLAYER_STATUS_TEXTURE_UPPER_Y = 0x103,
+    PLAYER_STATUS_TEXTURE_LOWER_Y = 0x106,
+    PLAYER_CURSE_PHASE_SCALE = 0xc00,
+    PLAYER_CURSE_OVERLAY_RED = 0x46,
+    PLAYER_CURSE_OVERLAY_GREEN = 0x46,
+    PLAYER_OBJECT31_FILTER_AMOUNT = 0x800
+};
+
 ADDRESS(0x80024154, 0x208)
 void player_reload_map_resources(
     s32 first, s32 second, s32 third, s32 fourth, s32 fifth, s32 optional_resource)
@@ -155,8 +183,8 @@ void player_reload_map_resources(
     player_sync_position_to_map();
     reset_collision_rows_and_overlay();
     render_frames_with_color_overlay(KF_COLOR_OVERLAY_SUBTRACT | KF_COLOR_OVERLAY_FRONT, KF_FIXED12_ONE, KF_FIXED12_ONE, 0);
-    if (scene_display_sys.asset_registry_entries[0x181] == NULL) {
-        resource_tmd_queue_read(KF_RESOURCE_ARCHIVE_MO, 0x101, 0x181);
+    if (scene_display_sys.asset_registry_entries[KF_MO_ON_DEMAND_MODEL_SLOT] == NULL) {
+        resource_tmd_queue_read(KF_RESOURCE_ARCHIVE_MO, KF_MO_ON_DEMAND_MODEL_ENTRY, KF_MO_ON_DEMAND_MODEL_SLOT);
     }
     cd_request_wait_idle();
     render_frames_with_color_overlay(KF_COLOR_OVERLAY_SUBTRACT | KF_COLOR_OVERLAY_FRONT, KF_FIXED12_ONE, 0, -128);
@@ -797,7 +825,7 @@ void player_apply_damage(u16 damage0, u16 damage1, u16 damage2, u16 damage_flags
         cur_avatar_status.physical_power, cur_avatar_status.combat_components[7], damage6);
     total += player_calculate_damage_component(
         cur_avatar_status.physical_power, cur_avatar_status.combat_components[8], damage7);
-    total = (scale_q16 * total + 0x8000) >> 16;
+    total = (scale_q16 * total + PLAYER_DAMAGE_Q16_HALF) >> 16;
     damage_loss = multiplier_tenths * total / 10;
     player_apply_damage_reaction(origin, damage_loss, flags);
 }
@@ -1207,8 +1235,8 @@ KfActor *player_probe_view_target_and_vectors(s32 scale, VECTOR *position, SVECT
 
     actor = actor_find_best_in_cone(&cur_avatar_status.camera_position,
                           cur_avatar_status.camera_rotation.angles[1],
-                          cur_avatar_status.camera_rotation.angles[0], 0x55f0,
-                          0x200, 0x200, distance, 0);
+                          cur_avatar_status.camera_rotation.angles[0], PLAYER_VIEW_TARGET_MAX_DISTANCE,
+                          PLAYER_VIEW_TARGET_YAW_LIMIT, PLAYER_VIEW_TARGET_PITCH_LIMIT, distance, 0);
     actor_status.player_view_target = actor;
     if (actor != NULL) {
         target = actor_find_target_of_type(&actor_status.target_groups[actor->group_index],
@@ -1264,7 +1292,7 @@ emit_simple_effect:
     case KF_EFFECT_KIND_2:
         effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS_AND_PLAYER,
                                 effect_id, &cur_avatar_status.camera_position,
-                       NULL, 0x1000, 0x100, 0x1000);
+                       NULL, PLAYER_MAGIC_KIND2_MAX_SCALE, PLAYER_MAGIC_KIND2_SCALE_STEP, PLAYER_MAGIC_KIND2_RADIAL_DAMAGE);
         break;
     case KF_EFFECT_KIND_3:
         actor = player_probe_view_target_and_vectors(5000, &position, &direction, &distance);
@@ -2281,7 +2309,7 @@ void player_update_vertical_motion(void)
         player_play_landing_sound(cur_avatar_status.vertical_velocity);
         if (cur_avatar_status.vertical_velocity >= 480) {
             impact = (cur_avatar_status.vertical_velocity * cur_avatar_status.vertical_velocity) >> 12;
-            player_apply_damage_reaction(NULL, (impact * impact * impact) / 0x1ccf0, 0);
+            player_apply_damage_reaction(NULL, (impact * impact * impact) / PLAYER_VERTICAL_IMPACT_DIVISOR, 0);
         }
         if ((collision_flags & KF_COLLISION_HIT_FLOOR) != KF_COLLISION_HIT_NONE) {
             cur_avatar_status.camera_position.vy = KF_COLLISION_CACHE_RESULT;
@@ -2668,7 +2696,7 @@ void player_update_actions_and_charge(void)
     s32 charge_gain;
     u8 timer;
 
-    player_magic_attack_masks[3] = 0xffff;
+    player_magic_attack_masks[3] = PLAYER_MAGIC_ATTACK_MASK_FULL;
     player_magic_attack_masks[0] = DAT_8006e568;
     player_magic_attack_masks[1] = DAT_8006e570;
     player_magic_attack_masks[2] = DAT_8006e574;
@@ -2779,7 +2807,7 @@ void player_update_actions_and_charge(void)
             goto cancel_weapon_attack;
         }
         cur_avatar_status.magic_attack_mask_cursor = attack_mask + 1;
-        if (attack_mask[1] == 0xffff) {
+        if (attack_mask[1] == PLAYER_MAGIC_ATTACK_MASK_FULL) {
             player_begin_weapon_attack(KF_ANIMATION_CLIP_SECOND);
             return;
         }
@@ -3090,12 +3118,12 @@ void player_update_frame(void)
     map_cell_add_layer_occupancy(cur_avatar_status.camera_position.vx,
                    cur_avatar_status.camera_position.vz, KF_PLAYER_COLLISION_RADIUS, -1);
     value = status_phase_step_scaled(&cur_avatar_status.darkness_phase,
-                           &cur_avatar_status.darkness_phase_limit, 64, 0xc00);
+                           &cur_avatar_status.darkness_phase_limit, 64, PLAYER_DARKNESS_PHASE_SCALE);
     if (value != -1) {
-        interpolate_collision_filter_rows(10, 10, 10, 0xef9, value);
+        interpolate_collision_filter_rows(10, 10, 10, PLAYER_DARKNESS_FILTER_ANGLE, value);
     }
     value = status_phase_step_scaled(&cur_avatar_status.magic_tint_phase,
-                           (u16 *)&cur_avatar_status.magic_tint_phase_limit, 64, 0xe10);
+                           (u16 *)&cur_avatar_status.magic_tint_phase_limit, 64, PLAYER_MAGIC_TINT_PHASE_SCALE);
     if (value != -1) {
         interpolate_collision_filter_rows(220, 220, 160, 18000, value);
     }
@@ -3165,7 +3193,7 @@ void player_update_frame(void)
         cur_avatar_status.turn_step_limit = 0;
         cur_avatar_status.paralysis_timer--;
         if ((cur_avatar_status.paralysis_timer & 3) == 0) {
-            accumulate_color_overlay(60, 30, 0, 0xc00);
+            accumulate_color_overlay(60, 30, 0, PLAYER_PARALYSIS_OVERLAY_SCALE);
         }
     }
     if (cur_avatar_status.weapon_guard_active != 0) {
@@ -3337,14 +3365,14 @@ update_reaction_pose:
                     cur_avatar_status.camera_rotation_target.angles[0] = 0;
                     cur_avatar_status.camera_rotation_target.angles[1] = KF_ANGLE_THREE_QUARTER_TURN;
                     cur_avatar_status.camera_rotation_target.angles[2] = 0;
-                    cur_avatar_status.camera_position.vy = -0x2480;
-                    cur_avatar_status.camera_position.vx = 0x1e000;
-                    cur_avatar_status.camera_position.vz = 0x22000;
+                    cur_avatar_status.camera_position.vy = -PLAYER_RESET_CAMERA_HEIGHT;
+                    cur_avatar_status.camera_position.vx = PLAYER_RESET_CAMERA_X;
+                    cur_avatar_status.camera_position.vz = PLAYER_RESET_CAMERA_Z;
                     cur_avatar_status.map_layer_index = 5;
                     event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_FULL_RESTORE)]--;
                     event_world_state_save_slot(asset_status.active_resource_ids[0]);
                     player_reset_status();
-                    player_reload_map_resources(1, 1, 1, 1, 1, 0x43);
+                    player_reload_map_resources(1, 1, 1, 1, 1, PLAYER_RELOAD_OPTIONAL_RESOURCE);
                 } else {
                     player_initialize_state();
                     event_state_initialize();
@@ -3385,17 +3413,17 @@ update_reaction_pose:
     }
     if (cur_avatar_status.map_marker_visual_effect_timer != 0) {
         if (cur_avatar_status.map_marker_visual_effect_timer == 1) {
-            MoveImage(&player_status_texture_row_0, 0x240, 0x103);
-            MoveImage(&player_status_texture_row_2, 0x240, 0x106);
+            MoveImage(&player_status_texture_row_0, PLAYER_STATUS_TEXTURE_X, PLAYER_STATUS_TEXTURE_UPPER_Y);
+            MoveImage(&player_status_texture_row_2, PLAYER_STATUS_TEXTURE_X, PLAYER_STATUS_TEXTURE_LOWER_Y);
             notify_enqueue(KF_NOTIFICATION_EFFECT_EXPIRED);
             cur_avatar_status.map_marker_visual_effect_timer = 0;
             map_object_refresh_cell_markers(KF_MAP_CELL_MARKER_PLACE);
         } else {
             if ((cur_avatar_status.map_marker_visual_effect_timer & 7) == 0) {
-                MoveImage(&player_status_texture_row_1, 0x240, 0x103);
+                MoveImage(&player_status_texture_row_1, PLAYER_STATUS_TEXTURE_X, PLAYER_STATUS_TEXTURE_UPPER_Y);
             }
             if ((cur_avatar_status.map_marker_visual_effect_timer & 7) == 4) {
-                MoveImage(&player_status_texture_row_3, 0x240, 0x106);
+                MoveImage(&player_status_texture_row_3, PLAYER_STATUS_TEXTURE_X, PLAYER_STATUS_TEXTURE_LOWER_Y);
             }
             if ((cur_avatar_status.map_marker_visual_effect_timer & 7) == 1) {
                 map_object_refresh_cell_markers(KF_MAP_CELL_MARKER_CLEAR);
@@ -3404,12 +3432,12 @@ update_reaction_pose:
         }
     }
     value = status_phase_step_scaled(&cur_avatar_status.curse_strength,
-                           &cur_avatar_status.curse_phase_limit, 64, 0xc00);
+                           &cur_avatar_status.curse_phase_limit, 64, PLAYER_CURSE_PHASE_SCALE);
     if (value != -1) {
         if (cur_avatar_status.curse_strength == 0) {
             player_recalculate_combat_stats();
         }
-        accumulate_color_overlay(0x46, 0x46, 30, value);
+        accumulate_color_overlay(PLAYER_CURSE_OVERLAY_RED, PLAYER_CURSE_OVERLAY_GREEN, 30, value);
     }
 
     cur_avatar_status.camera_rotation.angles[0] =
@@ -3475,7 +3503,7 @@ update_reaction_pose:
         player_dispatch_magic_effect(KF_EFFECT_KIND_11);
     }
     if (cur_avatar_status.equipped_body_id == KF_OBJECT_31) {
-        interpolate_collision_filter_rows(20, 20, 20, 5000, 0x800);
+        interpolate_collision_filter_rows(20, 20, 20, 5000, PLAYER_OBJECT31_FILTER_AMOUNT);
     }
     cur_avatar_status.equipment_effect_ticks++;
 }

@@ -230,6 +230,39 @@ enum {
     KF_MENU_NUMBER_COLUMN_WIDTH = 7
 };
 
+/* Menu text glyph codes: letters A to Z in order, then the blank cell. */
+enum {
+    KF_MENU_GLYPH_A = 0x00,
+    KF_MENU_GLYPH_B = 0x01,
+    KF_MENU_GLYPH_C = 0x02,
+    KF_MENU_GLYPH_D = 0x03,
+    KF_MENU_GLYPH_E = 0x04,
+    KF_MENU_GLYPH_F = 0x05,
+    KF_MENU_GLYPH_G = 0x06,
+    KF_MENU_GLYPH_H = 0x07,
+    KF_MENU_GLYPH_I = 0x08,
+    KF_MENU_GLYPH_J = 0x09,
+    KF_MENU_GLYPH_K = 0x0a,
+    KF_MENU_GLYPH_L = 0x0b,
+    KF_MENU_GLYPH_M = 0x0c,
+    KF_MENU_GLYPH_N = 0x0d,
+    KF_MENU_GLYPH_O = 0x0e,
+    KF_MENU_GLYPH_P = 0x0f,
+    KF_MENU_GLYPH_Q = 0x10,
+    KF_MENU_GLYPH_R = 0x11,
+    KF_MENU_GLYPH_S = 0x12,
+    KF_MENU_GLYPH_T = 0x13,
+    KF_MENU_GLYPH_U = 0x14,
+    KF_MENU_GLYPH_V = 0x15,
+    KF_MENU_GLYPH_W = 0x16,
+    KF_MENU_GLYPH_X = 0x17,
+    KF_MENU_GLYPH_Y = 0x18,
+    KF_MENU_GLYPH_Z = 0x19,
+    KF_MENU_GLYPH_SPACE = 0x7f,
+    /* Font cell index bits of a glyph code; the high bit is not part of it. */
+    KF_MENU_GLYPH_INDEX_MASK = 0x7f
+};
+
 typedef struct KfMenuPoint {
     s16 x;
     s16 y;

@@ -75,6 +75,11 @@ void cd_stream_limit_chunk(KfCdRequest *request)
     }
 }
 
+enum {
+    /* Image record whose first halfword is this value ends the image. */
+    CD_IMAGE_RECORD_END_MARKER = 0xffff
+};
+
 ADDRESS(0x80016fc8, 0x27c)
 void cd_request_service_stream(void)
 {
@@ -136,7 +141,7 @@ void cd_request_service_stream(void)
         }
 
         consumed += KF_CD_IMAGE_RECORD_HEADER_BYTES;
-        if (source[0] == 0xffff) {
+        if (source[0] == CD_IMAGE_RECORD_END_MARKER) {
             DrawSync(0);
             request->sector_count = 0;
             cd_request_advance(request);
@@ -550,10 +555,14 @@ enum {
     CD_SECTORS_PER_MINUTE = 60 * CD_SECTORS_PER_SECOND
 };
 
+enum {
+    CD_BCD_LOW_DIGIT_MASK = 0xf
+};
+
 ADDRESS(0x80017b1c, 0x20)
 s32 cd_bcd_to_int(u8 bcd)
 {
-    return (bcd >> 4) * 10 + (bcd & 0xf);
+    return (bcd >> 4) * 10 + (bcd & CD_BCD_LOW_DIGIT_MASK);
 }
 
 ADDRESS(0x80017b3c, 0x2c)
@@ -872,10 +881,15 @@ s32 cd_file_load_into(u_long *destination, const char *name, u32 size)
 
 /* Opens \CD\<name>;1 as archive SLOT: keeps its extent and copies the
  * sector-offset table out of sector 0. */
+enum {
+    /* Bytes the sector-offset table buffer reserves beyond one sector. */
+    CD_ARCHIVE_TABLE_EXTRA_BYTES = 0x40
+};
+
 ADDRESS(0x800185a0, 0xf0)
 void cd_archive_open(u16 slot, const char *name)
 {
-    u16 table[(KF_CD_SECTOR_BYTES + 0x40) / 2];
+    u16 table[(KF_CD_SECTOR_BYTES + CD_ARCHIVE_TABLE_EXTRA_BYTES) / 2];
     CdlFILE file;
     char path[CD_PATH_BYTES];
     KfCdArchive *archive = &cdrom_ctl.archives[slot];

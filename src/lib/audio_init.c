@@ -3,7 +3,8 @@
 
 enum {
     AUDIO_REVERB_DEPTH = 0x20,
-    AUDIO_SERIAL_VOLUME = 0x7f
+    AUDIO_SERIAL_VOLUME = 0x7f,
+    AUDIO_MASTER_VOLUME_MAX = 0x7f
 };
 
 /* US END links no sequence player, so only OPEN owns the table. */
@@ -26,7 +27,7 @@ void audio_initialize(void)
 #ifdef KF_END
     SsSetSerialAttr(SS_SERIAL_A, SS_MIX, SS_SON);
     SsSetSerialVol(SS_SERIAL_A, AUDIO_SERIAL_VOLUME, AUDIO_SERIAL_VOLUME);
-    SsSetMVol(0x7f, 0x7f);
+    SsSetMVol(AUDIO_MASTER_VOLUME_MAX, AUDIO_MASTER_VOLUME_MAX);
 #else
     SsSetTickMode(SS_TICK60);
     SsSetTableSize(audio_sequence_table, KF_AUDIO_SEQUENCE_CAPACITY, KF_AUDIO_TRACKS_PER_SEQUENCE);

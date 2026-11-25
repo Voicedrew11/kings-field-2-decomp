@@ -9,7 +9,9 @@
 #include "../lib/movie_stream_state.inc"
 
 enum {
-    ENDING_MDEC_16BIT_MODE = 2
+    ENDING_MDEC_16BIT_MODE = 2,
+    ENDING_ED0_LAST_FRAME = 0x6a2,
+    ENDING_ED1_LAST_FRAME = 0xa6d
 };
 
 RODATA(0x80011000, 0x2b)
@@ -35,7 +37,7 @@ void ending_play_movie(s32 movie)
         printf("\n__ file not found");
         return;
     }
-    movie_last_frame = movie != 0 ? 0xa6d : 0x6a2;
+    movie_last_frame = movie != 0 ? ENDING_ED1_LAST_FRAME : ENDING_ED0_LAST_FRAME;
     strSetDefDecEnv();
     strInit(&file.pos);
     strNextVlc();

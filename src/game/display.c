@@ -44,6 +44,47 @@ enum {
     KF_FOG_DISTANCE_MASK = 0x7fff
 };
 
+enum {
+    /* Fog near distances carry this flag above the 15-bit distance. */
+    KF_FOG_NEAR_FLAG = 0x8000,
+    /* GTE FLAG bit 12: IR0 (depth-cue factor) saturated. A projected vertex
+     * is kept only when this is the sole flag set. */
+    KF_GTE_FLAG_IR0_SATURATED = 0x1000,
+    KF_POLY_GT4_WORDS = 0x0c,
+    KF_POLY_GT3_WORDS = 0x09,
+    KF_TMD_MODE_FT4_SEMI_TRANSPARENT = KF_TMD_MODE_FT4 | KF_TMD_MODE_SEMI_TRANSPARENT,
+    KF_TMD_MODE_FT3_SEMI_TRANSPARENT = KF_TMD_MODE_FT3 | KF_TMD_MODE_SEMI_TRANSPARENT,
+    /* Ordering-table index wrap: the table has KF_MAP_OT_DEPTH_LIMIT slots. */
+    KF_ORDERING_TABLE_INDEX_MASK = KF_MAP_OT_DEPTH_LIMIT - 1,
+    KF_ORDERING_TABLE_LAST_INDEX = KF_MAP_OT_DEPTH_LIMIT - 1,
+    /* Map cell columns are carried as bytes. */
+    KF_MAP_CELL_COLUMN_MASK = 0xff,
+    /* Colour overlay and sliding panel texture: CLUT word, page, UV origin and size. */
+    KF_OVERLAY_CLUT = 0x7bdc,
+    KF_COLOR_OVERLAY_TEXTURE_U = 0x80,
+    KF_COLOR_OVERLAY_TEXTURE_V = 0xd0,
+    KF_COLOR_OVERLAY_TEXTURE_SIZE = 0xf,
+    KF_COLOR_OVERLAY_TPAGE = 0x17,
+    KF_ACCUMULATED_OVERLAY_TPAGE = 0x37,
+    KF_COLOR_OVERLAY_BACK_DEPTH = 0xc,
+    /* A light filter kind byte of 0xff leaves the override unset. */
+    KF_LIGHTING_FILTER_UNSET = 0xff,
+    KF_ACTOR_MODEL_REGISTRY_BASE = 0x80,
+    KF_ACTOR_MODEL_COUNT = 0x80,
+    KF_ACTOR_VAB_ENTRY = 0x20,
+    KF_ACTOR_VAB_COUNT = 0x40,
+    KF_MAP_OBJECT_MODEL_REGISTRY_BASE = 0x100,
+    KF_MAP_OBJECT_TMD_FLAG_ENTRY = 0x80,
+    KF_MAP_OBJECT_MODEL_COUNT = 0x140,
+    KF_AMBIENT_VAB_FLAG_ENTRY = 0x60,
+    KF_AMBIENT_VAB_SLOT_FIRST = 0x42,
+    KF_AMBIENT_VAB_SLOT_LIMIT = 0x82,
+    KF_AMBIENT_VAB_SLOT_COUNT = 0x40,
+    KF_EFFECT_MODEL_REGISTRY_BASE = 0x28,
+    KF_EFFECT_SCREEN_SPACE_DEPTH = 0x14,
+    KF_MENU_FADE_NEUTRAL_SHADE = 0x80
+};
+
 #define GRAPHICS scene_display_sys
 #define DISPLAY scene_display_sys.display_state
 
@@ -480,7 +521,7 @@ void tmd_project_vertices_with_fog(s32 count)
             projected++;
             vertex++;
         }
-    } else if (scene_display_sys.render_grid.fog_near_distance & 0x8000) {
+    } else if (scene_display_sys.render_grid.fog_near_distance & KF_FOG_NEAR_FLAG) {
         for (remaining--; remaining != -1; remaining--) {
             projected->sz = RotTransPers(vertex, (long *)projected,
                                          &perspective, &gte_flags);
@@ -522,7 +563,7 @@ void tmd_project_vertices_mark_clipped(s32 count)
         for (remaining--; remaining != -1; remaining--) {
             projected->sz = RotTransPers(vertex, (long *)projected,
                                          &perspective, &gte_flags);
-            if (gte_flags != 0x1000) {
+            if (gte_flags != KF_GTE_FLAG_IR0_SATURATED) {
                 projected->sz = -1;
             }
             projected->depth_cue = 0;
@@ -533,7 +574,7 @@ void tmd_project_vertices_mark_clipped(s32 count)
         for (remaining--; remaining != -1; remaining--) {
             projected->sz = RotTransPers(vertex, (long *)projected,
                                          &perspective, &gte_flags);
-            if (gte_flags != 0x1000) {
+            if (gte_flags != KF_GTE_FLAG_IR0_SATURATED) {
                 projected->sz = -1;
             }
             if (perspective >= 2800) {
@@ -1269,7 +1310,7 @@ void render_enqueue_map(u16 object_index)
             DpqColor(&shade, vb->depth_cue, &prim->packed.color1);
             DpqColor(&shade, vc->depth_cue, &prim->packed.color2);
             DpqColor(&shade, vd->depth_cue, &prim->packed.color3);
-            setlen(&prim->sdk, 0x0c);
+            setlen(&prim->sdk, KF_POLY_GT4_WORDS);
             prim->sdk.code = header.bytes.mode | KF_TMD_MODE_GT4;
             depth = ((va->sz + vb->sz + vc->sz + vd->sz) >> 2) +
                 KF_MAP_OT_DEPTH_BIAS;
@@ -1309,7 +1350,7 @@ void render_enqueue_map(u16 object_index)
             DpqColor(&shade, va->depth_cue, &prim->packed.color0);
             DpqColor(&shade, vb->depth_cue, &prim->packed.color1);
             DpqColor(&shade, vc->depth_cue, &prim->packed.color2);
-            setlen(&prim->sdk, 0x09);
+            setlen(&prim->sdk, KF_POLY_GT3_WORDS);
             prim->sdk.code = header.bytes.mode | KF_TMD_MODE_GT3;
             depth = (va->sz + vb->sz + vc->sz) / 3 + KF_MAP_OT_DEPTH_BIAS;
             if ((u32)depth < KF_MAP_OT_DEPTH_LIMIT) {
@@ -1385,7 +1426,7 @@ void render_enqueue_clipped_tmd_polygon(s32 vertex_count, SVECTOR *normal, u16 c
         if (depth < 16) {
             depth = 16;
         }
-        AddPrim((void *)&scene_display_sys.display_state.ordering_table[depth & 0x1fff],
+        AddPrim((void *)&scene_display_sys.display_state.ordering_table[depth & KF_ORDERING_TABLE_INDEX_MASK],
                 (void *)&packet->sdk);
 
         second = third;
@@ -1683,7 +1724,7 @@ void tmd_prepare_subdivided_object(KfTmdHeader *asset, s32 object_index, u8 *out
         /* Retail stores the header word twice before testing its mode. */
         word = *(u32 *)packet;
         word = *(u32 *)packet;
-        if (WORD_BYTE(3) == 0x2c || WORD_BYTE(3) == 0x2e) {
+        if (WORD_BYTE(3) == KF_TMD_MODE_FT4 || WORD_BYTE(3) == KF_TMD_MODE_FT4_SEMI_TRANSPARENT) {
             resource_copy_words((u32 *)out, (u32 *)packet, 8);
             word = *(u32 *)(packet + 20);
             SUBDIVIDE_CORNER(corners[0], 1);
@@ -1739,7 +1780,7 @@ void tmd_prepare_subdivided_object(KfTmdHeader *asset, s32 object_index, u8 *out
             output_bytes += 128;
             midpoint_count += 5;
             target->primitive_count += 3;
-        } else if (WORD_BYTE(3) == 0x24 || WORD_BYTE(3) == 0x26) {
+        } else if (WORD_BYTE(3) == KF_TMD_MODE_FT3 || WORD_BYTE(3) == KF_TMD_MODE_FT3_SEMI_TRANSPARENT) {
             resource_copy_words((u32 *)out, (u32 *)packet, 6);
             word = *(u32 *)(packet + 16);
             SUBDIVIDE_CORNER(corners[0], 1);
@@ -1936,7 +1977,7 @@ void render_map_cell_window(void)
             s32 x = start_x;
             s32 remaining_columns = KF_MAP_CELL_GRID_SIDE;
             do {
-                s32 column = x & 0xff;
+                s32 column = x & KF_MAP_CELL_COLUMN_MASK;
                 x++;
                 if ((u32)column < KF_MAP_WORLD_GRID_SIDE && *mask != KF_MAP_LAYER_NONE) {
                     render_map_cell_layers(column, row, *mask);
@@ -2048,7 +2089,7 @@ void render_sliding_panel_primary(void)
             y = 0;
         }
         render_textured_quad(0, y, 320, 240, 128, 192, 15, 15, KF_TEXTURED_QUAD_SEMI_TRANSPARENT, 55,
-                             0x7bdc, 60, 60, 60, 12);
+                             KF_OVERLAY_CLUT, 60, 60, 60, 12);
     }
 }
 
@@ -2063,7 +2104,7 @@ void render_sliding_panel_secondary(void)
             y = 0;
         }
         render_textured_quad(0, y, 320, 240, 144, 192, 15, 15, KF_TEXTURED_QUAD_SEMI_TRANSPARENT, 55,
-                             0x7bdc, 60, 60, 60, 12);
+                             KF_OVERLAY_CLUT, 60, 60, 60, 12);
     }
 }
 
@@ -2071,16 +2112,16 @@ ADDRESS(0x8003214c, 0xc0)
 void render_color_overlay(void)
 {
     if (scene_display_sys.color_overlay_control != KF_COLOR_OVERLAY_OFF) {
-        render_textured_quad(0, 0, 0x140, 0xf0,
-                             0x80, 0xd0, 0xf, 0xf, KF_TEXTURED_QUAD_SEMI_TRANSPARENT,
+        render_textured_quad(0, 0, KF_DISPLAY_WIDTH, KF_DISPLAY_HEIGHT,
+                             KF_COLOR_OVERLAY_TEXTURE_U, KF_COLOR_OVERLAY_TEXTURE_V, KF_COLOR_OVERLAY_TEXTURE_SIZE, KF_COLOR_OVERLAY_TEXTURE_SIZE, KF_TEXTURED_QUAD_SEMI_TRANSPARENT,
                              KF_GPU_TPAGE_ABR(scene_display_sys.color_overlay_control & KF_COLOR_OVERLAY_BLEND_MASK)
-                                 | 0x17,
-                             0x7bdc,
+                                 | KF_COLOR_OVERLAY_TPAGE,
+                             KF_OVERLAY_CLUT,
                              scene_display_sys.color_overlay_rgb[0],
                              scene_display_sys.color_overlay_rgb[1],
                              scene_display_sys.color_overlay_rgb[2],
                              (scene_display_sys.color_overlay_control & KF_COLOR_OVERLAY_FRONT) != KF_COLOR_OVERLAY_NO_FLAGS
-                                 ? 1 : 0xc);
+                                 ? 1 : KF_COLOR_OVERLAY_BACK_DEPTH);
     }
 }
 
@@ -2097,15 +2138,15 @@ ADDRESS(0x80032234, 0x138)
 void render_accumulated_color_overlay(void)
 {
     if (scene_display_sys.color_overlay_sample_count != 0) {
-        render_textured_quad(0, 0, 0x140, 0xf0,
-                      0x80, 0xd0, 0xf, 0xf, KF_TEXTURED_QUAD_SEMI_TRANSPARENT, 0x37, 0x7bdc,
+        render_textured_quad(0, 0, KF_DISPLAY_WIDTH, KF_DISPLAY_HEIGHT,
+                      KF_COLOR_OVERLAY_TEXTURE_U, KF_COLOR_OVERLAY_TEXTURE_V, KF_COLOR_OVERLAY_TEXTURE_SIZE, KF_COLOR_OVERLAY_TEXTURE_SIZE, KF_TEXTURED_QUAD_SEMI_TRANSPARENT, KF_ACCUMULATED_OVERLAY_TPAGE, KF_OVERLAY_CLUT,
                       *(s16 *)&scene_display_sys.color_overlay_red_sum /
                           scene_display_sys.color_overlay_sample_count,
                       *(s16 *)&scene_display_sys.color_overlay_green_sum /
                           scene_display_sys.color_overlay_sample_count,
                       *(s16 *)&scene_display_sys.color_overlay_blue_sum /
                           scene_display_sys.color_overlay_sample_count,
-                      0xc);
+                      KF_COLOR_OVERLAY_BACK_DEPTH);
     }
 }
 
@@ -2153,9 +2194,9 @@ void render_player_weapon(void)
     RotMatrix((SVECTOR *)&weapon->rotation_offset_x, &model);
     SetRotMatrix(&model);
     SetTransMatrix(&model);
-    asset_registry_select(0x20);
+    asset_registry_select(KF_PLAYER_WEAPON_ASSET_INDEX);
     object = tmd_get_object(0);
-    if (animation_prepare_asset_vertices(&cur_avatar_status.weapon_animation_cache, 0x20,
+    if (animation_prepare_asset_vertices(&cur_avatar_status.weapon_animation_cache, KF_PLAYER_WEAPON_ASSET_INDEX,
                       cur_avatar_status.weapon_attack_mode,
                       cur_avatar_status.weapon_attack_phase,
                       object->vertex_count) != 0) {
@@ -2256,7 +2297,7 @@ void render_world_model(KfMapLayerMask map_layer, u16 asset_index, const VECTOR 
         } else {
             fog_set_near(lighting->filter.angle);
         }
-        if (override->filter.kinds.types[0] != 0xff) {
+        if (override->filter.kinds.types[0] != KF_LIGHTING_FILTER_UNSET) {
             red = fixed_lerp_q12(lighting->filter.kinds.types[0],
                                 override->filter.kinds.types[0], lighting_blend);
             green = fixed_lerp_q12(lighting->filter.kinds.types[1],
@@ -2559,13 +2600,13 @@ void render_scene_and_update_resources(void)
             continue;
         }
 actor_visible:
-        if (resource_registry_get(actor->definition_id + 0x80) != NULL) {
+        if (resource_registry_get(actor->definition_id + KF_ACTOR_MODEL_REGISTRY_BASE) != NULL) {
             position = actor_resolve_group_position(actor, &actor_position);
             if ((actor->flags & KF_ACTOR_FLAG_RENDER_WITH_IDENTITY_MATRIX) != KF_ACTOR_FLAGS_NONE) {
                 rotation.z = 0;
                 rotation.y = 0;
                 rotation.x = 0;
-                render_world_model(actor->current_map_layer, actor->definition_id + 0x80,
+                render_world_model(actor->current_map_layer, actor->definition_id + KF_ACTOR_MODEL_REGISTRY_BASE,
                                &actor->position, &rotation, (SVECTOR *)&actor->model_scale_x,
                                &actor->animation_cache, &render_world_identity_matrix,
                                actor->animation_id, actor->animation_phase,
@@ -2575,7 +2616,7 @@ actor_visible:
                 rotation.x = actor->rotation.x;
                 rotation.y = actor->rotation.y + KF_ANGLE_HALF_TURN;
                 rotation.z = actor->rotation.z;
-                render_world_model(actor->current_map_layer, actor->definition_id + 0x80,
+                render_world_model(actor->current_map_layer, actor->definition_id + KF_ACTOR_MODEL_REGISTRY_BASE,
                                position, &rotation, (SVECTOR *)&actor->model_scale_x,
                                &actor->animation_cache,
                                &scene_display_sys.render_state.view_matrix,
@@ -2595,8 +2636,8 @@ actor_radius_check:
                  goto actor_visible;
              }
     }
-    resource_tmd_update_range(KF_RESOURCE_ARCHIVE_MO, 0, 0x80, 0x80, tmd_flags);
-    resource_vab_update_range(KF_RESOURCE_ARCHIVE_VAB, 0x20, 2, 0x40, vab_flags);
+    resource_tmd_update_range(KF_RESOURCE_ARCHIVE_MO, 0, KF_ACTOR_MODEL_REGISTRY_BASE, KF_ACTOR_MODEL_COUNT, tmd_flags);
+    resource_vab_update_range(KF_RESOURCE_ARCHIVE_VAB, KF_ACTOR_VAB_ENTRY, 2, KF_ACTOR_VAB_COUNT, vab_flags);
 
     frame = cdrom_ctl.state.frame_count;
     repeat_store_word((u32 *)tmd_flags, 0, 80);
@@ -2615,14 +2656,14 @@ actor_radius_check:
                                  object->tail.animated.radius_x,
                                  object->tail.animated.radius_z) &&
                 (object->layer_mask & render_masks_scan_state.first_layer_mask) != KF_MAP_LAYER_NONE) {
-                if (resource_registry_get(KF_ENUM_ENCODE(u16, object->object_id) + 0x100) != NULL) {
-                    render_animated_object(KF_ENUM_ENCODE(u16, object->object_id) + 0x100,
+                if (resource_registry_get(KF_ENUM_ENCODE(u16, object->object_id) + KF_MAP_OBJECT_MODEL_REGISTRY_BASE) != NULL) {
+                    render_animated_object(KF_ENUM_ENCODE(u16, object->object_id) + KF_MAP_OBJECT_MODEL_REGISTRY_BASE,
                                    (const struct KfEulerAngles *)&object->rotation,
                                    &object->tail.animated.animation_cache,
                                    object->asset_clip_selector, object->phase_q12,
                                    object->tail.animated.blend_mode,
                                    object->tail.animated.lighting_flags,
-                                   0x1fff - object->tail.animated.depth_code);
+                                   KF_ORDERING_TABLE_LAST_INDEX - object->tail.animated.depth_code);
                     object->collision_flags |= KF_MAP_OBJECT_FLAG_RENDERED;
                 }
                 tmd_flags[KF_ENUM_ENCODE(u16, object->object_id)] = KF_TRUE;
@@ -2637,25 +2678,25 @@ actor_radius_check:
             if (player_camera_within_map_region(object->position.vx >> KF_MAP_CELL_POSITION_SHIFT,
                               object->position.vz >> KF_MAP_CELL_POSITION_SHIFT,
                               object->tail.ambient_sound.region_width,
-                              object->tail.ambient_sound.region_depth, 0x8000) != 0) {
+                              object->tail.ambient_sound.region_depth, KF_MAP_REGION_HEIGHT_ANY) != 0) {
                 sound = object->tail.ambient_sound.sound_id;
-                if (sound_status.voices.params[sound].vab_slot_index >= 0x42
-                    && sound_status.voices.params[sound].vab_slot_index < 0x82) {
-                    /* This update starts at VAB slot 0x42. */
-                    vab_flags[sound_status.voices.params[sound].vab_slot_index - 0x42] = KF_TRUE;
+                if (sound_status.voices.params[sound].vab_slot_index >= KF_AMBIENT_VAB_SLOT_FIRST
+                    && sound_status.voices.params[sound].vab_slot_index < KF_AMBIENT_VAB_SLOT_LIMIT) {
+                    /* This update starts at the first ambient VAB slot. */
+                    vab_flags[sound_status.voices.params[sound].vab_slot_index - KF_AMBIENT_VAB_SLOT_FIRST] = KF_TRUE;
                 }
                 if ((s32)(object->extra_40.next_sound_frame - frame) < 0) {
                     object->extra_40.next_sound_frame = frame +
                         object->tail.ambient_sound.repeat_delay_units * 6;
                     /* One local carries each half extent, the audible radius and
                      * finally the volume. */
-                    volume = object->tail.ambient_sound.region_width * 0x400;
+                    volume = object->tail.ambient_sound.region_width * (KF_MAP_CELL_SIZE / 2);
                     nearest = cur_avatar_status.camera_position.vx - (volume + object->position.vx);
                     if (nearest < 0) {
                         nearest = -nearest;
                     }
                     nearest = volume - nearest;
-                    volume = object->tail.ambient_sound.region_depth * 0x400;
+                    volume = object->tail.ambient_sound.region_depth * (KF_MAP_CELL_SIZE / 2);
                     distance = cur_avatar_status.camera_position.vz - (volume + object->position.vz);
                     if (distance < 0) {
                         distance = -distance;
@@ -2707,7 +2748,7 @@ map_ordinary_visible:
             tmd_flags[KF_ENUM_ENCODE(u16, object->object_id)] = KF_TRUE;
             vab_flags[object_template->vab_resource_index] = KF_TRUE;
             scale = &object->scale;
-            if (resource_registry_get(KF_ENUM_ENCODE(u16, object->object_id) + 0x100) != NULL) {
+            if (resource_registry_get(KF_ENUM_ENCODE(u16, object->object_id) + KF_MAP_OBJECT_MODEL_REGISTRY_BASE) != NULL) {
                 rotation.x = object->rotation.vx;
                 rotation.y = object->rotation.vy + KF_ANGLE_HALF_TURN;
                 rotation.z = object->rotation.vz;
@@ -2716,7 +2757,7 @@ map_ordinary_visible:
                     render_mode = (visibility & KF_MAP_LAYER_NEAR_CLIPPED) != KF_MAP_LAYER_NONE
                         ? KF_RENDER_QUEUE_CLIPPED : KF_RENDER_QUEUE_TEXTURED;
                 }
-                render_world_model(object->layer_mask, KF_ENUM_ENCODE(u16, object->object_id) + 0x100,
+                render_world_model(object->layer_mask, KF_ENUM_ENCODE(u16, object->object_id) + KF_MAP_OBJECT_MODEL_REGISTRY_BASE,
                                &object->position, &rotation, scale,
                                (KfPoolRecord **)&object->tail,
                                &scene_display_sys.render_state.view_matrix,
@@ -2738,8 +2779,8 @@ map_radius_check:
         }
         }
     }
-    resource_tmd_update_range(KF_RESOURCE_ARCHIVE_MO, 0x80, 0x100, 0x140, tmd_flags);
-    resource_vab_update_range(KF_RESOURCE_ARCHIVE_VAB, 0x60, 0x42, 0x40, vab_flags);
+    resource_tmd_update_range(KF_RESOURCE_ARCHIVE_MO, KF_MAP_OBJECT_TMD_FLAG_ENTRY, KF_MAP_OBJECT_MODEL_REGISTRY_BASE, KF_MAP_OBJECT_MODEL_COUNT, tmd_flags);
+    resource_vab_update_range(KF_RESOURCE_ARCHIVE_VAB, KF_AMBIENT_VAB_FLAG_ENTRY, KF_AMBIENT_VAB_SLOT_FIRST, KF_AMBIENT_VAB_SLOT_COUNT, vab_flags);
 
     for (effect = effect_status.records, remaining = KF_EFFECT_CAPACITY - 1; remaining != -1;
          effect++, remaining--) {
@@ -2756,7 +2797,7 @@ map_radius_check:
             rotation.x = effect->rotation.vx;
             rotation.y = effect->rotation.vy + KF_ANGLE_HALF_TURN;
             rotation.z = effect->rotation.vz;
-            render_world_model(effect->map_layer_mask, KF_ENUM_ENCODE(u8, effect->render_id) + 0x28,
+            render_world_model(effect->map_layer_mask, KF_ENUM_ENCODE(u8, effect->render_id) + KF_EFFECT_MODEL_REGISTRY_BASE,
                            &effect->position, &rotation, (SVECTOR *)&effect->scale_x,
                            &effect->cache_tail.animation_cache,
                            &scene_display_sys.render_state.view_matrix,
@@ -2765,7 +2806,7 @@ map_radius_check:
                            effect->render_queue_mode, -60);
             break;
         case KF_EFFECT_RENDER_IDENTITY_TRANSFORM:
-            render_world_model(effect->map_layer_mask, KF_ENUM_ENCODE(u8, effect->render_id) + 0x28,
+            render_world_model(effect->map_layer_mask, KF_ENUM_ENCODE(u8, effect->render_id) + KF_EFFECT_MODEL_REGISTRY_BASE,
                            &effect->position, (const struct KfEulerAngles *)&effect->rotation,
                            (SVECTOR *)&effect->scale_x, &effect->cache_tail.animation_cache,
                            &render_world_identity_matrix,
@@ -2774,7 +2815,7 @@ map_radius_check:
                            effect->render_queue_mode, -60);
             break;
         case KF_EFFECT_RENDER_PITCH_TRANSFORM:
-            render_world_model(effect->map_layer_mask, KF_ENUM_ENCODE(u8, effect->render_id) + 0x28,
+            render_world_model(effect->map_layer_mask, KF_ENUM_ENCODE(u8, effect->render_id) + KF_EFFECT_MODEL_REGISTRY_BASE,
                            &effect->position, (const struct KfEulerAngles *)&effect->rotation,
                            (SVECTOR *)&effect->scale_x, &effect->cache_tail.animation_cache,
                            &scene_display_sys.render_state.pitch_matrix,
@@ -2783,14 +2824,14 @@ map_radius_check:
                            effect->render_queue_mode, -60);
             break;
         case KF_EFFECT_RENDER_SCREEN_SPACE:
-            render_world_model(effect->map_layer_mask, KF_ENUM_ENCODE(u8, effect->render_id) + 0x28,
+            render_world_model(effect->map_layer_mask, KF_ENUM_ENCODE(u8, effect->render_id) + KF_EFFECT_MODEL_REGISTRY_BASE,
                            &effect->position,
                            (const struct KfEulerAngles *)&effect->rotation,
                            (SVECTOR *)&effect->scale_x,
                            &effect->cache_tail.animation_cache, NULL,
                            effect->animation_clip, effect->animation_phase_q12,
                            effect->lighting_override_index, effect->lighting_blend_q12,
-                           effect->render_queue_mode, 0x14);
+                           effect->render_queue_mode, KF_EFFECT_SCREEN_SPACE_DEPTH);
             break;
         default:
             break;
@@ -2814,7 +2855,7 @@ map_radius_check:
                                KF_ENUM_DECODE(KF_ENUM_PROMOTED(KfAnimationClip),
                                               placed->frame_index + KF_MAP_PLACED_CLIP_BASE),
                                0, KF_LIGHTING_MAP_PLACED,
-                               0x1000, KF_RENDER_QUEUE_BLEND_ADD, 0);
+                               KF_FIXED12_ONE, KF_RENDER_QUEUE_BLEND_ADD, 0);
             }
             if (placed->frame_period != KF_MAP_PLACED_ANIMATION_DISABLED &&
                 scene_display_sys.map_placed_frame_counter % placed->frame_period == 0) {
@@ -3670,7 +3711,7 @@ s32 menu_fade_transition(s32 level, s32 step)
 
     for (;;) {
         display_begin_frame();
-        shade = 0x80 - (level >> 1);
+        shade = KF_MENU_FADE_NEUTRAL_SHADE - (level >> 1);
 
         MENU_FADE_NEXT_QUAD();
         setXYWH(quad, 0, 0, KF_MENU_FADE_FIRST_VRAM_SLICE_WIDTH, KF_DISPLAY_HEIGHT);

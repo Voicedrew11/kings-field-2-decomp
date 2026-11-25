@@ -492,6 +492,11 @@ void collision_cache_load_hit_bounds(void)
     }
 }
 
+enum {
+    /* Bits of a cell's quarter_turns byte above the quarter-turn field. */
+    KF_MAP_CELL_NON_QUARTER_TURN_BITS = 0xfc
+};
+
 ADDRESS(0x8002c700, 0x244)
 KF_ENUM_PARAM(KfCollisionHitFlags, s32) collision_query_world(s32 x, s32 y, s32 z, s32 radius,
                                                               s32 height,
@@ -512,7 +517,7 @@ KF_ENUM_PARAM(KfCollisionHitFlags, s32) collision_query_world(s32 x, s32 y, s32 
     }
 
     height &= KF_COLLISION_HEIGHT_VALUE_MASK;
-    if (KF_COLLISION_CACHE_CELL->layer[0].quarter_turns & 0xfc) {
+    if (KF_COLLISION_CACHE_CELL->layer[0].quarter_turns & KF_MAP_CELL_NON_QUARTER_TURN_BITS) {
         if ((mode & KF_COLLISION_QUERY_ACTORS) != KF_COLLISION_QUERY_NONE) {
             KF_COLLISION_CACHE_ACTOR_INDEX = actor_find_overlap_excluding_target_type3(x, y, z, radius, height);
             if (KF_COLLISION_CACHE_ACTOR_INDEX != KF_ACTOR_INDEX_NONE) {
@@ -640,13 +645,18 @@ void interpolate_collision_rows(KF_ENUM_PARAM(KfCollisionRowFields, s32) flags,
     }
 }
 
+enum {
+    /* A filter type byte of this value means no type is set. */
+    KF_COLLISION_FILTER_TYPE_NONE = 0xff
+};
+
 ADDRESS(0x8002cc70, 0x74)
 void interpolate_collision_filter_rows(u8 type0, u8 type1, u8 type2, s32 angle, u16 amount)
 {
     KfCollisionFilterPayload payload;
     KfCollisionRowFields flags = KF_COLLISION_ROW_NONE;
 
-    if (type0 != 0xff || type1 != type0 || type2 != type1) {
+    if (type0 != KF_COLLISION_FILTER_TYPE_NONE || type1 != type0 || type2 != type1) {
         payload.filter.kinds.types[0] = type0;
         payload.filter.kinds.types[1] = type1;
         payload.filter.kinds.types[2] = type2;
@@ -815,7 +825,7 @@ clear_first_layer:
             ~render_masks_scan_state.first_layer_mask;
         goto check_second_layer;
 check_first_layer:
-        if (first_layer->object_index == 0xff) {
+        if (first_layer->object_index == KF_MAP_CELL_NO_OBJECT_INDEX) {
             goto clear_first_layer;
         }
         if (!(first_layer->lighting_index & KF_MAP_CELL_LAYER_REVEALS_OTHER_LAYER)) {
@@ -828,7 +838,7 @@ set_second_layer:
 check_second_layer:
         second_layer = (KfMapOccupancyLayer *)((u8 *)cell +
                            render_masks_scan_state.second_layer_byte_offset);
-        if (second_layer->object_index != 0xff &&
+        if (second_layer->object_index != KF_MAP_CELL_NO_OBJECT_INDEX &&
             (value & render_masks_scan_state.second_layer_mask) != KF_MAP_LAYER_NONE) {
             goto set_second_layer;
         }
@@ -872,7 +882,7 @@ void sweep_map_cell_layer_mask_line(s32 first_offset, s32 second_offset, s32 map
                     cell = &pl_ext_7540.map_cells[map_z][map_x];
                     first_layer = (KfMapOccupancyLayer *)((u8 *)cell +
                                   render_masks_scan_state.first_layer_byte_offset);
-                    if (first_layer->object_index == 0xff) {
+                    if (first_layer->object_index == KF_MAP_CELL_NO_OBJECT_INDEX) {
                         goto clear_first_layer;
                     }
                     if (!(first_layer->lighting_index & KF_MAP_CELL_LAYER_REVEALS_OTHER_LAYER)) {
@@ -883,7 +893,7 @@ void sweep_map_cell_layer_mask_line(s32 first_offset, s32 second_offset, s32 map
                     goto advance_iteration;
     check_second_layer:
                     if (((KfMapOccupancyLayer *)((u8 *)cell +
-                         render_masks_scan_state.second_layer_byte_offset))->object_index != 0xff) {
+                         render_masks_scan_state.second_layer_byte_offset))->object_index != KF_MAP_CELL_NO_OBJECT_INDEX) {
                         if ((first & render_masks_scan_state.second_layer_mask) != KF_MAP_LAYER_NONE ||
                             (second & render_masks_scan_state.second_layer_mask) != KF_MAP_LAYER_NONE) {
                             goto set_second_layer;

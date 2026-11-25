@@ -22,6 +22,13 @@ enum {
     KF_RESOURCE_OFFSET_NO_SHIFT = 127
 };
 
+/* MO archive model that the post-death reload and an event scene command
+ * read on demand when its asset-registry slot is empty. */
+enum {
+    KF_MO_ON_DEMAND_MODEL_ENTRY = 0x101,
+    KF_MO_ON_DEMAND_MODEL_SLOT = 0x181
+};
+
 extern u8 resource_tmd_arc_work[0x37000];
 
 KF_ENUM_PARAM(KfMapLayerMask, u32) map_cell_layer_mask(const VECTOR *position);

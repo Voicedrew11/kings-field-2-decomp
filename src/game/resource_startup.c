@@ -63,6 +63,14 @@ void resource_noop_callback()
 {
 }
 
+enum {
+    /* FDAT archive entries: the initial block copied into the source buffer, and the map stream. */
+    RESOURCE_FDAT_INITIAL_ENTRY = 0x30,
+    RESOURCE_FDAT_STREAM_ENTRY = 0x2f,
+    /* First asset id of the second TMD archive loaded from its own buffer. */
+    RESOURCE_TMD_ARCHIVE_ASSET_BASE = 0x28
+};
+
 ADDRESS(0x80015dd4, 0x27c)
 void resource_initialize_game_assets(void)
 {
@@ -90,8 +98,8 @@ void resource_initialize_game_assets(void)
     cd_archive_open(KF_RESOURCE_ARCHIVE_ITEM, "COM\\ITEM.T");
 
     /* The archive copy destinations have provisional BSS extents. */
-    cd_archive_read(KF_RESOURCE_ARCHIVE_FDAT, 0x30, (u_long *)source);
-    cd_map_stream_read(KF_RESOURCE_ARCHIVE_FDAT, 0x2f);
+    cd_archive_read(KF_RESOURCE_ARCHIVE_FDAT, RESOURCE_FDAT_INITIAL_ENTRY, (u_long *)source);
+    cd_map_stream_read(KF_RESOURCE_ARCHIVE_FDAT, RESOURCE_FDAT_STREAM_ENTRY);
     audio_queue_vab_stream(KF_RESOURCE_ARCHIVE_VAB, 0, 0);
 
     resource_copy_words((u32 *)&map_objects_slots, (u32 *)(source + 4), *(u32 *)source >> 2);
@@ -112,7 +120,7 @@ void resource_initialize_game_assets(void)
     source += *(u32 *)source + 4;
     asset_registry_load_tmd_archive(0, tmd_0_buffer);
     resource_copy_words((u32 *)tmd_archive_28_buffer, (u32 *)(source + 4), *(u32 *)source >> 2);
-    asset_registry_load_tmd_archive(0x28, tmd_archive_28_buffer);
+    asset_registry_load_tmd_archive(RESOURCE_TMD_ARCHIVE_ASSET_BASE, tmd_archive_28_buffer);
     game_initialize_session();
 }
 

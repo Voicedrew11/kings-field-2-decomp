@@ -53,6 +53,31 @@ enum {
         KF_ENUM_ENCODE(s32, KF_ITEM_RELIEVE_AILMENTS) + 1
 };
 
+enum {
+    /* Map preview: the map image and the facing marker, both in 1:1 sprite units. */
+    MENU_MAP_INDEX_MASK = 0xff,
+    MENU_MAP_IMAGE_TINT = 0x5f,
+    MENU_MAP_IMAGE_TPAGE = 0x1f,
+    MENU_MAP_IMAGE_CLUT = 0x7fe4,
+    MENU_MAP_IMAGE_X = 0x3c,
+    MENU_MAP_IMAGE_Y = 0x14,
+    MENU_MAP_MARKER_TINT = 0x7f,
+    MENU_MAP_MARKER_TPAGE = 0x1c,
+    MENU_MAP_MARKER_CLUT = 0x7d25,
+    MENU_MAP_MARKER_V = 0x90,
+    MENU_MAP_FRAME_X = 0x36,
+    MENU_MAP_FRAME_Y = 0xe,
+    MENU_MAP_FRAME_SIZE = 0xd4,
+    /* Magic and card lists; the default list origin of menu_list_init. */
+    MENU_MAGIC_LIST_Y = 0x83,
+    MENU_LIST_DEFAULT_X = 0x2a,
+    MENU_LIST_DEFAULT_Y = 0x9f,
+    /* Full brightness for a sprite's red, green and blue channels. */
+    MENU_RGB_CHANNEL_FULL = 0xff,
+    /* Bytes of each primitive buffer half in the menu display state. */
+    MENU_PRIMITIVE_BUFFER_BYTES = 0x6400
+};
+
 typedef char kf_card_directory_entry_size[sizeof(struct DIRENTRY) == 40 ? 1 : -1];
 
 enum {
@@ -664,7 +689,7 @@ void menu_show_map_preview(s32 menu_code)
     s32 frame;
     s32 u0;
 
-    map_index = (menu_code - MENU_MAP_ITEM_FIRST) & 0xff;
+    map_index = (menu_code - MENU_MAP_ITEM_FIRST) & MENU_MAP_INDEX_MASK;
     map_offset = asset_status.current_map_region_id + MENU_MAP_ARCHIVE_FIRST_ENTRY;
     index = map_index * MENU_MAP_ARCHIVE_ENTRIES_PER_ITEM + map_offset;
     image = memory_allocate(cd_archive_entry_extent(KF_RESOURCE_ARCHIVE_ITEM, index, NULL));
@@ -675,17 +700,17 @@ void menu_show_map_preview(s32 menu_code)
         menu_frame_begin();
 
         primitive_buffer_begin_poly_ft4();
-        setRGB0(current_poly_ft4, 0x5f, 0x5f, 0x5f);
-        current_poly_ft4->tpage = 0x1f;
-        current_poly_ft4->clut = 0x7fe4;
-        setXYWH(current_poly_ft4, 0x3c, 0x14, 200, 200);
+        setRGB0(current_poly_ft4, MENU_MAP_IMAGE_TINT, MENU_MAP_IMAGE_TINT, MENU_MAP_IMAGE_TINT);
+        current_poly_ft4->tpage = MENU_MAP_IMAGE_TPAGE;
+        current_poly_ft4->clut = MENU_MAP_IMAGE_CLUT;
+        setXYWH(current_poly_ft4, MENU_MAP_IMAGE_X, MENU_MAP_IMAGE_Y, 200, 200);
         setUVWH(current_poly_ft4, 0, 0, 200, 200);
         primitive_buffer_commit_poly_ft4(KF_MENU_CONTENT_OT_DEPTH);
 
         primitive_buffer_begin_poly_ft4();
-        setRGB0(current_poly_ft4, 0x7f, 0x7f, 0x7f);
-        current_poly_ft4->tpage = 0x1c;
-        current_poly_ft4->clut = 0x7d25;
+        setRGB0(current_poly_ft4, MENU_MAP_MARKER_TINT, MENU_MAP_MARKER_TINT, MENU_MAP_MARKER_TINT);
+        current_poly_ft4->tpage = MENU_MAP_MARKER_TPAGE;
+        current_poly_ft4->clut = MENU_MAP_MARKER_CLUT;
         setXYWH(current_poly_ft4,
             cur_avatar_status.camera_position.vx / 819 + 52,
             212 - cur_avatar_status.camera_position.vz / 819,
@@ -698,11 +723,12 @@ void menu_show_map_preview(s32 menu_code)
         }
         u0 = index * MENU_MAP_FACING_TILE_U_STRIDE
              - MENU_MAP_FACING_TILE_COUNT * MENU_MAP_FACING_TILE_U_STRIDE;
-        setUVWH(current_poly_ft4, u0, 0x90, 15, 15);
+        setUVWH(current_poly_ft4, u0, MENU_MAP_MARKER_V, 15, 15);
         /* The facing marker sorts just above the map image. */
         primitive_buffer_commit_poly_ft4(KF_MENU_CONTENT_OT_DEPTH - 1);
 
-        menu_draw_nine_slice_panel(0x36, 0xe, 0xd4, 0xd4, 2, 2);
+        menu_draw_nine_slice_panel(MENU_MAP_FRAME_X, MENU_MAP_FRAME_Y,
+            MENU_MAP_FRAME_SIZE, MENU_MAP_FRAME_SIZE, 2, 2);
         menu_present_frame();
     }
 
@@ -731,7 +757,7 @@ s32 menu_choose_magic_action(void)
     menu.list.visible_rows = MENU_MAGIC_ACTION_VISIBLE_ROWS;
     menu.rows = rows;
     menu.values = values;
-    menu.list.list_y = 0x83;
+    menu.list.list_y = MENU_MAGIC_LIST_Y;
     menu.list.glyphs_per_entry = KF_MENU_GLYPHS_PER_ROW;
 
     for (;;) {
@@ -1082,7 +1108,7 @@ void menu_choose_primary_magic_shortcut(void)
     menu.list.visible_rows = 6;
     menu.rows = rows;
     menu.values = values;
-    menu.list.list_y = 0x83;
+    menu.list.list_y = MENU_MAGIC_LIST_Y;
     menu.list.glyphs_per_entry = KF_MENU_GLYPHS_PER_ROW;
 
     for (;;) {
@@ -1446,10 +1472,10 @@ s32 menu_card_build_slot_rows(const struct DIRENTRY *card_entries, u8 *glyph_row
     for (index = 0; index < KF_CARD_DIRECTORY_CAPACITY; index++) {
         if (memory_card_read_slot_summary(card_entries->name,
             &experience, &level, &slot_id) == KF_FALSE) {
-            *glyph_rows++ = 0x03;
-            *glyph_rows++ = 0x00;
-            *glyph_rows++ = 0x13;
-            *glyph_rows++ = 0x00;
+            *glyph_rows++ = KF_MENU_GLYPH_D;
+            *glyph_rows++ = KF_MENU_GLYPH_A;
+            *glyph_rows++ = KF_MENU_GLYPH_T;
+            *glyph_rows++ = KF_MENU_GLYPH_A;
             *glyph_rows++ = (u8)(slot_id + 32);
             *glyph_rows = KF_MENU_TEXT_END;
             glyph_rows += 15;
@@ -1509,20 +1535,20 @@ s32 menu_prompt_two_option(void)
     labels[0].position.x = 101;
     labels[0].position.y = 123;
     glyph_bytes = labels[0].glyphs.codes;
-    glyph_bytes[0] = 0x10;
-    glyph_bytes[1] = 0x14;
-    glyph_bytes[2] = 0x08;
-    glyph_bytes[3] = 0x13;
+    glyph_bytes[0] = KF_MENU_GLYPH_Q;
+    glyph_bytes[1] = KF_MENU_GLYPH_U;
+    glyph_bytes[2] = KF_MENU_GLYPH_I;
+    glyph_bytes[3] = KF_MENU_GLYPH_T;
     glyph_bytes[4] = KF_MENU_TEXT_END;
     labels[1].position.x = 101;
     labels[1].position.y = 149;
     glyph_bytes = labels[1].glyphs.codes;
-    glyph_bytes[0] = 0x11;
-    glyph_bytes[1] = 0x04;
-    glyph_bytes[2] = 0x13;
-    glyph_bytes[3] = 0x14;
-    glyph_bytes[4] = 0x11;
-    glyph_bytes[5] = 0x0d;
+    glyph_bytes[0] = KF_MENU_GLYPH_R;
+    glyph_bytes[1] = KF_MENU_GLYPH_E;
+    glyph_bytes[2] = KF_MENU_GLYPH_T;
+    glyph_bytes[3] = KF_MENU_GLYPH_U;
+    glyph_bytes[4] = KF_MENU_GLYPH_R;
+    glyph_bytes[5] = KF_MENU_GLYPH_N;
     glyph_bytes[6] = KF_MENU_TEXT_END;
 
     for (;;) {
@@ -1582,14 +1608,14 @@ void menu_options_controller(void)
 
     labels[0].position.x = 180;
     labels[0].position.y = 45;
-    labels[0].glyphs.codes[0] = 0x0e;
-    labels[0].glyphs.codes[1] = 0x0d;
+    labels[0].glyphs.codes[0] = KF_MENU_GLYPH_O;
+    labels[0].glyphs.codes[1] = KF_MENU_GLYPH_N;
     labels[0].glyphs.codes[2] = KF_MENU_TEXT_END;
     labels[1].position.x = 254;
     labels[1].position.y = 45;
-    labels[1].glyphs.codes[0] = 0x0e;
-    labels[1].glyphs.codes[1] = 0x05;
-    labels[1].glyphs.codes[2] = 0x05;
+    labels[1].glyphs.codes[0] = KF_MENU_GLYPH_O;
+    labels[1].glyphs.codes[1] = KF_MENU_GLYPH_F;
+    labels[1].glyphs.codes[2] = KF_MENU_GLYPH_F;
     labels[1].glyphs.codes[3] = KF_MENU_TEXT_END;
 
     selected[KF_MENU_OPTION_EFFECTS_ROW] = cur_avatar_status.audio_effects_enabled;
@@ -1879,9 +1905,9 @@ void menu_card_save_browser(void)
     count = menu_card_build_slot_rows(entries, glyph_rows[0].codes,
         experience_values, levels, slot_ids);
     new_label = glyph_rows[count].codes;
-    new_label[0] = 0x0d;
-    new_label[1] = 0x04;
-    new_label[2] = 0x16;
+    new_label[0] = KF_MENU_GLYPH_N;
+    new_label[1] = KF_MENU_GLYPH_E;
+    new_label[2] = KF_MENU_GLYPH_W;
     new_label[3] = KF_MENU_TEXT_END;
     experience_values[count] = KF_MENU_LIST_NO_NUMBER;
     levels[count] = CARD_MENU_NO_LEVEL;
@@ -1996,14 +2022,14 @@ s32 menu_confirm_card_format(s32 kind)
 
     labels[0].position.x = menu_window_layout(KF_MENU_WINDOW_SYSTEM)->rows[0].position.x;
     labels[0].position.y = menu_window_layout(KF_MENU_WINDOW_SYSTEM)->rows[0].position.y;
-    labels[0].glyphs.codes[0] = 0x18;
-    labels[0].glyphs.codes[1] = 0x04;
-    labels[0].glyphs.codes[2] = 0x12;
+    labels[0].glyphs.codes[0] = KF_MENU_GLYPH_Y;
+    labels[0].glyphs.codes[1] = KF_MENU_GLYPH_E;
+    labels[0].glyphs.codes[2] = KF_MENU_GLYPH_S;
     labels[0].glyphs.codes[3] = KF_MENU_TEXT_END;
     labels[1].position.x = menu_window_layout(KF_MENU_WINDOW_SYSTEM)->rows[1].position.x;
     labels[1].position.y = menu_window_layout(KF_MENU_WINDOW_SYSTEM)->rows[1].position.y;
-    labels[1].glyphs.codes[0] = 0x0d;
-    labels[1].glyphs.codes[1] = 0x0e;
+    labels[1].glyphs.codes[0] = KF_MENU_GLYPH_N;
+    labels[1].glyphs.codes[1] = KF_MENU_GLYPH_O;
     labels[1].glyphs.codes[2] = KF_MENU_TEXT_END;
 
     if (kind == KF_MENU_CARD_FORMAT_WITH_NOTICE) {
@@ -4243,15 +4269,15 @@ void menu_update_item_preview(s32 item_id)
     menu_item_preview_rotation.vz &= KF_PREVIEW_ANGLE_MASK;
     RotMatrix(&menu_item_preview_rotation, &rotation);
 
-    light.m[0][0] = 0x800;
-    light.m[0][1] = 0x800;
-    light.m[0][2] = -0x800;
+    light.m[0][0] = KF_FIXED12_ONE / 2;
+    light.m[0][1] = KF_FIXED12_ONE / 2;
+    light.m[0][2] = -(KF_FIXED12_ONE / 2);
     light.m[1][0] = 0;
     light.m[1][1] = 0;
-    light.m[1][2] = -0x800;
+    light.m[1][2] = -(KF_FIXED12_ONE / 2);
     light.m[2][0] = KF_FIXED12_ONE;
     light.m[2][1] = 0;
-    light.m[2][2] = -0x800;
+    light.m[2][2] = -(KF_FIXED12_ONE / 2);
     MulMatrix0(&light, &rotation, &lit);
     SetLightMatrix(&lit);
 
@@ -4334,7 +4360,7 @@ void menu_blit_sprite_translucent(
     const KfMenuSpriteDef *sprite, const KfMenuPoint *position)
 {
     primitive_buffer_begin_poly_ft4();
-    setRGB0(current_poly_ft4, 0xff, 0xff, 0xff);
+    setRGB0(current_poly_ft4, MENU_RGB_CHANNEL_FULL, MENU_RGB_CHANNEL_FULL, MENU_RGB_CHANNEL_FULL);
     current_poly_ft4->tpage = sprite->tpage;
     current_poly_ft4->clut = sprite->clut;
     setXYWH(current_poly_ft4,
@@ -4416,7 +4442,7 @@ void menu_draw_string(const KfMenuSpriteDef *font, const KfMenuGlyphString *stri
         setXYWH(current_poly_ft4,
             string->position.x + x_offset, string->position.y,
             font->width, font->height);
-        glyph = *code & 0x7f;
+        glyph = *code & KF_MENU_GLYPH_INDEX_MASK;
         x_offset += KF_MENU_GLYPH_ADVANCE;
         setUVWH(current_poly_ft4,
             (glyph & (KF_MENU_FONT_COLUMNS - 1)) * MENU_TEXT_CELL_WIDTH,
@@ -4499,7 +4525,7 @@ void menu_draw_nine_slice_panel(s32 x, s32 y, s32 width, s32 height,
                 draw_x += 28 + width;
             }
             primitive_buffer_begin_poly_ft4();
-            setRGB0(current_poly_ft4, 0xff, 0xff, 0xff);
+            setRGB0(current_poly_ft4, MENU_RGB_CHANNEL_FULL, MENU_RGB_CHANNEL_FULL, MENU_RGB_CHANNEL_FULL);
             SetSemiTrans((void *)current_poly_ft4, 1);
             current_poly_ft4->tpage = tile->tpage;
             clut = tile->clut;
@@ -4590,11 +4616,11 @@ void menu_enter_display_state(s32 mode)
     menu_saved_primitive_buffers[1] =
         scene_display_sys.display_state.primitive_buffers[1];
     scene_display_sys.display_state.primitive_buffers[0].end =
-        scene_display_sys.display_state.primitive_buffers[0].start + 0x6400;
+        scene_display_sys.display_state.primitive_buffers[0].start + MENU_PRIMITIVE_BUFFER_BYTES;
     scene_display_sys.display_state.primitive_buffers[1].start =
         scene_display_sys.display_state.primitive_buffers[0].end;
     scene_display_sys.display_state.primitive_buffers[1].end =
-        scene_display_sys.display_state.primitive_buffers[1].start + 0x6400;
+        scene_display_sys.display_state.primitive_buffers[1].start + MENU_PRIMITIVE_BUFFER_BYTES;
     menu_frame_upload_pixels = (u_long *)
         scene_display_sys.display_state.primitive_buffers[1].end;
 
@@ -4684,8 +4710,8 @@ void menu_list_init(KfMenuList *list, KfMenuWindowKind window_kind, s32 row)
     for (i = 0; i < KF_MENU_LIST_TITLE_COPY_GLYPHS; i++) {
         *title_codes++ = *source_codes++;
     }
-    list->list_x = 0x2a;
-    list->list_y = 0x9f;
+    list->list_x = MENU_LIST_DEFAULT_X;
+    list->list_y = MENU_LIST_DEFAULT_Y;
     list->entry_count = 0;
     list->visible_rows = 4;
     list->scroll_offset = 0;
