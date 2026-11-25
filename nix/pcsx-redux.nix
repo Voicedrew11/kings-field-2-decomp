@@ -1,11 +1,11 @@
 { pkgs }:
 
 let
-  version = "6d083a39";
+  version = "c55573b6";
   archive = pkgs.fetchurl {
     name = "PCSX-Redux-${version}-linux-x86_64.zip";
-    url = "https://distrib.app/storage/assets/114/810/550/2aabccac1603af19e3fb95178c68bbd8be34a96ae16a6004e49764f/PCSX-Redux-${version}-linux-x86_64.zip";
-    hash = "sha256-3eTnXv7saG8T/olU8kljM37VFudpa8yU7yFVIHLIhag=";
+    url = "https://distrib.app/storage/assets/616/76f/63e/4ea4903902b7217a1764813460371799d36d19800643018ce3e1ee8/PCSX-Redux-${version}-linux-x86_64.zip";
+    hash = "sha256-GsSW8soWdnloen13QQz62grjo0TYJSDy15wtx/JnqQQ=";
   };
 
   appImage = pkgs.runCommand "pcsx-redux-${version}-appimage" {
