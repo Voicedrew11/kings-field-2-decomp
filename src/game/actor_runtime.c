@@ -2272,10 +2272,10 @@ void actor_update_behavior(void)
                 actor->lighting_blend = 0x400;
                 actor->render_mode = KF_RENDER_QUEUE_BLEND_ADD;
             } else if (old_state < 38) {
-                if (actor->lighting_blend < 0x1000) {
+                if (actor->lighting_blend < KF_FIXED12_ONE) {
                     actor->lighting_blend += 192;
                 } else {
-                    actor->lighting_blend = 0x1000;
+                    actor->lighting_blend = KF_FIXED12_ONE;
                 }
             } else {
                 ((void (*)(KfActor *))asset_status.active_table[19])(actor);

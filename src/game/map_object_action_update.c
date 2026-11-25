@@ -90,8 +90,8 @@ void map_object_update_actions(void)
                                       object->position.vz, object->rotation.vy,
                                       map_object_cell_patterns[8], 1, KF_PATTERN_LIGHTING_UNCHANGED);
                     }
-                    if (object->phase_q12 > 0xfff) {
-                        object->phase_q12 = 0xfff;
+                    if (object->phase_q12 > KF_MAP_OBJECT_PHASE_FULL) {
+                        object->phase_q12 = KF_MAP_OBJECT_PHASE_FULL;
                         object->action_timer = 2;
                     }
                     break;
@@ -154,8 +154,8 @@ void map_object_update_actions(void)
                                       object_template->params.marker.cell_height, object->rotation.vy,
                                       KF_MAP_CELL_COPY_OBJECT_FIELDS);
                     }
-                    if (object->phase_q12 > 0xfff) {
-                        object->phase_q12 = 0xfff;
+                    if (object->phase_q12 > KF_MAP_OBJECT_PHASE_FULL) {
+                        object->phase_q12 = KF_MAP_OBJECT_PHASE_FULL;
                         object->action_timer = 2;
                     }
                     break;
@@ -395,7 +395,7 @@ void map_object_update_actions(void)
                     if (object->tail.marker.marker_id == KF_MAP_OBJECT_MARKER_TRIGGERED) {
                         map_object_set_cell_marker(object, KF_MAP_CELL_MARKER_CLEAR,
                                                    object_template->params.marker.marker_action_05);
-                        object->phase_q12 = 0xfff;
+                        object->phase_q12 = KF_MAP_OBJECT_PHASE_FULL;
                         object->action_timer = 3;
                     } else {
                         map_object_set_property(object->tail.linked_property.linked_object_index,
@@ -416,8 +416,8 @@ void map_object_update_actions(void)
                     break;
                 case 2:
                     object->phase_q12 += 128;
-                    if (object->phase_q12 >= 0xfff) {
-                        object->phase_q12 = 0xfff;
+                    if (object->phase_q12 >= KF_MAP_OBJECT_PHASE_FULL) {
+                        object->phase_q12 = KF_MAP_OBJECT_PHASE_FULL;
                         map_object_set_property(object->tail.linked_property.linked_object_index, KF_MAP_OBJECT_PROPERTY_ARM_EVENT);
                         object->action_timer = 3;
                     }
@@ -451,7 +451,7 @@ void map_object_update_actions(void)
                     if (object->phase_q12 < KF_FIXED12_ONE) {
                         break;
                     }
-                    object->phase_q12 = 0xfff;
+                    object->phase_q12 = KF_MAP_OBJECT_PHASE_FULL;
                 action83_complete:
                     map_object_apply_marker_signal(object->tail.action_83.completion_marker);
                     switch (object->tail.action_83.transition_mode) {
@@ -483,7 +483,7 @@ void map_object_update_actions(void)
                     break;
                 case 9:
                     if (object->tail.action_83.transition_mode == KF_MAP_OBJECT_TRANSITION_TOGGLE_OPEN) {
-                        object->phase_q12 = 0xfff;
+                        object->phase_q12 = KF_MAP_OBJECT_PHASE_FULL;
                     }
                     object->action_timer = 0;
                     break;
@@ -535,7 +535,7 @@ void map_object_update_actions(void)
                 case 3:
                     object->phase_q12 += 64;
                     if (object->phase_q12 >= KF_FIXED12_ONE) {
-                        object->phase_q12 = 0xfff;
+                        object->phase_q12 = KF_MAP_OBJECT_PHASE_FULL;
                         object->action_timer = 99;
                     }
                     break;
@@ -635,7 +635,7 @@ void map_object_update_actions(void)
                 }
                 case 1:
                     object->phase_q12 += 256;
-                    if (object->phase_q12 >= 0xfff) {
+                    if (object->phase_q12 >= KF_MAP_OBJECT_PHASE_FULL) {
                         object->asset_clip_selector = KF_ANIMATION_CLIP_SECOND;
                         object->phase_q12 = 0;
                         if ((object->tail.action_84_pattern.pattern_flags & KF_MAP_OBJECT_PATTERN_ONCE) != 0) {
@@ -648,7 +648,7 @@ void map_object_update_actions(void)
                     break;
                 case 32:
                     object->phase_q12 += 128;
-                    if (object->phase_q12 >= 0xfff) {
+                    if (object->phase_q12 >= KF_MAP_OBJECT_PHASE_FULL) {
                         object->asset_clip_selector = KF_ANIMATION_CLIP_FIRST;
                         object->phase_q12 = 0;
                         object->action_timer = 0;
@@ -710,7 +710,7 @@ void map_object_update_actions(void)
                         object->action_timer = 2;
                         object->phase_q12 = 0;
                         object->asset_clip_selector = KF_ANIMATION_CLIP_SECOND;
-                        object->phase_q12 = 0xfff;
+                        object->phase_q12 = KF_MAP_OBJECT_PHASE_FULL;
                     } else if (object->tail.collision_probe.camera_region_width != KF_MAP_OBJECT_REGION_NEVER &&
                                (object->tail.collision_probe.camera_region_width == KF_MAP_OBJECT_REGION_ALWAYS ||
                                 player_camera_within_map_region(object->position.vx >> KF_MAP_CELL_POSITION_SHIFT,
@@ -746,7 +746,7 @@ void map_object_update_actions(void)
                         break;
                     }
                     object->phase_q12 += increment;
-                    if (object->phase_q12 >= 0xfff) {
+                    if (object->phase_q12 >= KF_MAP_OBJECT_PHASE_FULL) {
                         if (object->tail.collision_probe.camera_region_width != KF_MAP_OBJECT_REGION_ALWAYS) {
                             object->phase_q12 = 0;
                             object->action_timer = 0;
@@ -787,8 +787,8 @@ void map_object_update_actions(void)
                     break;
                 case 2:
                     object->phase_q12 += 64;
-                    if (object->phase_q12 >= 0xfff) {
-                        object->phase_q12 = 0xfff;
+                    if (object->phase_q12 >= KF_MAP_OBJECT_PHASE_FULL) {
+                        object->phase_q12 = KF_MAP_OBJECT_PHASE_FULL;
                         if (object->tail.collision_probe.marker_trigger_state == KF_MAP_OBJECT_PROBE_RUNNING) {
                             object->asset_clip_selector = KF_ANIMATION_CLIP_THIRD;
                             object->phase_q12 = 0;
@@ -798,7 +798,7 @@ void map_object_update_actions(void)
                     break;
                 case 3:
                     object->phase_q12 += 64;
-                    if (object->phase_q12 >= 0xfff) {
+                    if (object->phase_q12 >= KF_MAP_OBJECT_PHASE_FULL) {
                         object->action_timer = 0;
                     }
                     break;

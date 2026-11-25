@@ -385,7 +385,7 @@ void event_scene_command_dispatch(const VECTOR *position,
             status = map_object_check_and_consume_marker(object, KF_ENUM_ENCODE(s32, command));
             switch (status) {
             case KF_MAP_OBJECT_MARKER_CONSUMED:
-                audio_play_sound_64();
+                audio_play_marker_consumed_sound();
                 cur_evt_state.interaction_handled = KF_TRUE;
                 break;
             case KF_MAP_OBJECT_MARKER_MISMATCH:

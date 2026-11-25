@@ -146,3 +146,5 @@ src/game/resource_startup.c	resource_advance_transition	phase_three	1	shared cas
 src/game/resource_startup.c	resource_advance_transition	complete	2	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target
 src/game/resource_startup.c	resource_advance_transition	begin_phase_five	1	forward jump	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/open/main.c	main	restart	1	retry loop	backward goto: no loop notes, so loop.c leaves the body alone
+src/game/memory_card_events.c	memory_card_write_slot	retry	1	retry loop	for (;;) around the body from retry: to the attempt check: game 523/524 (the unit itself fell below exact), reverted
+src/open/main.c	main	play_movies	1	retry loop	do the movie chain in an outer for (;;) with a play_movies flag set by the idle restart: open 25/26 (88.6%), reverted

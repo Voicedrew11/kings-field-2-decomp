@@ -361,31 +361,31 @@ handle_active:
 }
 
 ADDRESS(0x80016838, 0x14)
-void resource_transition_set_phase_1(KfCdRequest *request)
+void resource_transition_set_load_map_cells(KfCdRequest *request)
 {
     asset_status.transition_phase = KF_RESOURCE_TRANSITION_LOAD_MAP_CELLS;
 }
 
 ADDRESS(0x8001684c, 0x14)
-void resource_transition_set_phase_3(KfCdRequest *request)
+void resource_transition_set_load_map_actors(KfCdRequest *request)
 {
     asset_status.transition_phase = KF_RESOURCE_TRANSITION_LOAD_MAP_ACTORS;
 }
 
 ADDRESS(0x80016860, 0x14)
-void resource_transition_set_phase_2(KfCdRequest *request)
+void resource_transition_set_queue_map_actors(KfCdRequest *request)
 {
     asset_status.transition_phase = KF_RESOURCE_TRANSITION_QUEUE_MAP_ACTORS;
 }
 
 ADDRESS(0x80016874, 0x14)
-void resource_transition_set_phase_4(KfCdRequest *request)
+void resource_transition_set_queue_tim(KfCdRequest *request)
 {
     asset_status.transition_phase = KF_RESOURCE_TRANSITION_QUEUE_TIM;
 }
 
 ADDRESS(0x80016888, 0x14)
-void resource_transition_set_phase_6(KfCdRequest *request)
+void resource_transition_set_finish_audio(KfCdRequest *request)
 {
     asset_status.transition_phase = KF_RESOURCE_TRANSITION_FINISH_AUDIO;
 }
@@ -424,7 +424,7 @@ void resource_advance_transition(void)
         } while (index != -1);
         cd_archive_queue_read(KF_RESOURCE_ARCHIVE_FDAT, asset_status.requested_resource_ids[KF_RESOURCE_SLOT_MAP_REGION] * 3,
             (u_long *)cdrom_ctl.stream_work_buffer,
-            resource_transition_set_phase_1);
+            resource_transition_set_load_map_cells);
         return;
 
     case KF_RESOURCE_TRANSITION_LOAD_MAP_CELLS:
@@ -434,7 +434,7 @@ void resource_advance_transition(void)
         asset_status.active_table = callback_default_table;
         cd_archive_queue_read(KF_RESOURCE_ARCHIVE_FDAT, asset_status.requested_resource_ids[KF_RESOURCE_SLOT_MAP_REGION] * 3 + 2,
             (u_long *)rsc_hook_list,
-            resource_transition_set_phase_2);
+            resource_transition_set_queue_map_actors);
         resource_copy_words((u32 *)&pl_ext_7540, (u32 *)(buffer + 4),
                             sizeof(pl_ext_7540.map_cells) / sizeof(u32));
         buffer += *(u32 *)buffer + 4;
@@ -453,7 +453,7 @@ void resource_advance_transition(void)
         asset_status.transition_phase = KF_RESOURCE_TRANSITION_PENDING_IO;
         cd_archive_queue_read(KF_RESOURCE_ARCHIVE_FDAT, asset_status.requested_resource_ids[KF_RESOURCE_SLOT_MAP_REGION] * 3 + 1,
             (u_long *)cdrom_ctl.stream_work_buffer,
-            resource_transition_set_phase_3);
+            resource_transition_set_load_map_actors);
         asset_status.active_table = (KfCallback *)rsc_hook_list;
         return;
 
@@ -463,7 +463,7 @@ phase_three:
             asset_status.transition_phase = KF_RESOURCE_TRANSITION_PENDING_IO;
             cd_archive_queue_read(KF_RESOURCE_ARCHIVE_RTMD, asset_status.requested_resource_ids[KF_RESOURCE_SLOT_TMD],
                 (u_long *)resource_tmd_arc_work,
-                resource_transition_set_phase_4);
+                resource_transition_set_queue_tim);
         }
         if (asset_status.requested_resource_ids[KF_RESOURCE_SLOT_MAP_REGION] != KF_RESOURCE_REQUEST_KEEP) {
             stream = cdrom_ctl.stream_work_buffer;
@@ -588,7 +588,7 @@ begin_phase_five:
             cd_archive_queue_read(KF_RESOURCE_ARCHIVE_VAB,
                 asset_status.requested_resource_ids[KF_RESOURCE_SLOT_SEQUENCE] % 100 + 320,
                 sound_status.sequence_buffer,
-                resource_transition_set_phase_6);
+                resource_transition_set_finish_audio);
             asset_status.transition_phase = KF_RESOURCE_TRANSITION_PENDING_IO;
             return;
         }

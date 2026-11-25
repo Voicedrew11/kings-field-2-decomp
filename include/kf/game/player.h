@@ -633,7 +633,7 @@ void player_update_vertical_motion(void);
 b32 player_move_reaction_with_collision(void);
 void player_update_camera_rotation(void);
 void player_update_horizontal_motion(void);
-b32 item_id_is_71_to_80(KF_ENUM_PARAM(KfObjectId, s32) value);
+b32 item_id_is_menu_effect(KF_ENUM_PARAM(KfObjectId, s32) value);
 void player_update_actions_and_charge(void);
 void player_render_frame_and_release_pool(void);
 void player_begin_view_reaction(u8 map_object_index);

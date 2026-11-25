@@ -503,18 +503,18 @@ KF_ENUM_PARAM(KfEffectMotionResult, s32) effect_target_motion(const VECTOR *targ
                          s32 settle_distance, s32 min_distance,
                          s32 probe_radius, s32 probe_height_flags);
 void effect_scale_step(s32 multiplier, s32 limit, s32 increment,
-                       s32 arg3, s32 arg5);
+                       s32 falloff, s32 mode);
 void effect_spawn_zero_direction(KfEffectRecord *record, s32 mode);
-b32 effect_spawn_at_lower_bound(const VECTOR *position, s32 arg1, s32 arg2,
+b32 effect_spawn_at_lower_bound(const VECTOR *position, s32 scale, s32 amplitude,
                                 s32 vertical_window);
 void effect_spawn_motion(KfEffectRecord *record, s32 position_mode,
-                   s32 motion_mode, s32 arg3, s32 arg4, s32 arg5,
-                   s32 arg6, s32 arg7, ...);
+                   s32 motion_mode, s32 scale, s32 scale_step, s32 updates_remaining,
+                   s32 render_id, s32 vertical_step, ...);
 b32 effect_scatter_lower_bound(const VECTOR *origin, s32 count, s32 spread,
                   s32 scale_x, s32 scale_z, s32 variation);
 KF_ENUM_PARAM(KfCollisionHitFlags, s32) effect_collision_step(s32 radius, s32 angle, s32 step);
 void effect_collision_backtrack(void);
-void effect_spawn_radial_ring(s32 count, s32 radius, s32 vertical_angle, s32 arg3);
+void effect_spawn_radial_ring(s32 count, s32 radius, s32 vertical_angle, s32 vertical_step);
 KfAudioPlaybackResult effect_play_spatial_sound(KfEffectRecord *effect, s32 sound);
 KfEffectRecord *effect_pool_find_free(void);
 KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectType type, KfEffectKind kind,

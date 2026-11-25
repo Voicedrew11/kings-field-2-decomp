@@ -3,7 +3,7 @@
 #include <kf/lib/types.h>
 #include <kf/lib/memory_layout.h>
 
-/* Byte at 0x800102f0 through which an overlay names the next program for the
+/* The mailbox byte (KF_OVERLAY_MAILBOX below) through which an overlay names the next program for the
  * PSX.EXE loader (0 = OPEN, 1 = GAME, 2 = END). Each program reaches it
  * through its own initialized pointer; how the original spelled the address
  * is unresolved. */
@@ -14,7 +14,7 @@ enum {
 };
 
 extern u8 *overlay_next_request;
-/* Fixed bytes past PSX.EXE's linked .bss (it ends at 0x800102b4): PSX clears
+/* Fixed bytes just past PSX.EXE's linked .bss (whose end is BSS_END below): PSX clears
  * the flag at boot, GAME stores the request and the flag, and US OPEN reads
  * the flag (1 skips the opening movies), all through unrelocated constant
  * addresses. No program allocates them. */

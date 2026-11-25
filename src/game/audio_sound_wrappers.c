@@ -8,7 +8,7 @@
 enum { AUDIO_WRAPPER_VOLUME = 100 };
 
 ADDRESS(0x80046b5c, 0x24)
-void audio_play_sound_64(void)
+void audio_play_marker_consumed_sound(void)
 {
     audio_play_sound(0x40, AUDIO_WRAPPER_VOLUME);
 }

@@ -89,7 +89,7 @@ DATA(0x8006e98c, 0x4, ".sbss")
 static u8 *memory_card_buffer;
 
 /* Retail reserves 0x3f00 bytes: LIBCD's ISO9660 statics start right after
-   them at 0x80072a3c, so each KF_CARD_BLOCK_BYTES transfer through
+   them, so each KF_CARD_BLOCK_BYTES transfer through
    memory_card_buffer runs 0x100 bytes into that library scratch. */
 DATA(0x8006eb3c, 0x3f00, ".bss")
 static u8 memory_card_buffer_storage[0x3f00];

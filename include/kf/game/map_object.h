@@ -5,6 +5,7 @@
 #include <kf/lib/offsetof.h>
 #include <kf/lib/types.h>
 #include <kf/lib/enum.h>
+#include <kf/lib/math.h>
 #include <kf/game/audio.h>
 #include <kf/game/item.h>
 #include <kf/game/pool.h>
@@ -12,8 +13,8 @@
 #include <kf/game/notify_types.h>
 
 /* Template byte 0 selects an object's operation. The loader copies most
- * selectors unchanged into the runtime action byte (GAME 0x80035a74 jump
- * table, sb +4), which map_object_update_actions dispatches; the interaction
+ * selectors unchanged into the runtime action byte (the loader's byte-indexed
+ * operation jump table, sb +4), which map_object_update_actions dispatches; the interaction
  * and world-state switches read the template selector directly. Definition-
  * only and runtime-only operations therefore share one namespace. Names
  * follow the update/interaction code (and KF1's numbering where it agrees:
@@ -93,6 +94,8 @@ enum {
     /* Scene events spawn into the last sixteen slots. */
     KF_MAP_OBJECT_EVENT_POOL_FIRST = 0x17c,
     KF_MAP_OBJECT_EVENT_POOL_SIZE = 0x10,
+    /* Largest q12 phase: a phase that reaches one full unit saturates here. */
+    KF_MAP_OBJECT_PHASE_FULL = KF_FIXED12_ONE - 1,
     KF_MAP_REGION_HEIGHT_ANY = 0x8000,
     KF_MAP_OBJECT_CAPACITY = 0x18c
 };

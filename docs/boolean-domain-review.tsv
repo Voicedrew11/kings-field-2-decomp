@@ -277,7 +277,7 @@ game_counter_increment:return	converted	member is now a Boolean storage type	0	g
 main_end_flag	e1	named GAME_MAIN_RUNNING/EXIT_REQUESTED states	0	main_end_flag
 input_press_pending	converted	member is now a Boolean storage type	0	input_press_pending
 input_wait_brief_release::polls	reject	counter or arithmetic quantity (incremented/decremented)	1	input_wait_brief_release::polls
-item_id_is_71_to_80:return	converted	member is now a Boolean storage type	2	item_id_is_71_to_80:return
+item_id_is_menu_effect:return	converted	member is now a Boolean storage type	2	item_id_is_menu_effect:return
 magic_load_records::count	reject	counter or arithmetic quantity (incremented/decremented)	1	magic_load_records::count
 main::state	e1	named OPENING_STATE_* states	0	main::state
 map_cell_apply_rotated_pattern::first_layer_offset	reject	counter or arithmetic quantity (incremented/decremented)	2	map_cell_apply_rotated_pattern::first_layer_offset

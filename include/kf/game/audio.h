@@ -141,7 +141,7 @@ KfAudioPlaybackResult audio_play_spatial_range(
     s32 attenuation_distance, s32 note_offset);
 void audio_play_sound(s32 sound, s32 volume);
 void audio_update_listener(const VECTOR *position, const SVECTOR *rotation);
-void audio_play_sound_64(void);
+void audio_play_marker_consumed_sound(void);
 void audio_play_sound_at_volume_100(s32 sound);
 void audio_refresh_voice_handles(void);
 void audio_key_off_handle(KfAudioVoiceHandle *handle);

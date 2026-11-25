@@ -1842,7 +1842,7 @@ special_idle:
                     if (angle_within_tolerance(cur_avatar_status.camera_rotation.angles[1],
                                                bearing, group->player_facing_tolerance)
                         && angle_within_tolerance(actor->rotation.y,
-                                                  bearing + 0x800, group->actor_facing_tolerance)) {
+                                                  bearing + KF_ANGLE_HALF_TURN, group->actor_facing_tolerance)) {
                         actor_apply_magic_to_actor(index, cur_avatar_status.physical_power,
                                        cur_avatar_status.attack_components[0],
                                        cur_avatar_status.attack_components[1],
@@ -2636,7 +2636,7 @@ void player_update_horizontal_motion(void)
 
 
 ADDRESS(0x80029560, 0x1c)
-b32 item_id_is_71_to_80(KF_ENUM_PARAM(KfObjectId, s32) value)
+b32 item_id_is_menu_effect(KF_ENUM_PARAM(KfObjectId, s32) value)
 {
     if (value < KF_OBJECT_81) {
         if (value >= KF_ITEM_RELIEVE_AILMENTS) {
@@ -2672,7 +2672,7 @@ void player_update_actions_and_charge(void)
         }
         if (cur_avatar_status.secondary_item_shortcut_id != KF_OBJECT_NONE) {
             if (event_item_counters_table[KF_ENUM_ENCODE(u8, cur_avatar_status.secondary_item_shortcut_id)] != 0) {
-                if (item_id_is_71_to_80(cur_avatar_status.secondary_item_shortcut_id) != 0) {
+                if (item_id_is_menu_effect(cur_avatar_status.secondary_item_shortcut_id) != 0) {
                     menu_apply_item_effect(cur_avatar_status.secondary_item_shortcut_id);
                 } else {
                     event_scene_command_dispatch(&cur_avatar_status.camera_position,
@@ -2836,7 +2836,7 @@ void player_handle_interaction_and_menu(void)
     player_render_frame_and_release_pool();
     value = menu_run_root_controller();
     if (value >= 0) {
-        if (item_id_is_71_to_80(KF_ENUM_DECODE(KF_ENUM_PROMOTED(KfObjectId), value)) == 0) {
+        if (item_id_is_menu_effect(KF_ENUM_DECODE(KF_ENUM_PROMOTED(KfObjectId), value)) == 0) {
             render_game_frame(NULL, NULL);
             event_scene_command_dispatch(&cur_avatar_status.camera_position,
                                          &cur_avatar_status.camera_rotation_target,
@@ -3320,7 +3320,7 @@ update_reaction_pose:
                         KF_EVENT_POST_DEATH_RELOAD_ENABLED) != 0) {
                     actor_disable_type3_transition_actors();
                     cur_avatar_status.camera_rotation_target.angles[0] = 0;
-                    cur_avatar_status.camera_rotation_target.angles[1] = 0xc00;
+                    cur_avatar_status.camera_rotation_target.angles[1] = KF_ANGLE_THREE_QUARTER_TURN;
                     cur_avatar_status.camera_rotation_target.angles[2] = 0;
                     cur_avatar_status.camera_position.vy = -0x2480;
                     cur_avatar_status.camera_position.vx = 0x1e000;

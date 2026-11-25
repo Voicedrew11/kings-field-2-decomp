@@ -71,10 +71,10 @@ void callback_invoke_slot_04_zero(void);
 void resource_noop_callback();
 /* CD request completion callbacks; the finished request is unused. */
 struct KfCdRequest;
-void resource_transition_set_phase_1(struct KfCdRequest *request);
-void resource_transition_set_phase_2(struct KfCdRequest *request);
-void resource_transition_set_phase_3(struct KfCdRequest *request);
-void resource_transition_set_phase_4(struct KfCdRequest *request);
-void resource_transition_set_phase_6(struct KfCdRequest *request);
+void resource_transition_set_load_map_cells(struct KfCdRequest *request);
+void resource_transition_set_queue_map_actors(struct KfCdRequest *request);
+void resource_transition_set_load_map_actors(struct KfCdRequest *request);
+void resource_transition_set_queue_tim(struct KfCdRequest *request);
+void resource_transition_set_finish_audio(struct KfCdRequest *request);
 
 #endif

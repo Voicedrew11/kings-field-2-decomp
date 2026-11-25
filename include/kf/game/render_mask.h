@@ -5,7 +5,7 @@
 #include <kf/lib/types.h>
 #include <kf/game/render_types.h>
 
-/* The observed span is written by 0x8002c670 while it scans a 24-by-24
+/* The observed span is written by build_camera_map_cell_layer_masks while it scans a 24-by-24
  * window over the two-layer map occupancy grid. */
 typedef struct KfRenderMaskScanState {
     s32 first_layer_byte_offset;

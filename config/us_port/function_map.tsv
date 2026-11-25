@@ -74,11 +74,11 @@ GAME.EXE	0x80015d58	0x27c	0x80015dd4	0x27c	exact	0	resource_initialize_game_asse
 GAME.EXE	0x80015fd4	0x114	0x80016050	0x114	exact	0	resource_run_initial_transition
 GAME.EXE	0x800160e8	0x178	0x80016164	0x178	exact	0	translate_active_world_positions
 GAME.EXE	0x80016260	0x55c	0x800162dc	0x55c	exact	0	resource_request_transition
-GAME.EXE	0x800167bc	0x14	0x80016838	0x14	exact	0	resource_transition_set_phase_1
-GAME.EXE	0x800167d0	0x14	0x8001684c	0x14	exact	0	resource_transition_set_phase_3
-GAME.EXE	0x800167e4	0x14	0x80016860	0x14	exact	0	resource_transition_set_phase_2
-GAME.EXE	0x800167f8	0x14	0x80016874	0x14	exact	0	resource_transition_set_phase_4
-GAME.EXE	0x8001680c	0x14	0x80016888	0x14	exact	0	resource_transition_set_phase_6
+GAME.EXE	0x800167bc	0x14	0x80016838	0x14	exact	0	resource_transition_set_load_map_cells
+GAME.EXE	0x800167d0	0x14	0x8001684c	0x14	exact	0	resource_transition_set_load_map_actors
+GAME.EXE	0x800167e4	0x14	0x80016860	0x14	exact	0	resource_transition_set_queue_map_actors
+GAME.EXE	0x800167f8	0x14	0x80016874	0x14	exact	0	resource_transition_set_queue_tim
+GAME.EXE	0x8001680c	0x14	0x80016888	0x14	exact	0	resource_transition_set_finish_audio
 GAME.EXE	0x80016820	0x6b4	0x8001689c	0x6b4	exact	0	resource_advance_transition
 GAME.EXE	0x80016ed4	0xc	0x80016f50	0xc	exact	0	cd_stream_mark_complete
 GAME.EXE	0x80016ee0	0x30	0x80016f5c	0x30	exact	0	cd_map_stream_read
@@ -280,7 +280,7 @@ GAME.EXE	0x800279cc	0x5ac	0x80028560	0x5ac	exact	0	player_update_vertical_motion
 GAME.EXE	0x80027f78	0x2ac	0x80028b0c	0x2ac	exact	0	player_move_reaction_with_collision
 GAME.EXE	0x80028224	0x2f8	0x80028db8	0x31c	changed	0	player_update_camera_rotation
 GAME.EXE	0x8002851c	0x460	0x800290d4	0x48c	changed	0	player_update_horizontal_motion
-GAME.EXE	0x8002897c	0x1c	0x80029560	0x1c	exact	0	item_id_is_71_to_80
+GAME.EXE	0x8002897c	0x1c	0x80029560	0x1c	exact	0	item_id_is_menu_effect
 GAME.EXE	0x80028998	0x528	0x8002957c	0x5ec	changed	0	player_update_actions_and_charge
 GAME.EXE	0x80028ec0	0xe8	0x80029b68	0xe8	exact	0	player_update_reaction_rotation_offsets
 GAME.EXE	0x80028fa8	0x6c	0x80029c50	0x6c	exact	0	player_render_frame_and_release_pool
@@ -506,7 +506,7 @@ GAME.EXE	0x80042650	0x3670	0x80043388	0x367c	changed	0	effect_update_dispatch
 GAME.EXE	0x80045cc0	0x30	0x80046a04	0x30	exact	0	effect_pool_reset
 GAME.EXE	0x80045cf0	0x2c	0x80046a34	0x2c	exact	0	magic_load_records
 GAME.EXE	0x80045d1c	0xfc	0x80046a60	0xfc	exact	0	effect_pool_sweep
-GAME.EXE	0x80045e18	0x24	0x80046b5c	0x24	exact	0	audio_play_sound_64
+GAME.EXE	0x80045e18	0x24	0x80046b5c	0x24	exact	0	audio_play_marker_consumed_sound
 GAME.EXE	0x80045e3c	0x20	0x80046b80	0x20	exact	0	audio_play_sound_at_volume_100
 GAME.EXE	0x80045e5c	0xb4	0x80046ba0	0xb4	exact	0	collision_probe_forward_shape_0x20
 GAME.EXE	0x80045f10	0x8	0x80046c54	0x8	exact	0	event_unused_stub_0

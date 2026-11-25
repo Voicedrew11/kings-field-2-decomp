@@ -2398,7 +2398,7 @@ GAME.EXE	0x8001691c	0x611c	0x80016920	mips_hi16_lo16	instruction-word	0x8017e05e
 GAME.EXE	0x80016924	0x6124	0x80016928	mips_hi16_lo16	instruction-word	0x80177714	bss	map_objects_slots	lui+addiu	v0	paired-reviewed	reviewed	manual:resource-transition-map-object-clear;objects+0x0
 GAME.EXE	0x8001694c	0x614c	0x80016950	mips_hi16_lo16	instruction-word	0x801b6fa8	bss	cdrom_ctl	lui+addiu	a2	paired-reviewed	reviewed	manual:resource-transition-stream-read-destination;extent-unbound
 GAME.EXE	0x80016954	0x6154	0x80016958	mips_hi16_lo16	instruction-word	0x8017e06c	bss	asset_status	lui+lbu	v0	paired-reviewed	reviewed	manual:resource-transition-state
-GAME.EXE	0x8001695c	0x615c	0x80016960	mips_hi16_lo16	instruction-word	0x80016838	load	resource_transition_set_phase_1	lui+addiu	a3	paired-reviewed	reviewed	manual:resource-transition-phase-callback
+GAME.EXE	0x8001695c	0x615c	0x80016960	mips_hi16_lo16	instruction-word	0x80016838	load	resource_transition_set_load_map_cells	lui+addiu	a3	paired-reviewed	reviewed	manual:resource-transition-phase-callback
 GAME.EXE	0x80016968	0x6168		mips26	instruction-word	0x80017fa4	load	cd_archive_queue_read	jal		control-flow	reviewed	manual:resource-transition-direct-control
 GAME.EXE	0x80016970	0x6170		mips26	instruction-word	0x80016f2c	load		j		control-flow	reviewed	manual:resource-transition-direct-control
 GAME.EXE	0x80016978	0x6178	0x8001697c	mips_hi16_lo16	instruction-word	0x801b6fa8	bss	cdrom_ctl	lui+addiu	s0	paired-reviewed	reviewed	manual:resource-transition-stream-copy-source;extent-unbound
@@ -2407,7 +2407,7 @@ GAME.EXE	0x8001698c	0x618c	0x80016990	mips_hi16_lo16	instruction-word	0x80064b64
 GAME.EXE	0x80016994	0x6194	0x80016998	mips_hi16_lo16	instruction-word	0x8017e068	bss	asset_status	lui+sw	at	paired-reviewed	reviewed	manual:resource-transition-state
 GAME.EXE	0x800169a0	0x61a0	0x800169a4	mips_hi16_lo16	instruction-word	0x8019f07c	bss	rsc_hook_list	lui+addiu	a2	paired-reviewed	reviewed	manual:resource-transition-CD-loaded-callback-destination;object-extent-unbound
 GAME.EXE	0x800169a8	0x61a8	0x800169ac	mips_hi16_lo16	instruction-word	0x8017e06c	bss	asset_status	lui+lbu	v0	paired-reviewed	reviewed	manual:resource-transition-state
-GAME.EXE	0x800169b0	0x61b0	0x800169b4	mips_hi16_lo16	instruction-word	0x80016860	load	resource_transition_set_phase_2	lui+addiu	a3	paired-reviewed	reviewed	manual:resource-transition-phase-callback
+GAME.EXE	0x800169b0	0x61b0	0x800169b4	mips_hi16_lo16	instruction-word	0x80016860	load	resource_transition_set_queue_map_actors	lui+addiu	a3	paired-reviewed	reviewed	manual:resource-transition-phase-callback
 GAME.EXE	0x800169c0	0x61c0		mips26	instruction-word	0x80017fa4	load	cd_archive_queue_read	jal		control-flow	reviewed	manual:resource-transition-direct-control
 GAME.EXE	0x800169c8	0x61c8	0x800169cc	mips_hi16_lo16	instruction-word	0x801c8484	bss	pl_ext_7540	lui+addiu	a0	paired-reviewed	reviewed	manual:resource-transition-first-map-copy-destination
 GAME.EXE	0x800169d4	0x61d4		mips26	instruction-word	0x80017244	load	resource_copy_words	jal		control-flow	reviewed	manual:resource-transition-direct-control
@@ -2424,7 +2424,7 @@ GAME.EXE	0x80016a50	0x6250		mips26	instruction-word	0x80016f2c	load		j		control-
 GAME.EXE	0x80016a5c	0x625c	0x80016a60	mips_hi16_lo16	instruction-word	0x8017e05e	bss	asset_status	lui+sh	at	paired-reviewed	reviewed	manual:resource-transition-state
 GAME.EXE	0x80016a68	0x6268	0x80016a6c	mips_hi16_lo16	instruction-word	0x801b6fa8	bss	cdrom_ctl	lui+addiu	a2	paired-reviewed	reviewed	manual:resource-transition-stream-read-destination;extent-unbound
 GAME.EXE	0x80016a70	0x6270	0x80016a74	mips_hi16_lo16	instruction-word	0x8017e06c	bss	asset_status	lui+lbu	v0	paired-reviewed	reviewed	manual:resource-transition-state
-GAME.EXE	0x80016a78	0x6278	0x80016a7c	mips_hi16_lo16	instruction-word	0x8001684c	load	resource_transition_set_phase_3	lui+addiu	a3	paired-reviewed	reviewed	manual:resource-transition-phase-callback
+GAME.EXE	0x80016a78	0x6278	0x80016a7c	mips_hi16_lo16	instruction-word	0x8001684c	load	resource_transition_set_load_map_actors	lui+addiu	a3	paired-reviewed	reviewed	manual:resource-transition-phase-callback
 GAME.EXE	0x80016a88	0x6288		mips26	instruction-word	0x80017fa4	load	cd_archive_queue_read	jal		control-flow	reviewed	manual:resource-transition-direct-control
 GAME.EXE	0x80016a90	0x6290	0x80016a94	mips_hi16_lo16	instruction-word	0x8019f07c	bss	rsc_hook_list	lui+addiu	v0	paired-reviewed	reviewed	manual:resource-transition-active-callback-table;object-extent-unbound
 GAME.EXE	0x80016a98	0x6298	0x80016a9c	mips_hi16_lo16	instruction-word	0x8017e068	bss	asset_status	lui+sw	at	paired-reviewed	reviewed	manual:resource-transition-state
@@ -2432,7 +2432,7 @@ GAME.EXE	0x80016aa0	0x62a0		mips26	instruction-word	0x80016f2c	load		j		control-
 GAME.EXE	0x80016aa8	0x62a8	0x80016aac	mips_hi16_lo16	instruction-word	0x8017e06d	bss	asset_status	lui+addiu	v1	paired-reviewed	reviewed	manual:resource-transition-state
 GAME.EXE	0x80016ac0	0x62c0	0x80016ac4	mips_hi16_lo16	instruction-word	0x8017e05e	bss	asset_status	lui+sh	at	paired-reviewed	reviewed	manual:resource-transition-state
 GAME.EXE	0x80016ac8	0x62c8	0x80016acc	mips_hi16_lo16	instruction-word	0x8012e9ac	bss	resource_tmd_arc_work	lui+addiu	a2	paired-reviewed	reviewed	manual:resource-transition-TMD-read-destination;object-extent-unbound
-GAME.EXE	0x80016ad4	0x62d4	0x80016ad8	mips_hi16_lo16	instruction-word	0x80016874	load	resource_transition_set_phase_4	lui+addiu	a3	paired-reviewed	reviewed	manual:resource-transition-phase-callback
+GAME.EXE	0x80016ad4	0x62d4	0x80016ad8	mips_hi16_lo16	instruction-word	0x80016874	load	resource_transition_set_queue_tim	lui+addiu	a3	paired-reviewed	reviewed	manual:resource-transition-phase-callback
 GAME.EXE	0x80016adc	0x62dc		mips26	instruction-word	0x80017fa4	load	cd_archive_queue_read	jal		control-flow	reviewed	manual:resource-transition-direct-control
 GAME.EXE	0x80016ae4	0x62e4	0x80016ae8	mips_hi16_lo16	instruction-word	0x8017e06c	bss	asset_status	lui+lbu	v0	paired-reviewed	reviewed	manual:resource-transition-state
 GAME.EXE	0x80016af8	0x62f8	0x80016afc	mips_hi16_lo16	instruction-word	0x801b6fa8	bss	cdrom_ctl	lui+addiu	s2	paired-reviewed	reviewed	manual:resource-transition-stream-parse-source;extent-unbound
@@ -2494,7 +2494,7 @@ GAME.EXE	0x80016e7c	0x667c	0x80016e80	mips_hi16_lo16	instruction-word	0x801985ac
 GAME.EXE	0x80016e84	0x6684	0x80016e88	mips_hi16_lo16	instruction-word	0x8017e06f	bss	asset_status	lui+lbu	a1	paired-reviewed	reviewed	manual:resource-transition-state
 GAME.EXE	0x80016e9c	0x669c		mips26	instruction-word	0x8001474c	load	audio_queue_vab_stream	jal		control-flow	reviewed	manual:resource-transition-direct-control
 GAME.EXE	0x80016ea4	0x66a4	0x80016ea8	mips_hi16_lo16	instruction-word	0x8017e070	bss	asset_status	lui+lbu	a1	paired-reviewed	reviewed	manual:resource-transition-state
-GAME.EXE	0x80016ed0	0x66d0	0x80016ed4	mips_hi16_lo16	instruction-word	0x80016888	load	resource_transition_set_phase_6	lui+addiu	a3	paired-reviewed	reviewed	manual:resource-transition-phase-callback
+GAME.EXE	0x80016ed0	0x66d0	0x80016ed4	mips_hi16_lo16	instruction-word	0x80016888	load	resource_transition_set_finish_audio	lui+addiu	a3	paired-reviewed	reviewed	manual:resource-transition-phase-callback
 GAME.EXE	0x80016ed8	0x66d8	0x80016edc	mips_hi16_lo16	instruction-word	0x80198574	bss	sound_status	lui+lw	a2	paired-reviewed	reviewed	manual:resource-transition-sequence-state
 GAME.EXE	0x80016ee0	0x66e0		mips26	instruction-word	0x80017fa4	load	cd_archive_queue_read	jal		control-flow	reviewed	manual:resource-transition-direct-control
 GAME.EXE	0x80016eec	0x66ec	0x80016ef0	mips_hi16_lo16	instruction-word	0x8017e05e	bss	asset_status	lui+sh	at	paired-reviewed	reviewed	manual:resource-transition-state
@@ -5607,7 +5607,7 @@ GAME.EXE	0x80029670	0x18e70	0x80029674	mips_hi16_lo16	reachable-code	0x801994ac	
 GAME.EXE	0x80029684	0x18e84		mips26	reachable-code	0x80027dc0	load	player_select_magic_action	jal		control-flow	candidate	us-port:scan;byte-validated
 GAME.EXE	0x8002968c	0x18e8c	0x80029690	mips_hi16_lo16	reachable-code	0x801994ad	bss		lui+lbu	a0	paired-reviewed	reviewed	us-port:scan;byte-validated
 GAME.EXE	0x800296a0	0x18ea0	0x800296a4	mips_hi16_lo16	reachable-code	0x8009b52c	bss	event_item_counters_table	lui+addiu	at	paired-reviewed	reviewed	us-port:scan;byte-validated
-GAME.EXE	0x800296bc	0x18ebc		mips26	reachable-code	0x80029560	load	item_id_is_71_to_80	jal		control-flow	candidate	us-port:scan;byte-validated
+GAME.EXE	0x800296bc	0x18ebc		mips26	reachable-code	0x80029560	load	item_id_is_menu_effect	jal		control-flow	candidate	us-port:scan;byte-validated
 GAME.EXE	0x800296cc	0x18ecc	0x800296d0	mips_hi16_lo16	reachable-code	0x801994ad	bss		lui+lbu	a0	paired-reviewed	reviewed	us-port:scan;byte-validated
 GAME.EXE	0x800296d4	0x18ed4		mips26	reachable-code	0x800197d4	load	menu_apply_item_effect	jal		control-flow	candidate	us-port:scan;byte-validated
 GAME.EXE	0x800296dc	0x18edc		mips26	reachable-code	0x80029704	load		j		control-flow	candidate	us-port:scan;byte-validated
@@ -5727,7 +5727,7 @@ GAME.EXE	0x80029d78	0x19578	0x80029d7c	mips_hi16_lo16	reachable-code	0x80199556	
 GAME.EXE	0x80029d90	0x19590	0x80029d94	mips_hi16_lo16	reachable-code	0x801994a4	bss		lui+lh	v1	paired-reviewed	reviewed	us-port:scan;byte-validated
 GAME.EXE	0x80029da4	0x195a4		mips26	reachable-code	0x80029c50	load	player_render_frame_and_release_pool	jal		control-flow	candidate	us-port:scan;byte-validated
 GAME.EXE	0x80029dac	0x195ac		mips26	reachable-code	0x80018e80	load	func_80018e80	jal		control-flow	candidate	us-port:scan;byte-validated
-GAME.EXE	0x80029dc0	0x195c0		mips26	reachable-code	0x80029560	load	item_id_is_71_to_80	jal		control-flow	candidate	us-port:scan;byte-validated
+GAME.EXE	0x80029dc0	0x195c0		mips26	reachable-code	0x80029560	load	item_id_is_menu_effect	jal		control-flow	candidate	us-port:scan;byte-validated
 GAME.EXE	0x80029dd0	0x195d0		mips26	reachable-code	0x800342d8	load	render_game_frame	jal		control-flow	candidate	us-port:scan;byte-validated
 GAME.EXE	0x80029de0	0x195e0		mips26	reachable-code	0x800474d0	load	event_scene_command_dispatch	jal		control-flow	candidate	us-port:scan;byte-validated
 GAME.EXE	0x80029de8	0x195e8		mips26	reachable-code	0x80029e40	load		j		control-flow	candidate	us-port:scan;byte-validated
@@ -9094,7 +9094,7 @@ GAME.EXE	0x80047560	0x36d60		mips26	instruction-word	0x80036ec8	load	map_object_
 GAME.EXE	0x80047580	0x36d80	0x80047584	mips_hi16_lo16	instruction-word	0x80177714	bss	map_objects_slots	lui+addiu	v1	paired-reviewed	reviewed	manual:func_8004678c raw adjacent signed-low pair to established map_object_state owner
 GAME.EXE	0x80047590	0x36d90		mips26	instruction-word	0x800375ec	load	map_object_check_and_consume_marker	jal		control-flow	reviewed	manual:func_8004678c decoded direct call
 GAME.EXE	0x800475bc	0x36dbc		mips26	control-flow	0x80047544	load		j		reviewed	reviewed	manual:func_8004678c raw MIPS26 direct in-body jump
-GAME.EXE	0x800475c4	0x36dc4		mips26	instruction-word	0x80046b5c	load	audio_play_sound_64	jal		control-flow	reviewed	manual:func_8004678c decoded direct call
+GAME.EXE	0x800475c4	0x36dc4		mips26	instruction-word	0x80046b5c	load	audio_play_marker_consumed_sound	jal		control-flow	reviewed	manual:func_8004678c decoded direct call
 GAME.EXE	0x800475cc	0x36dcc	0x800475d0	mips_hi16_lo16	instruction-word	0x801b3084	bss	cur_evt_state	lui+sw	at	paired-reviewed	reviewed	manual:func_8004678c sets event state word after object action
 GAME.EXE	0x800475d4	0x36dd4		mips26	control-flow	0x800480b8	load		j		reviewed	reviewed	manual:func_8004678c raw MIPS26 direct in-body jump
 GAME.EXE	0x800475e0	0x36de0		mips26	control-flow	0x80033f08	load	notify_enqueue	jal		reviewed	reviewed	manual:func_8004678c raw MIPS26 direct call

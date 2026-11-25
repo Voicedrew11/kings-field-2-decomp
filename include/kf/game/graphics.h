@@ -15,7 +15,7 @@
 #include <psyq/sdk.h>
 
 /* GAME.EXE double-buffered display and the graphics runtime region cleared
- * by game_main_loop (0x5f3c words at 0x8017d140). Members are named where a
+ * by game_main_loop (0x5f3c words). Members are named where a
  * reconstructed function establishes them; the rest stay opaque. */
 
 enum {

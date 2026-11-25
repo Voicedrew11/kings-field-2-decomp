@@ -911,14 +911,14 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
         if (slot != KF_AUDIO_VAB_SLOT_NONE && sound_status.vab_slots[slot].vab_id != KF_AUDIO_VAB_ID_NONE &&
             sound_status.vab_slots[slot].vab_id != KF_AUDIO_VAB_ID_STREAM_PENDING) {
             audio_play_spatial_range(0xec, &record->position, volume, 28000,
-                                     0x7148, 0);
+                                     EFFECT_SPATIAL_ATTENUATION_DISTANCE, 0);
             break;
         }
         slot = sound_status.voices.params[239].vab_slot_index;
         if (slot != KF_AUDIO_VAB_SLOT_NONE && sound_status.vab_slots[slot].vab_id != KF_AUDIO_VAB_ID_NONE &&
             sound_status.vab_slots[slot].vab_id != KF_AUDIO_VAB_ID_STREAM_PENDING) {
             audio_play_spatial_range(0xef, &record->position, volume, 28000,
-                                     0x7148, 0);
+                                     EFFECT_SPATIAL_ATTENUATION_DISTANCE, 0);
         }
         break;
     }
@@ -1186,7 +1186,7 @@ KF_ENUM_PARAM(KfEffectMotionResult, s32) effect_target_motion(const VECTOR *targ
 }
 
 ADDRESS(0x80042a08, 0xac)
-void effect_scale_step(s32 multiplier, s32 limit, s32 increment, s32 arg3, s32 arg5)
+void effect_scale_step(s32 multiplier, s32 limit, s32 increment, s32 falloff, s32 mode)
 {
     KfEffectRecord *record = effect_status.current_record;
     s32 scaled_size;
@@ -1195,7 +1195,7 @@ void effect_scale_step(s32 multiplier, s32 limit, s32 increment, s32 arg3, s32 a
     scaled_size = (multiplier * record->scale_x) >> KF_FIXED12_BITS;
     effect_apply_radial_magic_damage(&record->position,
                   scaled_size - ((multiplier * increment) >> KF_FIXED12_BITS),
-                  scaled_size - 1, arg5, arg3, 0x1000);
+                  scaled_size - 1, mode, falloff, 0x1000);
     if (record->scale_x >= limit) {
         record->type = KF_EFFECT_SLOT_FREE;
     }
@@ -1220,7 +1220,7 @@ void effect_spawn_zero_direction(KfEffectRecord *record, s32 mode)
 }
 
 ADDRESS(0x80042b44, 0x88)
-b32 effect_spawn_at_lower_bound(const VECTOR *position, s32 arg1, s32 arg2,
+b32 effect_spawn_at_lower_bound(const VECTOR *position, s32 scale, s32 amplitude,
                                 s32 vertical_window)
 {
     s32 lower_bound = pl_ext_7540.collision_cache.heights.lower_bound;
@@ -1237,23 +1237,23 @@ b32 effect_spawn_at_lower_bound(const VECTOR *position, s32 arg1, s32 arg2,
     spawn_position.vx = position->vx;
     spawn_position.vz = position->vz;
     spawn_position.vy = lower_bound;
-    effect_construct_record(10, KF_EFFECT_TYPE_NONE, KF_EFFECT_KIND_102, &spawn_position, &direction, arg1,
-                            arg2);
+    effect_construct_record(10, KF_EFFECT_TYPE_NONE, KF_EFFECT_KIND_102, &spawn_position, &direction, scale,
+                            amplitude);
     return KF_TRUE;
 }
 
 ADDRESS(0x80042bcc, 0x298)
 void effect_spawn_motion(KfEffectRecord *record, s32 position_mode,
-                   s32 motion_mode, s32 arg3, s32 arg4, s32 arg5,
-                   s32 arg6, s32 arg7, ...)
+                   s32 motion_mode, s32 scale, s32 scale_step, s32 updates_remaining,
+                   s32 render_id, s32 vertical_step, ...)
 {
     s32 *args;
     SVECTOR motion;
     VECTOR position_delta;
     VECTOR transformed;
 
-    /* O32 places the remaining effect-mode operands after arg7. */
-    args = &arg7;
+    /* O32 places the remaining effect-mode operands after vertical_step. */
+    args = &vertical_step;
     if (position_mode == -1) {
         position_delta.vx = position_delta.vy = position_delta.vz = 0;
     } else {
@@ -1294,7 +1294,7 @@ void effect_spawn_motion(KfEffectRecord *record, s32 position_mode,
 spawn:
     addVector(&position_delta, &record->position);
     effect_construct_record(10, KF_EFFECT_TYPE_NONE, KF_EFFECT_KIND_101, &position_delta, &motion,
-                  arg3, arg4, arg5, arg6, arg7);
+                  scale, scale_step, updates_remaining, render_id, vertical_step);
 }
 
 ADDRESS(0x80042e64, 0x16c)
@@ -1387,7 +1387,7 @@ void effect_collision_backtrack(void)
 }
 
 ADDRESS(0x80043228, 0x160)
-void effect_spawn_radial_ring(s32 count, s32 radius, s32 vertical_angle, s32 arg3)
+void effect_spawn_radial_ring(s32 count, s32 radius, s32 vertical_angle, s32 vertical_step)
 {
     KfEffectRecord *record = effect_status.current_record;
     SVECTOR direction;
@@ -1407,7 +1407,7 @@ void effect_spawn_radial_ring(s32 count, s32 radius, s32 vertical_angle, s32 arg
         count--;
         effect_construct_record(10, record->type | KF_EFFECT_TARGET_ACTORS_AND_PLAYER, KF_EFFECT_KIND_8,
                                 &position, &direction,
-                      effect_status.current_index, arg3);
+                      effect_status.current_index, vertical_step);
     }
 }
 
@@ -1612,7 +1612,7 @@ void effect_update_dispatch(void)
     }
     case KF_EFFECT_KIND_42:
         if (record->cache_tail.payload.kind42.ticks_remaining == 0) {
-            effect_scale_step(0x3800, 0x1f8, 0x46, 0x800, 0x8000);
+            effect_scale_step(0x3800, 0x1f8, 0x46, 0x800, KF_RADIAL_MODE_REACH);
         } else {
             record->cache_tail.payload.kind42.ticks_remaining--;
         }
@@ -1699,7 +1699,7 @@ void effect_update_dispatch(void)
     }
     case KF_EFFECT_KIND_45:
         effect_scale_step(0x4000, record->cache_tail.payload.scale_step_argument.scale_step,
-                       0x46, 0x800, 0x8000);
+                       0x46, 0x800, KF_RADIAL_MODE_REACH);
         break;
     case KF_EFFECT_KIND_116: {
         VECTOR midpoint;
@@ -2061,7 +2061,7 @@ void effect_update_dispatch(void)
         SVECTOR random_direction;
 
         effect_scale_step(0x3800, record->cache_tail.payload.scale_step_argument.scale_step,
-                       0x80, 0x400, 0x8000);
+                       0x80, 0x400, KF_RADIAL_MODE_REACH);
         random_direction.vx = (rand() >> 6) - 256;
         random_direction.vz = (rand() >> 6) - 256;
         random_direction.vy = -(rand() >> 7) - 128;
@@ -2072,10 +2072,10 @@ void effect_update_dispatch(void)
         break;
     }
     case KF_EFFECT_KIND_51:
-        effect_scale_step(0x1000, 0x400, 0x80, 0x800, 0x8000);
+        effect_scale_step(KF_FIXED12_ONE, 0x400, 0x80, 0x800, KF_RADIAL_MODE_REACH);
         break;
     case KF_EFFECT_KIND_52:
-        effect_scale_step(0x1000, 0x800, 0x100, 0x800, 0x8000);
+        effect_scale_step(KF_FIXED12_ONE, 0x800, 0x100, 0x800, KF_RADIAL_MODE_REACH);
         break;
     case KF_EFFECT_KIND_118: {
         KF_ENUM_PROMOTED(KfEffectKind) child_kind;
@@ -2113,7 +2113,7 @@ void effect_update_dispatch(void)
         }
         break;
     case KF_EFFECT_KIND_20:
-        effect_scale_step(0x4000, 0x100, 0x20, 0x400, 0x8000);
+        effect_scale_step(0x4000, 0x100, 0x20, 0x400, KF_RADIAL_MODE_REACH);
         record->rotation.vy += 64;
         break;
     case KF_EFFECT_KIND_12: {
@@ -2133,7 +2133,7 @@ void effect_update_dispatch(void)
         }
         case 110:
         kind12_scale:
-            effect_scale_step(0x3800, 0x31f, 0x46, 0x400, 0x8000);
+            effect_scale_step(0x3800, 0x31f, 0x46, 0x400, KF_RADIAL_MODE_REACH);
             record->rotation.vy += 64;
             break;
         default:
@@ -2674,7 +2674,7 @@ void effect_update_dispatch(void)
             break;
         case 1:
         kind10_phase1:
-            effect_scale_step(0x4000, 0x800, 75, 0x400, 0x8000);
+            effect_scale_step(0x4000, 0x800, 75, 0x400, KF_RADIAL_MODE_REACH);
             record->rotation.vy += 64;
             break;
         default:
@@ -2982,7 +2982,7 @@ void effect_update_dispatch(void)
         }
         break;
     case KF_EFFECT_KIND_3:
-        effect_scale_step(0x4000, 0x200, 0x40, 0xc00, 0x8000);
+        effect_scale_step(0x4000, 0x200, 0x40, 0xc00, KF_RADIAL_MODE_REACH);
         break;
     case KF_EFFECT_KIND_114: {
         s32 count;

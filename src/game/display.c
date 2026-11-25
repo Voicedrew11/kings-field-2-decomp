@@ -2129,7 +2129,7 @@ void render_player_weapon(void)
     KfTmdObject *object;
     MATRIX model;
 
-    if (cur_avatar_status.weapon_attack_phase == -1) {
+    if (cur_avatar_status.weapon_attack_phase == KF_WEAPON_ATTACK_INACTIVE) {
         return;
     }
 
