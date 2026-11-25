@@ -92,6 +92,15 @@ void menu_unused_stub(void)
 {
 }
 
+/* func_8001883c's frame phase (DAT_8006e5a4 % 32) picks one 32x32 tile of
+ * the 2x2 block at x 960..992, y 256..288 to move each step. */
+enum {
+    MENU_CD_WAIT_TILE_LEFT_TOP = 0,
+    MENU_CD_WAIT_TILE_RIGHT_TOP = 8,
+    MENU_CD_WAIT_TILE_LEFT_BOTTOM = 16,
+    MENU_CD_WAIT_TILE_RIGHT_BOTTOM = 24
+};
+
 /* US-only; the CD wait loops call it. */
 ADDRESS(0x8001883c, 0x644)
 void func_8001883c(void)
@@ -102,7 +111,7 @@ void func_8001883c(void)
 
     if ((u32)(DAT_8006e5a8 - 5) >= 22) {
         switch (DAT_8006e5a4 % 32) {
-        case 0:
+        case MENU_CD_WAIT_TILE_LEFT_TOP:
             rect.x = DAT_8006e5ac;
             rect.y = DAT_8006e5b0;
             rect.w = 32;
@@ -121,7 +130,7 @@ void func_8001883c(void)
             rect.h = 32;
             MoveImage(&rect, DAT_8006e5ac, DAT_8006e5b0);
             break;
-        case 8:
+        case MENU_CD_WAIT_TILE_RIGHT_TOP:
             rect.x = DAT_8006e5ac;
             rect.y = DAT_8006e5b0;
             rect.w = 32;
@@ -140,7 +149,7 @@ void func_8001883c(void)
             rect.h = 32;
             MoveImage(&rect, DAT_8006e5ac, DAT_8006e5b0);
             break;
-        case 16:
+        case MENU_CD_WAIT_TILE_LEFT_BOTTOM:
             rect.x = DAT_8006e5ac;
             rect.y = DAT_8006e5b0;
             rect.w = 32;
@@ -159,7 +168,7 @@ void func_8001883c(void)
             rect.h = 32;
             MoveImage(&rect, DAT_8006e5ac, DAT_8006e5b0);
             break;
-        case 24:
+        case MENU_CD_WAIT_TILE_RIGHT_BOTTOM:
             rect.x = DAT_8006e5ac;
             rect.y = DAT_8006e5b0;
             rect.w = 32;

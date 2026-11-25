@@ -8,8 +8,8 @@ offset-named types	27
 value-echo constants	231
 numbered functions	3
 placeholder parameters	0
-raw case labels	102
-raw state values	113
+raw case labels	0
+raw state values	75
 raw bit masks	5
 raw hex literals	602
 literal element fills	27

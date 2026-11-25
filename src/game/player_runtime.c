@@ -508,6 +508,19 @@ enum {
     KF_PLAYER_DAMAGE_DURATION_MIN = 70
 };
 
+/* Eight sectors of the hit direction relative to the camera; each selects
+ * the (x, z) tilt signs that player_apply_damage_reaction applies. */
+enum {
+    PLAYER_DAMAGE_SECTOR_TILT_NEG_X,
+    PLAYER_DAMAGE_SECTOR_TILT_NEG_X_POS_Z,
+    PLAYER_DAMAGE_SECTOR_TILT_POS_Z,
+    PLAYER_DAMAGE_SECTOR_TILT_POS_X_POS_Z,
+    PLAYER_DAMAGE_SECTOR_TILT_POS_X,
+    PLAYER_DAMAGE_SECTOR_TILT_POS_X_NEG_Z,
+    PLAYER_DAMAGE_SECTOR_TILT_NEG_Z,
+    PLAYER_DAMAGE_SECTOR_TILT_NEG_X_NEG_Z
+};
+
 ADDRESS(0x80024fe0, 0x34c)
 void player_apply_damage_reaction(const VECTOR *origin, s32 damage, s32 reaction_flags)
 {
@@ -600,35 +613,35 @@ void player_apply_damage_reaction(const VECTOR *origin, s32 damage, s32 reaction
 
     direction_index = ((angles.y - cur_avatar_status.camera_rotation.angles[1] + 256) >> 9) & 7;
     switch (direction_index) {
-    case 0:
+    case PLAYER_DAMAGE_SECTOR_TILT_NEG_X:
         angles.x = -intensity;
         angles.z = 0;
         break;
-    case 1:
+    case PLAYER_DAMAGE_SECTOR_TILT_NEG_X_POS_Z:
         angles.x = -intensity;
         angles.z = intensity;
         break;
-    case 2:
+    case PLAYER_DAMAGE_SECTOR_TILT_POS_Z:
         angles.x = 0;
         angles.z = intensity;
         break;
-    case 3:
+    case PLAYER_DAMAGE_SECTOR_TILT_POS_X_POS_Z:
         angles.x = intensity;
         angles.z = intensity;
         break;
-    case 4:
+    case PLAYER_DAMAGE_SECTOR_TILT_POS_X:
         angles.x = intensity;
         angles.z = 0;
         break;
-    case 5:
+    case PLAYER_DAMAGE_SECTOR_TILT_POS_X_NEG_Z:
         angles.x = intensity;
         angles.z = -intensity;
         break;
-    case 6:
+    case PLAYER_DAMAGE_SECTOR_TILT_NEG_Z:
         angles.x = 0;
         angles.z = -intensity;
         break;
-    case 7:
+    case PLAYER_DAMAGE_SECTOR_TILT_NEG_X_NEG_Z:
         angles.x = -intensity;
         angles.z = -intensity;
         break;

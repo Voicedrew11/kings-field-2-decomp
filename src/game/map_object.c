@@ -280,7 +280,7 @@ void map_object_initialize_from_placements(const KfMapObjectPlacement *placement
         case KF_MAP_OBJECT_OP_SWITCH:
             object->asset_clip_selector = KF_ANIMATION_CLIP_FIRST;
             object->action = KF_MAP_OBJECT_OP_SWITCH;
-            object->action_timer = 9;
+            object->action_timer = KF_MAP_OBJECT_SWITCH_INIT;
             break;
         case KF_MAP_OBJECT_OP_HINGED_CONTAINER:
             object->action = KF_MAP_OBJECT_OP_HINGED_CONTAINER;
@@ -819,6 +819,11 @@ enum {
     KF_MAP_OBJECT_MOTION_LIMIT = KF_MAP_OBJECT_PHASE_FULL
 };
 
+enum {
+    MAP_OBJECT_SOCKET_MOTION_IDLE = 0,
+    MAP_OBJECT_SOCKET_MOTION_RUNNING = 1,
+};
+
 ADDRESS(0x800378a0, 0x2bc)
 b32 map_object_step_offset_motion(KfMapObject *source, KfMapObject *target,
                    SVECTOR *start_offset, SVECTOR *end_offset,
@@ -829,7 +834,7 @@ b32 map_object_step_offset_motion(KfMapObject *source, KfMapObject *target,
     s32 fraction;
 
     switch (source->action_timer) {
-    case 0:
+    case MAP_OBJECT_SOCKET_MOTION_IDLE:
         if (source->tail.event_effect.pending_event_command == KF_OBJECT_NONE) {
             return KF_FALSE;
         }
@@ -838,7 +843,7 @@ b32 map_object_step_offset_motion(KfMapObject *source, KfMapObject *target,
         } else {
             source->extra_40.offset_motion.elapsed_frames = duration - 1;
         }
-        source->action_timer = 1;
+        source->action_timer = MAP_OBJECT_SOCKET_MOTION_RUNNING;
         map_object_reset(target);
         target->action = KF_MAP_OBJECT_OP_OFFSET_MOTION;
         target->layer_mask = source->layer_mask;
@@ -853,7 +858,7 @@ b32 map_object_step_offset_motion(KfMapObject *source, KfMapObject *target,
         target->rotation.vy = source->rotation.vy;
         target->extra_40.object_index = source - map_objects_slots.objects;
         break;
-    case 1:
+    case MAP_OBJECT_SOCKET_MOTION_RUNNING:
         break;
     default:
         return KF_FALSE;

@@ -1242,6 +1242,13 @@ b32 effect_spawn_at_lower_bound(const VECTOR *position, s32 scale, s32 amplitude
     return KF_TRUE;
 }
 
+/* Negative motion modes of effect_spawn_motion; other values scale the record direction. */
+enum {
+    EFFECT_MOTION_SAMPLED_VERTEX = -1,
+    EFFECT_MOTION_RANDOM_RANGE = -2,
+    EFFECT_MOTION_STATIONARY = -3,
+};
+
 ADDRESS(0x80042bcc, 0x298)
 void effect_spawn_motion(KfEffectRecord *record, s32 position_mode,
                    s32 motion_mode, s32 scale, s32 scale_step, s32 updates_remaining,
@@ -1262,18 +1269,18 @@ void effect_spawn_motion(KfEffectRecord *record, s32 position_mode,
     }
 
     switch (motion_mode) {
-    case -1:
+    case EFFECT_MOTION_SAMPLED_VERTEX:
         effect_sample_rotated_vertex(record, args[2], &transformed,
                       (const SVECTOR *)args[3]);
         copyVector(&motion, &transformed);
         motion_mode = args[1];
         break;
-    case -2:
+    case EFFECT_MOTION_RANDOM_RANGE:
         motion.vx = (rand() * args[1] >> 15) + (u16)args[2];
         motion.vy = (rand() * args[3] >> 15) + (u16)args[4];
         motion.vz = (rand() * args[5] >> 15) + (u16)args[6];
         goto spawn;
-    case -3:
+    case EFFECT_MOTION_STATIONARY:
         motion.vx = motion.vy = motion.vz = 0;
         motion_mode = args[1];
         break;
@@ -1410,6 +1417,48 @@ void effect_spawn_radial_ring(s32 count, s32 radius, s32 vertical_angle, s32 ver
                       effect_status.current_index, vertical_step);
     }
 }
+
+/* record->phase of a KF_EFFECT_KIND_12 record. */
+enum {
+    EFFECT_KIND12_PHASE_LAUNCH_CHILD = 100,
+    EFFECT_KIND12_PHASE_CHILD_HANDOFF = 101,
+    EFFECT_KIND12_PHASE_RESET = 102,
+    EFFECT_KIND12_PHASE_SCALE = 110,
+};
+
+/* record->phase of a KF_EFFECT_KIND_5 record. */
+enum {
+    EFFECT_KIND5_PHASE_SPAWN_CHILDREN = 0,
+    EFFECT_KIND5_PHASE_AWAIT_CHILDREN = 1,
+};
+
+/* record->phase of a KF_EFFECT_KIND_106 record. */
+enum {
+    EFFECT_KIND106_PHASE_FLIGHT = 0,
+    EFFECT_KIND106_PHASE_AWAIT_CHILDREN = 1,
+};
+
+/* record->phase of a KF_EFFECT_KIND_8 record. */
+enum {
+    EFFECT_KIND8_PHASE_TRAVEL = 0,
+    EFFECT_KIND8_PHASE_SPREAD = 1,
+};
+
+/* record->phase of a KF_EFFECT_KIND_10 record. */
+enum {
+    EFFECT_KIND10_PHASE_TARGETING = 0,
+    EFFECT_KIND10_PHASE_EXPAND = 1,
+    EFFECT_KIND10_PHASE_ACTIVATE = 5,
+};
+
+/* record->phase of a KF_EFFECT_KIND_6 record. */
+enum {
+    EFFECT_KIND6_PHASE_SPAWN_TRAIL = 0,
+    EFFECT_KIND6_PHASE_TRAIL_FLIGHT = 1,
+    EFFECT_KIND6_PHASE_HOLD_ACTOR = 2,
+    EFFECT_KIND6_PHASE_RELEASE_COUNTDOWN = 3,
+    EFFECT_KIND6_PHASE_BURST = 4,
+};
 
 ADDRESS(0x80043388, 0x367c)
 void effect_update_dispatch(void)
@@ -2120,18 +2169,18 @@ void effect_update_dispatch(void)
         s32 prior_phase = initial_phase;
 
         switch (prior_phase) {
-        case 101:
+        case EFFECT_KIND12_PHASE_CHILD_HANDOFF:
             record->phase++;
             break;
-        case 100: {
+        case EFFECT_KIND12_PHASE_LAUNCH_CHILD: {
             KfEffectRecord *child = effect_construct_record(
                 10, record->type | KF_EFFECT_TARGET_ACTORS_AND_PLAYER, KF_EFFECT_KIND_12, &record->position,
                 NULL, &record->rotation);
 
-            child->phase = 101;
+            child->phase = EFFECT_KIND12_PHASE_CHILD_HANDOFF;
             goto kind12_reset;
         }
-        case 110:
+        case EFFECT_KIND12_PHASE_SCALE:
         kind12_scale:
             effect_scale_step(0x3800, 0x31f, 0x46, 0x400, KF_RADIAL_MODE_REACH);
             record->rotation.vy += 64;
@@ -2158,16 +2207,16 @@ void effect_update_dispatch(void)
                                                 KF_EFFECT_KIND_12,
                                       &record->position, NULL,
                                       &record->rotation);
-                child->phase = 101;
+                child->phase = EFFECT_KIND12_PHASE_CHILD_HANDOFF;
             }
             /* fall through */
-        case 102:
+        case EFFECT_KIND12_PHASE_RESET:
         kind12_reset:
             record->render_id = KF_EFFECT_MODEL_17;
             record->scale_z = 0;
             record->scale_y = 0;
             record->scale_x = 0;
-            record->phase = 110;
+            record->phase = EFFECT_KIND12_PHASE_SCALE;
             record->type |= KF_EFFECT_TARGET_ACTORS_AND_PLAYER;
             goto kind12_scale;
         kind12_collision:
@@ -2220,7 +2269,7 @@ void effect_update_dispatch(void)
         const KfActor *actor;
 
         switch (initial_phase) {
-        case 0: {
+        case EFFECT_KIND5_PHASE_SPAWN_CHILDREN: {
             progress = 0;
             if (record->cache_tail.payload.kind5.actor_index != KF_EFFECT_TARGET_ACTOR_NONE) {
                 goto kind5_actor_count;
@@ -2253,10 +2302,10 @@ void effect_update_dispatch(void)
                                record->cache_tail.payload.kind5.actor_index, progress >> 12);
                 progress += step_size;
             }
-            record->phase = 1;
+            record->phase = EFFECT_KIND5_PHASE_AWAIT_CHILDREN;
             break;
         }
-        case 1: {
+        case EFFECT_KIND5_PHASE_AWAIT_CHILDREN: {
             KfEffectRecord *child;
             s32 index;
 
@@ -2461,7 +2510,7 @@ void effect_update_dispatch(void)
     }
     case KF_EFFECT_KIND_106:
         switch (initial_phase) {
-        case 0:
+        case EFFECT_KIND106_PHASE_FLIGHT:
             record->direction.vy += 20;
             collision = effect_collision_step(140, KF_COLLISION_HEIGHT_CHECK_FLOOR, -300);
             if (collision != KF_COLLISION_HIT_NONE) {
@@ -2473,14 +2522,14 @@ void effect_update_dispatch(void)
                 effect_spawn_radial_ring(8, 140, -170, 40);
                 effect_play_spatial_sound(record, 0x25);
                 record->cache_tail.payload.kind106.children_remaining = 15;
-                record->phase = 1;
+                record->phase = EFFECT_KIND106_PHASE_AWAIT_CHILDREN;
                 record->render_flags = KF_EFFECT_RENDER_HIDDEN;
             } else {
                 effect_spawn_motion(record, -1, -3, 6000, -800,
                                6, 8, 0, -1024);
             }
             break;
-        case 1:
+        case EFFECT_KIND106_PHASE_AWAIT_CHILDREN:
             if (record->cache_tail.payload.kind106.children_remaining == 0) {
                 record->type = KF_EFFECT_SLOT_FREE;
             }
@@ -2491,7 +2540,7 @@ void effect_update_dispatch(void)
         KfEffectRecord *parent;
 
         switch (initial_phase) {
-        case 0: {
+        case EFFECT_KIND8_PHASE_TRAVEL: {
             const KfEffectKind8State *kind8 =
                 &record->cache_tail.payload.kind8;
             VECTOR next;
@@ -2520,7 +2569,7 @@ void effect_update_dispatch(void)
                         s32 dz;
                         s32 distance;
 
-                        record->phase = 1;
+                        record->phase = EFFECT_KIND8_PHASE_SPREAD;
                         record->render_flags = KF_EFFECT_RENDER_VISIBLE | KF_EFFECT_RENDER_PITCH_TRANSFORM;
                         record->render_id = KF_EFFECT_MODEL_20;
                         dx = record->position.vx - parent->position.vx;
@@ -2559,7 +2608,7 @@ void effect_update_dispatch(void)
             break;
             break;
         }
-        case 1: {
+        case EFFECT_KIND8_PHASE_SPREAD: {
             const KfEffectKind8State *kind8 =
                 &record->cache_tail.payload.kind8;
             struct KfVecXZi forward;
@@ -2608,7 +2657,7 @@ void effect_update_dispatch(void)
         KfActor *actor;
 
         switch (initial_phase) {
-        case 0:
+        case EFFECT_KIND10_PHASE_TARGETING:
             collision = effect_collision_step(250, KF_COLLISION_HEIGHT_CHECK_FLOOR, 0);
             if (collision == KF_COLLISION_HIT_NONE && record->updates_remaining >= 2) {
                 goto kind10_normal;
@@ -2626,8 +2675,8 @@ void effect_update_dispatch(void)
                 effect_play_spatial_sound(record, 0x17);
             }
             /* fall through */
-        case 5:
-            record->phase = 1;
+        case EFFECT_KIND10_PHASE_ACTIVATE:
+            record->phase = EFFECT_KIND10_PHASE_EXPAND;
             record->render_id = KF_EFFECT_MODEL_11;
             record->lighting_override_index = KF_LIGHTING_EFFECT;
             record->scale_z = 0;
@@ -2672,7 +2721,7 @@ void effect_update_dispatch(void)
                 }
             }
             break;
-        case 1:
+        case EFFECT_KIND10_PHASE_EXPAND:
         kind10_phase1:
             effect_scale_step(0x4000, 0x800, 75, 0x400, KF_RADIAL_MODE_REACH);
             record->rotation.vy += 64;
@@ -2692,7 +2741,7 @@ void effect_update_dispatch(void)
         KfActor *actor;
 
         switch (initial_phase) {
-        case 0: {
+        case EFFECT_KIND6_PHASE_SPAWN_TRAIL: {
             s32 index;
             KfEffectRecord *child;
             KfEffectTrailChildLink *link;
@@ -2712,13 +2761,13 @@ void effect_update_dispatch(void)
                 link->parent_index = parent_index;
             }
             child->render_id = KF_EFFECT_MODEL_24;
-            record->phase = 1;
+            record->phase = EFFECT_KIND6_PHASE_TRAIL_FLIGHT;
         }
         /* The spawn tick also runs the phase-one update. */
-        case 1:
+        case EFFECT_KIND6_PHASE_TRAIL_FLIGHT:
             if (record->updates_remaining < 3) {
             kind6_phase3:
-                record->phase = 3;
+                record->phase = EFFECT_KIND6_PHASE_RELEASE_COUNTDOWN;
                 record->updates_remaining = -1;
                 record->cache_tail.payload.trail.phase_counter = 24;
                 break;
@@ -2740,7 +2789,7 @@ void effect_update_dispatch(void)
                     if (actor->target_type == KF_ACTOR_TARGET_2 || actor->target_type == KF_ACTOR_TARGET_3) {
                         record->render_flags = KF_EFFECT_RENDER_VISIBLE;
                         record->render_id = KF_EFFECT_MODEL_22;
-                        record->phase = 2;
+                        record->phase = EFFECT_KIND6_PHASE_HOLD_ACTOR;
                         record->cache_tail.payload.trail.phase_counter = 0;
                         record->rotation.vz = 0;
                         record->rotation.vx = 0;
@@ -2769,7 +2818,7 @@ void effect_update_dispatch(void)
                 row->rotation.vx = record->rotation.vx + (rcos(angle) >> 4);
             }
             break;
-        case 2:
+        case EFFECT_KIND6_PHASE_HOLD_ACTOR:
         phase_two: {
             VECTOR scratch;
             VECTOR *position;
@@ -2797,7 +2846,7 @@ void effect_update_dispatch(void)
                     0, actor->collision_height,
                     record->cache_tail.payload.trail.phase_counter * 350);
             } else if (record->cache_tail.payload.trail.phase_counter >= 60) {
-                record->phase = 4;
+                record->phase = EFFECT_KIND6_PHASE_BURST;
                 break;
             }
             {
@@ -2818,7 +2867,7 @@ void effect_update_dispatch(void)
             }
             break;
         }
-        case 3: {
+        case EFFECT_KIND6_PHASE_RELEASE_COUNTDOWN: {
             u8 frame = ++record->cache_tail.payload.trail.frame_index;
 
             if (frame >= 24) {
@@ -2830,7 +2879,7 @@ void effect_update_dispatch(void)
             }
             goto kind6_release_actor;
         }
-        case 4: {
+        case EFFECT_KIND6_PHASE_BURST: {
             s32 index;
 
             for (index = 31; index != -1; index--) {
