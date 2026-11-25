@@ -5,6 +5,8 @@ relink checks extend it for King's Field II's PS-X ELF / objdiff flow:
 
     kf verify board [--gate|--update|--externs]        source cleanliness ratchet
     kf verify board --data [all]                    data ownership inventory
+    kf verify readability [--gate|--update|--list L|--functions N|--metrics]
+                                                    decompiler-shaped source ratchet
     kf verify data  [--image I][--detail][--coverage]  strict data gate vs retail
     kf verify reachability [--image I][--output P]   known-reference ownership audit
     kf verify roundtrip [--image I][--output P]      target relink/placement gate
@@ -39,6 +41,10 @@ def main(argv: list[str] | None = None) -> int:
         from scripts.kf.cleanliness import main as board_main
 
         return board_main(rest)
+    if sub == "readability":
+        from scripts.kf.readability import main as readability_main
+
+        return readability_main(rest)
     if sub == "data":
         from scripts.kf.data_match import main as data_main
 
@@ -51,7 +57,7 @@ def main(argv: list[str] | None = None) -> int:
         from scripts.kf.roundtrip import main as roundtrip_main
 
         return roundtrip_main(rest)
-    print(f"kf verify: unknown subcommand {sub!r} (choose board, data, reachability or roundtrip)",
+    print(f"kf verify: unknown subcommand {sub!r} (choose board, readability, data, reachability or roundtrip)",
           file=sys.stderr)
     return 2
 
