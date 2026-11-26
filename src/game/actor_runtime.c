@@ -53,9 +53,9 @@ ADDRESS(0x80039a3c, 0xc0)
 void actor_set_home_position(KfActor *actor)
 {
     actor->position.vx = (actor->home_cell_x << ACTOR_HOME_CELL_SHIFT)
-                       + actor->word_24.home_local_x;
+                       + actor->anchor.home.local_x;
     actor->position.vz = (actor->home_cell_z << ACTOR_HOME_CELL_SHIFT)
-                       + actor->word_22.home_local_z;
+                       + actor->anchor.home.local_z;
     actor->position.vy = collision_sample_map_layer_height(actor->home_map_layer,
                                         actor->position.vx,
                                         actor->position.vz,
@@ -79,7 +79,7 @@ void actor_copy_group_defaults(KfActor *actor)
     u16 value;
 
     actor->definition_id = group->definition_id;
-    actor->health = group->word_1a.initial_health;
+    actor->health = group->health_or_vertex.initial_health;
     actor->collision_radius = group->collision_radius;
     actor->collision_height = group->collision_height;
     actor->flags = group->initial_actor_flags;
@@ -158,7 +158,7 @@ void actor_prepare_and_initialize(KfActor *actor)
     actor->rotation.z = 0;
     actor->rotation.x = 0;
     actor->current_map_layer = actor->home_map_layer;
-    actor->rotation.y = actor->word_20.home_yaw;
+    actor->rotation.y = actor->anchor.home.yaw;
     actor_set_home_position(actor);
     actor_initialize_from_group(actor);
     if (actor->slot_state == KF_ACTOR_SLOT_HOMEBOUND) {
@@ -705,7 +705,7 @@ void actor_apply_magic_to_actor(s32 actor_index, u16 power, u16 magic_06,
     s32 motion_divisor;
 
     if (actor->slot_state == KF_ACTOR_SLOT_HOMEBOUND) {
-        actor = &actor_status.actors[actor->word_22.linked_actor_slot];
+        actor = &actor_status.actors[actor->anchor.linked_actor.actor_slot];
     }
     group = &actor_status.target_groups[actor->group_index];
     if (actor->target_type == KF_ACTOR_TARGET_DEATH && actor->animation_phase >= 1548) {
@@ -807,7 +807,7 @@ update_motion:
     if ((actor->flags & KF_ACTOR_FLAG_LINKED) != KF_ACTOR_FLAGS_NONE) {
         KfActorStateGame *state = &actor_status;
         KfTargetGroup *groups = state->target_groups;
-        linked = &state->actors[actor->word_22.linked_actor_slot];
+        linked = &state->actors[actor->anchor.linked_actor.actor_slot];
         motion_divisor = groups[linked->group_index].knockback_divisor;
     } else {
         motion_divisor = group->knockback_divisor;
@@ -1033,7 +1033,7 @@ s32 actor_find_overlap_excluding_target_type3(s32 x, s32 y, s32 z,
             continue;
         }
         if ((actor->flags & KF_ACTOR_FLAG_LINKED) != KF_ACTOR_FLAGS_NONE) {
-            if (actor->word_22.linked_actor_slot == actor_status.current_actor_slot_index) {
+            if (actor->anchor.linked_actor.actor_slot == actor_status.current_actor_slot_index) {
                 continue;
             }
             alternate.vx = actor->position.vx;
@@ -1068,7 +1068,7 @@ s32 actor_find_overlap(s32 x, s32 y, s32 z, s32 radius, s32 height)
             continue;
         }
         if ((actor->flags & KF_ACTOR_FLAG_LINKED) != KF_ACTOR_FLAGS_NONE) {
-            if (actor->word_22.linked_actor_slot == actor_status.current_actor_slot_index) {
+            if (actor->anchor.linked_actor.actor_slot == actor_status.current_actor_slot_index) {
                 continue;
             }
             alternate.vx = actor->position.vx;
@@ -1100,7 +1100,7 @@ void actor_bind_current(KfActor *actor)
         actor_status.active_group = group;
         actor_status.current_group_index = actor->group_index;
         if ((group->initial_actor_flags & KF_ACTOR_FLAG_LINKED) != KF_ACTOR_FLAGS_NONE) {
-            other = &actor_status.actors[actor->word_22.linked_actor_slot];
+            other = &actor_status.actors[actor->anchor.linked_actor.actor_slot];
             actor_status.other_actor = other;
             actor_status.other_group = &actor_status.target_groups[other->group_index];
         }
@@ -2479,8 +2479,8 @@ void actor_update_behavior(void)
             actor->tail_72.angles.x = 0;
             actor->tail_72.motion.baseline = actor->vertical_anchor_offset +
                 collision_sample_map_layer_height(actor->home_map_layer,
-                    (actor->home_cell_x << KF_MAP_CELL_POSITION_SHIFT) + actor->word_24.home_local_x,
-                    (actor->home_cell_z << KF_MAP_CELL_POSITION_SHIFT) + actor->word_22.home_local_z,
+                    (actor->home_cell_x << KF_MAP_CELL_POSITION_SHIFT) + actor->anchor.home.local_x,
+                    (actor->home_cell_z << KF_MAP_CELL_POSITION_SHIFT) + actor->anchor.home.local_z,
                     actor->collision_radius, actor->collision_height);
             actor_set_animation_if_changed(target->animation_id);
             actor_suspend_vertical_motion();
@@ -3138,7 +3138,7 @@ void actor_update_behavior(void)
         }
         switch (actor->state_70.signed_state) {
         case ACTOR_RISE_STATE_AWAIT_OBJECT: {
-            KfMapObject *object = &map_objects_slots.objects[actor->word_20.linked_map_object_slot];
+            KfMapObject *object = &map_objects_slots.objects[actor->anchor.object_link.rise_object_slot];
             u16 group_scale;
 
             if (object->action_timer < 2 || object->rotation.vx == 0 ||
@@ -3256,8 +3256,8 @@ void actor_update_behavior(void)
                 actor->state_70.signed_state = ACTOR_RETURN_STATE_TURN_HOME_YAW;
             } else {
                 actor->tail_72.signed_state = actor_turn_and_move_toward_point(
-                    (actor->home_cell_x << KF_MAP_CELL_POSITION_SHIFT) + actor->word_24.home_local_x,
-                    (actor->home_cell_z << KF_MAP_CELL_POSITION_SHIFT) + actor->word_22.home_local_z,
+                    (actor->home_cell_x << KF_MAP_CELL_POSITION_SHIFT) + actor->anchor.home.local_x,
+                    (actor->home_cell_z << KF_MAP_CELL_POSITION_SHIFT) + actor->anchor.home.local_z,
                     target->params.return_home.move_speed, target->params.return_home.turn_speed,
                     actor->tail_72.signed_state,
                     group->movement_step,
@@ -3269,9 +3269,9 @@ void actor_update_behavior(void)
             actor_advance_animation_wrapped(actor, target->params.return_home.walk_animation_step);
             break;
         case ACTOR_RETURN_STATE_TURN_HOME_YAW:
-            actor_turn_toward_angle(actor, actor->word_20.home_yaw, target->params.return_home.turn_speed,
+            actor_turn_toward_angle(actor, actor->anchor.home.yaw, target->params.return_home.turn_speed,
                           group->turn_acceleration);
-            if (actor->rotation.y == actor->word_20.home_yaw) {
+            if (actor->rotation.y == actor->anchor.home.yaw) {
                 actor_set_animation(target->animation_id);
                 actor->state_70.signed_state = ACTOR_RETURN_STATE_RESIZE;
             }
@@ -3460,7 +3460,7 @@ void actor_update_behavior(void)
             rotation.z = actor->rotation.z;
             vector_rotate_yxz(&rotation, (SVECTOR *)&group->position_offset_x,
                               &group_offset);
-            actor_sample_rotated_animation_vertex(other, actor->word_24.linked_animation_vertex_index, &vertex_offset);
+            actor_sample_rotated_animation_vertex(other, actor->anchor.linked_actor.vertex_index, &vertex_offset);
             actor->position.vx = other->position.vx + vertex_offset.vx -
                                  group_offset.vx;
             actor->position.vy = other->position.vy + vertex_offset.vy -
@@ -3509,7 +3509,7 @@ void actor_update_frame(void)
             if ((actor_status.active_group->initial_actor_flags &
                  KF_ACTOR_FLAG_MAP_OBJECT_ATTACHED) != KF_ACTOR_FLAGS_NONE) {
                 KfMapObject *object =
-                    &map_objects_slots.objects[actor->word_22.linked_map_object_slot];
+                    &map_objects_slots.objects[actor->anchor.object_link.attached_object_slot];
                 s32 object_z;
 
                 actor->position.vx = object->position.vx;
@@ -3577,9 +3577,9 @@ void actor_load_records(const KfActorLoadRecord *records)
             actor->home_cell_x = records->cell_x;
             actor->spawn_chance = records->spawn_chance;
             actor->death_drop_object_id = records->death_drop_object_id;
-            actor->word_20.value = records->initial_actor_word_20;
-            actor->word_22.value = records->initial_actor_word_22;
-            actor->word_24.value = records->initial_actor_word_24;
+            actor->anchor.home.yaw = records->initial_actor_word_20;
+            actor->anchor.home.local_z = records->initial_actor_word_22;
+            actor->anchor.home.local_x = records->initial_actor_word_24;
             actor->vertical_anchor_offset = records->vertical_anchor_offset;
             actor->lifecycle = KF_ACTOR_LIFECYCLE_DORMANT;
             actor->target_type = KF_ACTOR_TARGET_IDLE;
@@ -3592,8 +3592,8 @@ void actor_load_records(const KfActorLoadRecord *records)
             actor->render_depth = group->render_depth;
             if ((actor->flags & KF_ACTOR_FLAG_LINKED) != KF_ACTOR_FLAGS_NONE) {
                 if (actor->slot_state == KF_ACTOR_SLOT_HOMEBOUND) {
-                    if (actor->word_24.value == -1) {
-                        actor->word_24.value = group->word_1a.slot3_home_x_fallback;
+                    if (actor->anchor.linked_actor.vertex_index == -1) {
+                        actor->anchor.linked_actor.vertex_index = group->health_or_vertex.linked_vertex_fallback;
                     }
                     if (actor->vertical_anchor_offset == -1) {
                         actor->vertical_anchor_offset = group->default_vertical_anchor_offset;

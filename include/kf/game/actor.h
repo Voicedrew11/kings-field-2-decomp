@@ -546,12 +546,14 @@ typedef union KfTargetReference {
 } KfTargetReference;
 typedef char kf_target_reference_size[sizeof(KfTargetReference) == 4 ? 1 : -1];
 
-/* Slot-state-3 actors can use the initial-health word as a local X fallback. */
-typedef union KfTargetGroupWord1a {
+/* Linked homebound actors with no placement vertex read this word as their
+ * default attachment vertex instead of the initial health. */
+typedef union KfTargetGroupHealthOrVertex {
     u16 initial_health;
-    u16 slot3_home_x_fallback;
-} KfTargetGroupWord1a;
-typedef char kf_target_group_word1a_size[sizeof(KfTargetGroupWord1a) == 2 ? 1 : -1];
+    u16 linked_vertex_fallback;
+} KfTargetGroupHealthOrVertex;
+typedef char kf_target_group_health_or_vertex_size[
+    sizeof(KfTargetGroupHealthOrVertex) == 2 ? 1 : -1];
 
 typedef struct KfTargetGroup {
     u8 definition_id;
@@ -572,7 +574,7 @@ typedef struct KfTargetGroup {
     u16 collision_height;
     u16 player_facing_tolerance;
     u16 actor_facing_tolerance;
-    KfTargetGroupWord1a word_1a;
+    KfTargetGroupHealthOrVertex health_or_vertex;
     u16 default_vertical_anchor_offset;
     u16 experience_reward;
     u16 magic_component_divisors[8];
@@ -600,8 +602,8 @@ typedef char kf_target_group_player_facing_tolerance_offset[
     offsetof(KfTargetGroup, player_facing_tolerance) == 0x16 ? 1 : -1];
 typedef char kf_target_group_actor_facing_tolerance_offset[
     offsetof(KfTargetGroup, actor_facing_tolerance) == 0x18 ? 1 : -1];
-typedef char kf_target_group_word_1a_offset[
-    offsetof(KfTargetGroup, word_1a) == 0x1a ? 1 : -1];
+typedef char kf_target_group_health_or_vertex_offset[
+    offsetof(KfTargetGroup, health_or_vertex) == 0x1a ? 1 : -1];
 typedef char kf_target_group_experience_reward_offset[
     offsetof(KfTargetGroup, experience_reward) == 0x1e ? 1 : -1];
 typedef char kf_target_group_vertical_acceleration_offset[
@@ -705,27 +707,35 @@ typedef char kf_actor_motion_size[sizeof(KfActorMotion) == 8 ? 1 : -1];
 typedef char kf_actor_ballistic_phase_offset[
     offsetof(KfActorMotion, ballistic.phase) == 2 ? 1 : -1];
 
-typedef union KfActorWord20 {
-    u16 value;
+/* Bytes 0x20-0x25, copied from the actor's placement row. Most actors read
+ * them as their home yaw and cell-local position (actor_prepare_and_initialize
+ * reads that view for every actor); linked actors also as the actor they
+ * follow and its attachment vertex; object-linked actors as map-object slots
+ * (the object a rising actor waits on, or the one an attached group rides). */
+typedef struct KfActorHomeAnchor {
+    u16 yaw;
+    s16 local_z;
+    s16 local_x;
+} KfActorHomeAnchor;
+
+typedef struct KfActorLinkedActorAnchor {
     u16 home_yaw;
-    u16 linked_map_object_slot;
-} KfActorWord20;
-typedef char kf_actor_word20_size[sizeof(KfActorWord20) == 2 ? 1 : -1];
+    s16 actor_slot;
+    s16 vertex_index;
+} KfActorLinkedActorAnchor;
 
-typedef union KfActorWord22 {
-    s16 value;
-    s16 home_local_z;
-    s16 linked_actor_slot;
-    s16 linked_map_object_slot;
-} KfActorWord22;
-typedef char kf_actor_word22_size[sizeof(KfActorWord22) == 2 ? 1 : -1];
-
-typedef union KfActorWord24 {
-    s16 value;
+typedef struct KfActorObjectAnchor {
+    u16 rise_object_slot;
+    s16 attached_object_slot;
     s16 home_local_x;
-    s16 linked_animation_vertex_index;
-} KfActorWord24;
-typedef char kf_actor_word24_size[sizeof(KfActorWord24) == 2 ? 1 : -1];
+} KfActorObjectAnchor;
+
+typedef union KfActorAnchor {
+    KfActorHomeAnchor home;
+    KfActorLinkedActorAnchor linked_actor;
+    KfActorObjectAnchor object_link;
+} KfActorAnchor;
+typedef char kf_actor_anchor_size[sizeof(KfActorAnchor) == 6 ? 1 : -1];
 
 /* The 0x7c stride and these fields are fixed by the actor pool and phase
  * helpers. Other fields remain open. */
@@ -757,9 +767,7 @@ typedef struct KfActor {
     u16 health;
     u16 collision_radius;
     u16 collision_height;
-    KfActorWord20 word_20;
-    KfActorWord22 word_22;
-    KfActorWord24 word_24;
+    KfActorAnchor anchor;
     s16 vertical_anchor_offset;
     KfActorFlags flags;
     VECTOR position;
@@ -823,9 +831,15 @@ typedef char kf_actor_flags_offset[offsetof(KfActor, flags) == 0x28 ? 1 : -1];
 typedef char kf_actor_position_offset[offsetof(KfActor, position) == 0x2c ? 1 : -1];
 typedef char kf_actor_ballistic_origin_y_offset[
     offsetof(KfActor, ballistic_origin_y) == 0x3c ? 1 : -1];
-typedef char kf_actor_home_yaw_offset[offsetof(KfActor, word_20.home_yaw) == 0x20 ? 1 : -1];
-typedef char kf_actor_home_offset_z[offsetof(KfActor, word_22.home_local_z) == 0x22 ? 1 : -1];
-typedef char kf_actor_home_offset_x[offsetof(KfActor, word_24.home_local_x) == 0x24 ? 1 : -1];
+typedef char kf_actor_home_yaw_offset[offsetof(KfActor, anchor.home.yaw) == 0x20 ? 1 : -1];
+typedef char kf_actor_home_offset_z[offsetof(KfActor, anchor.home.local_z) == 0x22 ? 1 : -1];
+typedef char kf_actor_home_offset_x[offsetof(KfActor, anchor.home.local_x) == 0x24 ? 1 : -1];
+typedef char kf_actor_linked_actor_slot_offset[
+    offsetof(KfActor, anchor.linked_actor.actor_slot) == 0x22 ? 1 : -1];
+typedef char kf_actor_linked_vertex_offset[
+    offsetof(KfActor, anchor.linked_actor.vertex_index) == 0x24 ? 1 : -1];
+typedef char kf_actor_attached_object_offset[
+    offsetof(KfActor, anchor.object_link.attached_object_slot) == 0x22 ? 1 : -1];
 typedef char kf_actor_vertical_anchor_offset[
     offsetof(KfActor, vertical_anchor_offset) == 0x26 ? 1 : -1];
 typedef char kf_actor_model_scale_x_offset[

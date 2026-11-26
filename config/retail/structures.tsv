@@ -2,11 +2,15 @@
 # A supported layout proves current size/offset modeling, not an original typedef spelling.
 name	size	layout_confidence	evidence	note
 KfActor	0x7c	supported	game/actor.h;retail GAME actor chain	layout from reconstructed header
+KfActorAnchor	0x6	supported	game/actor.h;actor_load_records;actor_update_frame;actor_update_behavior	placement bytes 0x20-0x25: home, linked-actor or object-link view
 KfActorBallisticPhaseView	0x8	supported	actor_update_vertical_motion state 0x30	Vector extent with Y halfword interpreted as ballistic phase
+KfActorHomeAnchor	0x6	supported	game/actor.h;actor_load_records;actor_update_frame;actor_update_behavior	home yaw and cell-local position
+KfActorLinkedActorAnchor	0x6	supported	game/actor.h;actor_load_records;actor_update_frame;actor_update_behavior	followed actor slot and its attachment vertex
 KfActorLoadRecord	0x10	supported	game/actor.h;actor_load_records 16-byte stride;resource transition archive caller	map archive actor placement record
 KfActorModelScaleY	0x2	supported	game/actor.h;actor_group_position;actor_spatial_sound	Q12 Y model scale and signed high-byte sound-note view
 KfActorModelScaleYBytes	0x2	supported	game/actor.h;actor_spatial_sound	low and signed high bytes of Y model scale
 KfActorMotion	0x8	supported	actor_motion.c;actor_behavior_dispatch.c;effect_runtime.c	SVECTOR movement view with ballistic phase overlay
+KfActorObjectAnchor	0x6	supported	game/actor.h;actor_load_records;actor_update_frame;actor_update_behavior	rise-from-object slot and attached map-object slot
 KfActorOrientation	0x8	supported	game/actor.h;actor_update_behavior	actor rotation angles followed by two unresolved bytes
 KfActorState70	0x2	supported	game/actor.h;GAME 0x8003d8f0-0x8003d934;GAME 0x80038f7c	Signed halfword and two byte action-state views at actor +0x70
 KfActorState70Bytes	0x2	supported	game/actor.h;GAME 0x8003d8f0-0x8003da98	Two byte action-state view at actor +0x70/+0x71
@@ -14,9 +18,6 @@ KfActorStateGame	0x93cc	supported	game/actor.h;retail GAME actor chain	layout fr
 KfActorTail72	0x8	supported	game/actor.h;GAME 0x8003e414-0x8003e468;GAME 0x8003d784;GAME 0x8003d804;GAME 0x8003ed70-0x8003eed4	SVECTOR output/copy overlaps motion baseline, signed state, and script halfwords
 KfActorTail72Motion	0x8	supported	game/actor.h;GAME 0x8003d784;GAME 0x8003d804	Euler halfwords followed by signed actor +0x78 baseline
 KfActorTail72Script	0x4	supported	game/actor.h;GAME 0x8003ed70;GAME 0x8003ed88;GAME 0x8003eeb8;GAME 0x8003eed4	Minimum two-halfword action-script state; first word has signed and unsigned reads
-KfActorWord20	0x2	supported	game/actor.h;GAME 0x8003900c lhu;GAME 0x8003ec3c lhu	Actor +0x20 halfword used as home yaw or linked map-object slot; original union spelling unproved
-KfActorWord22	0x2	supported	game/actor.h;GAME 0x80038d20 lh;GAME 0x8003f724 lh	Actor +0x22 signed halfword used as home-local Z or linked slot; original union spelling unproved
-KfActorWord24	0x2	supported	game/actor.h;GAME 0x80038d18 lh;GAME 0x8003f558 lh	Actor +0x24 signed halfword used as home-local X or animation vertex index; original union spelling unproved
 KfAnimClip	0x08	candidate	game/animation.h;animation_select_keyframe	prefix with one offset; additional keyframes extend the record
 KfAnimKeyframe	0x08	supported	game/animation.h;animation_select_keyframe	eight-byte keyframe prefix
 KfAssetHeader	0x14	supported	game headers;asm;xrefs;animation_select_keyframe	minimum archive header through the clip-table offset
@@ -213,7 +214,7 @@ KfTargetEventStreamParams	0xa	supported	game/actor.h;actor_update_behavior;actor
 KfTargetFlyingKeepRangeParams	0x10	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
 KfTargetFlyingWanderParams	0xc	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
 KfTargetGroup	0x78	supported	game/actor.h;retail GAME actor chain	layout from reconstructed header
-KfTargetGroupWord1a	0x2	supported	game/actor.h	Slot-state-3 actors can use the initial-health word as a local X fallback.
+KfTargetGroupHealthOrVertex	0x2	supported	game/actor.h;actor_copy_group_defaults;actor_load_records	initial health, or a linked actor's default attachment vertex
 KfTargetHeadingMoveParams	0x6	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
 KfTargetJumpAttackParams	0xc	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
 KfTargetKeepRangeParams	0xe	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header

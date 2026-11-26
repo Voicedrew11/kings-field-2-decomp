@@ -28,9 +28,7 @@ KfActor	0x18	0x2	animation_phase	u16	supported	game/actor.h;retail GAME actor ch
 KfActor	0x1a	0x2	health	u16	supported	actor_copy_group_defaults group+0x1a copy;actor_apply_magic_to_actor damage/death transition;KF1 KfActor health	Current actor health depleted by magic damage
 KfActor	0x1c	0x2	collision_radius	u16	supported	actor_copy_group_defaults group collision_radius copy;collision_query_world;collision cache radius	Dynamic actor collision radius, sometimes interpolated by action
 KfActor	0x1e	0x2	collision_height	u16	supported	actor_copy_group_defaults group collision_height copy;collision_query_world;collision cache interaction height	Dynamic actor collision height, sometimes interpolated by action
-KfActor	0x20	0x2	word_20	KfActorWord20	supported	GAME actor_set_home_position;actor_prepare_and_initialize;actor_update_behavior	Home yaw copied from placement; slot-3 behavior also indexes a linked map object with this word
-KfActor	0x22	0x2	word_22	KfActorWord22	supported	GAME actor_set_home_position;actor_target_selection;actor_fixup_group_targets	Signed home-local Z offset; linked actors and a linked map object use this word as an index in specific modes
-KfActor	0x24	0x2	word_24	KfActorWord24	supported	GAME actor_set_home_position;actor_update_behavior	Signed home-local X offset; linked actor behavior also uses this word as an animation vertex index
+KfActor	0x20	0x6	anchor	KfActorAnchor	supported	GAME actor_set_home_position;actor_prepare_and_initialize;actor_update_behavior;actor_update_frame	placement bytes 0x20-0x25 read as home, linked-actor or map-object anchor
 KfActor	0x26	0x2	vertical_anchor_offset	s16	supported	actor_load_records;actor_set_home_position;actor_animation;actor_behavior_dispatch	signed local Y offset used for placement, collision baseline, and target sampling
 KfActor	0x28	0x4	flags	KfActorFlags	supported	GAME 0x80038d70/0x8003b64c andi;0x8003d3a8/0x8003d448 andi;0x8003fd74/0x800451e8 ori;actor_initialize_from_group;render_world_model	Flag word; 0x10 links actor motion, 0x80 selects blended model render mode, 0x400 chooses raw map-layer floor, 0x800 holds effect-gated animation; other bits unresolved
 KfActor	0x2c	0x10	position	VECTOR	supported	game/actor.h;retail GAME actor chain	member used by reconstructed actor code
@@ -53,10 +51,19 @@ KfActor	0x6c	0x2	ballistic_acceleration	s16	supported	actor_start_ballistic_moti
 KfActor	0x6e	0x2	unknown_6e	u8[2]	opaque	game/actor.h;retail GAME actor chain	offset and width observed; meaning unresolved
 KfActor	0x70	0x2	state_70	KfActorState70	supported	GAME 0x8003d8f0-0x8003da98;GAME 0x80038f7c	Signed halfword and byte state views overlap at actor +0x70
 KfActor	0x72	0x8	tail_72	KfActorTail72	supported	GAME 0x8003e414-0x8003e468;0x8003d784;0x8003ed70-0x8003eed4	Action-specific vector, motion baseline, and script halfwords share one tail
+KfActorAnchor	0x0	0x6	home	KfActorHomeAnchor	supported	actor_prepare_and_initialize;actor_set_home_position	home yaw and cell-local offsets, read for every actor
+KfActorAnchor	0x0	0x6	linked_actor	KfActorLinkedActorAnchor	supported	actor_update_behavior;actor_score_target_candidate;actor_load_records	linked actors: followed actor slot and attachment vertex
+KfActorAnchor	0x0	0x6	object_link	KfActorObjectAnchor	supported	actor_update_behavior rise-from-object;actor_update_frame map-object attachment	map-object slots for rising and attached actors
 KfActorBallisticPhaseView	0x0	0x2	motion_x	s16	supported	actor_motion.c	Shares vector X halfword in ballistic state
 KfActorBallisticPhaseView	0x2	0x2	phase	s16	supported	actor_update_vertical_motion state 0x30	Ballistic phase increments for the quadratic Y expression
 KfActorBallisticPhaseView	0x4	0x2	motion_z	s16	supported	actor_motion.c	Shares vector Z halfword in ballistic state
 KfActorBallisticPhaseView	0x6	0x2	pad	s16	supported	SVECTOR layout	Padding halfword of the shared vector extent
+KfActorHomeAnchor	0x0	0x2	yaw	u16	supported	game/actor.h;GAME 0x8003900c lhu;actor_prepare_and_initialize	Home yaw copied to actor rotation
+KfActorHomeAnchor	0x2	0x2	local_z	s16	supported	game/actor.h;GAME 0x80038d20 lh;actor_set_home_position	Signed offset added to the home-cell Z coordinate
+KfActorHomeAnchor	0x4	0x2	local_x	s16	supported	game/actor.h;GAME 0x80038d18 lh;actor_set_home_position	Signed offset added to the home-cell X coordinate
+KfActorLinkedActorAnchor	0x0	0x2	home_yaw	u16	supported	GAME 0x8003900c lhu;actor_prepare_and_initialize	home yaw, read for every actor including linked ones
+KfActorLinkedActorAnchor	0x2	0x2	actor_slot	s16	supported	game/actor.h;actor_score_target_candidate;actor_find_overlap;actor_update_behavior	Linked actor pool slot in selected modes
+KfActorLinkedActorAnchor	0x4	0x2	vertex_index	s16	supported	game/actor.h;GAME 0x8003f558 lh;actor_update_behavior	Animation vertex index in linked-actor action
 KfActorLoadRecord	0x0	0x1	slot_state	KfActorSlotState	supported	game/actor.h;actor_load_records 16-byte stride;resource transition archive caller	copied to KfActor.slot_state; zero leaves the slot free
 KfActorLoadRecord	0x1	0x1	group_index	u8	supported	game/actor.h;actor_load_records 16-byte stride;resource transition archive caller	copied to KfActor.group_index
 KfActorLoadRecord	0x2	0x1	placement_flags	u8	supported	game/actor.h;actor_load_records 16-byte stride;resource transition archive caller	copied to KfActor.placement_flags
@@ -75,6 +82,9 @@ KfActorModelScaleYBytes	0x0	0x1	low	u8	supported	game/actor.h;actor_spatial_soun
 KfActorModelScaleYBytes	0x1	0x1	high	s8	supported	game/actor.h;actor_spatial_sound	signed high byte adjusts spatial sound note
 KfActorMotion	0x0	0x8	vector	SVECTOR	supported	actor_move_with_collision;effect_runtime;actor_group_effects	Complete signed X/Y/Z vector view
 KfActorMotion	0x0	0x8	ballistic	KfActorBallisticPhaseView	supported	actor_update_vertical_motion state 0x30	Ballistic view with phase at +0x2
+KfActorObjectAnchor	0x0	0x2	rise_object_slot	u16	supported	game/actor.h;GAME 0x8003ec3c lhu;actor_update_behavior	Action-specific map-object pool index
+KfActorObjectAnchor	0x2	0x2	attached_object_slot	s16	supported	game/actor.h;GAME 0x8003f724 lh;actor_update_frame	Map-object pool slot in map-attached mode
+KfActorObjectAnchor	0x4	0x2	home_local_x	s16	supported	GAME 0x80038d18 lh;actor_set_home_position	home-cell X offset, read for every actor
 KfActorOrientation	0x0	0x6	rotation	KfEulerAngles	candidate	game/actor.h	KfActorOrientation member from reconstructed header
 KfActorOrientation	0x6	0x2	unknown_46	u8[2]	opaque	game/actor.h	layout span without a supported meaning
 KfActorState70	0x0	0x2	signed_state	s16	supported	GAME 0x80038f7c lh;GAME 0x8003e354 lh	Signed action-state halfword view
@@ -105,16 +115,6 @@ KfActorTail72Motion	0x0	0x6	angles	KfEulerAngles	supported	GAME 0x8003e634-0x800
 KfActorTail72Motion	0x6	0x2	baseline	s16	supported	GAME 0x8003d784 sh and 0x8003d804 lh	Signed actor height baseline for selectors 12/16
 KfActorTail72Script	0x0	0x2	word_index	u16	supported	GAME 0x8003ed70 lh;0x8003ed88 lhu	Script word index at actor +0x72; both signed and unsigned reads observed
 KfActorTail72Script	0x2	0x2	effect_cycle_index	u16	supported	GAME 0x8003eeb8 lh;0x8003eed4 lhu;actor_dispatch_group_effect kind 0x7b	Counts action-25 effect batches; nonzero suppresses repeated spatial sound for kind 0x7b
-KfActorWord20	0x0	0x2	value	u16	candidate	game/actor.h	KfActorWord20 member from reconstructed header
-KfActorWord20	0x0	0x2	home_yaw	u16	supported	game/actor.h;GAME 0x8003900c lhu;actor_prepare_and_initialize	Home yaw copied to actor rotation
-KfActorWord20	0x0	0x2	linked_map_object_slot	u16	supported	game/actor.h;GAME 0x8003ec3c lhu;actor_update_behavior	Action-specific map-object pool index
-KfActorWord22	0x0	0x2	value	s16	candidate	game/actor.h	KfActorWord22 member from reconstructed header
-KfActorWord22	0x0	0x2	home_local_z	s16	supported	game/actor.h;GAME 0x80038d20 lh;actor_set_home_position	Signed offset added to the home-cell Z coordinate
-KfActorWord22	0x0	0x2	linked_actor_slot	s16	supported	game/actor.h;actor_score_target_candidate;actor_find_overlap;actor_update_behavior	Linked actor pool slot in selected modes
-KfActorWord22	0x0	0x2	linked_map_object_slot	s16	supported	game/actor.h;GAME 0x8003f724 lh;actor_update_frame	Map-object pool slot in map-attached mode
-KfActorWord24	0x0	0x2	value	s16	candidate	game/actor.h	KfActorWord24 member from reconstructed header
-KfActorWord24	0x0	0x2	home_local_x	s16	supported	game/actor.h;GAME 0x80038d18 lh;actor_set_home_position	Signed offset added to the home-cell X coordinate
-KfActorWord24	0x0	0x2	linked_animation_vertex_index	s16	supported	game/actor.h;GAME 0x8003f558 lh;actor_update_behavior	Animation vertex index in linked-actor action
 KfAnimClip	0x00	0x02	keyframe_count	u16	supported	asm;animation_select_keyframe	frame count for the selected clip
 KfAnimClip	0x02	0x02	unknown_02	u16	opaque	game/animation.h;animation_select_keyframe	meaning unresolved
 KfAnimClip	0x04	0x04	keyframe_offsets	u32[1]	candidate	asm;animation_select_keyframe	first offset in variable-length keyframe table
@@ -1191,7 +1191,7 @@ KfTargetGroup	0x12	0x2	collision_radius	u16	supported	GAME actor_initialization 
 KfTargetGroup	0x14	0x2	collision_height	u16	supported	GAME actor_initialization +0x1e copy;GAME 0x8003983c overlap height;KF1 actor definition collision_height	Actor collision height used for placement and overlap
 KfTargetGroup	0x16	0x2	player_facing_tolerance	u16	supported	GAME 0x800270b0 lhu group+0x16;angle_within_tolerance	Player-facing tolerance before a direct actor hit
 KfTargetGroup	0x18	0x2	actor_facing_tolerance	u16	supported	GAME 0x800270c8 lhu group+0x18;GAME 0x8003fb94;angle_within_tolerance	Actor-facing tolerance for direct hits and magic impacts
-KfTargetGroup	0x1a	0x2	word_1a	KfTargetGroupWord1a	supported	GAME 0x80038df0 lhu group+0x1a to actor health;GAME 0x8003f9a8 lhu group+0x1a to slot-state-3 local X fallback	Shared raw halfword has initial-health and slot-state-3 local-X views
+KfTargetGroup	0x1a	0x2	health_or_vertex	KfTargetGroupHealthOrVertex	supported	GAME 0x80038df0 lhu group+0x1a to actor health;GAME 0x8003f9a8 lhu group+0x1a to linked homebound default attachment vertex	Shared raw halfword: initial health, or the default attachment vertex of linked homebound actors
 KfTargetGroup	0x1c	0x2	default_vertical_anchor_offset	u16	supported	actor_load_records;actor_set_home_position	fallback actor vertical anchor offset when placement record has -1 sentinel
 KfTargetGroup	0x1e	0x2	experience_reward	u16	supported	GAME actor_fixed_curve player_add_experience argument;KF1 actor definition experience_reward	Experience awarded when the actor dies
 KfTargetGroup	0x20	0x10	magic_component_divisors	u16[8]	supported	GAME 0x80039c94 eight lhu reads;actor_magic_component_curve third parameter	Eight divisors for the per-component magic response curve
@@ -1199,8 +1199,8 @@ KfTargetGroup	0x30	0x2	scattered_effect_id_center	u16	supported	actor_behavior_d
 KfTargetGroup	0x32	0x2	initial_model_scale_q12	u16	supported	actor_copy_group_defaults;actor_behavior_dispatch;render_resource_dispatch;actor_group_position	uniform Q12 model scale copied to actor X/Y/Z scale components
 KfTargetGroup	0x34	0x4	initial_actor_flags	KfActorFlags	supported	actor_copy_group_defaults;actor_group_effects;actor_animation;actor_fixup_group_targets	copied to KfActor +0x28 on initialization and spawn; group bits gate actor behavior
 KfTargetGroup	0x38	0x40	targets	KfTargetReference[16]	supported	game/actor.h;retail GAME actor chain;8003f7ec offset fixup	encoded relative offsets become candidate pointers
-KfTargetGroupWord1a	0x0	0x2	initial_health	u16	supported	game/actor.h;actor_copy_group_defaults	initial_health access in exact source
-KfTargetGroupWord1a	0x0	0x2	slot3_home_x_fallback	u16	supported	game/actor.h;actor_load_records	slot3_home_x_fallback access in exact source
+KfTargetGroupHealthOrVertex	0x0	0x2	initial_health	u16	supported	game/actor.h;actor_copy_group_defaults	initial_health access in exact source
+KfTargetGroupHealthOrVertex	0x0	0x2	linked_vertex_fallback	u16	supported	game/actor.h;actor_load_records	linked_vertex_fallback access in exact source
 KfTargetHeadingMoveParams	0x0	0x2	move_speed	u16	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	member read by reconstructed code
 KfTargetHeadingMoveParams	0x2	0x2	turn_speed	u16	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	member read by reconstructed code
 KfTargetHeadingMoveParams	0x4	0x1	heading_change_chance	u8	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	member read by reconstructed code
