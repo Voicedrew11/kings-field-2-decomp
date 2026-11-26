@@ -1240,7 +1240,7 @@ KfActor *player_probe_view_target_and_vectors(s32 scale, VECTOR *position, SVECT
     actor_status.player_view_target = actor;
     if (actor != NULL) {
         target = actor_find_target_of_type(&actor_status.target_groups[actor->group_index],
-                                           KF_ACTOR_TARGET_130);
+                                           KF_ACTOR_TARGET_PLAYER_VIEW_REACTION);
         if (target != NULL &&
             (actor->flags & KF_ACTOR_FLAG_BLOCK_PLAYER_TARGETING) == KF_ACTOR_FLAGS_NONE) {
             actor_set_target(actor, target);

@@ -1786,7 +1786,7 @@ void effect_update_dispatch(void)
             VECTOR old_position;
             VECTOR *position;
 
-            if (actor->lifecycle != KF_ACTOR_LIFECYCLE_ACTIVE || actor->target_type != KF_ACTOR_TARGET_25) {
+            if (actor->lifecycle != KF_ACTOR_LIFECYCLE_ACTIVE || actor->target_type != KF_ACTOR_TARGET_EFFECT_SCRIPT) {
                 record->type = KF_EFFECT_SLOT_FREE;
                 break;
             }
@@ -2987,7 +2987,7 @@ void effect_update_dispatch(void)
                     actor_index = pl_ext_7540.collision_cache.actor_index;
                     record->cache_tail.payload.trail.actor_index = actor_index;
                     actor = &actor_status.actors[record->cache_tail.payload.trail.actor_index];
-                    if (actor->target_type == KF_ACTOR_TARGET_2 || actor->target_type == KF_ACTOR_TARGET_3) {
+                    if (actor->target_type == KF_ACTOR_TARGET_DAMAGE_REACTION || actor->target_type == KF_ACTOR_TARGET_DEATH) {
                         record->render_flags = KF_EFFECT_RENDER_VISIBLE;
                         record->render_id = KF_EFFECT_MODEL_22;
                         record->phase = EFFECT_KIND6_PHASE_HOLD_ACTOR;
