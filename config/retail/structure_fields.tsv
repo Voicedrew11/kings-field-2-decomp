@@ -61,6 +61,8 @@ KfActorBallisticPhaseView	0x6	0x2	pad	s16	supported	SVECTOR layout	Padding halfw
 KfActorHomeAnchor	0x0	0x2	yaw	u16	supported	game/actor.h;GAME 0x8003900c lhu;actor_prepare_and_initialize	Home yaw copied to actor rotation
 KfActorHomeAnchor	0x2	0x2	local_z	s16	supported	game/actor.h;GAME 0x80038d20 lh;actor_set_home_position	Signed offset added to the home-cell Z coordinate
 KfActorHomeAnchor	0x4	0x2	local_x	s16	supported	game/actor.h;GAME 0x80038d18 lh;actor_set_home_position	Signed offset added to the home-cell X coordinate
+KfActorKeepRangeState	0x0	0x1	retreating	u8	supported	GAME 0x8003d8f0 sb;GAME 0x8003d9e4 lbu	set after an attack or when the player is near; moves at heading + half turn
+KfActorKeepRangeState	0x1	0x1	ledge_drop	u8	supported	GAME 0x8003d934 sb;GAME 0x8003da4c lbu	set by ledge_drop_chance; switches movement to ledge probing
 KfActorLinkedActorAnchor	0x0	0x2	home_yaw	u16	supported	GAME 0x8003900c lhu;actor_prepare_and_initialize	home yaw, read for every actor including linked ones
 KfActorLinkedActorAnchor	0x2	0x2	actor_slot	s16	supported	game/actor.h;actor_score_target_candidate;actor_find_overlap;actor_update_behavior	Linked actor pool slot in selected modes
 KfActorLinkedActorAnchor	0x4	0x2	vertex_index	s16	supported	game/actor.h;GAME 0x8003f558 lh;actor_update_behavior	Animation vertex index in linked-actor action
@@ -88,9 +90,7 @@ KfActorObjectAnchor	0x4	0x2	home_local_x	s16	supported	GAME 0x80038d18 lh;actor_
 KfActorOrientation	0x0	0x6	rotation	KfEulerAngles	candidate	game/actor.h	KfActorOrientation member from reconstructed header
 KfActorOrientation	0x6	0x2	unknown_46	u8[2]	opaque	game/actor.h	layout span without a supported meaning
 KfActorState70	0x0	0x2	signed_state	s16	supported	GAME 0x80038f7c lh;GAME 0x8003e354 lh	Signed action-state halfword view
-KfActorState70	0x0	0x2	bytes	KfActorState70Bytes	supported	GAME 0x8003d8f0-0x8003da98	Action-specific low and high byte state view
-KfActorState70Bytes	0x0	0x1	low	u8	supported	GAME 0x8003d8f0 sb;GAME 0x8003d9e4 lbu	Low actor action-state byte
-KfActorState70Bytes	0x1	0x1	high	u8	supported	GAME 0x8003d934 sb;GAME 0x8003da4c lbu	High actor action-state byte
+KfActorState70	0x0	0x2	keep_range	KfActorKeepRangeState	supported	GAME 0x8003d8f0-0x8003da98	keep-range behaviour retreat and ledge-drop flags
 KfActorStateGame	0x0	0x60e0	actors	KfActor[200]	supported	game/actor.h;retail GAME actor chain	member used by reconstructed actor code
 KfActorStateGame	0x60e0	0x12c0	target_groups	KfTargetGroup[40]	supported	game/actor.h;retail GAME actor chain;8003f7ec 40-group loop	member used by reconstructed actor code
 KfActorStateGame	0x73a0	0x2000	target_candidate_blob	u8[8192]	supported	game/actor.h;GAME 0x80016820 archive copy;0x8003f7ec fixup	0x32c0-byte copy covers 40 groups and this opaque candidate-record span; internal record layout unresolved
@@ -551,7 +551,7 @@ KfMapObjectExtra40	0x00	0x04	record	KfMapObjectRecord40 *	candidate	asm;player_a
 KfMapObjectExtra40	0x0	0x4	raw	u32	candidate	game/map_object.h	KfMapObjectExtra40 member from reconstructed header
 KfMapObjectExtra40	0x00	0x04	bob_base_y	s32	supported	map_object_initialize_from_placements;map_object_update_actions action 16	base Y sampled before sine bob update
 KfMapObjectExtra40	0x00	0x04	next_sound_frame	u32	supported	map_object_initialize_from_placements;map_object_update_actions;render_scene_and_update_resources	actions 0x12 and 0x1f schedule their next sound using frame count
-KfMapObjectExtra40	0x00	0x04	bytes	u8[4]	supported	asm;map_object_step_offset_motion	raw byte view for action-specific state
+KfMapObjectExtra40	0x00	0x01	trigger_latch	u8	supported	map_object_update_actions;map_object_initialize_from_placements	one-shot latch of camera-region and trigger actions
 KfMapObjectExtra40	0x00	0x02	object_index	u16	supported	asm;map_object_step_offset_motion	index of a source map object stored in target +0x40
 KfMapObjectExtra40	0x00	0x02	angular_velocity_x	s16	supported	GAME 0x800376c4-0x8003771c;map_object_update_actions action 8	signed X-angle velocity passed to angle_velocity_step and updated each frame
 KfMapObjectExtra40	0x00	0x02	movement_frames_left	u16	supported	map_object_update_actions action 22	countdown initialized to 16 while moving before next action phase

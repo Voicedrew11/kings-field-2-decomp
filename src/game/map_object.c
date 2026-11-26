@@ -317,12 +317,12 @@ void map_object_initialize_from_placements(const KfMapObjectPlacement *placement
             object->asset_clip_selector = KF_ANIMATION_CLIP_FIRST;
             object->phase_q12 = 0;
             object->action = KF_MAP_OBJECT_OP_WARP;
-            object->extra_40.bytes[0] = KF_MAP_OBJECT_LATCH_CLEAR;
+            object->extra_40.trigger_latch = KF_MAP_OBJECT_LATCH_CLEAR;
             break;
         case KF_MAP_OBJECT_OP_REGION_TRIGGER:
             object->layer_mask = KF_MAP_LAYER_NONE;
             object->action = KF_MAP_OBJECT_OP_REGION_TRIGGER;
-            object->extra_40.bytes[0] = KF_MAP_OBJECT_LATCH_CLEAR;
+            object->extra_40.trigger_latch = KF_MAP_OBJECT_LATCH_CLEAR;
             break;
         case KF_MAP_OBJECT_OP_SCREEN_IMAGE:
             if (object->tail.params.initial_rotation.rotation_x_code != KF_MAP_OBJECT_ROTATION_CODE_NONE) {
@@ -365,7 +365,7 @@ void map_object_initialize_from_placements(const KfMapObjectPlacement *placement
         case KF_MAP_OBJECT_OP_ANIMATED_HAZARD:
             object->asset_clip_selector = KF_ANIMATION_CLIP_FIRST;
             object->action = KF_MAP_OBJECT_OP_ANIMATED_HAZARD;
-            object->extra_40.bytes[0] = KF_MAP_OBJECT_LATCH_CLEAR;
+            object->extra_40.trigger_latch = KF_MAP_OBJECT_LATCH_CLEAR;
             if (object->tail.params.collision_probe.camera_region_width != KF_MAP_OBJECT_REGION_ALWAYS) {
                 map_object_set_cell_marker(object, KF_MAP_CELL_MARKER_PLACE,
                                            object_template->params.marker.marker_action_51);

@@ -449,7 +449,7 @@ object_control_action:
                     asset_status.active_resource_ids[KF_RESOURCE_SLOT_MAP_REGION];
                 cur_evt_state.interaction_handled = KF_TRUE;
                 game_counter_decrement(command);
-                object->extra_40.bytes[0] = KF_MAP_OBJECT_LATCH_CLEAR;
+                object->extra_40.trigger_latch = KF_MAP_OBJECT_LATCH_CLEAR;
                 event_spawn_effect_object(object, command);
             } else if (map_object_check_and_consume_marker(object, KF_ENUM_ENCODE(s32, command)) == KF_MAP_OBJECT_MARKER_MISMATCH) {
                 notify_enqueue(object->tail.params.notification.linked_notification);

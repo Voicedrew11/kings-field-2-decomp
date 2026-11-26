@@ -2536,31 +2536,31 @@ void actor_update_behavior(void)
             case KF_ACTOR_TARGET_FLYING_PURSUIT_ATTACK:
             case KF_ACTOR_TARGET_REPEATED_ATTACK:
             case KF_ACTOR_TARGET_PURSUIT_ATTACK:
-                actor->state_70.bytes.low = 1;
+                actor->state_70.keep_range.retreating = 1;
                 break;
             default:
-                actor->state_70.bytes.low = 0;
+                actor->state_70.keep_range.retreating = 0;
                 break;
             }
-            actor->state_70.bytes.high = 0;
+            actor->state_70.keep_range.ledge_drop = 0;
         }
         if (rand() < 6000) {
             distance = fixed_vector2_length(
                 cur_avatar_status.camera_position.vx - actor->position.vx,
                 cur_avatar_status.camera_position.vz - actor->position.vz);
             if (distance >= target->params.keep_range.approach_distance) {
-                actor->state_70.bytes.low = 0;
+                actor->state_70.keep_range.retreating = 0;
             } else if (distance <= target->params.keep_range.retreat_distance) {
-                actor->state_70.bytes.low = 1;
+                actor->state_70.keep_range.retreating = 1;
             }
         }
         angle = vector_xz_to_angle(
             cur_avatar_status.camera_position.vx - actor->position.vx,
             cur_avatar_status.camera_position.vz - actor->position.vz);
         actor->movement_yaw = angle;
-        mode = actor->state_70.bytes.high == 0 ? KF_ACTOR_MOVE_AVOID_LEDGE | KF_ACTOR_MOVE_SLIDE_KEEP_SPEED
+        mode = actor->state_70.keep_range.ledge_drop == 0 ? KF_ACTOR_MOVE_AVOID_LEDGE | KF_ACTOR_MOVE_SLIDE_KEEP_SPEED
                                                : KF_ACTOR_MOVE_PROBE_LEDGE | KF_ACTOR_MOVE_SLIDE_KEEP_SPEED;
-        if (actor->state_70.bytes.low == 0) {
+        if (actor->state_70.keep_range.retreating == 0) {
             motion_flags = actor_turn_and_move_along_heading((s16)angle,
                 target->params.keep_range.move_speed, target->params.keep_range.turn_speed,
                 group->movement_step,
@@ -2571,18 +2571,18 @@ void actor_update_behavior(void)
                 group->movement_step, mode);
         }
         if ((motion_flags & KF_COLLISION_HIT_LEDGE) != KF_COLLISION_HIT_NONE) {
-            if (actor->state_70.bytes.high != 0) {
+            if (actor->state_70.keep_range.ledge_drop != 0) {
                 goto case5_advance;
             }
             if (rand() < target->params.keep_range.ledge_drop_chance) {
-                actor->state_70.bytes.high = 1;
+                actor->state_70.keep_range.ledge_drop = 1;
                 goto case5_advance;
             }
         } else {
-            actor->state_70.bytes.high = 0;
+            actor->state_70.keep_range.ledge_drop = 0;
         }
         if (motion_flags != KF_COLLISION_HIT_NONE) {
-            actor->state_70.bytes.low = actor->state_70.bytes.low == 0;
+            actor->state_70.keep_range.retreating = actor->state_70.keep_range.retreating == 0;
         }
     case5_advance:
         actor_advance_animation_wrapped(actor, target->animation_step);

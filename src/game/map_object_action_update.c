@@ -826,7 +826,7 @@ void map_object_update_actions(void)
                         object->action_timer = MAP_OBJECT_HAZARD_ACTIVE;
                         object->phase_q12 = 0;
                         object->asset_clip_selector = KF_ANIMATION_CLIP_FIRST;
-                        object->extra_40.bytes[0] = KF_MAP_OBJECT_LATCH_CLEAR;
+                        object->extra_40.trigger_latch = KF_MAP_OBJECT_LATCH_CLEAR;
                         map_object_play_spatial_sound(object,
                                                       object_template->params.collision.sound_id);
                     }
@@ -878,8 +878,8 @@ void map_object_update_actions(void)
                         if (kind == KF_COLLISION_HIT_NONE) {
                             goto clear_action_trigger;
                         }
-                        if (object->extra_40.bytes[0] == KF_MAP_OBJECT_LATCH_CLEAR) {
-                            object->extra_40.bytes[0] = KF_MAP_OBJECT_LATCH_SET;
+                        if (object->extra_40.trigger_latch == KF_MAP_OBJECT_LATCH_CLEAR) {
+                            object->extra_40.trigger_latch = KF_MAP_OBJECT_LATCH_SET;
                             effect_dispatch_magic_impact(kind, KF_ACTOR_DAMAGE_FROM_HAZARD, 5000, 5,
                                           object->tail.params.collision_probe.damage_multiplier_tenths,
                                           object_template->params.collision.impact_magic_values[0],
@@ -1095,9 +1095,9 @@ void map_object_update_actions(void)
                                    object->tail.params.region_action.region_width,
                                    object->tail.params.region_action.region_depth,
                                    object->position.vy)) {
-                    if (object->extra_40.bytes[0] == KF_MAP_OBJECT_LATCH_CLEAR) {
+                    if (object->extra_40.trigger_latch == KF_MAP_OBJECT_LATCH_CLEAR) {
                         if (!(object->tail.params.region_action.operation_flags & KF_MAP_OBJECT_REGION_REPEAT)) {
-                            object->extra_40.bytes[0] = KF_MAP_OBJECT_LATCH_SET;
+                            object->extra_40.trigger_latch = KF_MAP_OBJECT_LATCH_SET;
                         }
                         switch (object->tail.params.region_action.operation_flags & KF_MAP_OBJECT_REGION_OPERATION_MASK) {
                         case KF_MAP_OBJECT_REGION_CALLBACK:
@@ -1114,7 +1114,7 @@ void map_object_update_actions(void)
                     }
                 } else {
                 clear_action_trigger:
-                    object->extra_40.bytes[0] = KF_MAP_OBJECT_LATCH_CLEAR;
+                    object->extra_40.trigger_latch = KF_MAP_OBJECT_LATCH_CLEAR;
                 }
                 break;
 
@@ -1124,14 +1124,14 @@ void map_object_update_actions(void)
                                    object->tail.params.transition.region_width,
                                    object->tail.params.transition.region_depth,
                                    object->position.vy)) {
-                    if (object->extra_40.bytes[0] == KF_MAP_OBJECT_LATCH_CLEAR) {
+                    if (object->extra_40.trigger_latch == KF_MAP_OBJECT_LATCH_CLEAR) {
                         KfMapObject *candidate = map_objects_slots.objects;
                         s32 count = KF_MAP_OBJECT_CAPACITY;
                         audio_play_sound(MAP_OBJECT_WARP_SOUND, MAP_OBJECT_WARP_SOUND_VOLUME);
                         render_frames_with_color_overlay(KF_COLOR_OVERLAY_ADD, 0, KF_FIXED12_ONE, MAP_OBJECT_WARP_FADE_STEP);
                         do {
                             if (candidate->action == KF_MAP_OBJECT_OP_WARP) {
-                                candidate->extra_40.bytes[0] = KF_MAP_OBJECT_LATCH_SET;
+                                candidate->extra_40.trigger_latch = KF_MAP_OBJECT_LATCH_SET;
                             }
                             candidate++;
                         } while (--count != 0);
@@ -1155,7 +1155,7 @@ void map_object_update_actions(void)
                         render_set_color_overlay(KF_COLOR_OVERLAY_OFF, 0, 0, 0);
                     }
                 } else {
-                    object->extra_40.bytes[0] = KF_MAP_OBJECT_LATCH_CLEAR;
+                    object->extra_40.trigger_latch = KF_MAP_OBJECT_LATCH_CLEAR;
                 }
                 object->phase_q12 = (object->phase_q12 + 64) & KF_MAP_OBJECT_PHASE_WRAP_MASK;
                 break;

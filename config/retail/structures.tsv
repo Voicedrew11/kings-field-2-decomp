@@ -5,6 +5,7 @@ KfActor	0x7c	supported	game/actor.h;retail GAME actor chain	layout from reconstr
 KfActorAnchor	0x6	supported	game/actor.h;actor_load_records;actor_update_frame;actor_update_behavior	placement bytes 0x20-0x25: home, linked-actor or object-link view
 KfActorBallisticPhaseView	0x8	supported	actor_update_vertical_motion state 0x30	Vector extent with Y halfword interpreted as ballistic phase
 KfActorHomeAnchor	0x6	supported	game/actor.h;actor_load_records;actor_update_frame;actor_update_behavior	home yaw and cell-local position
+KfActorKeepRangeState	0x2	supported	game/actor.h;GAME 0x8003d8f0-0x8003da98;actor_update_behavior keep range	Two byte action-state view at actor +0x70/+0x71
 KfActorLinkedActorAnchor	0x6	supported	game/actor.h;actor_load_records;actor_update_frame;actor_update_behavior	followed actor slot and its attachment vertex
 KfActorLoadRecord	0x10	supported	game/actor.h;actor_load_records 16-byte stride;resource transition archive caller	map archive actor placement record
 KfActorModelScaleY	0x2	supported	game/actor.h;actor_group_position;actor_spatial_sound	Q12 Y model scale and signed high-byte sound-note view
@@ -13,7 +14,6 @@ KfActorMotion	0x8	supported	actor_motion.c;actor_behavior_dispatch.c;effect_runt
 KfActorObjectAnchor	0x6	supported	game/actor.h;actor_load_records;actor_update_frame;actor_update_behavior	rise-from-object slot and attached map-object slot
 KfActorOrientation	0x8	supported	game/actor.h;actor_update_behavior	actor rotation angles followed by two unresolved bytes
 KfActorState70	0x2	supported	game/actor.h;GAME 0x8003d8f0-0x8003d934;GAME 0x80038f7c	Signed halfword and two byte action-state views at actor +0x70
-KfActorState70Bytes	0x2	supported	game/actor.h;GAME 0x8003d8f0-0x8003da98	Two byte action-state view at actor +0x70/+0x71
 KfActorStateGame	0x93cc	supported	game/actor.h;retail GAME actor chain	layout from reconstructed header
 KfActorTail72	0x8	supported	game/actor.h;GAME 0x8003e414-0x8003e468;GAME 0x8003d784;GAME 0x8003d804;GAME 0x8003ed70-0x8003eed4	SVECTOR output/copy overlaps motion baseline, signed state, and script halfwords
 KfActorTail72Motion	0x8	supported	game/actor.h;GAME 0x8003d784;GAME 0x8003d804	Euler halfwords followed by signed actor +0x78 baseline

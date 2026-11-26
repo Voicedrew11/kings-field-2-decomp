@@ -147,7 +147,7 @@ KF_ENUM_BEGIN(KfMapObjectFlags, u8)
 KF_ENUM_END(KfMapObjectFlags)
 KF_ENUM_FLAGS(KfMapObjectFlags, u8)
 
-/* extra_40.bytes[0] one-shot latch of camera-region and trigger actions. */
+/* extra_40.trigger_latch: one-shot latch of camera-region and trigger actions. */
 enum {
     KF_MAP_OBJECT_LATCH_CLEAR = 0,
     KF_MAP_OBJECT_LATCH_SET = 1
@@ -881,7 +881,7 @@ typedef union KfMapObjectExtra40 {
     u32 raw;
     s32 bob_base_y;
     u32 next_sound_frame;
-    u8 bytes[4];
+    u8 trigger_latch;
     u16 object_index;
     s16 angular_velocity_x;
     u16 movement_frames_left;

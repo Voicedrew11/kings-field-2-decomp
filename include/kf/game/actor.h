@@ -644,16 +644,18 @@ typedef union KfActorModelScaleY {
 } KfActorModelScaleY;
 typedef char kf_actor_model_scale_y_size[sizeof(KfActorModelScaleY) == 2 ? 1 : -1];
 
-typedef struct KfActorState70Bytes {
-    u8 low;
-    u8 high;
-} KfActorState70Bytes;
+/* Keep-range behaviour: retreating moves away from the player instead of
+ * toward it; ledge_drop lets the actor step off a ledge it probed. */
+typedef struct KfActorKeepRangeState {
+    u8 retreating;
+    u8 ledge_drop;
+} KfActorKeepRangeState;
 typedef char kf_actor_state_70_bytes_size[
-    sizeof(KfActorState70Bytes) == 2 ? 1 : -1];
+    sizeof(KfActorKeepRangeState) == 2 ? 1 : -1];
 
 typedef union KfActorState70 {
     s16 signed_state;
-    KfActorState70Bytes bytes;
+    KfActorKeepRangeState keep_range;
 } KfActorState70;
 typedef char kf_actor_state_70_size[sizeof(KfActorState70) == 2 ? 1 : -1];
 
@@ -863,7 +865,7 @@ typedef char kf_actor_ballistic_launch_speed_y_offset[
 typedef char kf_actor_ballistic_acceleration_offset[
     offsetof(KfActor, ballistic_acceleration) == 0x6c ? 1 : -1];
 typedef char kf_actor_state_70_offset[offsetof(KfActor, state_70) == 0x70 ? 1 : -1];
-typedef char kf_actor_state_71_offset[offsetof(KfActor, state_70.bytes.high) == 0x71 ? 1 : -1];
+typedef char kf_actor_state_71_offset[offsetof(KfActor, state_70.keep_range.ledge_drop) == 0x71 ? 1 : -1];
 typedef char kf_actor_tail_72_offset[offsetof(KfActor, tail_72) == 0x72 ? 1 : -1];
 typedef char kf_actor_tail_72_signed_offset[offsetof(KfActor, tail_72.signed_state) == 0x72 ? 1 : -1];
 typedef char kf_actor_tail_72_unsigned_offset[offsetof(KfActor, tail_72.unsigned_state) == 0x72 ? 1 : -1];
