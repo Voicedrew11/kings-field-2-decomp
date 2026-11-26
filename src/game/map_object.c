@@ -137,7 +137,7 @@ void map_object_refresh_cell_markers(KfMapCellMarkerMode mode)
             if (object->action != KF_MAP_OBJECT_OP_ANIMATED_HAZARD) {
                 continue;
             }
-            if (object->tail.params.fields.unknown_3a.bytes.high == KF_MAP_OBJECT_HAZARD_NO_CELL_MARKER) {
+            if (object->tail.params.collision_probe.camera_region_width == KF_MAP_OBJECT_REGION_ALWAYS) {
                 continue;
             }
             object_template = &map_objects_slots.templates[KF_ENUM_ENCODE(u16, object->object_id)];
@@ -233,7 +233,7 @@ void map_object_initialize_from_placements(const KfMapObjectPlacement *placement
                     object->rotation.vz =
                         object->tail.params.initial_rotation.rotation_z_code << 6;
                 }
-                if (object->tail.params.fields.unknown_39 == 0) {
+                if (object->tail.params.initial_rotation.stationary == 0) {
                     object->action = KF_MAP_OBJECT_OP_BOB;
                     object->render_queue_mode = KF_RENDER_QUEUE_BLEND_ADD;
                     object->lighting_override_index = KF_LIGHTING_EFFECT;
@@ -366,7 +366,7 @@ void map_object_initialize_from_placements(const KfMapObjectPlacement *placement
             object->asset_clip_selector = KF_ANIMATION_CLIP_FIRST;
             object->action = KF_MAP_OBJECT_OP_ANIMATED_HAZARD;
             object->extra_40.bytes[0] = KF_MAP_OBJECT_LATCH_CLEAR;
-            if (object->tail.params.fields.unknown_3a.bytes.high != KF_MAP_OBJECT_HAZARD_NO_CELL_MARKER) {
+            if (object->tail.params.collision_probe.camera_region_width != KF_MAP_OBJECT_REGION_ALWAYS) {
                 map_object_set_cell_marker(object, KF_MAP_CELL_MARKER_PLACE,
                                            object_template->params.marker.marker_action_51);
             }

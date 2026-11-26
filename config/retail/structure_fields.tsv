@@ -672,7 +672,8 @@ KfMapObjectTailHalfword	0x0	0x2	signed_value	s16	supported	game/map_object.h;map
 KfMapObjectTailHalfword	0x0	0x2	bytes	KfMapObjectTailHalfwordBytes	supported	game/map_object.h;asm;map object collision	halfword and byte views in object tail
 KfMapObjectTailHalfwordBytes	0x0	0x1	low	u8	supported	game/map_object.h;asm;map object collision	two bytes in object tail halfword
 KfMapObjectTailHalfwordBytes	0x1	0x1	high	u8	supported	game/map_object.h;asm;map object collision	two bytes in object tail halfword
-KfMapObjectTailInitialRotationView	0x0	0x2	unknown_38	u8[2]	opaque	game/map_object.h	preceding action-specific bytes
+KfMapObjectTailInitialRotationView	0x0	0x1	event_mask	u8	supported	map_object_initialize_from_placements;event_map_object_interact	event mask; pickups require ARMED
+KfMapObjectTailInitialRotationView	0x1	0x1	stationary	u8	supported	map_object_initialize_from_placements item pickup	zero switches the pickup to bobbing with an additive glow
 KfMapObjectTailInitialRotationView	0x2	0x1	rotation_x_code	u8	supported	GAME 0x80035abc/0x80035d88 lbu;map_object_initialize_from_placements	0xff sentinel or byte shifted by six into rotation.vx
 KfMapObjectTailInitialRotationView	0x3	0x1	rotation_y_code	u8	supported	GAME 0x80035adc/0x80035da8 lbu;map_object_initialize_from_placements	0xff sentinel or byte shifted by six into rotation.vy
 KfMapObjectTailInitialRotationView	0x4	0x1	rotation_z_code	u8	supported	GAME 0x80035afc/0x80035dc8 lbu;map_object_initialize_from_placements	0xff sentinel or byte shifted by six into rotation.vz

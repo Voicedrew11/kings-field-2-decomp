@@ -116,7 +116,6 @@ enum {
 enum {
     KF_MAP_OBJECT_ROTATION_CODE_NONE = 0xff,
     KF_MAP_OBJECT_LINK_NONE = 0xff,
-    KF_MAP_OBJECT_HAZARD_NO_CELL_MARKER = 0xff,
     KF_MAP_OBJECT_SIGNAL_NONE = 0xff,
     KF_MAP_OBJECT_EXTRA_FILL_BYTE = 0xff,
     KF_MAP_OBJECT_RESOURCE_LOCAL_X_UNSET = 0xff,
@@ -694,8 +693,11 @@ typedef char kf_map_object_tail_action51_marker_offset[
 /* Two placement kinds seed three object rotation axes from byte codes;
  * 0xff leaves an axis at its default value. The final code overlaps the
  * spawn-sequence halfword used by other object kinds. */
+/* Item pickups: a nonzero stationary byte keeps the pickup still; zero makes
+ * it bob with an additive glow. */
 typedef struct KfMapObjectTailInitialRotationView {
-    u8 unknown_38[2];
+    u8 event_mask;
+    u8 stationary;
     u8 rotation_x_code;
     u8 rotation_y_code;
     u8 rotation_z_code;
