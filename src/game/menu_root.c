@@ -641,7 +641,7 @@ void menu_apply_item_effect(KF_ENUM_PARAM(KfObjectId, s32) item_id)
     event_item_counters_table[KF_ENUM_ENCODE(s32, item_id)]--;
     if ((u32)(KF_ENUM_ENCODE(s32, item_id) - KF_ENUM_ENCODE(s32, KF_ITEM_RESTORE_HP_100)) < 2 ||
         (u32)(KF_ENUM_ENCODE(s32, item_id) - KF_ENUM_ENCODE(s32, KF_ITEM_CLEAR_AILMENTS)) < 2) {
-        event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_82)]++;
+        event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_EMPTY_CONTAINER)]++;
         }
     menu_play_sound_cue(KF_MENU_SOUND_ITEM_USED);
 }
@@ -1169,13 +1169,13 @@ void menu_item_magic_controller(void)
         magic_ids[index] = KF_ENUM_ENCODE(u8, KF_MAGIC_NONE);
     }
 
-    saved_count_60 = event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_96)];
+    saved_count_60 = event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_TRADE_CURRENCY)];
     saved_count_61 = event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_97)];
-    event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_96)] = 0;
+    event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_TRADE_CURRENCY)] = 0;
     event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_97)] = 0;
     count = menu_collect_masked_item_rows(event_item_counters_table, rows, counts, item_ids, KF_ITEM_USABLE_FIRST,
         KF_ITEM_USABLE_LAST);
-    event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_96)] = saved_count_60;
+    event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_TRADE_CURRENCY)] = saved_count_60;
     event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_97)] = saved_count_61;
 
     count += menu_collect_available_magic_rows(effect_status.magic_records, &rows[count],
@@ -3098,7 +3098,7 @@ void menu_item_trade_controller(void)
         selected_item = indices[menu.list.selected_index];
         if (confirmed == KF_TRUE) {
             cost = menu.prices[menu.list.selected_index] * menu_item_quantity;
-            if (counters[KF_ENUM_ENCODE(u8, KF_OBJECT_96)] < cost
+            if (counters[KF_ENUM_ENCODE(u8, KF_ITEM_TRADE_CURRENCY)] < cost
                     || (selected_item == 117
                         ? counters[KF_ENUM_ENCODE(u8, KF_OBJECT_117)] + menu_item_quantity * 10 >= 100
                         : counters[selected_item] + menu_item_quantity >= 100)) {
@@ -3122,7 +3122,7 @@ void menu_item_trade_controller(void)
     menu_release_item_model();
     if (result != KF_MENU_RESULT_CANCELLED) {
         cost = menu.prices[menu.list.selected_index] * menu_item_quantity;
-        counters[KF_ENUM_ENCODE(u8, KF_OBJECT_96)] -= cost;
+        counters[KF_ENUM_ENCODE(u8, KF_ITEM_TRADE_CURRENCY)] -= cost;
         if (result == KF_ENUM_ENCODE(s32, KF_OBJECT_117)) {
             counters[KF_ENUM_ENCODE(u8, KF_OBJECT_117)] += menu_item_quantity * 10;
         } else {
@@ -4205,7 +4205,7 @@ void menu_render_list(const KfMenuList *menu, KfMenuListMode render_mode)
         || render_mode == KF_MENU_LIST_STOCK_BUY || render_mode == KF_MENU_LIST_STOCK_OWNED) {
         menu_draw_status_counters(KF_MENU_COUNTERS_GOLD);
     } else if (render_mode == KF_MENU_LIST_TRADE) {
-        menu_draw_status_counters(KF_MENU_COUNTERS_OBJECT_96);
+        menu_draw_status_counters(KF_MENU_COUNTERS_TRADE_CURRENCY);
     }
     if (render_mode == KF_MENU_LIST_CARD_LOAD || render_mode == KF_MENU_LIST_CARD_SAVE) {
         menu_render_list_mode_8_9_noop();
@@ -4305,7 +4305,7 @@ void menu_draw_status_counters(s32 kind)
 
     heading.position.x = 183;
     heading.position.y = 33;
-    if (kind == KF_MENU_COUNTERS_OBJECT_96) {
+    if (kind == KF_MENU_COUNTERS_TRADE_CURRENCY) {
         heading.glyphs.codes[0] = 2;
         heading.glyphs.codes[1] = 17;
         heading.glyphs.codes[2] = 24;
@@ -4326,8 +4326,8 @@ void menu_draw_status_counters(s32 kind)
 
     amount.position.x = heading.position.x + 56;
     amount.position.y = heading.position.y;
-    if (kind == KF_MENU_COUNTERS_OBJECT_96) {
-        menu_format_number(event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_96)], 7, KF_FORMAT_PAD_SPACES,
+    if (kind == KF_MENU_COUNTERS_TRADE_CURRENCY) {
+        menu_format_number(event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_TRADE_CURRENCY)], 7, KF_FORMAT_PAD_SPACES,
             KF_MENU_FORMAT_STYLE_TRAILING_11,
                            amount.glyphs.codes);
     } else {

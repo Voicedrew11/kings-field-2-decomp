@@ -313,7 +313,7 @@ void event_target_stream_execute(KfActor *actor)
     }
 
 after_script:
-    old_counter = event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_83)];
+    old_counter = event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_FALL_SURVIVAL_CONSUMABLE)];
     switch (candidate->params.event_stream.post_stream_menu_action & KF_EVENT_POST_STREAM_MENU_MASK) {
     case KF_EVENT_POST_STREAM_BUY_SELL:
         player_render_frame_and_release_pool();
@@ -337,8 +337,8 @@ after_script:
         }
         break;
     }
-    if (event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_83)] < old_counter) {
-        cur_evt_state.control.fields.counter_53_decreased = 1;
+    if (event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_FALL_SURVIVAL_CONSUMABLE)] < old_counter) {
+        cur_evt_state.control.fields.fall_survival_consumable_decreased = 1;
     }
     cur_evt_state.control.fields.stream_actor_definition_id = actor->definition_id;
     if (restore_state && candidate->params.event_stream.completion_animation_id != KF_ANIMATION_CLIP_NONE) {
@@ -437,7 +437,7 @@ object_control_action:
         if (index != -1) {
             KfMapObject *object = &map_objects_slots.objects[index];
 
-            if (object->object_id == KF_OBJECT_189) {
+            if (object->object_id == KF_OBJECT_CONTROL_SOCKET) {
                 if (object->tail.event_effect.pending_event_command != KF_OBJECT_NONE) {
                     break;
                 }
@@ -531,7 +531,7 @@ transition_action: {
         if (index != -1) {
             KfMapObject *object = &map_objects_slots.objects[index];
 
-            if (object->object_id == KF_OBJECT_184) {
+            if (object->object_id == KF_OBJECT_ITEM_RECEPTACLE) {
                 if (object->tail.event_effect.pending_event_command == KF_OBJECT_NONE) {
                     object->tail.event_effect.pending_event_command = command;
                     object->action_timer = 0;
@@ -545,25 +545,25 @@ transition_action: {
             }
         }
         break;
-    case KF_OBJECT_84:
+    case KF_ITEM_MAP_MARKER_EFFECT:
         cur_avatar_status.map_marker_visual_effect_timer = 1200;
-        game_counter_decrement(KF_OBJECT_84);
+        game_counter_decrement(KF_ITEM_MAP_MARKER_EFFECT);
         cur_evt_state.interaction_handled = KF_TRUE;
         break;
-    case KF_OBJECT_88:
+    case KF_ITEM_MARKER_SIGNAL:
         index = map_object_find_interaction_target(0, position, 800, 1700,
                                rotation->angles[1], 512);
         if (index != -1) {
             KfMapObject *object = &map_objects_slots.objects[index];
 
-            if (object->object_id == KF_OBJECT_157) {
+            if (object->object_id == KF_OBJECT_MARKER_SIGNAL_RECEIVER) {
                 map_object_apply_marker_signal(object->tail.marker.marker_id);
             }
             cur_evt_state.interaction_handled = KF_TRUE;
         }
         audio_play_sound_at_volume_100(8);
         break;
-    case KF_OBJECT_89: {
+    case KF_ITEM_LOCATE_ITEMS: {
         KfMapObject *scan = map_objects_slots.objects;
         KfMapObject *nearest = NULL;
         s32 nearest_distance = 999999;
@@ -574,10 +574,10 @@ transition_action: {
             KF_ENUM_PROMOTED(KfObjectId) object_id = object->object_id;
             s32 distance;
 
-            if (object_id < KF_OBJECT_82) {
+            if (object_id < KF_ITEM_EMPTY_CONTAINER) {
                 continue;
             }
-            if (object_id >= KF_OBJECT_84) {
+            if (object_id >= KF_ITEM_MAP_MARKER_EFFECT) {
                 if (object_id >= KF_OBJECT_97) {
                     continue;
                 }
@@ -702,7 +702,7 @@ decay_update:
         cur_evt_state.interaction_handled = KF_TRUE;
         break;
     }
-    case KF_OBJECT_82:
+    case KF_ITEM_EMPTY_CONTAINER:
         if (collision_probe_forward_shape_0x20(position,
                            (const struct KfEulerAngles *)rotation) == 0) {
             index = map_object_find_interaction_target(0, position, 800, 1700,
@@ -710,17 +710,17 @@ decay_update:
             if (index == -1) {
                 break;
             }
-            if (map_objects_slots.objects[index].object_id != KF_OBJECT_195) {
+            if (map_objects_slots.objects[index].object_id != KF_OBJECT_CONTAINER_REFILL) {
                 break;
             }
         }
         if (!game_counter_increment(KF_ITEM_RESTORE_HP_100)) {
             notify_enqueue(KF_NOTIFICATION_22);
-            game_counter_decrement(KF_OBJECT_82);
+            game_counter_decrement(KF_ITEM_EMPTY_CONTAINER);
         }
         cur_evt_state.interaction_handled = KF_TRUE;
         break;
-    case KF_OBJECT_85: {
+    case KF_ITEM_INSPECTION: {
         KF_ENUM_STORAGE(KfMapLayerMask, s32) side =
             cur_avatar_status.map_layer_index == 0 ? KF_MAP_LAYER_FIRST : KF_MAP_LAYER_SECOND;
         s32 actor_distance;
@@ -759,13 +759,13 @@ decay_update:
         }
         break;
     }
-    case KF_OBJECT_86:
-        game_counter_decrement(KF_OBJECT_86);
+    case KF_ITEM_FULL_MP_TIMER:
+        game_counter_decrement(KF_ITEM_FULL_MP_TIMER);
         cur_avatar_status.full_mp_timer = 900;
         cur_evt_state.interaction_handled = KF_TRUE;
         break;
-    case KF_OBJECT_87:
-        game_counter_decrement(KF_OBJECT_87);
+    case KF_ITEM_MAGIC_BOOST_TIMER:
+        game_counter_decrement(KF_ITEM_MAGIC_BOOST_TIMER);
         cur_avatar_status.magic_boost_timer = 900;
         cur_evt_state.interaction_handled = KF_TRUE;
         player_recalculate_combat_stats();
@@ -905,7 +905,7 @@ void event_map_object_interact(KfMapObject *object, ...)
         }
     }
     if (object->object_id == KF_OBJECT_18) {
-        object->object_id = KF_OBJECT_13;
+        object->object_id = KF_ITEM_GUARDING_WEAPON;
     }
 
     first_yaw = cur_avatar_status.camera_rotation.angles[0] & KF_ANGLE_WRAP_MASK;
@@ -1030,7 +1030,7 @@ interpolate_back:
     }
     if (buttons) {
         object->object_id = KF_OBJECT_NONE;
-    } else if (object->object_id == KF_OBJECT_13) {
+    } else if (object->object_id == KF_ITEM_GUARDING_WEAPON) {
         object->object_id = KF_OBJECT_18;
     }
 finish:
@@ -1289,7 +1289,7 @@ void event_state_initialize(void)
     }
     repeat_store_word((u32 *)event_item_counters_table, 0,
                       sizeof(event_item_counters_table) / sizeof(u32));
-    event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_0)] = 1;
+    event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_STARTING_WEAPON)] = 1;
 }
 
 ADDRESS(0x8004910c, 0x30)

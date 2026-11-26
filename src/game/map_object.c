@@ -642,7 +642,7 @@ void map_object_spawn_scattered_effect(u16 effect_id, const VECTOR *origin,
                                             map_objects_slots.spawn_sequence_pool_15e);
     map_object_reset(object);
     object->tail.scattered_effect.spawn_sequence = map_objects_slots.spawn_sequence_pool_15e++;
-    object->object_id = KF_OBJECT_70;
+    object->object_id = KF_OBJECT_SCATTERED_EFFECT;
     object->tail.scattered_effect.effect_id = effect_id;
     angle = (u16)(rand() >> KF_RANDOM_ANGLE_SHIFT);
     object->position.vx = origin->vx +

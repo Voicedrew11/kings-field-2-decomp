@@ -410,7 +410,7 @@ KfEventControl	0x00	0x40	fields	KfEventControlFields	supported	game/event_state.
 KfEventControlFields	0x00	0x01	highest_requested_map_region_id	u8	supported	GAME 0x80016488 lbu;resource_request_transition	maximum effective first map-region ID requested by resource transition
 KfEventControlFields	0x01	0x01	post_death_reload_flags	u8	supported	GAME 0x8002a274 lbu/0x8002a27c andi 8;player_update_frame	bit 3 gates the post-death world save and resource reload when counter 0x4c is nonzero; other bits unresolved
 KfEventControlFields	0x02	0x1a	unknown_02	u8[26]	opaque	game/event_state.h	unclassified control bytes before the counter 0x53 change marker
-KfEventControlFields	0x1c	0x01	counter_53_decreased	u8	supported	event_target_stream_execute;GAME 0x80046684	set when counter 0x53 falls during a scripted menu
+KfEventControlFields	0x1c	0x01	fall_survival_consumable_decreased	u8	supported	event_target_stream_execute;GAME 0x80046684	set when counter 0x53 falls during a scripted menu
 KfEventControlFields	0x1d	0x0b	unknown_1d	u8[11]	opaque	game/event_state.h	unclassified control bytes before object slots
 KfEventControlFields	0x28	0x0c	object_slots	KfEventControlObjectSlot[3]	supported	game/event_state.h;event_scene_command_dispatch;map_object_update_actions	three four-byte object slots at control +0x28/+0x2c/+0x30
 KfEventControlFields	0x34	0x0b	unknown_34	u8[11]	opaque	game/event_state.h	unclassified control bytes

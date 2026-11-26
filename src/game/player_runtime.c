@@ -138,7 +138,7 @@ enum {
     PLAYER_CURSE_PHASE_SCALE = 0xc00,
     PLAYER_CURSE_OVERLAY_RED = 0x46,
     PLAYER_CURSE_OVERLAY_GREEN = 0x46,
-    PLAYER_OBJECT31_FILTER_AMOUNT = 0x800
+    PLAYER_MAGIC_LIMITING_BODY_FILTER_AMOUNT = 0x800
 };
 
 ADDRESS(0x80024154, 0x208)
@@ -959,7 +959,7 @@ void player_initialize_state(void)
     player_set_equipment_slot(KF_OBJECT_NONE, KF_EQUIPMENT_SLOT_NONE);
     cur_avatar_status.selected_magic_record = NULL;
     player_set_primary_magic_shortcut_id(KF_MAGIC_NONE);
-    player_equip_weapon(KF_OBJECT_0);
+    player_equip_weapon(KF_ITEM_STARTING_WEAPON);
     player_set_secondary_magic_shortcut_id(KF_MAGIC_NONE);
     player_set_secondary_item_shortcut_id(KF_OBJECT_NONE);
     cur_avatar_status.camera_rotation_target.angles[0] = 0;
@@ -1675,8 +1675,8 @@ void player_update_weapon_attack(void)
                     break;
                 }
 
-                if (cur_avatar_status.equipped_accessory_id == KF_OBJECT_59
-                    || cur_avatar_status.equipped_extra_id == KF_OBJECT_59) {
+                if (cur_avatar_status.equipped_accessory_id == KF_ITEM_BALLISTIC_VARIANT_ACCESSORY
+                    || cur_avatar_status.equipped_extra_id == KF_ITEM_BALLISTIC_VARIANT_ACCESSORY) {
                     /* Selects the paired ballistic kind 47 or 48. */
                     effect_kind = KF_ENUM_DECODE(KF_ENUM_PROMOTED(KfEffectKind),
                                                  KF_ENUM_ENCODE(s32, effect_kind) + 17);
@@ -1824,7 +1824,7 @@ special_idle:
                  < cur_avatar_status.weapon_attack_window + phase_step) {
             cur_avatar_status.weapon_guard_active = KF_FALSE;
             if (cur_avatar_status.weapon_attack_mode == KF_ANIMATION_CLIP_SECOND) {
-                if (cur_avatar_status.equipped_weapon_id == KF_OBJECT_13
+                if (cur_avatar_status.equipped_weapon_id == KF_ITEM_GUARDING_WEAPON
                     && (cur_avatar_status.pad_buttons.current & DAT_8006e574) != 0) {
                     cur_avatar_status.weapon_attack_phase -= phase_step;
                     cur_avatar_status.weapon_guard_active = KF_TRUE;
@@ -1913,12 +1913,12 @@ special_idle:
         if (cur_avatar_status.weapon_charge_delay == 0) {
             s32 gain = player_charge_gain_for_rank(cur_avatar_status.physical_power,
                                       weapon->charge_rank) * 2;
-            if (cur_avatar_status.equipped_leg_id == KF_OBJECT_44) {
+            if (cur_avatar_status.equipped_leg_id == KF_ITEM_HALF_WEAPON_CHARGE_LEG) {
                 gain >>= 1;
             }
             if ((cur_avatar_status.equipped_accessory_id == KF_ITEM_PHYSICAL_POWER_BONUS_ACCESSORY
                  || cur_avatar_status.equipped_extra_id == KF_ITEM_PHYSICAL_POWER_BONUS_ACCESSORY)
-                && cur_avatar_status.equipped_weapon_id == KF_OBJECT_13) {
+                && cur_avatar_status.equipped_weapon_id == KF_ITEM_GUARDING_WEAPON) {
                 gain *= 2;
             }
             cur_avatar_status.attack_charge_current += gain;
@@ -1957,7 +1957,7 @@ void player_select_magic_action(KF_ENUM_PARAM(KfEffectKind, s32) magic_id)
             return;
         }
     }
-    if (cur_avatar_status.equipped_body_id == KF_OBJECT_31 && magic_id >= KF_EFFECT_KIND_11) {
+    if (cur_avatar_status.equipped_body_id == KF_ITEM_MAGIC_LIMITING_BODY && magic_id >= KF_EFFECT_KIND_11) {
         if (magic_id < KF_EFFECT_KIND_13) {
             return;
         }
@@ -2745,7 +2745,7 @@ void player_update_actions_and_charge(void)
 
     if ((cur_avatar_status.pad_buttons.current & DAT_8006e568)
         && (cur_avatar_status.pad_buttons.halves.previous & DAT_8006e568)
-        && cur_avatar_status.equipped_shield_id != KF_OBJECT_50) {
+        && cur_avatar_status.equipped_shield_id != KF_ITEM_CHARGE_KEEPING_SHIELD) {
         if (cur_avatar_status.movement_speed_adjustment_decay_latch != 0) {
             cur_avatar_status.movement_speed_adjustment_decay_latch--;
         }
@@ -2771,7 +2771,7 @@ void player_update_actions_and_charge(void)
     } else {
         charge_gain = player_charge_gain_for_rank(cur_avatar_status.magic,
                                     cur_avatar_status.selected_magic_record->charge_rate);
-        if (cur_avatar_status.equipped_head_id == KF_OBJECT_24) {
+        if (cur_avatar_status.equipped_head_id == KF_ITEM_HALF_MAGIC_CHARGE_HEAD) {
             charge_gain >>= 1;
         }
         cur_avatar_status.magic_charge += charge_gain;
@@ -3339,8 +3339,8 @@ update_reaction_pose:
             && cur_avatar_status.fatal_fall_latch == 0
             && (cur_avatar_status.equipped_accessory_id == KF_ITEM_STATUS_GUARD_ACCESSORY
                 || cur_avatar_status.equipped_extra_id == KF_ITEM_STATUS_GUARD_ACCESSORY)
-            && event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_83)] != 0) {
-            event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_83)]--;
+            && event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_FALL_SURVIVAL_CONSUMABLE)] != 0) {
+            event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_FALL_SURVIVAL_CONSUMABLE)]--;
             render_frames_with_color_overlay(KF_COLOR_OVERLAY_ADD, 0, KF_FIXED12_ONE, 512);
             player_reset_status();
             render_frames_with_color_overlay(KF_COLOR_OVERLAY_ADD, KF_FIXED12_ONE, 0, -512);
@@ -3496,14 +3496,14 @@ update_reaction_pose:
     if (cur_avatar_status.equipped_extra_id != KF_OBJECT_NONE) {
         player_apply_equipment_hp_tick(cur_avatar_status.equipped_extra_record);
     }
-    if (cur_avatar_status.equipped_head_id == KF_OBJECT_25 && rand() < 36) {
+    if (cur_avatar_status.equipped_head_id == KF_ITEM_RANDOM_CAST_HEAD && rand() < 36) {
         cur_avatar_status.magic_origin_offset.vx = 0;
         cur_avatar_status.magic_origin_offset.vy = -300;
         cur_avatar_status.magic_origin_offset.vz = 400;
         player_dispatch_magic_effect(KF_EFFECT_KIND_11);
     }
-    if (cur_avatar_status.equipped_body_id == KF_OBJECT_31) {
-        interpolate_collision_filter_rows(20, 20, 20, 5000, PLAYER_OBJECT31_FILTER_AMOUNT);
+    if (cur_avatar_status.equipped_body_id == KF_ITEM_MAGIC_LIMITING_BODY) {
+        interpolate_collision_filter_rows(20, 20, 20, 5000, PLAYER_MAGIC_LIMITING_BODY_FILTER_AMOUNT);
     }
     cur_avatar_status.equipment_effect_ticks++;
 }

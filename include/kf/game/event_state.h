@@ -34,7 +34,7 @@ typedef struct KfEventControlFields {
     u8 highest_requested_map_region_id;
     u8 post_death_reload_flags;
     u8 unknown_02[0x1a];
-    u8 counter_53_decreased;
+    u8 fall_survival_consumable_decreased;
     u8 unknown_1d[0x0b];
     KfEventControlObjectSlot object_slots[3];
     u8 unknown_34[0x0b];
@@ -46,8 +46,8 @@ typedef char kf_event_control_post_death_reload_offset[
     offsetof(KfEventControlFields, post_death_reload_flags) == 1 ? 1 : -1];
 typedef char kf_event_control_object_slots_offset[
     offsetof(KfEventControlFields, object_slots) == 0x28 ? 1 : -1];
-typedef char kf_event_control_counter_53_decreased_offset[
-    offsetof(KfEventControlFields, counter_53_decreased) == 0x1c ? 1 : -1];
+typedef char kf_event_control_fall_survival_consumable_decreased_offset[
+    offsetof(KfEventControlFields, fall_survival_consumable_decreased) == 0x1c ? 1 : -1];
 typedef char kf_event_control_last_slot_resource_offset[
     offsetof(KfEventControlFields, object_slots[2].resource_id) == 0x32 ? 1 : -1];
 typedef char kf_event_control_stream_actor_definition_offset[

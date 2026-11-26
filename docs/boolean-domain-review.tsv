@@ -91,7 +91,7 @@ KfEffectTrailState.frame_index	reject	counter or arithmetic quantity (incremente
 KfEquipmentRecord.hp_drain_interval	reject	counter or arithmetic quantity (incremented/decremented)	1	KfEquipmentRecord.hp_drain_interval
 KfEquipmentRecord.hp_regen_interval	reject	counter or arithmetic quantity (incremented/decremented)	1	KfEquipmentRecord.hp_regen_interval
 KfEulerAngles.z	reject	counter or arithmetic quantity (incremented/decremented)	9	KfEulerAngles.z
-KfEventControlFields.counter_53_decreased	reject	event control byte also written through bytes[0x40 + operand] by map scripts	1	KfEventControlFields.counter_53_decreased
+KfEventControlFields.fall_survival_consumable_decreased	reject	event control byte also written through bytes[0x40 + operand] by map scripts	1	KfEventControlFields.fall_survival_consumable_decreased
 KfEventControlFields.post_death_reload_flags&0x8	reject	masked bit of a wider flags or packed word (flags-domain review, not a Boolean slot)	1	KfEventControlFields.post_death_reload_flags&0x8
 KfEventState.interaction_handled	converted	member is now a Boolean storage type	0	KfEventState.interaction_handled
 KfFloorItem.frames_until_update	reject	counter or arithmetic quantity (incremented/decremented)	2	KfFloorItem.frames_until_update

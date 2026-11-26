@@ -151,7 +151,7 @@ enum {
 enum {
     KF_MENU_COUNTERS_GOLD = 1,
     KF_MENU_COUNTERS_GOLD_ONLY = 2,
-    KF_MENU_COUNTERS_OBJECT_96 = 3
+    KF_MENU_COUNTERS_TRADE_CURRENCY = 3
 };
 
 /* menu_confirm_card_format kind: the save path asks with explanatory rows. */
