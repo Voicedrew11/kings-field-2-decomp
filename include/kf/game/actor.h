@@ -185,13 +185,6 @@ KF_ENUM_BEGIN(KfActorTargetType, u8)
     KF_ACTOR_TARGET_NONE = 0xff
 KF_ENUM_END(KfActorTargetType)
 
-typedef struct KfTargetCandidateWord0cBytes {
-    u8 low;
-    u8 high;
-} KfTargetCandidateWord0cBytes;
-typedef char kf_target_candidate_word0c_bytes_size[
-    sizeof(KfTargetCandidateWord0cBytes) == 2 ? 1 : -1];
-
 typedef struct KfTargetCandidateSelectionScales {
     u8 initial_score_scale;
     u8 continuing_score_scale;
@@ -206,181 +199,13 @@ typedef struct KfTargetCandidateDamageReaction {
 typedef char kf_target_candidate_damage_reaction_size[
     sizeof(KfTargetCandidateDamageReaction) == 2 ? 1 : -1];
 
-typedef union KfTargetCandidateWord02 {
+/* Damage reactions reuse the selection scales as their trigger chance. */
+typedef union KfTargetCandidateWeights {
     KfTargetCandidateSelectionScales target_selection;
     KfTargetCandidateDamageReaction damage_reaction;
-} KfTargetCandidateWord02;
-typedef char kf_target_candidate_word02_size[
-    sizeof(KfTargetCandidateWord02) == 2 ? 1 : -1];
-
-/* A dying actor's candidate drops this object with chance high/256. */
-typedef struct KfTargetCandidateDeathDrop {
-    KF_ENUM_STORAGE(KfObjectId, u8) object_id;
-    u8 chance;
-} KfTargetCandidateDeathDrop;
-typedef char kf_target_candidate_death_drop_size[
-    sizeof(KfTargetCandidateDeathDrop) == 2 ? 1 : -1];
-
-/* Type-25 scripts dispatch this effect kind through actor_dispatch_group_effect. */
-typedef struct KfTargetCandidateScriptEffect {
-    KfEffectKind kind;
-    u8 unknown_01;
-} KfTargetCandidateScriptEffect;
-typedef char kf_target_candidate_script_effect_size[
-    sizeof(KfTargetCandidateScriptEffect) == 2 ? 1 : -1];
-
-typedef union KfTargetCandidateWord0c {
-    u16 value;
-    KfTargetCandidateWord0cBytes bytes;
-    KfTargetCandidateDeathDrop death_drop;
-    KfTargetCandidateScriptEffect script_effect;
-} KfTargetCandidateWord0c;
-typedef char kf_target_candidate_word0c_size[
-    sizeof(KfTargetCandidateWord0c) == 2 ? 1 : -1];
-typedef char kf_target_candidate_word0c_high_offset[
-    offsetof(KfTargetCandidateWord0c, bytes.high) == 1 ? 1 : -1];
-
-typedef struct KfTargetCandidateWord0eBytes {
-    u8 low;
-    u8 high;
-} KfTargetCandidateWord0eBytes;
-typedef char kf_target_candidate_word0e_bytes_size[
-    sizeof(KfTargetCandidateWord0eBytes) == 2 ? 1 : -1];
-
-typedef union KfTargetCandidateWord0e {
-    u16 value;
-    KfTargetCandidateWord0eBytes bytes;
-} KfTargetCandidateWord0e;
-typedef char kf_target_candidate_word0e_size[
-    sizeof(KfTargetCandidateWord0e) == 2 ? 1 : -1];
-
-typedef struct KfTargetCandidateWord10Bytes {
-    u8 fallback_offset;
-    KfAnimationClip completion_animation_id;
-} KfTargetCandidateWord10Bytes;
-typedef char kf_target_candidate_word10_bytes_size[
-    sizeof(KfTargetCandidateWord10Bytes) == 2 ? 1 : -1];
-
-typedef struct KfTargetCandidateWord10Attack {
-    u8 fallback_offset;
-    u8 damage_flags;
-} KfTargetCandidateWord10Attack;
-typedef char kf_target_candidate_word10_attack_size[
-    sizeof(KfTargetCandidateWord10Attack) == 2 ? 1 : -1];
-
-typedef union KfTargetCandidateWord10 {
-    u16 value;
-    KfTargetCandidateWord10Bytes bytes;
-    KfTargetCandidateWord10Attack attack;
-} KfTargetCandidateWord10;
-typedef char kf_target_candidate_word10_size[
-    sizeof(KfTargetCandidateWord10) == 2 ? 1 : -1];
-
-typedef struct KfTargetCandidateWord12Bytes {
-    u8 post_stream_menu_action;
-    u8 marker_state;
-} KfTargetCandidateWord12Bytes;
-typedef char kf_target_candidate_word12_bytes_size[
-    sizeof(KfTargetCandidateWord12Bytes) == 2 ? 1 : -1];
-
-typedef struct KfTargetCandidateWord12Flight {
-    u8 vertical_velocity_step;
-    u8 orientation_change_threshold;
-} KfTargetCandidateWord12Flight;
-typedef char kf_target_candidate_word12_flight_size[
-    sizeof(KfTargetCandidateWord12Flight) == 2 ? 1 : -1];
-
-typedef union KfTargetCandidateWord12 {
-    u16 value;
-    KfTargetCandidateWord12Bytes bytes;
-    KfTargetCandidateWord12Flight flight;
-} KfTargetCandidateWord12;
-typedef char kf_target_candidate_word12_size[
-    sizeof(KfTargetCandidateWord12) == 2 ? 1 : -1];
-
-typedef union KfTargetCandidateWord14 {
-    u16 value;
-    u8 bytes[2];
-} KfTargetCandidateWord14;
-typedef char kf_target_candidate_word14_size[
-    sizeof(KfTargetCandidateWord14) == 2 ? 1 : -1];
-
-typedef struct KfTargetCandidateWord16Bytes {
-    u8 low;
-    u8 high;
-} KfTargetCandidateWord16Bytes;
-typedef char kf_target_candidate_word16_bytes_size[
-    sizeof(KfTargetCandidateWord16Bytes) == 2 ? 1 : -1];
-
-typedef union KfTargetCandidateWord16 {
-    u16 value;
-    KfTargetCandidateWord16Bytes bytes;
-} KfTargetCandidateWord16;
-typedef char kf_target_candidate_word16_size[
-    sizeof(KfTargetCandidateWord16) == 2 ? 1 : -1];
-
-typedef struct KfTargetCandidateWord18Bytes {
-    u8 low;
-    u8 high;
-} KfTargetCandidateWord18Bytes;
-typedef char kf_target_candidate_word18_bytes_size[
-    sizeof(KfTargetCandidateWord18Bytes) == 2 ? 1 : -1];
-
-typedef union KfTargetCandidateWord18 {
-    u16 value;
-    KfTargetCandidateWord18Bytes bytes;
-} KfTargetCandidateWord18;
-typedef char kf_target_candidate_word18_size[
-    sizeof(KfTargetCandidateWord18) == 2 ? 1 : -1];
-
-typedef union KfTargetCandidateWord1a {
-    u16 value;
-    u8 bytes[2];
-} KfTargetCandidateWord1a;
-typedef char kf_target_candidate_word1a_size[
-    sizeof(KfTargetCandidateWord1a) == 2 ? 1 : -1];
-
-typedef union KfTargetCandidateWord1c {
-    u16 value;
-    u8 bytes[2];
-} KfTargetCandidateWord1c;
-typedef char kf_target_candidate_word1c_size[
-    sizeof(KfTargetCandidateWord1c) == 2 ? 1 : -1];
-
-typedef union KfTargetCandidateWord1e {
-    u16 value;
-    u8 bytes[2];
-} KfTargetCandidateWord1e;
-typedef char kf_target_candidate_word1e_size[
-    sizeof(KfTargetCandidateWord1e) == 2 ? 1 : -1];
-
-typedef union KfTargetCandidateWord26 {
-    u16 unsigned_value;
-    s16 signed_value;
-} KfTargetCandidateWord26;
-typedef char kf_target_candidate_word26_size[
-    sizeof(KfTargetCandidateWord26) == 2 ? 1 : -1];
-
-typedef union KfTargetCandidateWord24 {
-    u16 unsigned_value;
-    s16 signed_value;
-} KfTargetCandidateWord24;
-typedef char kf_target_candidate_word24_size[
-    sizeof(KfTargetCandidateWord24) == 2 ? 1 : -1];
-
-typedef union KfTargetCandidateWord20 {
-    u16 damage_component0;
-    u16 animation_phase_start;
-} KfTargetCandidateWord20;
-typedef char kf_target_candidate_word20_size[
-    sizeof(KfTargetCandidateWord20) == 2 ? 1 : -1];
-
-typedef union KfTargetCandidateWord22 {
-    u16 damage_component1;
-    u16 animation_phase_stop;
-} KfTargetCandidateWord22;
-typedef char kf_target_candidate_word22_size[
-    sizeof(KfTargetCandidateWord22) == 2 ? 1 : -1];
+} KfTargetCandidateWeights;
+typedef char kf_target_candidate_weights_size[
+    sizeof(KfTargetCandidateWeights) == 2 ? 1 : -1];
 
 /* Low 14 bits: sound interval; high 2 bits: trigger mode. */
 typedef struct KfTargetSoundTriggerFields {
@@ -397,99 +222,320 @@ typedef union KfTargetSoundTrigger {
 typedef char kf_target_sound_trigger_size[
     sizeof(KfTargetSoundTrigger) == 2 ? 1 : -1];
 
+/*
+ * Per-type parameters at candidate offset 0x0c. Each view is named after the
+ * behaviour that reads it in actor_update_behavior, actor_score_target_candidate
+ * or the event stream interpreter; a type reads only its own view.
+ */
+
+/* Damage reaction: taken when a hit deals at least this much damage. */
+typedef struct KfTargetDamageReactionParams {
+    u16 damage_threshold;
+} KfTargetDamageReactionParams;
+
+/* Death: a dying actor drops object_id with chance/256. */
+typedef struct KfTargetDeathDropParams {
+    KF_ENUM_STORAGE(KfObjectId, u8) object_id;
+    u8 chance;
+} KfTargetDeathDropParams;
+
+/* Wander and forward moves: turn toward a heading, then move along it. */
+typedef struct KfTargetHeadingMoveParams {
+    u16 move_speed;
+    u16 turn_speed;
+    u8 heading_change_chance;
+} KfTargetHeadingMoveParams;
+
+/* Clip arguments of actor_update_motion_animation after its first clip. */
+typedef struct KfTargetMotionClips {
+    KfAnimationClip reverse;
+    KfAnimationClip forward;
+    KfAnimationClip fast;
+    KfAnimationClip slow;
+} KfTargetMotionClips;
+typedef char kf_target_motion_clips_size[sizeof(KfTargetMotionClips) == 4 ? 1 : -1];
+
+/* Flying wander: hover within hover_range of the home height. */
+typedef struct KfTargetFlyingWanderParams {
+    u16 move_speed;
+    u16 turn_speed;
+    u16 hover_range;
+    u8 vertical_velocity_step;
+    u8 orientation_change_threshold;
+    KfTargetMotionClips motion_clips;
+} KfTargetFlyingWanderParams;
+
+/*
+ * Keep range: approach beyond approach_distance, retreat inside
+ * retreat_distance. Scoring takes a new target within engage_distance and
+ * keeps the current one within hold_distance.
+ */
+typedef struct KfTargetKeepRangeParams {
+    u16 move_speed;
+    u16 turn_speed;
+    u16 engage_distance;
+    u16 hold_distance;
+    u16 retreat_distance;
+    u16 approach_distance;
+    u16 ledge_drop_chance;
+} KfTargetKeepRangeParams;
+
+/* Flying keep range: the keep-range fields, then motion clips. */
+typedef struct KfTargetFlyingKeepRangeParams {
+    u16 move_speed;
+    u16 turn_speed;
+    u16 engage_distance;
+    u16 hold_distance;
+    u16 retreat_distance;
+    u16 approach_distance;
+    KfTargetMotionClips motion_clips;
+} KfTargetFlyingKeepRangeParams;
+typedef char kf_target_flying_keep_range_shares_prefix[
+    offsetof(KfTargetFlyingKeepRangeParams, approach_distance) ==
+    offsetof(KfTargetKeepRangeParams, approach_distance) ? 1 : -1];
+
+/* Jump attack: back off, wind up, then a ballistic jump at the player. */
+typedef struct KfTargetJumpAttackParams {
+    u16 engage_distance;
+    u16 back_off_distance;
+    u16 trajectory_speed;
+    u16 back_off_speed;
+    KfAnimationClip back_off_animation_id;
+    KfAnimationClip landing_animation_id;
+    u8 jump_animation_step;
+    u8 trajectory_parameter;
+} KfTargetJumpAttackParams;
+
+/* Drift: random acceleration on each axis, clamped to max_speed. */
+typedef struct KfTargetDriftParams {
+    u16 max_speed;
+    u16 turn_speed;
+    u16 acceleration;
+} KfTargetDriftParams;
+
+/* The cone hit passed to actor_try_damage_player_in_cone. */
+typedef struct KfTargetConeHit {
+    u8 maximum_distance;
+    u8 y_offset;
+    u8 angle_tolerance;
+    u8 damage_flags;
+    u16 damage[3];
+} KfTargetConeHit;
+typedef char kf_target_cone_hit_size[sizeof(KfTargetConeHit) == 10 ? 1 : -1];
+
+/* Pursuing attacks move toward the player; step changes by animation phase. */
+typedef struct KfTargetAttackPursuit {
+    u16 move_speed;
+    u16 turn_speed;
+    u16 phase_start;
+    u16 phase_stop;
+    s16 step_after_start;
+    s16 step_after_stop;
+} KfTargetAttackPursuit;
+
+/* Repeated hits: the first hit repeats every hit_phase_step up to last_hit_phase. */
+typedef struct KfTargetRepeatedHits {
+    KfTargetConeHit secondary_hit;
+    u16 last_hit_phase;
+    u16 hit_phase_step;
+    u16 secondary_hit_phase;
+} KfTargetRepeatedHits;
+
+typedef union KfTargetAttackFollowUp {
+    KfTargetAttackPursuit pursuit;
+    KfTargetRepeatedHits repeated;
+} KfTargetAttackFollowUp;
+typedef char kf_target_attack_follow_up_size[sizeof(KfTargetAttackFollowUp) == 0x10 ? 1 : -1];
+
+/*
+ * Cone attack: hit when the animation crosses hit_phase. motion_step is the
+ * motion decay of standing attacks and the move step of pursuing ones.
+ */
+typedef struct KfTargetAttackParams {
+    u8 unused;
+    u8 motion_step;
+    KfTargetConeHit hit;
+    u16 hit_phase;
+    u16 engage_distance;
+    KfTargetAttackFollowUp follow_up;
+} KfTargetAttackParams;
+
+/* Lunge: a straight charge that damages the player on contact. */
+typedef struct KfTargetLungeParams {
+    u8 unused;
+    u8 damage_flags;
+    u16 damage[3];
+    u16 lunge_speed;
+    u16 turn_speed;
+    u16 lunge_acceleration;
+    u16 engage_distance;
+} KfTargetLungeParams;
+
+/* Partner turn: follow the other actor's turn direction. */
+typedef struct KfTargetPartnerTurnParams {
+    KfAnimationClip negative_turn_animation_id;
+    KfAnimationClip positive_turn_animation_id;
+} KfTargetPartnerTurnParams;
+
+/* Weapon reactions are scored while the player's weapon attack is active. */
+typedef struct KfTargetWeaponWaitParams {
+    u8 facing_angle;
+    u8 unused;
+    u16 engage_distance;
+    u16 lead_in_phase;
+} KfTargetWeaponWaitParams;
+
+typedef struct KfTargetWeaponRetreatParams {
+    u8 facing_angle;
+    u8 unused;
+    u16 engage_distance;
+    u16 retreat_speed;
+    u16 pass_count;
+} KfTargetWeaponRetreatParams;
+typedef char kf_target_weapon_retreat_shares_prefix[
+    offsetof(KfTargetWeaponRetreatParams, engage_distance) ==
+    offsetof(KfTargetWeaponWaitParams, engage_distance) ? 1 : -1];
+
+/* Ambush: wait hidden at a reduced size until the player comes close. */
+typedef struct KfTargetAmbushParams {
+    u16 trigger_distance;
+    u16 emerge_speed;
+    u16 hold_frames;
+    u16 move_phase;
+    u16 hidden_radius;
+    u16 hidden_height;
+    KfAnimationClip hold_animation_id;
+    u8 hold_animation_step;
+} KfTargetAmbushParams;
+
+/*
+ * Effect script: each cue phase runs halfword opcodes from stream. The stream
+ * runs past the candidate prefix; its complete extent is not established.
+ */
+typedef struct KfTargetEffectScriptParams {
+    KfEffectKind effect_kind;
+    u8 facing_angle;
+    u16 first_cue_phase;
+    u16 last_cue_phase;
+    u16 cue_phase_step;
+    u16 minimum_distance;
+    u16 maximum_distance;
+    u16 damage_multiplier_tenths;
+    u16 stream[1];
+} KfTargetEffectScriptParams;
+
+/* Return home: walk back, face the home yaw, then resize. */
+typedef struct KfTargetReturnHomeParams {
+    u16 return_distance;
+    u16 move_speed;
+    u16 turn_speed;
+    u16 rest_radius;
+    u16 rest_height;
+    KfAnimationClip walk_animation_id;
+    u8 walk_animation_step;
+} KfTargetReturnHomeParams;
+
+/* Contact damage: the player_apply_damage arguments in table order. */
+typedef struct KfTargetContactDamageParams {
+    u16 damage_flags;
+    u16 damage[8];
+} KfTargetContactDamageParams;
+
+/*
+ * Event stream: byte opcodes from stream. cursor_offset is the resume
+ * position in stream; marker offsets count from marker_state.
+ */
+typedef struct KfTargetEventStreamParams {
+    u16 talk_image_base;
+    u16 completion_phase_step;
+    u8 cursor_offset;
+    KfAnimationClip completion_animation_id;
+    u8 post_stream_menu_action;
+    u8 marker_state;
+    u8 stream[1];
+} KfTargetEventStreamParams;
+
+typedef union KfTargetParams {
+    KfTargetDamageReactionParams damage_reaction;
+    KfTargetDeathDropParams death_drop;
+    KfTargetHeadingMoveParams heading_move;
+    KfTargetFlyingWanderParams flying_wander;
+    KfTargetKeepRangeParams keep_range;
+    KfTargetFlyingKeepRangeParams flying_keep_range;
+    KfTargetJumpAttackParams jump_attack;
+    KfTargetDriftParams drift;
+    KfTargetAttackParams attack;
+    KfTargetLungeParams lunge;
+    KfTargetPartnerTurnParams partner_turn;
+    KfTargetWeaponWaitParams weapon_wait;
+    KfTargetWeaponRetreatParams weapon_retreat;
+    KfTargetAmbushParams ambush;
+    KfTargetEffectScriptParams effect_script;
+    KfTargetReturnHomeParams return_home;
+    KfTargetContactDamageParams contact_damage;
+    KfTargetEventStreamParams event_stream;
+} KfTargetParams;
+typedef char kf_target_params_size[sizeof(KfTargetParams) == 0x20 ? 1 : -1];
+
 /* This is the observed prefix; complete extent and stride remain under study. */
 typedef struct KfTargetCandidate {
     KfActorTargetType type;
     KfAnimationClip animation_id;
-    KfTargetCandidateWord02 word_02;
+    KfTargetCandidateWeights weights;
     u8 sound_code;
     u8 unknown_05[2];
     u8 start_vertical_motion_on_entry;
     u16 animation_step;
     KfTargetSoundTrigger sound_trigger;
-    KfTargetCandidateWord0c word_0c;
-    KfTargetCandidateWord0e word_0e;
-    KfTargetCandidateWord10 word_10;
-    KfTargetCandidateWord12 word_12;
-    KfTargetCandidateWord14 word_14;
-    KfTargetCandidateWord16 word_16;
-    KfTargetCandidateWord18 word_18;
-    KfTargetCandidateWord1a word_1a;
-    KfTargetCandidateWord1c word_1c;
-    KfTargetCandidateWord1e word_1e;
-    KfTargetCandidateWord20 word_20;
-    KfTargetCandidateWord22 word_22;
-    KfTargetCandidateWord24 word_24;
-    KfTargetCandidateWord26 word_26;
-    u16 repeated_attack_phase_step;
-    u16 secondary_hit_phase;
+    KfTargetParams params;
 } KfTargetCandidate;
 typedef char kf_target_candidate_view_size[sizeof(KfTargetCandidate) == 0x2c ? 1 : -1];
 typedef char kf_target_candidate_animation_id_offset[offsetof(KfTargetCandidate, animation_id) == 1 ? 1 : -1];
-typedef char kf_target_candidate_word_02_offset[offsetof(KfTargetCandidate, word_02) == 2 ? 1 : -1];
+typedef char kf_target_candidate_weights_offset[offsetof(KfTargetCandidate, weights) == 2 ? 1 : -1];
 typedef char kf_target_candidate_sound_code_offset[offsetof(KfTargetCandidate, sound_code) == 4 ? 1 : -1];
 typedef char kf_target_candidate_start_vertical_motion_offset[
     offsetof(KfTargetCandidate, start_vertical_motion_on_entry) == 7 ? 1 : -1];
-typedef char kf_target_candidate_word_10_offset[offsetof(KfTargetCandidate, word_10) == 0x10 ? 1 : -1];
-typedef char kf_target_candidate_fallback_offset[offsetof(KfTargetCandidateWord10Bytes, fallback_offset) == 0 ? 1 : -1];
 typedef char kf_target_candidate_animation_step_offset[offsetof(KfTargetCandidate, animation_step) == 0x08 ? 1 : -1];
 typedef char kf_target_candidate_sound_trigger_offset[offsetof(KfTargetCandidate, sound_trigger) == 0x0a ? 1 : -1];
-typedef char kf_target_candidate_word_0c_offset[offsetof(KfTargetCandidate, word_0c) == 0x0c ? 1 : -1];
-typedef char kf_target_candidate_word_0e_offset[offsetof(KfTargetCandidate, word_0e) == 0x0e ? 1 : -1];
-typedef char kf_target_candidate_word_0e_low_offset[offsetof(KfTargetCandidate, word_0e.bytes.low) == 0x0e ? 1 : -1];
-typedef char kf_target_candidate_completion_animation_offset[offsetof(KfTargetCandidateWord10Bytes, completion_animation_id) == 1 ? 1 : -1];
-typedef char kf_target_candidate_completion_animation_total_offset[offsetof(KfTargetCandidate, word_10.bytes.completion_animation_id) == 0x11 ? 1 : -1];
+typedef char kf_target_candidate_params_offset[offsetof(KfTargetCandidate, params) == 0x0c ? 1 : -1];
+typedef char kf_target_candidate_attack_hit_offset[
+    offsetof(KfTargetCandidate, params.attack.hit) == 0x0e ? 1 : -1];
 typedef char kf_target_candidate_attack_damage_flags_offset[
-    offsetof(KfTargetCandidate, word_10.attack.damage_flags) == 0x11 ? 1 : -1];
-typedef char kf_target_candidate_word_12_offset[offsetof(KfTargetCandidate, word_12) == 0x12 ? 1 : -1];
-typedef char kf_target_candidate_flight_vertical_step_offset[
-    offsetof(KfTargetCandidate, word_12.flight.vertical_velocity_step) == 0x12 ? 1 : -1];
-typedef char kf_target_candidate_flight_orientation_threshold_offset[
-    offsetof(KfTargetCandidate, word_12.flight.orientation_change_threshold) == 0x13 ? 1 : -1];
-typedef char kf_target_candidate_marker_state_offset[offsetof(KfTargetCandidateWord12Bytes, marker_state) == 1 ? 1 : -1];
-typedef char kf_target_candidate_marker_state_total_offset[offsetof(KfTargetCandidate, word_12.bytes.marker_state) == 0x13 ? 1 : -1];
-typedef char kf_target_candidate_word_14_offset[offsetof(KfTargetCandidate, word_14) == 0x14 ? 1 : -1];
-typedef char kf_target_candidate_stream_bytes_offset[offsetof(KfTargetCandidate, word_14.bytes) == 0x14 ? 1 : -1];
-typedef char kf_target_candidate_word_16_offset[offsetof(KfTargetCandidate, word_16) == 0x16 ? 1 : -1];
-typedef char kf_target_candidate_word_16_high_offset[offsetof(KfTargetCandidate, word_16.bytes.high) == 0x17 ? 1 : -1];
-typedef char kf_target_candidate_word_18_offset[offsetof(KfTargetCandidate, word_18) == 0x18 ? 1 : -1];
-typedef char kf_target_candidate_word_18_high_offset[offsetof(KfTargetCandidate, word_18.bytes.high) == 0x19 ? 1 : -1];
-typedef char kf_target_candidate_word_1a_offset[offsetof(KfTargetCandidate, word_1a) == 0x1a ? 1 : -1];
-typedef char kf_target_candidate_word_1c_offset[offsetof(KfTargetCandidate, word_1c) == 0x1c ? 1 : -1];
-typedef char kf_target_candidate_word_1e_offset[offsetof(KfTargetCandidate, word_1e) == 0x1e ? 1 : -1];
-typedef char kf_target_candidate_word_20_offset[offsetof(KfTargetCandidate, word_20) == 0x20 ? 1 : -1];
-typedef char kf_target_candidate_word_22_offset[offsetof(KfTargetCandidate, word_22) == 0x22 ? 1 : -1];
-typedef char kf_target_candidate_word_24_offset[offsetof(KfTargetCandidate, word_24) == 0x24 ? 1 : -1];
-typedef char kf_target_candidate_word_26_offset[offsetof(KfTargetCandidate, word_26) == 0x26 ? 1 : -1];
-typedef char kf_target_candidate_repeated_attack_phase_step_offset[
-    offsetof(KfTargetCandidate, repeated_attack_phase_step) == 0x28 ? 1 : -1];
+    offsetof(KfTargetCandidate, params.attack.hit.damage_flags) == 0x11 ? 1 : -1];
+typedef char kf_target_candidate_attack_hit_phase_offset[
+    offsetof(KfTargetCandidate, params.attack.hit_phase) == 0x18 ? 1 : -1];
+typedef char kf_target_candidate_attack_engage_offset[
+    offsetof(KfTargetCandidate, params.attack.engage_distance) == 0x1a ? 1 : -1];
+typedef char kf_target_candidate_secondary_hit_offset[
+    offsetof(KfTargetCandidate, params.attack.follow_up.repeated.secondary_hit) == 0x1c ? 1 : -1];
 typedef char kf_target_candidate_secondary_hit_phase_offset[
-    offsetof(KfTargetCandidate, secondary_hit_phase) == 0x2a ? 1 : -1];
-
-/* Type 25 reads a variable halfword stream after this proved prefix. Its
- * complete allocation and record stride are not established. */
-typedef struct KfTargetCandidateAction25 {
-    KfActorTargetType type;
-    u8 unknown_01[3];
-    u8 unknown_04;
-    u8 unknown_05[2];
-    u16 unknown_08;
-    u16 unknown_0a;
-    KfTargetCandidateWord0c word_0c;
-    KfTargetCandidateWord0e word_0e;
-    KfTargetCandidateWord10 word_10;
-    KfTargetCandidateWord12 word_12;
-    KfTargetCandidateWord14 word_14;
-    KfTargetCandidateWord16 word_16;
-    KfTargetCandidateWord18 word_18;
-    u16 stream[1]; /* first word of a variable-length archive payload */
-} KfTargetCandidateAction25;
-typedef char kf_target_candidate_action25_prefix_size[
-    sizeof(KfTargetCandidateAction25) == 0x1c ? 1 : -1];
-typedef char kf_target_candidate_action25_word_08_offset[
-    offsetof(KfTargetCandidateAction25, unknown_08) == 0x08 ? 1 : -1];
-typedef char kf_target_candidate_action25_stream_offset[
-    offsetof(KfTargetCandidateAction25, stream) == 0x1a ? 1 : -1];
+    offsetof(KfTargetCandidate, params.attack.follow_up.repeated.secondary_hit_phase) == 0x2a ? 1 : -1];
+typedef char kf_target_candidate_step_after_stop_offset[
+    offsetof(KfTargetCandidate, params.attack.follow_up.pursuit.step_after_stop) == 0x26 ? 1 : -1];
+typedef char kf_target_candidate_lunge_engage_offset[
+    offsetof(KfTargetCandidate, params.lunge.engage_distance) == 0x1a ? 1 : -1];
+typedef char kf_target_candidate_keep_range_ledge_offset[
+    offsetof(KfTargetCandidate, params.keep_range.ledge_drop_chance) == 0x18 ? 1 : -1];
+typedef char kf_target_candidate_flying_keep_range_clips_offset[
+    offsetof(KfTargetCandidate, params.flying_keep_range.motion_clips) == 0x18 ? 1 : -1];
+typedef char kf_target_candidate_flying_wander_clips_offset[
+    offsetof(KfTargetCandidate, params.flying_wander.motion_clips) == 0x14 ? 1 : -1];
+typedef char kf_target_candidate_jump_step_offset[
+    offsetof(KfTargetCandidate, params.jump_attack.jump_animation_step) == 0x16 ? 1 : -1];
+typedef char kf_target_candidate_ambush_clip_offset[
+    offsetof(KfTargetCandidate, params.ambush.hold_animation_id) == 0x18 ? 1 : -1];
+typedef char kf_target_candidate_script_stream_offset[
+    offsetof(KfTargetCandidate, params.effect_script.stream) == 0x1a ? 1 : -1];
+typedef char kf_target_candidate_return_clip_offset[
+    offsetof(KfTargetCandidate, params.return_home.walk_animation_id) == 0x16 ? 1 : -1];
+typedef char kf_target_candidate_contact_damage_last_offset[
+    offsetof(KfTargetCandidate, params.contact_damage.damage[7]) == 0x1c ? 1 : -1];
+typedef char kf_target_candidate_event_cursor_offset[
+    offsetof(KfTargetCandidate, params.event_stream.cursor_offset) == 0x10 ? 1 : -1];
+typedef char kf_target_candidate_event_marker_offset[
+    offsetof(KfTargetCandidate, params.event_stream.marker_state) == 0x13 ? 1 : -1];
+typedef char kf_target_candidate_event_stream_offset[
+    offsetof(KfTargetCandidate, params.event_stream.stream) == 0x14 ? 1 : -1];
 
 /* Group slots hold byte offsets until actor_fixup_group_targets runs. */
 typedef union KfTargetReference {

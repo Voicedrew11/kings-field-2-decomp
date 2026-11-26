@@ -137,7 +137,7 @@ void actor_animation_seek_phase(KfActor *actor, KfAnimationClip state, u16 phase
     render_game_frame(NULL, NULL);
 }
 
-/* candidate->word_12.bytes.marker_state: CLEAR means no rewind is pending;
+/* candidate->params.event_stream.marker_state: CLEAR means no rewind is pending;
  * REWIND_ARMED is set when a rewind marker is executed, so a different actor
  * resuming the stream skips to the marker's continuation. */
 enum {
@@ -148,19 +148,19 @@ enum {
 ADDRESS(0x80046e88, 0x5c)
 u8 event_target_stream_find_marker(const KfTargetCandidate *candidate, u8 marker)
 {
-    const u8 *cursor = candidate->word_14.bytes;
+    const u8 *cursor = candidate->params.event_stream.stream;
 
     for (;;) {
         s32 code = *cursor++;
 
         if (code != KF_EVENT_STREAM_MARKER_RECORD) {
             if (code == KF_EVENT_STREAM_END) {
-                return candidate->word_10.bytes.fallback_offset;
+                return candidate->params.event_stream.cursor_offset;
             }
             continue;
         }
         if (*cursor == marker) {
-            const u8 *base = &candidate->word_12.bytes.marker_state;
+            const u8 *base = &candidate->params.event_stream.marker_state;
             return cursor - base;
         }
         cursor++;
@@ -172,7 +172,7 @@ u8 *event_target_stream_resolve_cursor(KfActor *actor)
 {
     KfTargetCandidate *candidate =
         actor_status.target_groups[actor->group_index].targets[0].pointer;
-    u8 *cursor = candidate->word_14.bytes;
+    u8 *cursor = candidate->params.event_stream.stream;
 
     for (;;) {
         u8 code = *cursor;
@@ -182,21 +182,21 @@ u8 *event_target_stream_resolve_cursor(KfActor *actor)
                 /* Retail retries this byte; the stream must supply a control code. */
                 continue;
             }
-            if (candidate->word_10.bytes.fallback_offset == 0) {
+            if (candidate->params.event_stream.cursor_offset == 0) {
                 cursor++;
-                candidate->word_10.bytes.fallback_offset = cursor - candidate->word_14.bytes;
+                candidate->params.event_stream.cursor_offset = cursor - candidate->params.event_stream.stream;
                 return cursor;
             }
 use_fallback:
-            return candidate->word_14.bytes + candidate->word_10.bytes.fallback_offset;
+            return candidate->params.event_stream.stream + candidate->params.event_stream.cursor_offset;
         }
         if (cur_evt_state.control.bytes[cursor[1]] == cursor[2]) {
             u8 offset = event_target_stream_find_marker(candidate, cursor[3]);
-            if (candidate->word_10.bytes.fallback_offset < offset) {
-                candidate->word_10.bytes.fallback_offset = offset;
+            if (candidate->params.event_stream.cursor_offset < offset) {
+                candidate->params.event_stream.cursor_offset = offset;
             }
             cur_evt_state.control.fields.stream_actor_definition_id = actor->definition_id;
-            candidate->word_12.bytes.marker_state = EVENT_MARKER_CLEAR;
+            candidate->params.event_stream.marker_state = EVENT_MARKER_CLEAR;
             goto use_fallback;
         }
         cursor += 4;
@@ -223,66 +223,66 @@ void event_target_stream_execute(KfActor *actor)
     }
     restore_state = KF_FALSE;
     repeat = 0;
-    if (candidate->word_10.bytes.fallback_offset == 0) {
+    if (candidate->params.event_stream.cursor_offset == 0) {
         cur_evt_state.control.fields.stream_actor_definition_id = actor->definition_id;
     }
     cursor = event_target_stream_resolve_cursor(actor);
     if (cur_evt_state.control.fields.stream_actor_definition_id != actor->definition_id &&
-        candidate->word_12.bytes.marker_state == EVENT_MARKER_REWIND_ARMED) {
+        candidate->params.event_stream.marker_state == EVENT_MARKER_REWIND_ARMED) {
         while (*cursor++ != KF_EVENT_STREAM_REWIND_MARKER) {
         }
         cursor++;
-        candidate->word_10.bytes.fallback_offset = cursor - candidate->word_14.bytes;
-        candidate->word_12.bytes.marker_state = EVENT_MARKER_CLEAR;
+        candidate->params.event_stream.cursor_offset = cursor - candidate->params.event_stream.stream;
+        candidate->params.event_stream.marker_state = EVENT_MARKER_CLEAR;
     }
 
     for (;;) {
         switch (*cursor) {
         case KF_EVENT_STREAM_REWIND_MARKER:
-            candidate->word_12.bytes.marker_state = EVENT_MARKER_REWIND_ARMED;
+            candidate->params.event_stream.marker_state = EVENT_MARKER_REWIND_ARMED;
             /* The two rewind opcodes share their byte-count operand. */
         case KF_EVENT_STREAM_REWIND:
         {
             u8 count = cursor[1];
-            candidate->word_10.bytes.fallback_offset -= count;
+            candidate->params.event_stream.cursor_offset -= count;
             cursor -= count;
             continue;
         }
         case KF_EVENT_STREAM_BRANCH:
             if (cur_evt_state.control.bytes[cursor[1]] == cursor[2]) {
-                candidate->word_10.bytes.fallback_offset = event_target_stream_find_marker(candidate, cursor[3]);
-                cursor = candidate->word_14.bytes + candidate->word_10.bytes.fallback_offset;
+                candidate->params.event_stream.cursor_offset = event_target_stream_find_marker(candidate, cursor[3]);
+                cursor = candidate->params.event_stream.stream + candidate->params.event_stream.cursor_offset;
             } else {
                 cursor += 4;
-                candidate->word_10.bytes.fallback_offset += 4;
+                candidate->params.event_stream.cursor_offset += 4;
             }
             continue;
         case KF_EVENT_STREAM_MARKER_RECORD:
             cursor += 2;
-            candidate->word_10.bytes.fallback_offset += 2;
+            candidate->params.event_stream.cursor_offset += 2;
             continue;
         case KF_EVENT_STREAM_SKIP:
             break;
         case KF_EVENT_STREAM_CALLBACK:
             cursor++;
-            candidate->word_10.bytes.fallback_offset++;
+            candidate->params.event_stream.cursor_offset++;
             ((void (*)(KfActor *, s32))asset_status.active_table[4])(actor, *cursor);
             break;
         case KF_EVENT_STREAM_REPEAT:
             cursor++;
-            candidate->word_10.bytes.fallback_offset++;
+            candidate->params.event_stream.cursor_offset++;
             repeat = *cursor;
             break;
         case KF_EVENT_STREAM_RESET_MARKER:
             cur_evt_state.control.fields.stream_actor_definition_id = actor->definition_id;
             cursor++;
-            candidate->word_10.bytes.fallback_offset++;
-            candidate->word_12.bytes.marker_state = EVENT_MARKER_CLEAR;
+            candidate->params.event_stream.cursor_offset++;
+            candidate->params.event_stream.marker_state = EVENT_MARKER_CLEAR;
             continue;
         case KF_EVENT_STREAM_SET_CONTROL:
             cur_evt_state.control.bytes[cursor[1]] = cursor[2];
             cursor += 2;
-            candidate->word_10.bytes.fallback_offset += 2;
+            candidate->params.event_stream.cursor_offset += 2;
             break;
         case KF_EVENT_STREAM_END:
             goto after_script;
@@ -299,12 +299,12 @@ void event_target_stream_execute(KfActor *actor)
                               candidate->animation_step);
                 restore_state = KF_TRUE;
             }
-            menu_show_transition_image(KF_RESOURCE_ARCHIVE_TALK, candidate->word_0c.value + *cursor);
+            menu_show_transition_image(KF_RESOURCE_ARCHIVE_TALK, candidate->params.event_stream.talk_image_base + *cursor);
             break;
         }
 
         cursor++;
-        candidate->word_10.bytes.fallback_offset++;
+        candidate->params.event_stream.cursor_offset++;
         if (repeat != 0) {
             repeat--;
             continue;
@@ -314,10 +314,10 @@ void event_target_stream_execute(KfActor *actor)
 
 after_script:
     old_counter = event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_83)];
-    switch (candidate->word_12.bytes.post_stream_menu_action & KF_EVENT_POST_STREAM_MENU_MASK) {
+    switch (candidate->params.event_stream.post_stream_menu_action & KF_EVENT_POST_STREAM_MENU_MASK) {
     case KF_EVENT_POST_STREAM_BUY_SELL:
         player_render_frame_and_release_pool();
-        menu_item_buy_sell_controller(candidate->word_12.bytes.post_stream_menu_action &
+        menu_item_buy_sell_controller(candidate->params.event_stream.post_stream_menu_action &
                                       KF_EVENT_POST_STREAM_BUY_SELL_CHOICE_MASK);
         break;
     case KF_EVENT_POST_STREAM_STOCK_CHOICE:
@@ -341,10 +341,10 @@ after_script:
         cur_evt_state.control.fields.counter_53_decreased = 1;
     }
     cur_evt_state.control.fields.stream_actor_definition_id = actor->definition_id;
-    if (restore_state && candidate->word_10.bytes.completion_animation_id != KF_ANIMATION_CLIP_NONE) {
-        actor_animation_seek_phase(actor, candidate->word_10.bytes.completion_animation_id, 0,
+    if (restore_state && candidate->params.event_stream.completion_animation_id != KF_ANIMATION_CLIP_NONE) {
+        actor_animation_seek_phase(actor, candidate->params.event_stream.completion_animation_id, 0,
                       KF_ACTOR_ANIMATION_PHASE_MAX,
-                      candidate->word_0e.value);
+                      candidate->params.event_stream.completion_phase_step);
         actor->animation_id = saved_state;
     }
     cur_evt_state.interaction_handled = KF_TRUE;
@@ -1411,8 +1411,8 @@ void event_world_state_save_slot(s32 save_slot)
         candidate = group->targets[0].pointer;
         if (candidate != NULL && candidate->type == KF_ACTOR_TARGET_EVENT_STREAM) {
             *write++ = index;
-            *write++ = candidate->word_10.bytes.fallback_offset;
-            *write++ = candidate->word_12.bytes.marker_state;
+            *write++ = candidate->params.event_stream.cursor_offset;
+            *write++ = candidate->params.event_stream.marker_state;
         }
     }
     *write++ = KF_EVENT_WORLD_SAVE_LIST_END;
@@ -1561,8 +1561,8 @@ void event_world_state_restore_slot(s32 save_slot)
         }
         group = &actor_status.target_groups[group_index];
         candidate = group->targets[0].pointer;
-        candidate->word_10.bytes.fallback_offset = *stream++;
-        candidate->word_12.bytes.marker_state = *stream++;
+        candidate->params.event_stream.cursor_offset = *stream++;
+        candidate->params.event_stream.marker_state = *stream++;
     }
 
     object = map_objects_slots.objects;

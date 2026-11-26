@@ -2,9 +2,9 @@
 # RATCHET: down-only. Bless a lower number with `kf verify readability --update`;
 # a higher one fails `kf verify readability --gate`.
 # Never hand-edit to raise a floor - rewrite the new site instead.
-offset-named members	154
-offset-named member uses	300
-offset-named types	27
+offset-named members	126
+offset-named member uses	61
+offset-named types	4
 value-echo constants	231
 numbered functions	3
 placeholder parameters	0
@@ -17,6 +17,6 @@ gotos	237
 unlisted gotos	0
 long functions	27
 deeply nested functions	15
-union scalar views	288
+union scalar views	78
 matching-history comments	0
 addresses in comments	0
