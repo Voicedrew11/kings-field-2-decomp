@@ -118,7 +118,7 @@ enum {
     PLAYER_VIEW_TARGET_MAX_DISTANCE = 0x55f0,
     PLAYER_VIEW_TARGET_YAW_LIMIT = 0x200,
     PLAYER_VIEW_TARGET_PITCH_LIMIT = 0x200,
-    /* KF_EFFECT_KIND_2 payload: max_scale, scale_step, radial_damage_parameter. */
+    /* KF_EFFECT_KIND_EXPANDING_RING payload: max_scale, scale_step, radial_damage_parameter. */
     PLAYER_MAGIC_KIND2_MAX_SCALE = KF_FIXED12_ONE,
     PLAYER_MAGIC_KIND2_SCALE_STEP = KF_FIXED12_ONE / 16,
     PLAYER_MAGIC_KIND2_RADIAL_DAMAGE = KF_FIXED12_ONE,
@@ -1289,12 +1289,12 @@ emit_simple_effect:
         effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS, effect_id,
                                 &position, &direction);
         break;
-    case KF_EFFECT_KIND_2:
+    case KF_EFFECT_KIND_EXPANDING_RING:
         effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS_AND_PLAYER,
                                 effect_id, &cur_avatar_status.camera_position,
                        NULL, PLAYER_MAGIC_KIND2_MAX_SCALE, PLAYER_MAGIC_KIND2_SCALE_STEP, PLAYER_MAGIC_KIND2_RADIAL_DAMAGE);
         break;
-    case KF_EFFECT_KIND_3:
+    case KF_EFFECT_KIND_DROP_FROM_ABOVE_BURST:
         actor = player_probe_view_target_and_vectors(5000, &position, &direction, &distance);
         if (actor == NULL) {
             /* Both axes share the reused sum/base temporaries, and the camera
@@ -1329,10 +1329,10 @@ emit_simple_effect:
 case3_store_z:
         position.vz = case3_z;
 case3_emit:
-        effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS, KF_EFFECT_KIND_114,
+        effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS, KF_EFFECT_KIND_DROP_FROM_ABOVE,
                                 &position, NULL);
         break;
-    case KF_EFFECT_KIND_0:
+    case KF_EFFECT_KIND_FALLING_DROP:
         actor = player_probe_view_target_and_vectors(5000, &position, &direction, &distance);
         if (actor == NULL) {
             kind = KF_EFFECT_TARGET_ACTOR_NONE;
@@ -1341,7 +1341,7 @@ case3_emit:
         }
         position.vx += direction.vx;
         position.vz += direction.vz;
-        effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS, KF_EFFECT_KIND_111,
+        effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS, KF_EFFECT_KIND_FALLING_DROP_EMITTER,
                                 &position, NULL, kind);
         break;
     case KF_EFFECT_KIND_13: {
@@ -1388,7 +1388,7 @@ emit_rotation_effect:
         effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS, KF_EFFECT_KIND_103,
                                 &position, &direction, adjusted_distance);
         break;
-    case KF_EFFECT_KIND_5:
+    case KF_EFFECT_KIND_VERTEX_SWARM:
         target_scale = 200;
 select_actor_effect:
         actor = player_probe_view_target_and_vectors(target_scale, &position, &direction, &distance);
@@ -1400,19 +1400,19 @@ select_actor_effect:
         effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS, effect_id,
                                 &position, &direction, kind);
         break;
-    case KF_EFFECT_KIND_9:
+    case KF_EFFECT_KIND_HOMING:
         target_scale = 500;
         goto select_actor_effect;
-    case KF_EFFECT_KIND_8:
+    case KF_EFFECT_KIND_RING_WAVE:
         player_probe_view_target_and_vectors(700, &position, &direction, &distance);
-        effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS, KF_EFFECT_KIND_106,
+        effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS, KF_EFFECT_KIND_RING_WAVE_BURST,
                                 &position, &direction,
                        &cur_avatar_status.camera_rotation);
         break;
-    case KF_EFFECT_KIND_10:
+    case KF_EFFECT_KIND_ACTOR_TURRET:
         rotation_scale = 300;
         goto probe_rotation_effect;
-    case KF_EFFECT_KIND_6:
+    case KF_EFFECT_KIND_HOLDING_TRAIL:
         rotation_scale = 250;
         goto probe_rotation_effect;
     case KF_EFFECT_KIND_12: {
@@ -1433,7 +1433,7 @@ select_actor_effect:
     case KF_EFFECT_KIND_43:
         effect_id = KF_EFFECT_KIND_115;
         goto sequence_effect;
-    case KF_EFFECT_KIND_42:
+    case KF_EFFECT_KIND_DELAYED_BURST:
         effect_id = KF_EFFECT_KIND_113;
 sequence_effect: {
         const KfPlayerMagicSpawnRecord *record = player_magic_spawn_records;
@@ -1479,7 +1479,7 @@ sequence_effect: {
         position = *override_position;
         goto emit_simple_effect;
     }
-    case KF_EFFECT_KIND_50: {
+    case KF_EFFECT_KIND_CHARGED_BURST: {
         const VECTOR *override_position;
         override_position = *(const VECTOR **)(arguments += 4);
         position = *override_position;
@@ -1507,18 +1507,18 @@ sequence_effect: {
         cur_avatar_status.attack_boost_timer = 900;
         player_recalculate_combat_stats();
         break;
-    case KF_EFFECT_KIND_14:
-        effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC, KF_EFFECT_KIND_14,
+    case KF_EFFECT_KIND_CURE_POISON:
+        effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC, KF_EFFECT_KIND_CURE_POISON,
                                 &cur_avatar_status.camera_position,
                        &direction);
         break;
-    case KF_EFFECT_KIND_16:
-        effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC, KF_EFFECT_KIND_16,
+    case KF_EFFECT_KIND_HEAL:
+        effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC, KF_EFFECT_KIND_HEAL,
                                 &cur_avatar_status.camera_position,
                        &direction);
         break;
-    case KF_EFFECT_KIND_19:
-        effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC, KF_EFFECT_KIND_19,
+    case KF_EFFECT_KIND_HEAL_AND_CURE:
+        effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC, KF_EFFECT_KIND_HEAL_AND_CURE,
                                 &cur_avatar_status.camera_position,
                        &direction);
         break;
@@ -1598,7 +1598,7 @@ void player_dispatch_weapon_magic(KF_ENUM_PARAM(KfEffectKind, s32) magic_id, b32
         player_dispatch_magic_effect(magic_id, &position);
         break;
     case KF_EFFECT_KIND_49:
-    case KF_EFFECT_KIND_50:
+    case KF_EFFECT_KIND_CHARGED_BURST:
         player_sample_weapon_world_vertex(0, &position);
         player_dispatch_magic_effect(magic_id, &position);
         break;
@@ -1969,9 +1969,9 @@ void player_select_magic_action(KF_ENUM_PARAM(KfEffectKind, s32) magic_id)
     }
 
     switch (magic_id) {
-    case KF_EFFECT_KIND_14:
-    case KF_EFFECT_KIND_16:
-    case KF_EFFECT_KIND_19:
+    case KF_EFFECT_KIND_CURE_POISON:
+    case KF_EFFECT_KIND_HEAL:
+    case KF_EFFECT_KIND_HEAL_AND_CURE:
         break;
     case KF_EFFECT_KIND_DEFENSE_BOOST:
         if (cur_avatar_status.defense_boost_timer != 0) {
@@ -2007,17 +2007,17 @@ charge_gate:
     cur_avatar_status.vitals.current_mp -= mp_cost;
 
     switch (magic_id) {
-    case KF_EFFECT_KIND_10:
+    case KF_EFFECT_KIND_ACTOR_TURRET:
         cur_avatar_status.magic_origin_offset.vx = 0;
         cur_avatar_status.magic_origin_offset.vy = -512;
         cur_avatar_status.magic_origin_offset.vz = 2000;
         /* Retail falls through to the shared action-byte stores. */
     case KF_EFFECT_KIND_1:
     case KF_EFFECT_KIND_4:
-    case KF_EFFECT_KIND_5:
-    case KF_EFFECT_KIND_6:
+    case KF_EFFECT_KIND_VERTEX_SWARM:
+    case KF_EFFECT_KIND_HOLDING_TRAIL:
     case KF_EFFECT_KIND_7:
-    case KF_EFFECT_KIND_8:
+    case KF_EFFECT_KIND_RING_WAVE:
     case KF_EFFECT_KIND_11:
     case KF_EFFECT_KIND_18:
         cur_avatar_status.queued_magic_action.casts_remaining = 1;
@@ -2028,12 +2028,12 @@ charge_gate:
         cur_avatar_status.queued_magic_action.casts_remaining = 5;
         cur_avatar_status.queued_magic_action.repeat_interval = 2;
         break;
-    case KF_EFFECT_KIND_9:
+    case KF_EFFECT_KIND_HOMING:
         cur_avatar_status.queued_magic_action.casts_remaining = 6;
         cur_avatar_status.queued_magic_action.repeat_interval = 1;
         break;
-    case KF_EFFECT_KIND_0:
-    case KF_EFFECT_KIND_2:
+    case KF_EFFECT_KIND_FALLING_DROP:
+    case KF_EFFECT_KIND_EXPANDING_RING:
         cur_avatar_status.queued_magic_action.casts_remaining = 1;
         cur_avatar_status.queued_magic_action.repeat_interval = 1;
         cur_avatar_status.magic_origin_offset.vz = 0;
@@ -2044,7 +2044,7 @@ charge_gate:
         cur_avatar_status.queued_magic_action.casts_remaining = 7;
         cur_avatar_status.queued_magic_action.repeat_interval = 1;
         break;
-    case KF_EFFECT_KIND_3:
+    case KF_EFFECT_KIND_DROP_FROM_ABOVE_BURST:
         cur_avatar_status.queued_magic_action.casts_remaining = 6;
         cur_avatar_status.queued_magic_action.repeat_interval = 2;
         break;

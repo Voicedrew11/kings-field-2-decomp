@@ -2008,22 +2008,22 @@ void actor_dispatch_group_effect(KF_ENUM_PARAM(KfEffectKind, s32) kind, s32 dama
                       &orientation.angles);
         break;
     }
-    case KF_EFFECT_KIND_9:
-    case KF_EFFECT_KIND_33:
+    case KF_EFFECT_KIND_HOMING:
+    case KF_EFFECT_KIND_PLAYER_HOMING:
         actor_compute_target_direction(current, player, 400, &position, &direction,
             KF_ACTOR_PITCH_TRACK_TARGET, KF_ANGLE_QUARTER_TURN, 1);
         effect_construct_record(damage_multiplier_tenths,
                                 KF_EFFECT_SOURCE_HAZARD | KF_EFFECT_TARGET_ACTORS_AND_PLAYER, kind, &position, &direction,
                       KF_EFFECT_TARGET_ACTOR_PLAYER);
         break;
-    case KF_EFFECT_KIND_24:
+    case KF_EFFECT_KIND_PLAYER_HOMING_WITH_FOLLOWERS:
         actor_compute_target_direction(current, player, 250, &position, &direction,
             KF_ACTOR_PITCH_TRACK_TARGET, KF_ANGLE_QUARTER_TURN, 1);
         effect_construct_record(damage_multiplier_tenths,
                                 KF_EFFECT_SOURCE_HAZARD | KF_EFFECT_TARGET_ACTORS_AND_PLAYER, kind,
                                 &position, &direction);
         break;
-    case KF_EFFECT_KIND_2:
+    case KF_EFFECT_KIND_EXPANDING_RING:
         effect_construct_record(damage_multiplier_tenths,
                                 KF_EFFECT_SOURCE_HAZARD | KF_EFFECT_TARGET_ACTORS_AND_PLAYER, kind, &position, &direction,
                       KF_FIXED12_ONE, ACTOR_HAZARD_RING_SCALE_STEP, KF_FIXED12_ONE);
@@ -2035,13 +2035,13 @@ void actor_dispatch_group_effect(KF_ENUM_PARAM(KfEffectKind, s32) kind, s32 dama
                                 KF_EFFECT_SOURCE_HAZARD | KF_EFFECT_TARGET_ACTORS_AND_PLAYER, kind,
                                 &position, &direction);
         break;
-    case KF_EFFECT_KIND_23:
+    case KF_EFFECT_KIND_ATTACHED_RELEASE:
         effect_construct_record(damage_multiplier_tenths,
                                 KF_EFFECT_SOURCE_HAZARD | KF_EFFECT_TARGET_ACTORS_AND_PLAYER, kind, &position, NULL,
                       actor_status.current_actor_slot_index, position_mode,
                       ((const u16 *)arguments[1])[2]);
         break;
-    case KF_EFFECT_KIND_108:
+    case KF_EFFECT_KIND_ACTOR_FORWARD_SHOT:
         pitch_yaw_to_forward_vector(&current->rotation, &direction);
         vector3s_scale_shift12(550, &direction);
         effect = effect_construct_record(damage_multiplier_tenths,
@@ -2090,7 +2090,7 @@ void actor_dispatch_group_effect(KF_ENUM_PARAM(KfEffectKind, s32) kind, s32 dama
                                 KF_EFFECT_SOURCE_HAZARD | KF_EFFECT_TARGET_ACTORS_AND_PLAYER, kind,
                                 &position, NULL);
         break;
-    case KF_EFFECT_KIND_110:
+    case KF_EFFECT_KIND_SPAWN_ASCENDING_SPIN_ACTOR:
         group_index = ((const u16 *)arguments[1])[2];
         spawned = actor_pool_find_free();
         if (spawned != NULL) {
@@ -2117,7 +2117,7 @@ void actor_dispatch_group_effect(KF_ENUM_PARAM(KfEffectKind, s32) kind, s32 dama
             actor_select_target_type_in_own_group(spawned, KF_ACTOR_TARGET_ASCENDING_SPIN);
         }
         break;
-    case KF_EFFECT_KIND_112:
+    case KF_EFFECT_KIND_SPAWN_COLLISION_MOVE_ACTOR:
         group_index = ((const u16 *)arguments[1])[2];
         spawned = actor_pool_find_free();
         if (spawned != NULL) {
