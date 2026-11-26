@@ -41,27 +41,29 @@ KF_ENUM_FLAGS(KfEffectType, u8)
 
 /* Effect model row: the renderer and vertex sampler draw asset
  * render_id + 0x28. base_render_id keeps the constructor's row for kinds that
- * switch models. Model identities remain WIP. */
+ * switch models. A row is named after the only effect kind that draws it;
+ * rows that kinds share, or whose kind is still numbered, keep decimal WIP
+ * names. */
 KF_ENUM_BEGIN(KfEffectRenderId, u8)
-    KF_EFFECT_MODEL_0 = 0,
+    KF_EFFECT_MODEL_HOLDING_TRAIL = 0,
     KF_EFFECT_MODEL_8 = 8,
-    KF_EFFECT_MODEL_9 = 9,
+    KF_EFFECT_MODEL_EXPANDING_RING = 9,
     KF_EFFECT_MODEL_10 = 10,
     KF_EFFECT_MODEL_11 = 11,
-    KF_EFFECT_MODEL_12 = 12,
+    KF_EFFECT_MODEL_LOWER_BOUND_RIPPLE = 12,
     KF_EFFECT_MODEL_13 = 13,
     KF_EFFECT_MODEL_14 = 14,
     KF_EFFECT_MODEL_15 = 15,
     KF_EFFECT_MODEL_16 = 16,
     KF_EFFECT_MODEL_17 = 17,
     KF_EFFECT_MODEL_19 = 19,
-    KF_EFFECT_MODEL_20 = 20,
-    KF_EFFECT_MODEL_21 = 21,
-    KF_EFFECT_MODEL_22 = 22,
-    KF_EFFECT_MODEL_23 = 23,
-    KF_EFFECT_MODEL_24 = 24,
-    KF_EFFECT_MODEL_25 = 25,
-    KF_EFFECT_MODEL_26 = 26,
+    KF_EFFECT_MODEL_RING_WAVE_SPREAD = 20,
+    KF_EFFECT_MODEL_ACTOR_TURRET = 21,
+    KF_EFFECT_MODEL_HOLDING_TRAIL_HOLD = 22,
+    KF_EFFECT_MODEL_HOLDING_TRAIL_HEAD = 23,
+    KF_EFFECT_MODEL_HOLDING_TRAIL_TAIL = 24,
+    KF_EFFECT_MODEL_DEFENSE_BOOST = 25,
+    KF_EFFECT_MODEL_ATTACK_BOOST = 26,
     KF_EFFECT_MODEL_28 = 28,
     KF_EFFECT_MODEL_29 = 29,
     KF_EFFECT_MODEL_30 = 30,
@@ -69,10 +71,10 @@ KF_ENUM_BEGIN(KfEffectRenderId, u8)
     KF_EFFECT_MODEL_32 = 32,
     KF_EFFECT_MODEL_33 = 33,
     KF_EFFECT_MODEL_34 = 34,
-    KF_EFFECT_MODEL_35 = 35,
+    KF_EFFECT_MODEL_HOLDING_TRAIL_SEGMENT = 35,
     KF_EFFECT_MODEL_36 = 36,
     KF_EFFECT_MODEL_37 = 37,
-    KF_EFFECT_MODEL_38 = 38,
+    KF_EFFECT_MODEL_DROP_FROM_ABOVE = 38,
     KF_EFFECT_MODEL_40 = 40,
     KF_EFFECT_MODEL_41 = 41,
     KF_EFFECT_MODEL_42 = 42,

@@ -603,8 +603,8 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
         record->render_flags = KF_EFFECT_RENDER_VISIBLE;
         record->animation_clip = KF_ANIMATION_CLIP_FIRST;
         record->render_queue_mode = KF_RENDER_QUEUE_BLEND_ADD;
-        record->base_render_id = KF_EFFECT_MODEL_21;
-        record->render_id = KF_EFFECT_MODEL_21;
+        record->base_render_id = KF_EFFECT_MODEL_ACTOR_TURRET;
+        record->render_id = KF_EFFECT_MODEL_ACTOR_TURRET;
         record->lighting_override_index = KF_LIGHTING_EFFECT;
         record->lighting_blend_q12 = KF_FIXED12_ONE;
         record->scale_z = 3000;
@@ -626,8 +626,8 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
         record->render_flags = KF_EFFECT_RENDER_HIDDEN;
         record->animation_clip = KF_ANIMATION_CLIP_STATIC_OBJECT_FIRST;
         record->render_queue_mode = KF_RENDER_QUEUE_BLEND_ADD;
-        record->base_render_id = KF_EFFECT_MODEL_0;
-        record->render_id = KF_EFFECT_MODEL_0;
+        record->base_render_id = KF_EFFECT_MODEL_HOLDING_TRAIL;
+        record->render_id = KF_EFFECT_MODEL_HOLDING_TRAIL;
         record->scale_z = KF_FIXED12_ONE;
         record->scale_y = KF_FIXED12_ONE;
         record->scale_x = KF_FIXED12_ONE;
@@ -654,8 +654,8 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
         record->render_flags = KF_EFFECT_RENDER_VISIBLE;
         record->animation_clip = KF_ANIMATION_CLIP_STATIC_OBJECT_FIRST;
         record->render_queue_mode = KF_RENDER_QUEUE_BLEND_ADD;
-        record->base_render_id = KF_EFFECT_MODEL_35;
-        record->render_id = KF_EFFECT_MODEL_35;
+        record->base_render_id = KF_EFFECT_MODEL_HOLDING_TRAIL_SEGMENT;
+        record->render_id = KF_EFFECT_MODEL_HOLDING_TRAIL_SEGMENT;
         record->lighting_override_index = KF_LIGHTING_EFFECT;
         record->lighting_blend_q12 = KF_FIXED12_ONE;
         record->scale_z = KF_FIXED12_ONE;
@@ -739,8 +739,8 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
     case KF_EFFECT_KIND_EXPANDING_RING: {
         record->render_flags = KF_EFFECT_RENDER_VISIBLE;
         record->animation_clip = KF_ANIMATION_CLIP_STATIC_OBJECT_FIRST;
-        record->base_render_id = KF_EFFECT_MODEL_9;
-        record->render_id = KF_EFFECT_MODEL_9;
+        record->base_render_id = KF_EFFECT_MODEL_EXPANDING_RING;
+        record->render_id = KF_EFFECT_MODEL_EXPANDING_RING;
         record->lighting_override_index = KF_LIGHTING_EFFECT;
         record->lighting_blend_q12 = KF_FIXED12_ONE;
         record->scale_z = 0;
@@ -977,8 +977,8 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
 
         record->render_flags = KF_EFFECT_RENDER_VISIBLE;
         record->animation_clip = KF_ANIMATION_CLIP_STATIC_OBJECT_FIRST;
-        record->base_render_id = KF_EFFECT_MODEL_12;
-        record->render_id = KF_EFFECT_MODEL_12;
+        record->base_render_id = KF_EFFECT_MODEL_LOWER_BOUND_RIPPLE;
+        record->render_id = KF_EFFECT_MODEL_LOWER_BOUND_RIPPLE;
         record->scale_y = 0;
         scale = va[1];
         record->scale_z = scale;
@@ -1008,10 +1008,10 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
         break;
     }
     case KF_EFFECT_KIND_DEFENSE_BOOST:
-        effect_pool_initialize_fixed(record, KF_EFFECT_MODEL_25);
+        effect_pool_initialize_fixed(record, KF_EFFECT_MODEL_DEFENSE_BOOST);
         break;
     case KF_EFFECT_KIND_ATTACK_BOOST:
-        effect_pool_initialize_fixed(record, KF_EFFECT_MODEL_26);
+        effect_pool_initialize_fixed(record, KF_EFFECT_MODEL_ATTACK_BOOST);
         break;
     case KF_EFFECT_KIND_HEAL:
         record->render_flags = KF_EFFECT_RENDER_HIDDEN;
@@ -1050,8 +1050,8 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
 
         record->render_flags = KF_EFFECT_RENDER_VISIBLE;
         record->animation_clip = KF_ANIMATION_CLIP_STATIC_OBJECT_FIRST;
-        record->base_render_id = KF_EFFECT_MODEL_38;
-        record->render_id = KF_EFFECT_MODEL_38;
+        record->base_render_id = KF_EFFECT_MODEL_DROP_FROM_ABOVE;
+        record->render_id = KF_EFFECT_MODEL_DROP_FROM_ABOVE;
         record->updates_remaining = 45;
         record->cache_tail.payload.kind114.origin_y = record->position.vy;
         candidate_position.vx = record->position.vx + (rand() >> 5) - 512;
@@ -2772,7 +2772,7 @@ void effect_update_dispatch(void)
 
                         record->phase = EFFECT_KIND8_PHASE_SPREAD;
                         record->render_flags = KF_EFFECT_RENDER_VISIBLE | KF_EFFECT_RENDER_PITCH_TRANSFORM;
-                        record->render_id = KF_EFFECT_MODEL_20;
+                        record->render_id = KF_EFFECT_MODEL_RING_WAVE_SPREAD;
                         dx = record->position.vx - parent->position.vx;
                         dz = record->position.vz - parent->position.vz;
                         record->rotation.vz = 0;
@@ -2954,14 +2954,14 @@ void effect_update_dispatch(void)
                     &record->rotation, index);
 
                 if (index == 0) {
-                    child->render_id = KF_EFFECT_MODEL_23;
+                    child->render_id = KF_EFFECT_MODEL_HOLDING_TRAIL_HEAD;
                 }
                 parent_index = effect_status.current_index;
                 link = &child->cache_tail.payload.trail_child;
                 link->lag_index = index;
                 link->parent_index = parent_index;
             }
-            child->render_id = KF_EFFECT_MODEL_24;
+            child->render_id = KF_EFFECT_MODEL_HOLDING_TRAIL_TAIL;
             record->phase = EFFECT_KIND6_PHASE_TRAIL_FLIGHT;
         }
         /* The spawn tick also runs the phase-one update. */
@@ -2989,7 +2989,7 @@ void effect_update_dispatch(void)
                     actor = &actor_status.actors[record->cache_tail.payload.trail.actor_index];
                     if (actor->target_type == KF_ACTOR_TARGET_DAMAGE_REACTION || actor->target_type == KF_ACTOR_TARGET_DEATH) {
                         record->render_flags = KF_EFFECT_RENDER_VISIBLE;
-                        record->render_id = KF_EFFECT_MODEL_22;
+                        record->render_id = KF_EFFECT_MODEL_HOLDING_TRAIL_HOLD;
                         record->phase = EFFECT_KIND6_PHASE_HOLD_ACTOR;
                         record->cache_tail.payload.trail.phase_counter = 0;
                         record->rotation.vz = 0;
