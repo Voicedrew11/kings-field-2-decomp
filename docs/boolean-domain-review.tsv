@@ -113,7 +113,7 @@ KfMapObjectOffsetMotionState.elapsed_frames	reject	counter or arithmetic quantit
 KfMapObjectStateGame.definition_drop_sequence	reject	counter or arithmetic quantity (incremented/decremented)	1	KfMapObjectStateGame.definition_drop_sequence
 KfMapObjectStateGame.placement_drop_sequence	reject	counter or arithmetic quantity (incremented/decremented)	1	KfMapObjectStateGame.placement_drop_sequence
 KfMapObjectStateGame.spawn_sequence_pool_15e	reject	counter or arithmetic quantity (incremented/decremented)	1	KfMapObjectStateGame.spawn_sequence_pool_15e
-KfMapObjectTail.reset_words	reject	whole-word clears of the tail union	3	KfMapObjectTail.reset_words
+KfMapObjectTailParams.reset_words	reject	whole-word clears of the tail union	3	KfMapObjectTailParams.reset_words
 KfMapObjectTailAction88CellCopyView.transition_mode	e1	switch selector; 0/1 are members of a state domain	3	KfMapObjectTailAction88CellCopyView.transition_mode
 KfMapObjectTailAmbientSoundView.vertical_attenuation_flags	reject	tail-union byte with other writers; flag byte	1	KfMapObjectTailAmbientSoundView.vertical_attenuation_flags
 KfMapObjectTailFields.unknown_39	reject	tail-union byte with other writers	1	KfMapObjectTailFields.unknown_39

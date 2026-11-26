@@ -112,36 +112,37 @@ KfMapObjectRecord40	0x3a	candidate	game/map_object.h;player_apply_map_object_rea
 KfMapObjectResourceOffsets	0x03	supported	game/map_object.h;map_object_initialize_from_placements;map_object_update_actions	three signed resource-transition offset bytes in map-object +0x40 union
 KfMapObjectSavedLayerState	0x1	supported	GAME 0x80037f38/0x8003801c lbu;map_object_initialize_from_placements;map_object_update_actions	saved layer mask passed to action 0x54 map-cell pattern updates
 KfMapObjectStateGame	0x8744	supported	asm;map_object_effect_pool_acquire;game_main_loop startup clear	layout from the reconstructed header
-KfMapObjectTail	0xc	supported	game/map_object.h;asm;map object reset	12-byte tail and word-reset view
-KfMapObjectTailAction51MarkerView	0xc	supported	GAME 0x80036800 lbu;map_object_apply_marker_signal action 0x51	Action-0x51 marker identifier overlays the high spawn-sequence byte used by effect objects
-KfMapObjectTailAction83View	0xc	supported	GAME 0x80037ab0 lbu;map_object_apply_marker_signal	action 83 emits a marker after each opening or closing phase
-KfMapObjectTailAction84PatternView	0xc	supported	GAME 0x80037ee4..0x80037f84;map_cell_apply_rotated_pattern	action 84 checks camera region and chooses one of two map-cell patterns
-KfMapObjectTailAction88CellCopyView	0xc	supported	GAME 0x80037c34..0x80037c74;map_cell_copy_rotated_fields	action 88 carries rotated copy coordinates and dimensions at its own tail offsets
-KfMapObjectTailAction89LayerFadeView	0xc	supported	GAME 0x80036828 marker compare;GAME 0x80037ce4 delay copy	action 89 marker and initial layer-fade delay share one tail view
-KfMapObjectTailAmbientSoundView	0xc	supported	GAME 0x80032858..0x80032a5c;map_object action 0x1f	ambient-sound action uses region, volume, range, attenuation, and repeat period bytes
-KfMapObjectTailAnimatedView	0xc	supported	game/map_object.h;render_scene_and_update_resources;resource_advance_transition	Overlapping action-0xf0 view of the 12-byte tail; not a separate object
-KfMapObjectTailCellCopyView	0xc	supported	GAME 0x80035c08..0x80035c48;map_cell_copy_rotated_fields	actions 3 and 4 carry source and destination map-cell coordinates
-KfMapObjectTailCollisionProbeView	0xc	supported	GAME 0x80038148..0x800383c8;effect_dispatch_magic_impact	action 81 uses a camera-region gate and dispatches magic collision damage
+KfMapObjectTail	0xc	supported	game/map_object.h;asm;map object reset;display.c animation cache address	animation cache word, then the per-operation view union
+KfMapObjectTailAction51MarkerView	0x8	supported	GAME 0x80036800 lbu;map_object_apply_marker_signal action 0x51	Action-0x51 marker identifier overlays the high spawn-sequence byte used by effect objects
+KfMapObjectTailAction83View	0x8	supported	GAME 0x80037ab0 lbu;map_object_apply_marker_signal	action 83 emits a marker after each opening or closing phase
+KfMapObjectTailAction84PatternView	0x8	supported	GAME 0x80037ee4..0x80037f84;map_cell_apply_rotated_pattern	action 84 checks camera region and chooses one of two map-cell patterns
+KfMapObjectTailAction88CellCopyView	0x8	supported	GAME 0x80037c34..0x80037c74;map_cell_copy_rotated_fields	action 88 carries rotated copy coordinates and dimensions at its own tail offsets
+KfMapObjectTailAction89LayerFadeView	0x8	supported	GAME 0x80036828 marker compare;GAME 0x80037ce4 delay copy	action 89 marker and initial layer-fade delay share one tail view
+KfMapObjectTailAmbientSoundView	0x8	supported	GAME 0x80032858..0x80032a5c;map_object action 0x1f	ambient-sound action uses region, volume, range, attenuation, and repeat period bytes
+KfMapObjectTailAnimatedView	0x8	supported	game/map_object.h;render_scene_and_update_resources;resource_advance_transition	Overlapping action-0xf0 view of the 12-byte tail; not a separate object
+KfMapObjectTailCellCopyView	0x8	supported	GAME 0x80035c08..0x80035c48;map_cell_copy_rotated_fields	actions 3 and 4 carry source and destination map-cell coordinates
+KfMapObjectTailCollisionProbeView	0x8	supported	GAME 0x80038148..0x800383c8;effect_dispatch_magic_impact	action 81 uses a camera-region gate and dispatches magic collision damage
 KfMapObjectTailCopyWords	0x08	supported	game/map_object.h;GAME 0x80035a3c-0x80035a48	two copied resource words; their action-specific meanings remain unresolved
-KfMapObjectTailEventEffectView	0xc	supported	game/map_object.h;event_spawn_effect_object	event effect-object index at map-object tail +0x39
-KfMapObjectTailFields	0xc	supported	game/map_object.h;asm;map object reset	12-byte map-object tail fields
-KfMapObjectTailGoldRewardView	0xc	supported	game/map_object.h	Kind 0x20 gives the player this amount when its interaction completes.
+KfMapObjectTailEventEffectView	0x8	supported	game/map_object.h;event_spawn_effect_object	event effect-object index at map-object tail +0x39
+KfMapObjectTailFields	0x8	supported	game/map_object.h;asm;map object reset	12-byte map-object tail fields
+KfMapObjectTailGoldRewardView	0x8	supported	game/map_object.h	Kind 0x20 gives the player this amount when its interaction completes.
 KfMapObjectTailHalfword	0x2	supported	game/map_object.h;asm;map object collision	halfword and byte views in object tail
 KfMapObjectTailHalfwordBytes	0x2	supported	game/map_object.h;asm;map object collision	two bytes in object tail halfword
-KfMapObjectTailInitialRotationView	0xc	supported	GAME 0x80035abc..0x80035b1c and 0x80035da8..0x80035de8;map_object_initialize_from_placements	three byte codes initialize object rotation axes for placement kinds 0x40 and 0x0d
-KfMapObjectTailLinkedPropertyView	0xc	supported	GAME 0x800355d8;map_object_update_actions actions 5/8/22	linked map-object index used by property updates
-KfMapObjectTailMarkerView	0xc	supported	GAME 0x800367c4..0x80036894;map_object_apply_marker_signal;map_object_check_and_consume_marker	marker-driven actions compare and consume the tail +0x38 signal byte
-KfMapObjectTailMotionView	0xc	supported	game/map_object.h	Actions 0x60 and 0x62 reuse this halfword for vertical and angular motion.
-KfMapObjectTailNotificationView	0xc	supported	game/map_object.h;event_scene_command_dispatch;event_world_dispatch_interaction	Overlapping notification-byte view of the 12-byte tail; not a separate object
-KfMapObjectTailPair38View	0xc	supported	game/map_object.h;func_80047c98	halfword view of tail bytes +0x38 and +0x39
-KfMapObjectTailPlacement	0xc	supported	game/map_object.h;map_object_initialize_from_placements	placement view: unresolved word followed by the copied tail words
-KfMapObjectTailRegionActionView	0xc	supported	game/map_object.h	Action 225 uses the same camera-region bytes as action 224, followed by an operation byte, its operand, and the value written by operation 2.
-KfMapObjectTailResourceTriggerView	0xc	supported	game/map_object.h;map_object_update_actions;resource_request_transition	Overlapping action-0xe0 resource-selector view of the 12-byte tail; not a separate object
-KfMapObjectTailScaleLinkView	0xc	supported	GAME 0x8003860c..0x800386dc;map_object_update_actions	action 19 controls a linked object's scale in 1/32 units
-KfMapObjectTailScatteredEffectView	0xc	supported	game/map_object.h	The scattered effect pool stores the selected effect ID beside its spawn sequence; the preceding state bytes have action-specific uses elsewhere.
-KfMapObjectTailSceneInspectView	0xc	supported	game/map_object.h	Scene command 0x55 checks this camera region and opens the selected image.
-KfMapObjectTailSpawnByteFields	0xc	supported	game/map_object.h;map_object_effect_pool_acquire;map_object_spawn_effect	tail view whose spawn sequence halfword is also addressed by byte
-KfMapObjectTailTransitionView	0xc	supported	game/map_object.h;map_object_update_actions action 34	Overlapping destination-cell and yaw-code view of the 12-byte tail; not a separate object
+KfMapObjectTailInitialRotationView	0x8	supported	GAME 0x80035abc..0x80035b1c and 0x80035da8..0x80035de8;map_object_initialize_from_placements	three byte codes initialize object rotation axes for placement kinds 0x40 and 0x0d
+KfMapObjectTailLinkedPropertyView	0x8	supported	GAME 0x800355d8;map_object_update_actions actions 5/8/22	linked map-object index used by property updates
+KfMapObjectTailMarkerView	0x8	supported	GAME 0x800367c4..0x80036894;map_object_apply_marker_signal;map_object_check_and_consume_marker	marker-driven actions compare and consume the tail +0x38 signal byte
+KfMapObjectTailMotionView	0x8	supported	game/map_object.h	Actions 0x60 and 0x62 reuse this halfword for vertical and angular motion.
+KfMapObjectTailNotificationView	0x8	supported	game/map_object.h;event_scene_command_dispatch;event_world_dispatch_interaction	Overlapping notification-byte view of the 12-byte tail; not a separate object
+KfMapObjectTailPair38View	0x8	supported	game/map_object.h;func_80047c98	halfword view of tail bytes +0x38 and +0x39
+KfMapObjectTailParams	0x8	supported	game/map_object.h;map_object_pool_reset;map_object_update_actions	per-operation bytes 0x38-0x3f, selected by the object action
+KfMapObjectTailPlacement	0x8	supported	game/map_object.h;map_object_initialize_from_placements	placement view: unresolved word followed by the copied tail words
+KfMapObjectTailRegionActionView	0x8	supported	game/map_object.h	Action 225 uses the same camera-region bytes as action 224, followed by an operation byte, its operand, and the value written by operation 2.
+KfMapObjectTailResourceTriggerView	0x8	supported	game/map_object.h;map_object_update_actions;resource_request_transition	Overlapping action-0xe0 resource-selector view of the 12-byte tail; not a separate object
+KfMapObjectTailScaleLinkView	0x8	supported	GAME 0x8003860c..0x800386dc;map_object_update_actions	action 19 controls a linked object's scale in 1/32 units
+KfMapObjectTailScatteredEffectView	0x8	supported	game/map_object.h	The scattered effect pool stores the selected effect ID beside its spawn sequence; the preceding state bytes have action-specific uses elsewhere.
+KfMapObjectTailSceneInspectView	0x8	supported	game/map_object.h	Scene command 0x55 checks this camera region and opens the selected image.
+KfMapObjectTailSpawnByteFields	0x8	supported	game/map_object.h;map_object_effect_pool_acquire;map_object_spawn_effect	tail view whose spawn sequence halfword is also addressed by byte
+KfMapObjectTailTransitionView	0x8	supported	game/map_object.h;map_object_update_actions action 34	Overlapping destination-cell and yaw-code view of the 12-byte tail; not a separate object
 KfMapObjectTemplate	0x18	supported	game/map_object.h;func_800355d8;func_80036190	24-byte map object template with action-specific parameters
 KfMapObjectTemplateCollisionParams	0xc	supported	GAME 0x80038324..0x80038350	collision-probe action interprets template halfwords +0x0c/+0x0e/+0x10 as vertex, reach, height
 KfMapObjectTemplateMarkerParams	0xc	supported	asm;map_object_refresh_cell_markers;GAME 0x8003718c..0x800372f0;0x80035c14..0x80035c30	marker selectors, rotated map-cell copy size and spatial sound selector
@@ -194,40 +195,39 @@ KfShapeHeightRecord	0x2	supported	game/collision_cache.h;collision_evaluate_shap
 KfShapeLedgeRecord	0xa	supported	game/collision_cache.h;collision_evaluate_shape_records record operands	operands of shape record 0x31; record meaning from shape evaluation
 KfShapeSlopeRecord	0xc	supported	game/collision_cache.h;collision_evaluate_shape_records record operands	operands of shape records 0x30 and 0x32; record meaning from shape evaluation
 KfShapeWallRecord	0x8	supported	game/collision_cache.h;collision_evaluate_shape_records record operands	operands of shape records 0x20-0x23; record meaning from shape evaluation
+KfTargetAmbushParams	0xe	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetAttackFollowUp	0x10	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetAttackParams	0x20	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetAttackPursuit	0xc	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
 KfTargetCandidate	0x2c	candidate	game/actor.h;GAME 0x80039108;GAME 0x8003e140-0x8003e1b4	minimum observed view through unsigned halfword +0x2a; full extent and stride unknown
-KfTargetCandidateAction25	0x1c	candidate	GAME 0x8003ed78-0x8003eecc;game/actor.h	Type-25 prefix plus first script halfword; variable payload extent and candidate stride unresolved
 KfTargetCandidateDamageReaction	0x2	supported	game/actor.h;actor_apply_magic_to_actor	word_02 damage-reaction view: reaction chance byte and an unused byte
-KfTargetCandidateDeathDrop	0x2	supported	actor_update_behavior death branch;map_object_spawn_effect source 1	death-drop object ID and chance bytes of candidate +0x0c
-KfTargetCandidateScriptEffect	0x2	supported	actor_update_behavior type-25 script;actor_dispatch_group_effect arg0	effect-kind byte of candidate +0x0c for type-25 effect scripts
 KfTargetCandidateSelectionScales	0x2	supported	game/actor.h;actor_score_target_candidate	word_02 target-selection view: initial and continuing score scales
-KfTargetCandidateWord02	0x2	supported	game/actor.h;actor_score_target_candidate;actor_apply_magic_to_actor	candidate word +0x02 read as selection scales or damage-reaction bytes
-KfTargetCandidateWord0c	0x2	supported	GAME 0x8003e824 lhu;GAME 0x8003e648 lbu	shared candidate +0x0c halfword and high-byte views
-KfTargetCandidateWord0cBytes	0x2	supported	GAME 0x8003e648 lbu	byte-addressable candidate +0x0c word view
-KfTargetCandidateWord0e	0x2	supported	GAME 0x800391d0/0x80039358 lbu;0x800394a8 lhu	overlapping candidate +0x0e byte and halfword views
-KfTargetCandidateWord0eBytes	0x2	supported	GAME 0x800391d0/0x80039358 lbu	low and high bytes of candidate +0x0e halfword
-KfTargetCandidateWord10	0x2	supported	GAME 0x800391ac lhu candidate+0x10;event byte consumers	overlapping halfword and byte views at candidate +0x10
-KfTargetCandidateWord10Attack	0x2	supported	game/actor.h;actor_update_behavior	word_10 attack view: fallback offset and damage component 3
-KfTargetCandidateWord10Bytes	0x2	supported	GAME event save/restore;message marker scan	two observed bytes at candidate +0x10 and +0x11
-KfTargetCandidateWord12	0x2	supported	GAME 0x80039108 lhu candidate+0x12;event byte consumers	overlapping halfword and byte views at candidate +0x12
-KfTargetCandidateWord12Bytes	0x2	supported	GAME event save/restore;message marker scan	two observed bytes at candidate +0x12 and +0x13
-KfTargetCandidateWord12Flight	0x2	supported	game/actor.h;actor_update_behavior	word_12 flight view: vertical velocity step and orientation change threshold
-KfTargetCandidateWord14	0x2	supported	GAME 0x800393f4 lhu candidate+0x14;event byte stream	overlapping halfword and two-byte stream prefix; complete stream extent unresolved
-KfTargetCandidateWord16	0x2	supported	GAME 0x80039108 lhu candidate+0x16;GAME 0x8003ef34/0x8003eff0 lbu	shared unsigned halfword and byte view
-KfTargetCandidateWord16Bytes	0x2	supported	GAME 0x8003ef34/0x8003eff0 lbu	byte-addressable candidate +0x16 word view
-KfTargetCandidateWord18	0x2	supported	GAME 0x8003e078 lhu candidate+0x18;GAME 0x8003ebe0 lbu candidate+0x19	shared unsigned halfword and high-byte view
-KfTargetCandidateWord18Bytes	0x2	supported	GAME 0x8003ebe0 lbu candidate+0x19	byte-addressable candidate +0x18 word view
-KfTargetCandidateWord1a	0x2	supported	GAME 0x80039108 lhu candidate+0x1a;GAME 0x8003dc14 lbu candidate+0x1a	unsigned halfword and byte view
-KfTargetCandidateWord1c	0x2	supported	GAME 0x8003e294 lhu candidate+0x1c;GAME 0x8003e1d0/0x8003e1d4 lbu	unsigned halfword and byte view
-KfTargetCandidateWord1e	0x2	supported	GAME 0x8003e2d4 lhu candidate+0x1e;GAME 0x8003e1d8/0x8003e1f8 lbu	unsigned halfword and byte view
-KfTargetCandidateWord20	0x2	supported	game/actor.h;actor_update_behavior	candidate word +0x20 read as damage component 0 or animation phase start
-KfTargetCandidateWord22	0x2	supported	game/actor.h;actor_update_behavior	candidate word +0x22 read as damage component 1 or animation phase stop
-KfTargetCandidateWord24	0x2	supported	GAME 0x8003e1ec lhu;GAME 0x8003e298 lh candidate+0x24	unsigned damage value and signed motion-step views
-KfTargetCandidateWord26	0x2	supported	GAME 0x8003e154 lhu;GAME 0x8003e274 lh candidate+0x26	unsigned bound and signed motion-step views
+KfTargetCandidateWeights	0x2	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	selection scales, or a damage reaction's trigger chance
+KfTargetConeHit	0xa	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetContactDamageParams	0x12	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetDamageReactionParams	0x2	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetDeathDropParams	0x2	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetDriftParams	0x6	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetEffectScriptParams	0x10	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetEventStreamParams	0xa	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetFlyingKeepRangeParams	0x10	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetFlyingWanderParams	0xc	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
 KfTargetGroup	0x78	supported	game/actor.h;retail GAME actor chain	layout from reconstructed header
 KfTargetGroupWord1a	0x2	supported	game/actor.h	Slot-state-3 actors can use the initial-health word as a local X fallback.
+KfTargetHeadingMoveParams	0x6	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetJumpAttackParams	0xc	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetKeepRangeParams	0xe	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetLungeParams	0x10	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetMotionClips	0x4	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetParams	0x20	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type parameters at candidate offset 0x0c, selected by type
+KfTargetPartnerTurnParams	0x2	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
 KfTargetReference	0x4	supported	game/actor.h;asm;actor target fixup	relative offset and target pointer share one slot
+KfTargetRepeatedHits	0x10	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetReturnHomeParams	0xc	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
 KfTargetSoundTrigger	0x2	supported	game/actor.h;actor_update_behavior	sound trigger word read whole and through its interval/mode bitfields
 KfTargetSoundTriggerFields	0x2	supported	game/actor.h	Low 14 bits: sound interval; high 2 bits: trigger mode.
+KfTargetWeaponRetreatParams	0x8	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
+KfTargetWeaponWaitParams	0x6	supported	game/actor.h;actor_update_behavior;actor_score_target_candidate	per-type candidate parameter view; layout from reconstructed header
 KfTmdF3	0x0c	supported	game/tmd_packets.h;retail tmd_prepare_primitive_indices;KF1 exact counterpart	flat triangle primitive body
 KfTmdF4	0x10	supported	game/tmd_packets.h;retail tmd_prepare_primitive_indices;KF1 exact counterpart	flat quadrilateral primitive body
 KfTmdFt3	0x14	supported	game/tmd_packets.h;render_enqueue_map;TMD primitive mode 0x24	textured triangle primitive source layout

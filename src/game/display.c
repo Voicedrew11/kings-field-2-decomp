@@ -2653,17 +2653,17 @@ actor_radius_check:
         switch (object->action) {
         case KF_MAP_OBJECT_OP_ANIMATED_MODEL:
             if (map_cell_visible(&object->position,
-                                 object->tail.animated.radius_x,
-                                 object->tail.animated.radius_z) &&
+                                 object->tail.params.animated.radius_x,
+                                 object->tail.params.animated.radius_z) &&
                 (object->layer_mask & render_masks_scan_state.first_layer_mask) != KF_MAP_LAYER_NONE) {
                 if (resource_registry_get(KF_ENUM_ENCODE(u16, object->object_id) + KF_MAP_OBJECT_MODEL_REGISTRY_BASE) != NULL) {
                     render_animated_object(KF_ENUM_ENCODE(u16, object->object_id) + KF_MAP_OBJECT_MODEL_REGISTRY_BASE,
                                    (const struct KfEulerAngles *)&object->rotation,
-                                   &object->tail.animated.animation_cache,
+                                   &object->tail.animation_cache,
                                    object->asset_clip_selector, object->phase_q12,
-                                   object->tail.animated.blend_mode,
-                                   object->tail.animated.lighting_flags,
-                                   KF_ORDERING_TABLE_LAST_INDEX - object->tail.animated.depth_code);
+                                   object->tail.params.animated.blend_mode,
+                                   object->tail.params.animated.lighting_flags,
+                                   KF_ORDERING_TABLE_LAST_INDEX - object->tail.params.animated.depth_code);
                     object->collision_flags |= KF_MAP_OBJECT_FLAG_RENDERED;
                 }
                 tmd_flags[KF_ENUM_ENCODE(u16, object->object_id)] = KF_TRUE;
@@ -2677,9 +2677,9 @@ actor_radius_check:
 
             if (player_camera_within_map_region(object->position.vx >> KF_MAP_CELL_POSITION_SHIFT,
                               object->position.vz >> KF_MAP_CELL_POSITION_SHIFT,
-                              object->tail.ambient_sound.region_width,
-                              object->tail.ambient_sound.region_depth, KF_MAP_REGION_HEIGHT_ANY) != 0) {
-                sound = object->tail.ambient_sound.sound_id;
+                              object->tail.params.ambient_sound.region_width,
+                              object->tail.params.ambient_sound.region_depth, KF_MAP_REGION_HEIGHT_ANY) != 0) {
+                sound = object->tail.params.ambient_sound.sound_id;
                 if (sound_status.voices.params[sound].vab_slot_index >= KF_AMBIENT_VAB_SLOT_FIRST
                     && sound_status.voices.params[sound].vab_slot_index < KF_AMBIENT_VAB_SLOT_LIMIT) {
                     /* This update starts at the first ambient VAB slot. */
@@ -2687,16 +2687,16 @@ actor_radius_check:
                 }
                 if ((s32)(object->extra_40.next_sound_frame - frame) < 0) {
                     object->extra_40.next_sound_frame = frame +
-                        object->tail.ambient_sound.repeat_delay_units * 6;
+                        object->tail.params.ambient_sound.repeat_delay_units * 6;
                     /* One local carries each half extent, the audible radius and
                      * finally the volume. */
-                    volume = object->tail.ambient_sound.region_width * (KF_MAP_CELL_SIZE / 2);
+                    volume = object->tail.params.ambient_sound.region_width * (KF_MAP_CELL_SIZE / 2);
                     nearest = cur_avatar_status.camera_position.vx - (volume + object->position.vx);
                     if (nearest < 0) {
                         nearest = -nearest;
                     }
                     nearest = volume - nearest;
-                    volume = object->tail.ambient_sound.region_depth * (KF_MAP_CELL_SIZE / 2);
+                    volume = object->tail.params.ambient_sound.region_depth * (KF_MAP_CELL_SIZE / 2);
                     distance = cur_avatar_status.camera_position.vz - (volume + object->position.vz);
                     if (distance < 0) {
                         distance = -distance;
@@ -2705,30 +2705,30 @@ actor_radius_check:
                     if (distance < nearest) {
                         nearest = distance;
                     }
-                    volume = object->tail.ambient_sound.audible_radius_code << 11;
+                    volume = object->tail.params.ambient_sound.audible_radius_code << 11;
                     if (nearest >= volume) {
-                        volume = object->tail.ambient_sound.maximum_volume;
+                        volume = object->tail.params.ambient_sound.maximum_volume;
                     } else {
                         if (volume == 0) {
                             continue;
                         }
-                        volume = object->tail.ambient_sound.maximum_volume * nearest / volume;
+                        volume = object->tail.params.ambient_sound.maximum_volume * nearest / volume;
                     }
-                    if (object->tail.ambient_sound.vertical_attenuation_flags & 1) {
+                    if (object->tail.params.ambient_sound.vertical_attenuation_flags & 1) {
                         distance = cur_avatar_status.camera_position.vy - object->position.vy;
                         if (distance < 0) {
                             distance = -distance;
                         }
-                        distance = object->tail.ambient_sound.maximum_volume * distance >> 13;
+                        distance = object->tail.params.ambient_sound.maximum_volume * distance >> 13;
                         volume -= distance;
                     }
                     if (volume > 19) {
-                        audio_play_sound(object->tail.ambient_sound.sound_id, volume);
+                        audio_play_sound(object->tail.params.ambient_sound.sound_id, volume);
                     }
                 }
             } else {
                 object->extra_40.next_sound_frame = frame +
-                    object->tail.ambient_sound.repeat_delay_units * 6;
+                    object->tail.params.ambient_sound.repeat_delay_units * 6;
             }
             break;
         }
@@ -2759,7 +2759,7 @@ map_ordinary_visible:
                 }
                 render_world_model(object->layer_mask, KF_ENUM_ENCODE(u16, object->object_id) + KF_MAP_OBJECT_MODEL_REGISTRY_BASE,
                                &object->position, &rotation, scale,
-                               (KfPoolRecord **)&object->tail,
+                               &object->tail.animation_cache,
                                &scene_display_sys.render_state.view_matrix,
                                object->asset_clip_selector, object->phase_q12,
                                object->lighting_override_index, object->lighting_blend_q12,

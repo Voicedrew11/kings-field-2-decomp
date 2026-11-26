@@ -488,8 +488,8 @@ phase_three:
             object = map_objects_slots.objects;
             index = KF_MAP_OBJECT_CAPACITY - 1;
             do {
-                if (object->tail.animated.animation_cache != NULL) {
-                    pool_record_release(object->tail.animated.animation_cache);
+                if (object->tail.animation_cache != NULL) {
+                    pool_record_release(object->tail.animation_cache);
                 }
                 if (object->action == KF_MAP_OBJECT_OP_PLAYER_REACTION) {
                     memory_free((u8 *)object->extra_40.record);
