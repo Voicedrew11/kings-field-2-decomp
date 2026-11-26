@@ -172,7 +172,6 @@ KfPlayerMagicIdSequence	0xc	supported	asm;retail bytes;US 0xc data extent	12 eff
 KfPlayerMagicSpawnFields	0x8	supported	game/player.h	One magic spawn offset; its SVECTOR pad slot carries the effect kind.
 KfPlayerMagicSpawnRecord	0x08	supported	asm;player_dispatch_magic_effect;retail bytes	Eight-byte offset copied as SVECTOR with signed effect kind at +6; original typedef spelling unresolved
 KfPlayerMovementSpeed	0x02	supported	asm;player_update_vertical_motion	one halfword read with both lh and lhu in vertical motion
-KfPlayerPadButtonHalves	0x4	supported	asm;player_update_frame PadRead(1) store and previous-frame copy;player_update_actions_and_charge	this frame's pad buttons followed by the previous frame's copy
 KfPlayerPadButtons	0x4	supported	asm;player_update_frame;player_handle_interaction_and_menu;player_clear_motion	pad button word read whole for press/hold edges or by halfword
 KfPlayerPositionReaction	0x14	supported	asm;func_800291ec	mode and three signed position words in the player reaction overlay
 KfPlayerReactionOverlay	0x14	supported	asm;func_800291ec;func_800293d4;func_80029464	three overlapping player reaction views

@@ -879,11 +879,8 @@ KfPlayerMagicSpawnRecord	0x00	0x08	offset	SVECTOR	supported	GAME 0x8002601c-0x80
 KfPlayerMagicSpawnRecord	0x0	0x8	fields	KfPlayerMagicSpawnFields	candidate	game/player.h	KfPlayerMagicSpawnRecord member from reconstructed header
 KfPlayerMovementSpeed	0x00	0x02	unsigned_value	u16	supported	asm;player_update_vertical_motion	view bob phase reads lhu
 KfPlayerMovementSpeed	0x00	0x02	signed_value	s16	supported	asm;player_update_vertical_motion	falling threshold reads lh
-KfPlayerPadButtonHalves	0x00	0x02	current	u16	supported	asm;player_update_frame PadRead(1) store	buttons read this frame
-KfPlayerPadButtonHalves	0x02	0x02	previous	u16	supported	asm;player_update_frame copy;player_update_actions_and_charge	previous frame's buttons for edge detection
-KfPlayerPadButtons	0x00	0x04	word	u32	supported	asm;player_handle_interaction_and_menu;player_update_actions_and_charge	both halves masked together for pressed/held edges
-KfPlayerPadButtons	0x00	0x02	current	u16	supported	asm;player_update_frame;player_clear_motion	this frame's buttons
-KfPlayerPadButtons	0x00	0x04	halves	KfPlayerPadButtonHalves	supported	asm;player_update_actions_and_charge	current/previous halfword view
+KfPlayerPadButtons	0x00	0x02	current	u16	supported	asm;player_update_frame PadRead(1) store	buttons read this frame
+KfPlayerPadButtons	0x02	0x02	previous	u16	supported	asm;player_update_frame copy;player_update_actions_and_charge	previous frame's buttons for edge detection
 KfPlayerPositionReaction	0x00	0x01	recovery_step	u8	supported	player_apply_map_object_reaction;player_update_frame	increments each position-recovery frame; scales interpolation and exits after step 15
 KfPlayerPositionReaction	0x04	0x10	position	VECTOR	supported	asm;player_apply_map_object_reaction	three signed world-position words stored at +0x150/+0x154/+0x158
 KfPlayerReactionOverlay	0x00	0x10	damage	KfPlayerDamageReaction	supported	asm;player_begin_view_reaction;player_begin_moving_damage_reaction	full damage reaction view

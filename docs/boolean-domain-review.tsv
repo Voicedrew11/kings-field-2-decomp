@@ -128,7 +128,7 @@ KfMenuList.selected_index	reject	counter or arithmetic quantity (incremented/dec
 KfNotificationControl.effect_phase	reject	phase byte also written with other values	2	KfNotificationControl.effect_phase
 KfNotificationControl.queue_head	reject	queue index	1	KfNotificationControl.queue_head
 KfPlayerMovementSpeed.unsigned_value	reject	counter or arithmetic quantity (incremented/decremented)	1	KfPlayerMovementSpeed.unsigned_value
-KfPlayerPadButtonHalves.previous&0xb0	reject	masked bit of a wider flags or packed word (flags-domain review, not a Boolean slot)	1	KfPlayerPadButtonHalves.previous&0xb0
+KfPlayerPadButtons.previous&0xb0	reject	masked bit of a wider flags or packed word (flags-domain review, not a Boolean slot)	1	KfPlayerPadButtons.previous&0xb0
 KfPlayerPadButtons.current&0x10	reject	masked bit of a wider flags or packed word (flags-domain review, not a Boolean slot)	2	KfPlayerPadButtons.current&0x10
 KfPlayerPadButtons.current&0x5000	reject	masked bit of a wider flags or packed word (flags-domain review, not a Boolean slot)	1	KfPlayerPadButtons.current&0x5000
 KfPlayerPadButtons.current&0x80	reject	masked bit of a wider flags or packed word (flags-domain review, not a Boolean slot)	2	KfPlayerPadButtons.current&0x80

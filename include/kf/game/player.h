@@ -217,21 +217,13 @@ typedef char kf_player_position_reaction_position_offset[
 
 /* PadRead(1) buttons for this frame, and the previous frame's copy taken
  * after the player update. */
-typedef struct KfPlayerPadButtonHalves {
+typedef struct KfPlayerPadButtons {
     u16 current;
     u16 previous;
-} KfPlayerPadButtonHalves;
-
-typedef union KfPlayerPadButtons {
-    u32 word;
-    u16 current;
-    KfPlayerPadButtonHalves halves;
 } KfPlayerPadButtons;
 
-typedef char kf_player_pad_button_halves_size[
-    sizeof(KfPlayerPadButtonHalves) == 4 ? 1 : -1];
 typedef char kf_player_pad_buttons_previous_offset[
-    offsetof(KfPlayerPadButtons, halves.previous) == 2 ? 1 : -1];
+    offsetof(KfPlayerPadButtons, previous) == 2 ? 1 : -1];
 typedef char kf_player_pad_buttons_size[sizeof(KfPlayerPadButtons) == 4 ? 1 : -1];
 
 /* Whole-word tests of BUTTON in both frames: newly pressed, or held. */
