@@ -3525,8 +3525,8 @@ void menu_draw_player_status(void)
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
 
-    heading.glyphs.codes[0] = 7;
-    heading.glyphs.codes[1] = 15;
+    heading.glyphs.codes[0] = KF_MENU_GLYPH_H;
+    heading.glyphs.codes[1] = KF_MENU_GLYPH_P;
     heading.glyphs.codes[2] = KF_MENU_TEXT_END;
     heading.position.y += row_step;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
@@ -3535,7 +3535,7 @@ void menu_draw_player_status(void)
     menu_format_number(cur_avatar_status.vitals.current_hp, 4, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
-    amount.glyphs.codes[0] = 20;
+    amount.glyphs.codes[0] = KF_MENU_GLYPH_U;
     amount.glyphs.codes[1] = KF_MENU_TEXT_END;
     amount.position.x += 28;
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
@@ -3544,7 +3544,7 @@ void menu_draw_player_status(void)
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
 
-    heading.glyphs.codes[0] = 12;
+    heading.glyphs.codes[0] = KF_MENU_GLYPH_M;
     heading.position.y += row_step;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.x = heading.position.x + 63;
@@ -3552,7 +3552,7 @@ void menu_draw_player_status(void)
     menu_format_number(cur_avatar_status.vitals.current_mp, 4, KF_FORMAT_PAD_SPACES,
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
-    amount.glyphs.codes[0] = 20;
+    amount.glyphs.codes[0] = KF_MENU_GLYPH_U;
     amount.glyphs.codes[1] = KF_MENU_TEXT_END;
     amount.position.x += 28;
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
@@ -3561,15 +3561,15 @@ void menu_draw_player_status(void)
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
 
-    heading.glyphs.codes[0] = 18;
-    heading.glyphs.codes[1] = 19;
-    heading.glyphs.codes[2] = 17;
-    heading.glyphs.codes[3] = 127;
-    heading.glyphs.codes[4] = 15;
-    heading.glyphs.codes[5] = 14;
-    heading.glyphs.codes[6] = 22;
-    heading.glyphs.codes[7] = 4;
-    heading.glyphs.codes[8] = 17;
+    heading.glyphs.codes[0] = KF_MENU_GLYPH_S;
+    heading.glyphs.codes[1] = KF_MENU_GLYPH_T;
+    heading.glyphs.codes[2] = KF_MENU_GLYPH_R;
+    heading.glyphs.codes[3] = KF_MENU_GLYPH_SPACE;
+    heading.glyphs.codes[4] = KF_MENU_GLYPH_P;
+    heading.glyphs.codes[5] = KF_MENU_GLYPH_O;
+    heading.glyphs.codes[6] = KF_MENU_GLYPH_W;
+    heading.glyphs.codes[7] = KF_MENU_GLYPH_E;
+    heading.glyphs.codes[8] = KF_MENU_GLYPH_R;
     heading.glyphs.codes[9] = KF_MENU_TEXT_END;
     heading.position.y += row_step;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
@@ -3579,9 +3579,9 @@ void menu_draw_player_status(void)
         KF_MENU_FORMAT_STYLE_PLAIN, amount.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &amount);
 
-    heading.glyphs.codes[0] = 12;
-    heading.glyphs.codes[1] = 0;
-    heading.glyphs.codes[2] = 6;
+    heading.glyphs.codes[0] = KF_MENU_GLYPH_M;
+    heading.glyphs.codes[1] = KF_MENU_GLYPH_A;
+    heading.glyphs.codes[2] = KF_MENU_GLYPH_G;
     heading.position.y += row_step;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
     amount.position.x = heading.position.x + 84;
@@ -3632,12 +3632,12 @@ void menu_draw_combat_attributes(void)
     menu_copy_label_row(label.glyphs.codes, menu_header_labels[2].codes);
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
 
-    label.glyphs.codes[0] = 127;
-    label.glyphs.codes[1] = 18;
-    label.glyphs.codes[2] = 11;
-    label.glyphs.codes[3] = 0;
-    label.glyphs.codes[4] = 18;
-    label.glyphs.codes[5] = 7;
+    label.glyphs.codes[0] = KF_MENU_GLYPH_SPACE;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_S;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_L;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_S;
+    label.glyphs.codes[5] = KF_MENU_GLYPH_H;
     label.glyphs.codes[6] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -3647,10 +3647,10 @@ void menu_draw_combat_attributes(void)
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 2;
-    label.glyphs.codes[2] = 7;
-    label.glyphs.codes[3] = 14;
-    label.glyphs.codes[4] = 15;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_C;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_H;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_O;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_P;
     label.glyphs.codes[5] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -3659,10 +3659,10 @@ void menu_draw_combat_attributes(void)
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 18;
-    label.glyphs.codes[2] = 19;
-    label.glyphs.codes[3] = 0;
-    label.glyphs.codes[4] = 1;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_S;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_T;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_B;
     label.glyphs.codes[5] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -3671,16 +3671,16 @@ void menu_draw_combat_attributes(void)
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 7;
-    label.glyphs.codes[2] = 14;
-    label.glyphs.codes[3] = 11;
-    label.glyphs.codes[4] = 24;
-    label.glyphs.codes[5] = 127;
-    label.glyphs.codes[6] = 12;
-    label.glyphs.codes[7] = 0;
-    label.glyphs.codes[8] = 6;
-    label.glyphs.codes[9] = 8;
-    label.glyphs.codes[10] = 2;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_H;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_O;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_L;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_Y;
+    label.glyphs.codes[5] = KF_MENU_GLYPH_SPACE;
+    label.glyphs.codes[6] = KF_MENU_GLYPH_M;
+    label.glyphs.codes[7] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[8] = KF_MENU_GLYPH_G;
+    label.glyphs.codes[9] = KF_MENU_GLYPH_I;
+    label.glyphs.codes[10] = KF_MENU_GLYPH_C;
     label.glyphs.codes[11] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -3689,16 +3689,16 @@ void menu_draw_combat_attributes(void)
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 5;
-    label.glyphs.codes[2] = 8;
-    label.glyphs.codes[3] = 17;
-    label.glyphs.codes[4] = 4;
-    label.glyphs.codes[5] = 127;
-    label.glyphs.codes[6] = 12;
-    label.glyphs.codes[7] = 0;
-    label.glyphs.codes[8] = 6;
-    label.glyphs.codes[9] = 8;
-    label.glyphs.codes[10] = 2;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_F;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_I;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_R;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_E;
+    label.glyphs.codes[5] = KF_MENU_GLYPH_SPACE;
+    label.glyphs.codes[6] = KF_MENU_GLYPH_M;
+    label.glyphs.codes[7] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[8] = KF_MENU_GLYPH_G;
+    label.glyphs.codes[9] = KF_MENU_GLYPH_I;
+    label.glyphs.codes[10] = KF_MENU_GLYPH_C;
     label.glyphs.codes[11] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -3707,17 +3707,17 @@ void menu_draw_combat_attributes(void)
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 4;
-    label.glyphs.codes[2] = 0;
-    label.glyphs.codes[3] = 17;
-    label.glyphs.codes[4] = 19;
-    label.glyphs.codes[5] = 7;
-    label.glyphs.codes[6] = 127;
-    label.glyphs.codes[7] = 12;
-    label.glyphs.codes[8] = 0;
-    label.glyphs.codes[9] = 6;
-    label.glyphs.codes[10] = 8;
-    label.glyphs.codes[11] = 2;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_E;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_R;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_T;
+    label.glyphs.codes[5] = KF_MENU_GLYPH_H;
+    label.glyphs.codes[6] = KF_MENU_GLYPH_SPACE;
+    label.glyphs.codes[7] = KF_MENU_GLYPH_M;
+    label.glyphs.codes[8] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[9] = KF_MENU_GLYPH_G;
+    label.glyphs.codes[10] = KF_MENU_GLYPH_I;
+    label.glyphs.codes[11] = KF_MENU_GLYPH_C;
     label.glyphs.codes[12] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -3726,16 +3726,16 @@ void menu_draw_combat_attributes(void)
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 22;
-    label.glyphs.codes[2] = 8;
-    label.glyphs.codes[3] = 13;
-    label.glyphs.codes[4] = 3;
-    label.glyphs.codes[5] = 127;
-    label.glyphs.codes[6] = 12;
-    label.glyphs.codes[7] = 0;
-    label.glyphs.codes[8] = 6;
-    label.glyphs.codes[9] = 8;
-    label.glyphs.codes[10] = 2;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_W;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_I;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_N;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_D;
+    label.glyphs.codes[5] = KF_MENU_GLYPH_SPACE;
+    label.glyphs.codes[6] = KF_MENU_GLYPH_M;
+    label.glyphs.codes[7] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[8] = KF_MENU_GLYPH_G;
+    label.glyphs.codes[9] = KF_MENU_GLYPH_I;
+    label.glyphs.codes[10] = KF_MENU_GLYPH_C;
     label.glyphs.codes[11] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -3744,17 +3744,17 @@ void menu_draw_combat_attributes(void)
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 22;
-    label.glyphs.codes[2] = 0;
-    label.glyphs.codes[3] = 19;
-    label.glyphs.codes[4] = 4;
-    label.glyphs.codes[5] = 17;
-    label.glyphs.codes[6] = 127;
-    label.glyphs.codes[7] = 12;
-    label.glyphs.codes[8] = 0;
-    label.glyphs.codes[9] = 6;
-    label.glyphs.codes[10] = 8;
-    label.glyphs.codes[11] = 2;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_W;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_T;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_E;
+    label.glyphs.codes[5] = KF_MENU_GLYPH_R;
+    label.glyphs.codes[6] = KF_MENU_GLYPH_SPACE;
+    label.glyphs.codes[7] = KF_MENU_GLYPH_M;
+    label.glyphs.codes[8] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[9] = KF_MENU_GLYPH_G;
+    label.glyphs.codes[10] = KF_MENU_GLYPH_I;
+    label.glyphs.codes[11] = KF_MENU_GLYPH_C;
     label.glyphs.codes[12] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -3768,12 +3768,12 @@ void menu_draw_combat_attributes(void)
     menu_copy_label_row(label.glyphs.codes, menu_header_labels[3].codes);
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
 
-    label.glyphs.codes[0] = 127;
-    label.glyphs.codes[1] = 18;
-    label.glyphs.codes[2] = 11;
-    label.glyphs.codes[3] = 0;
-    label.glyphs.codes[4] = 18;
-    label.glyphs.codes[5] = 7;
+    label.glyphs.codes[0] = KF_MENU_GLYPH_SPACE;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_S;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_L;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_S;
+    label.glyphs.codes[5] = KF_MENU_GLYPH_H;
     label.glyphs.codes[6] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -3783,10 +3783,10 @@ void menu_draw_combat_attributes(void)
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 2;
-    label.glyphs.codes[2] = 7;
-    label.glyphs.codes[3] = 14;
-    label.glyphs.codes[4] = 15;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_C;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_H;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_O;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_P;
     label.glyphs.codes[5] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -3795,10 +3795,10 @@ void menu_draw_combat_attributes(void)
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 18;
-    label.glyphs.codes[2] = 19;
-    label.glyphs.codes[3] = 0;
-    label.glyphs.codes[4] = 1;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_S;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_T;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_B;
     label.glyphs.codes[5] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -3807,12 +3807,12 @@ void menu_draw_combat_attributes(void)
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 15;
-    label.glyphs.codes[2] = 14;
-    label.glyphs.codes[3] = 8;
-    label.glyphs.codes[4] = 18;
-    label.glyphs.codes[5] = 14;
-    label.glyphs.codes[6] = 13;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_P;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_O;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_I;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_S;
+    label.glyphs.codes[5] = KF_MENU_GLYPH_O;
+    label.glyphs.codes[6] = KF_MENU_GLYPH_N;
     label.glyphs.codes[7] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -3821,16 +3821,16 @@ void menu_draw_combat_attributes(void)
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 3;
-    label.glyphs.codes[2] = 0;
-    label.glyphs.codes[3] = 17;
-    label.glyphs.codes[4] = 10;
-    label.glyphs.codes[5] = 127;
-    label.glyphs.codes[6] = 12;
-    label.glyphs.codes[7] = 0;
-    label.glyphs.codes[8] = 6;
-    label.glyphs.codes[9] = 8;
-    label.glyphs.codes[10] = 2;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_D;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_R;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_K;
+    label.glyphs.codes[5] = KF_MENU_GLYPH_SPACE;
+    label.glyphs.codes[6] = KF_MENU_GLYPH_M;
+    label.glyphs.codes[7] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[8] = KF_MENU_GLYPH_G;
+    label.glyphs.codes[9] = KF_MENU_GLYPH_I;
+    label.glyphs.codes[10] = KF_MENU_GLYPH_C;
     label.glyphs.codes[11] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -3839,16 +3839,16 @@ void menu_draw_combat_attributes(void)
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 5;
-    label.glyphs.codes[2] = 8;
-    label.glyphs.codes[3] = 17;
-    label.glyphs.codes[4] = 4;
-    label.glyphs.codes[5] = 127;
-    label.glyphs.codes[6] = 12;
-    label.glyphs.codes[7] = 0;
-    label.glyphs.codes[8] = 6;
-    label.glyphs.codes[9] = 8;
-    label.glyphs.codes[10] = 2;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_F;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_I;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_R;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_E;
+    label.glyphs.codes[5] = KF_MENU_GLYPH_SPACE;
+    label.glyphs.codes[6] = KF_MENU_GLYPH_M;
+    label.glyphs.codes[7] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[8] = KF_MENU_GLYPH_G;
+    label.glyphs.codes[9] = KF_MENU_GLYPH_I;
+    label.glyphs.codes[10] = KF_MENU_GLYPH_C;
     label.glyphs.codes[11] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -3857,17 +3857,17 @@ void menu_draw_combat_attributes(void)
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 4;
-    label.glyphs.codes[2] = 0;
-    label.glyphs.codes[3] = 17;
-    label.glyphs.codes[4] = 19;
-    label.glyphs.codes[5] = 7;
-    label.glyphs.codes[6] = 127;
-    label.glyphs.codes[7] = 12;
-    label.glyphs.codes[8] = 0;
-    label.glyphs.codes[9] = 6;
-    label.glyphs.codes[10] = 8;
-    label.glyphs.codes[11] = 2;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_E;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_R;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_T;
+    label.glyphs.codes[5] = KF_MENU_GLYPH_H;
+    label.glyphs.codes[6] = KF_MENU_GLYPH_SPACE;
+    label.glyphs.codes[7] = KF_MENU_GLYPH_M;
+    label.glyphs.codes[8] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[9] = KF_MENU_GLYPH_G;
+    label.glyphs.codes[10] = KF_MENU_GLYPH_I;
+    label.glyphs.codes[11] = KF_MENU_GLYPH_C;
     label.glyphs.codes[12] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -3876,16 +3876,16 @@ void menu_draw_combat_attributes(void)
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 22;
-    label.glyphs.codes[2] = 8;
-    label.glyphs.codes[3] = 13;
-    label.glyphs.codes[4] = 3;
-    label.glyphs.codes[5] = 127;
-    label.glyphs.codes[6] = 12;
-    label.glyphs.codes[7] = 0;
-    label.glyphs.codes[8] = 6;
-    label.glyphs.codes[9] = 8;
-    label.glyphs.codes[10] = 2;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_W;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_I;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_N;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_D;
+    label.glyphs.codes[5] = KF_MENU_GLYPH_SPACE;
+    label.glyphs.codes[6] = KF_MENU_GLYPH_M;
+    label.glyphs.codes[7] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[8] = KF_MENU_GLYPH_G;
+    label.glyphs.codes[9] = KF_MENU_GLYPH_I;
+    label.glyphs.codes[10] = KF_MENU_GLYPH_C;
     label.glyphs.codes[11] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -3894,17 +3894,17 @@ void menu_draw_combat_attributes(void)
         KF_MENU_FORMAT_STYLE_PLAIN, number.glyphs.codes);
     menu_draw_number(&menu_sprite_defs[KF_MENU_SPRITE_NUMBER_ATLAS], &number);
 
-    label.glyphs.codes[1] = 22;
-    label.glyphs.codes[2] = 0;
-    label.glyphs.codes[3] = 19;
-    label.glyphs.codes[4] = 4;
-    label.glyphs.codes[5] = 17;
-    label.glyphs.codes[6] = 127;
-    label.glyphs.codes[7] = 12;
-    label.glyphs.codes[8] = 0;
-    label.glyphs.codes[9] = 6;
-    label.glyphs.codes[10] = 8;
-    label.glyphs.codes[11] = 2;
+    label.glyphs.codes[1] = KF_MENU_GLYPH_W;
+    label.glyphs.codes[2] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[3] = KF_MENU_GLYPH_T;
+    label.glyphs.codes[4] = KF_MENU_GLYPH_E;
+    label.glyphs.codes[5] = KF_MENU_GLYPH_R;
+    label.glyphs.codes[6] = KF_MENU_GLYPH_SPACE;
+    label.glyphs.codes[7] = KF_MENU_GLYPH_M;
+    label.glyphs.codes[8] = KF_MENU_GLYPH_A;
+    label.glyphs.codes[9] = KF_MENU_GLYPH_G;
+    label.glyphs.codes[10] = KF_MENU_GLYPH_I;
+    label.glyphs.codes[11] = KF_MENU_GLYPH_C;
     label.glyphs.codes[12] = KF_MENU_TEXT_END;
     label.position.y += 18;
     menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &label);
@@ -4306,19 +4306,19 @@ void menu_draw_status_counters(s32 kind)
     heading.position.x = 183;
     heading.position.y = 33;
     if (kind == KF_MENU_COUNTERS_TRADE_CURRENCY) {
-        heading.glyphs.codes[0] = 2;
-        heading.glyphs.codes[1] = 17;
-        heading.glyphs.codes[2] = 24;
-        heading.glyphs.codes[3] = 18;
-        heading.glyphs.codes[4] = 19;
-        heading.glyphs.codes[5] = 0;
-        heading.glyphs.codes[6] = 11;
+        heading.glyphs.codes[0] = KF_MENU_GLYPH_C;
+        heading.glyphs.codes[1] = KF_MENU_GLYPH_R;
+        heading.glyphs.codes[2] = KF_MENU_GLYPH_Y;
+        heading.glyphs.codes[3] = KF_MENU_GLYPH_S;
+        heading.glyphs.codes[4] = KF_MENU_GLYPH_T;
+        heading.glyphs.codes[5] = KF_MENU_GLYPH_A;
+        heading.glyphs.codes[6] = KF_MENU_GLYPH_L;
         heading.glyphs.codes[7] = KF_MENU_TEXT_END;
     } else {
-        heading.glyphs.codes[0] = 6;
-        heading.glyphs.codes[1] = 14;
-        heading.glyphs.codes[2] = 11;
-        heading.glyphs.codes[3] = 3;
+        heading.glyphs.codes[0] = KF_MENU_GLYPH_G;
+        heading.glyphs.codes[1] = KF_MENU_GLYPH_O;
+        heading.glyphs.codes[2] = KF_MENU_GLYPH_L;
+        heading.glyphs.codes[3] = KF_MENU_GLYPH_D;
         heading.glyphs.codes[4] = KF_MENU_TEXT_END;
     }
     menu_blit_sprite_translucent(&menu_sprite_defs[KF_MENU_SPRITE_PANEL_BACKGROUND], &heading.position);
@@ -4339,12 +4339,12 @@ void menu_draw_status_counters(s32 kind)
     if (kind != KF_MENU_COUNTERS_GOLD_ONLY) {
         heading.position.x = 183;
         heading.position.y = 61;
-        heading.glyphs.codes[0] = 13;
-        heading.glyphs.codes[1] = 20;
-        heading.glyphs.codes[2] = 12;
-        heading.glyphs.codes[3] = 1;
-        heading.glyphs.codes[4] = 4;
-        heading.glyphs.codes[5] = 17;
+        heading.glyphs.codes[0] = KF_MENU_GLYPH_N;
+        heading.glyphs.codes[1] = KF_MENU_GLYPH_U;
+        heading.glyphs.codes[2] = KF_MENU_GLYPH_M;
+        heading.glyphs.codes[3] = KF_MENU_GLYPH_B;
+        heading.glyphs.codes[4] = KF_MENU_GLYPH_E;
+        heading.glyphs.codes[5] = KF_MENU_GLYPH_R;
         heading.glyphs.codes[6] = KF_MENU_TEXT_END;
         menu_blit_sprite_translucent(&menu_sprite_defs[KF_MENU_SPRITE_PANEL_BACKGROUND], &heading.position);
         menu_draw_string(&menu_sprite_defs[KF_MENU_SPRITE_GLYPH_ATLAS], &heading);
