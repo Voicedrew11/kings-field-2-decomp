@@ -1407,8 +1407,7 @@ b32 effect_scatter_lower_bound(const VECTOR *origin, s32 count, s32 spread,
             return KF_FALSE;
         }
         count--;
-        if (count != -1) {
-            do {
+        while (count != -1) {
             VECTOR position;
             SVECTOR direction;
             s32 magnitude;
@@ -1418,13 +1417,12 @@ b32 effect_scatter_lower_bound(const VECTOR *origin, s32 count, s32 spread,
             position.vy = pl_ext_7540.collision_cache.heights.lower_bound;
             magnitude = random_centered_triangular_scaled(variation) + 4096;
             effect_construct_record(10, KF_EFFECT_TYPE_NONE, KF_EFFECT_KIND_LOWER_BOUND_RIPPLE, &position, &direction,
-                          scale_x * magnitude >> KF_FIXED12_BITS,
-                          scale_z * magnitude >> KF_FIXED12_BITS);
+                      scale_x * magnitude >> KF_FIXED12_BITS,
+                      scale_z * magnitude >> KF_FIXED12_BITS);
 
             count--;
             offset_x = (rand() * spread >> 14) - spread;
             offset_z = (rand() * spread >> 14) - spread;
-            } while (count != -1);
         }
         return KF_TRUE;
     }

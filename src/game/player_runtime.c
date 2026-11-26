@@ -2147,22 +2147,20 @@ retry: {
 
         if (!slide_attempted) {
             slide_distance = distance - PLAYER_MOVE_STEP;
-            if (slide_distance >= 0) {
-                do {
-                    next.vx = cur_avatar_status.camera_position.vx
-                           + ((-rsin(heading) * slide_distance) >> KF_FIXED12_BITS);
-                    next.vz = cur_avatar_status.camera_position.vz
-                           + ((rcos(heading) * slide_distance) >> KF_FIXED12_BITS);
-                    if (collision_query_world(next.vx, cur_avatar_status.camera_position.vy,
-                                       next.vz, KF_PLAYER_COLLISION_RADIUS,
-                                       KF_PLAYER_HEIGHT,
-                                       PLAYER_MOVE_COLLISION_MODE) == KF_COLLISION_HIT_NONE) {
-                        cur_avatar_status.camera_position.vx = next.vx;
-                        cur_avatar_status.camera_position.vz = next.vz;
-                        break;
-                    }
-                    slide_distance -= PLAYER_MOVE_STEP;
-                } while (slide_distance >= 0);
+            while (slide_distance >= 0) {
+                next.vx = cur_avatar_status.camera_position.vx
+                       + ((-rsin(heading) * slide_distance) >> KF_FIXED12_BITS);
+                next.vz = cur_avatar_status.camera_position.vz
+                       + ((rcos(heading) * slide_distance) >> KF_FIXED12_BITS);
+                if (collision_query_world(next.vx, cur_avatar_status.camera_position.vy,
+                                   next.vz, KF_PLAYER_COLLISION_RADIUS,
+                                   KF_PLAYER_HEIGHT,
+                                   PLAYER_MOVE_COLLISION_MODE) == KF_COLLISION_HIT_NONE) {
+                    cur_avatar_status.camera_position.vx = next.vx;
+                    cur_avatar_status.camera_position.vz = next.vz;
+                    break;
+                }
+                slide_distance -= PLAYER_MOVE_STEP;
             }
             slide_attempted = KF_TRUE;
         }

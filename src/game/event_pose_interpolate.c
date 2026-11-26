@@ -1321,18 +1321,16 @@ void event_arena_owner_pointers_add_delta(s32 delta)
 {
     KfMemoryBlock *block = &cur_evt_state.arena.first_block;
 
-    if (block->kind != KF_MEMORY_BLOCK_END) {
-        do {
-            KF_ENUM_PROMOTED(KfMemoryBlockKind) kind = block->kind;
-            u32 step;
-            if (kind < KF_MEMORY_BLOCK_KIND_COUNT) {
-                if (kind != KF_MEMORY_BLOCK_FREE) {
-                    block->owner = (u8 **)((u8 *)block->owner + delta);
-                }
+    while (block->kind != KF_MEMORY_BLOCK_END) {
+        KF_ENUM_PROMOTED(KfMemoryBlockKind) kind = block->kind;
+        u32 step;
+        if (kind < KF_MEMORY_BLOCK_KIND_COUNT) {
+            if (kind != KF_MEMORY_BLOCK_FREE) {
+                block->owner = (u8 **)((u8 *)block->owner + delta);
             }
-            step = block->size + sizeof(*block);
-            block = (KfMemoryBlock *)((u8 *)block + step);
-        } while (block->kind != KF_MEMORY_BLOCK_END);
+        }
+        step = block->size + sizeof(*block);
+        block = (KfMemoryBlock *)((u8 *)block + step);
     }
 }
 
@@ -1359,18 +1357,16 @@ void event_arena_owner_pointers_subtract_delta(s32 delta)
 {
     KfMemoryBlock *block = &cur_evt_state.arena.first_block;
 
-    if (block->kind != KF_MEMORY_BLOCK_END) {
-        do {
-            KF_ENUM_PROMOTED(KfMemoryBlockKind) kind = block->kind;
-            u32 step;
-            if (kind < KF_MEMORY_BLOCK_KIND_COUNT) {
-                if (kind != KF_MEMORY_BLOCK_FREE) {
-                    block->owner = (u8 **)((u8 *)block->owner - delta);
-                }
+    while (block->kind != KF_MEMORY_BLOCK_END) {
+        KF_ENUM_PROMOTED(KfMemoryBlockKind) kind = block->kind;
+        u32 step;
+        if (kind < KF_MEMORY_BLOCK_KIND_COUNT) {
+            if (kind != KF_MEMORY_BLOCK_FREE) {
+                block->owner = (u8 **)((u8 *)block->owner - delta);
             }
-            step = block->size + sizeof(*block);
-            block = (KfMemoryBlock *)((u8 *)block + step);
-        } while (block->kind != KF_MEMORY_BLOCK_END);
+        }
+        step = block->size + sizeof(*block);
+        block = (KfMemoryBlock *)((u8 *)block + step);
     }
 }
 

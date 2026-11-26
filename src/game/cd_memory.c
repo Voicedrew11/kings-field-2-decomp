@@ -290,30 +290,28 @@ void memory_arena_compact(KfMemoryBlock *arena)
     KfMemoryBlock *write_block = arena;
 
     memory_arena_wait_pending(arena);
-    if (read_block->kind != KF_MEMORY_BLOCK_END) {
-        do {
-            KfMemoryBlock *next = (KfMemoryBlock *)((u8 *)read_block + read_block->size + sizeof(KfMemoryBlock));
+    while (read_block->kind != KF_MEMORY_BLOCK_END) {
+        KfMemoryBlock *next = (KfMemoryBlock *)((u8 *)read_block + read_block->size + sizeof(KfMemoryBlock));
 
-            if (read_block->kind == KF_MEMORY_BLOCK_RECLAIMABLE) {
-                memory_arena_free(read_block);
-            }
-            if (read_block->kind == KF_MEMORY_BLOCK_OWNED) {
-                if (read_block != write_block) {
-                    u32 *source = (u32 *)read_block;
-                    u32 *destination = (u32 *)write_block;
-                    u32 word_count = (read_block->size + sizeof(KfMemoryBlock)) >> 2;
+        if (read_block->kind == KF_MEMORY_BLOCK_RECLAIMABLE) {
+            memory_arena_free(read_block);
+        }
+        if (read_block->kind == KF_MEMORY_BLOCK_OWNED) {
+            if (read_block != write_block) {
+                u32 *source = (u32 *)read_block;
+                u32 *destination = (u32 *)write_block;
+                u32 word_count = (read_block->size + sizeof(KfMemoryBlock)) >> 2;
 
-                    do {
-                        *destination++ = *source++;
-                    } while (--word_count != 0);
-                    *write_block->owner = (u8 *)(write_block + 1);
-                    write_block = (KfMemoryBlock *)destination;
-                } else {
-                    write_block = next;
-                }
+                do {
+                    *destination++ = *source++;
+                } while (--word_count != 0);
+                *write_block->owner = (u8 *)(write_block + 1);
+                write_block = (KfMemoryBlock *)destination;
+            } else {
+                write_block = next;
             }
-            read_block = next;
-        } while (read_block->kind != KF_MEMORY_BLOCK_END);
+        }
+        read_block = next;
     }
     write_block->kind = KF_MEMORY_BLOCK_FREE;
     write_block->size = (u8 *)read_block - (u8 *)write_block - sizeof(KfMemoryBlock);

@@ -1480,157 +1480,155 @@ void render_enqueue_tmd_with_clipping(u16 object_index, s32 depth_bias,
                              object->primitive_offset);
     }
     remaining = object->primitive_count;
-    if (remaining-- != 0) {
-        do {
-            vertices = (u8 *)scene_display_sys.tmd_projected_vertices;
-            header.word = *(u32 *)packet;
-            packet += KF_TMD_PACKET_HEADER_BYTES;
-            switch (header.bytes.mode & KF_TMD_MODE_MASK) {
-            case KF_TMD_MODE_FT4: {
-                s32 clipped_count;
-                s32 depth;
-                KfGpuGT4 *prim;
+    while (remaining-- != 0) {
+        vertices = (u8 *)scene_display_sys.tmd_projected_vertices;
+        header.word = *(u32 *)packet;
+        packet += KF_TMD_PACKET_HEADER_BYTES;
+        switch (header.bytes.mode & KF_TMD_MODE_MASK) {
+        case KF_TMD_MODE_FT4: {
+            s32 clipped_count;
+            s32 depth;
+            KfGpuGT4 *prim;
 
-                va = TMD_VERTEX(vertices, FT4_FACE->vertex0);
-                vb = TMD_VERTEX(vertices, FT4_FACE->vertex1);
-                vc = TMD_VERTEX(vertices, FT4_FACE->vertex2);
-                vd = TMD_VERTEX(vertices, FT4_FACE->vertex3);
-                dy0 = va->y - vb->y;
-                dy1 = vb->y - vd->y;
-                dy2 = vd->y - vc->y;
-                dy3 = vc->y - va->y;
-                dy4 = vb->y - vc->y;
-                dx0 = va->x - vb->x;
-                dx1 = vb->x - vd->x;
-                dx2 = vd->x - vc->x;
-                dx3 = vc->x - va->x;
-                dx4 = vb->x - vc->x;
-                if (!((s16)(va->sz | vb->sz | vc->sz | vd->sz) == -1 ||
-                    MAP_OUTSIDE_Y(dy0) || MAP_OUTSIDE_Y(dy1) ||
-                    MAP_OUTSIDE_Y(dy2) || MAP_OUTSIDE_Y(dy3) ||
-                    MAP_OUTSIDE_Y(dy4) || MAP_OUTSIDE_X(dx0) ||
-                    MAP_OUTSIDE_X(dx1) || MAP_OUTSIDE_X(dx2) ||
-                    MAP_OUTSIDE_X(dx3) || MAP_OUTSIDE_X(dx4))) {
-                    if (NormalClip(TMD_XY(va), TMD_XY(vb), TMD_XY(vc)) <= 0) {
-                        break;
-                    }
-                    prim = (KfGpuGT4 *)scene_display_sys.display_state.primitive_buffer->cursor;
-                    scene_display_sys.display_state.primitive_buffer->cursor += sizeof(POLY_GT4);
-                    if (scene_display_sys.display_state.primitive_buffer->cursor >
-                        scene_display_sys.display_state.primitive_buffer->end) {
-                        return;
-                    }
-                    prim->packed.clut = FT4_FACE->clut;
-                    prim->packed.tpage = FT4_FACE->tpage;
-                    prim->packed.xy0 = TMD_XY(va);
-                    prim->packed.xy1 = TMD_XY(vb);
-                    prim->packed.xy2 = TMD_XY(vc);
-                    prim->packed.xy3 = TMD_XY(vd);
-                    prim->packed.uv0 = FT4_FACE->uv0;
-                    prim->packed.uv1 = FT4_FACE->uv1;
-                    prim->packed.uv2 = FT4_FACE->uv2;
-                    prim->packed.uv3 = FT4_FACE->uv3;
-                    NormalColorCol(TMD_VECTOR(normals, FT4_FACE->normal),
-                                   &map_textured_primitive_color, &shade);
-                    DpqColor(&shade, va->depth_cue, &prim->packed.color0);
-                    DpqColor(&shade, vb->depth_cue, &prim->packed.color1);
-                    DpqColor(&shade, vc->depth_cue, &prim->packed.color2);
-                    DpqColor(&shade, vd->depth_cue, &prim->packed.color3);
-                    setlen(&prim->sdk, 12);
-                    prim->sdk.code = (header.bytes.mode & KF_TMD_MODE_SEMI_TRANSPARENT) | KF_TMD_MODE_GT4;
-                    depth = ((va->sz + vb->sz + vc->sz + vd->sz) >> 2) + depth_bias;
-                    if (depth < 16) {
-                        depth = 16;
-                    }
-                    AddPrim((void *)&scene_display_sys.display_state.ordering_table[depth & 0x1fff],
-                            (void *)&prim->sdk);
-                } else {
-                    clipped_count = Clip4FTP(TMD_VECTOR(original_vertices, FT4_FACE->vertex0),
-                                             TMD_VECTOR(original_vertices, FT4_FACE->vertex1),
-                                             TMD_VECTOR(original_vertices, FT4_FACE->vertex2),
-                                             TMD_VECTOR(original_vertices, FT4_FACE->vertex3),
-                                             (short *)&FT4_FACE->uv0,
-                                             (short *)&FT4_FACE->uv1,
-                                             (short *)&FT4_FACE->uv2,
-                                             (short *)&FT4_FACE->uv3,
-                                             scene_display_sys.clip_result_vertices);
-                    if (clipped_count >= 3) {
-                        render_enqueue_clipped_tmd_polygon(clipped_count,
-                                       TMD_VECTOR(normals, FT4_FACE->normal),
-                                       FT4_FACE->clut, FT4_FACE->tpage,
-                                       header.bytes.mode & KF_TMD_MODE_SEMI_TRANSPARENT, depth_bias);
-                    }
+            va = TMD_VERTEX(vertices, FT4_FACE->vertex0);
+            vb = TMD_VERTEX(vertices, FT4_FACE->vertex1);
+            vc = TMD_VERTEX(vertices, FT4_FACE->vertex2);
+            vd = TMD_VERTEX(vertices, FT4_FACE->vertex3);
+            dy0 = va->y - vb->y;
+            dy1 = vb->y - vd->y;
+            dy2 = vd->y - vc->y;
+            dy3 = vc->y - va->y;
+            dy4 = vb->y - vc->y;
+            dx0 = va->x - vb->x;
+            dx1 = vb->x - vd->x;
+            dx2 = vd->x - vc->x;
+            dx3 = vc->x - va->x;
+            dx4 = vb->x - vc->x;
+            if (!((s16)(va->sz | vb->sz | vc->sz | vd->sz) == -1 ||
+                MAP_OUTSIDE_Y(dy0) || MAP_OUTSIDE_Y(dy1) ||
+                MAP_OUTSIDE_Y(dy2) || MAP_OUTSIDE_Y(dy3) ||
+                MAP_OUTSIDE_Y(dy4) || MAP_OUTSIDE_X(dx0) ||
+                MAP_OUTSIDE_X(dx1) || MAP_OUTSIDE_X(dx2) ||
+                MAP_OUTSIDE_X(dx3) || MAP_OUTSIDE_X(dx4))) {
+                if (NormalClip(TMD_XY(va), TMD_XY(vb), TMD_XY(vc)) <= 0) {
+                    break;
                 }
-                break;
+                prim = (KfGpuGT4 *)scene_display_sys.display_state.primitive_buffer->cursor;
+                scene_display_sys.display_state.primitive_buffer->cursor += sizeof(POLY_GT4);
+                if (scene_display_sys.display_state.primitive_buffer->cursor >
+                    scene_display_sys.display_state.primitive_buffer->end) {
+                    return;
+                }
+                prim->packed.clut = FT4_FACE->clut;
+                prim->packed.tpage = FT4_FACE->tpage;
+                prim->packed.xy0 = TMD_XY(va);
+                prim->packed.xy1 = TMD_XY(vb);
+                prim->packed.xy2 = TMD_XY(vc);
+                prim->packed.xy3 = TMD_XY(vd);
+                prim->packed.uv0 = FT4_FACE->uv0;
+                prim->packed.uv1 = FT4_FACE->uv1;
+                prim->packed.uv2 = FT4_FACE->uv2;
+                prim->packed.uv3 = FT4_FACE->uv3;
+                NormalColorCol(TMD_VECTOR(normals, FT4_FACE->normal),
+                               &map_textured_primitive_color, &shade);
+                DpqColor(&shade, va->depth_cue, &prim->packed.color0);
+                DpqColor(&shade, vb->depth_cue, &prim->packed.color1);
+                DpqColor(&shade, vc->depth_cue, &prim->packed.color2);
+                DpqColor(&shade, vd->depth_cue, &prim->packed.color3);
+                setlen(&prim->sdk, 12);
+                prim->sdk.code = (header.bytes.mode & KF_TMD_MODE_SEMI_TRANSPARENT) | KF_TMD_MODE_GT4;
+                depth = ((va->sz + vb->sz + vc->sz + vd->sz) >> 2) + depth_bias;
+                if (depth < 16) {
+                    depth = 16;
+                }
+                AddPrim((void *)&scene_display_sys.display_state.ordering_table[depth & 0x1fff],
+                        (void *)&prim->sdk);
+            } else {
+                clipped_count = Clip4FTP(TMD_VECTOR(original_vertices, FT4_FACE->vertex0),
+                                         TMD_VECTOR(original_vertices, FT4_FACE->vertex1),
+                                         TMD_VECTOR(original_vertices, FT4_FACE->vertex2),
+                                         TMD_VECTOR(original_vertices, FT4_FACE->vertex3),
+                                         (short *)&FT4_FACE->uv0,
+                                         (short *)&FT4_FACE->uv1,
+                                         (short *)&FT4_FACE->uv2,
+                                         (short *)&FT4_FACE->uv3,
+                                         scene_display_sys.clip_result_vertices);
+                if (clipped_count >= 3) {
+                    render_enqueue_clipped_tmd_polygon(clipped_count,
+                                   TMD_VECTOR(normals, FT4_FACE->normal),
+                                   FT4_FACE->clut, FT4_FACE->tpage,
+                                   header.bytes.mode & KF_TMD_MODE_SEMI_TRANSPARENT, depth_bias);
+                }
             }
-            case KF_TMD_MODE_FT3: {
-                s32 clipped_count;
-                s32 depth;
-                KfGpuGT3 *prim;
+            break;
+        }
+        case KF_TMD_MODE_FT3: {
+            s32 clipped_count;
+            s32 depth;
+            KfGpuGT3 *prim;
 
-                va = TMD_VERTEX(vertices, FT3_FACE->vertex0);
-                vb = TMD_VERTEX(vertices, FT3_FACE->vertex1);
-                vc = TMD_VERTEX(vertices, FT3_FACE->vertex2);
-                dy0 = va->y - vb->y;
-                dy1 = vb->y - vc->y;
-                dy2 = vc->y - va->y;
-                dx0 = va->x - vb->x;
-                dx1 = vb->x - vc->x;
-                dx2 = vc->x - va->x;
-                if (!((s16)(va->sz | vb->sz | vc->sz) == -1 ||
-                    MAP_OUTSIDE_Y(dy0) || MAP_OUTSIDE_Y(dy1) ||
-                    MAP_OUTSIDE_Y(dy2) || MAP_OUTSIDE_X(dx0) ||
-                    MAP_OUTSIDE_X(dx1) || MAP_OUTSIDE_X(dx2))) {
-                    if (NormalClip(TMD_XY(va), TMD_XY(vb), TMD_XY(vc)) <= 0) {
-                        break;
-                    }
-                    prim = (KfGpuGT3 *)scene_display_sys.display_state.primitive_buffer->cursor;
-                    scene_display_sys.display_state.primitive_buffer->cursor += sizeof(POLY_GT3);
-                    if (scene_display_sys.display_state.primitive_buffer->cursor >
-                        scene_display_sys.display_state.primitive_buffer->end) {
-                        return;
-                    }
-                    prim->packed.clut = FT3_FACE->clut;
-                    prim->packed.tpage = FT3_FACE->tpage;
-                    prim->packed.xy0 = TMD_XY(va);
-                    prim->packed.xy1 = TMD_XY(vb);
-                    prim->packed.xy2 = TMD_XY(vc);
-                    prim->packed.uv0 = FT3_FACE->uv0;
-                    prim->packed.uv1 = FT3_FACE->uv1;
-                    prim->packed.uv2 = FT3_FACE->uv2;
-                    NormalColorCol(TMD_VECTOR(normals, FT3_FACE->normal),
-                                   &map_textured_primitive_color, &shade);
-                    DpqColor(&shade, va->depth_cue, &prim->packed.color0);
-                    DpqColor(&shade, vb->depth_cue, &prim->packed.color1);
-                    DpqColor(&shade, vc->depth_cue, &prim->packed.color2);
-                    setlen(&prim->sdk, 9);
-                    prim->sdk.code = (header.bytes.mode & KF_TMD_MODE_SEMI_TRANSPARENT) | KF_TMD_MODE_GT3;
-                    depth = (va->sz + vb->sz + vc->sz) / 3 + depth_bias;
-                    if (depth < 16) {
-                        depth = 16;
-                    }
-                    AddPrim((void *)&scene_display_sys.display_state.ordering_table[depth & 0x1fff],
-                            (void *)&prim->sdk);
-                } else {
-                    clipped_count = Clip3FTP(TMD_VECTOR(original_vertices, FT3_FACE->vertex0),
-                                             TMD_VECTOR(original_vertices, FT3_FACE->vertex1),
-                                             TMD_VECTOR(original_vertices, FT3_FACE->vertex2),
-                                             (short *)&FT3_FACE->uv0,
-                                             (short *)&FT3_FACE->uv1,
-                                             (short *)&FT3_FACE->uv2,
-                                             scene_display_sys.clip_result_vertices);
-                    if (clipped_count >= 3) {
-                        render_enqueue_clipped_tmd_polygon(clipped_count,
-                                       TMD_VECTOR(normals, FT3_FACE->normal),
-                                       FT3_FACE->clut, FT3_FACE->tpage,
-                                       header.bytes.mode & KF_TMD_MODE_SEMI_TRANSPARENT, depth_bias);
-                    }
+            va = TMD_VERTEX(vertices, FT3_FACE->vertex0);
+            vb = TMD_VERTEX(vertices, FT3_FACE->vertex1);
+            vc = TMD_VERTEX(vertices, FT3_FACE->vertex2);
+            dy0 = va->y - vb->y;
+            dy1 = vb->y - vc->y;
+            dy2 = vc->y - va->y;
+            dx0 = va->x - vb->x;
+            dx1 = vb->x - vc->x;
+            dx2 = vc->x - va->x;
+            if (!((s16)(va->sz | vb->sz | vc->sz) == -1 ||
+                MAP_OUTSIDE_Y(dy0) || MAP_OUTSIDE_Y(dy1) ||
+                MAP_OUTSIDE_Y(dy2) || MAP_OUTSIDE_X(dx0) ||
+                MAP_OUTSIDE_X(dx1) || MAP_OUTSIDE_X(dx2))) {
+                if (NormalClip(TMD_XY(va), TMD_XY(vb), TMD_XY(vc)) <= 0) {
+                    break;
                 }
-                break;
+                prim = (KfGpuGT3 *)scene_display_sys.display_state.primitive_buffer->cursor;
+                scene_display_sys.display_state.primitive_buffer->cursor += sizeof(POLY_GT3);
+                if (scene_display_sys.display_state.primitive_buffer->cursor >
+                    scene_display_sys.display_state.primitive_buffer->end) {
+                    return;
+                }
+                prim->packed.clut = FT3_FACE->clut;
+                prim->packed.tpage = FT3_FACE->tpage;
+                prim->packed.xy0 = TMD_XY(va);
+                prim->packed.xy1 = TMD_XY(vb);
+                prim->packed.xy2 = TMD_XY(vc);
+                prim->packed.uv0 = FT3_FACE->uv0;
+                prim->packed.uv1 = FT3_FACE->uv1;
+                prim->packed.uv2 = FT3_FACE->uv2;
+                NormalColorCol(TMD_VECTOR(normals, FT3_FACE->normal),
+                               &map_textured_primitive_color, &shade);
+                DpqColor(&shade, va->depth_cue, &prim->packed.color0);
+                DpqColor(&shade, vb->depth_cue, &prim->packed.color1);
+                DpqColor(&shade, vc->depth_cue, &prim->packed.color2);
+                setlen(&prim->sdk, 9);
+                prim->sdk.code = (header.bytes.mode & KF_TMD_MODE_SEMI_TRANSPARENT) | KF_TMD_MODE_GT3;
+                depth = (va->sz + vb->sz + vc->sz) / 3 + depth_bias;
+                if (depth < 16) {
+                    depth = 16;
+                }
+                AddPrim((void *)&scene_display_sys.display_state.ordering_table[depth & 0x1fff],
+                        (void *)&prim->sdk);
+            } else {
+                clipped_count = Clip3FTP(TMD_VECTOR(original_vertices, FT3_FACE->vertex0),
+                                         TMD_VECTOR(original_vertices, FT3_FACE->vertex1),
+                                         TMD_VECTOR(original_vertices, FT3_FACE->vertex2),
+                                         (short *)&FT3_FACE->uv0,
+                                         (short *)&FT3_FACE->uv1,
+                                         (short *)&FT3_FACE->uv2,
+                                         scene_display_sys.clip_result_vertices);
+                if (clipped_count >= 3) {
+                    render_enqueue_clipped_tmd_polygon(clipped_count,
+                                   TMD_VECTOR(normals, FT3_FACE->normal),
+                                   FT3_FACE->clut, FT3_FACE->tpage,
+                                   header.bytes.mode & KF_TMD_MODE_SEMI_TRANSPARENT, depth_bias);
+                }
             }
-            }
-            packet += header.bytes.input_length * KF_TMD_WORD_BYTES;
-        } while (remaining-- != 0);
+            break;
+        }
+        }
+        packet += header.bytes.input_length * KF_TMD_WORD_BYTES;
     }
 }
 
