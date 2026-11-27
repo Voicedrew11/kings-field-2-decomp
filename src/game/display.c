@@ -115,7 +115,7 @@ KfRenderModelRow render_model_rows[KF_RENDER_MODEL_ROW_COUNT] = {
     {KF_SPRITE_VISIBLE, 0, KF_LIGHTING_HUD, 14, 0, { 64,   8,  2, 0}, { 16, 52, 24, 0}, {0}, NULL},
     {KF_SPRITE_VISIBLE, 0, KF_LIGHTING_HUD, 15, 0, {204,   8,  2, 0}, { 16, 35, 32, 0}, {0}, NULL},
     {KF_SPRITE_VISIBLE, 0, KF_LIGHTING_HUD, 15, 0, {204,   8,  2, 0}, { 16, 52, 32, 0}, {0}, NULL},
-    {KF_SPRITE_VISIBLE, 0, KF_LIGHTING_PRESET_48, 16, 0, {178, 200,  2, 0}, {  5, 12, 40, 0}, {0}, NULL},
+    {KF_SPRITE_VISIBLE, 0, KF_LIGHTING_HUD_GAUGE_BRIGHT, 16, 0, {178, 200,  2, 0}, {  5, 12, 40, 0}, {0}, NULL},
     {KF_SPRITE_END}
 };
 

@@ -21,11 +21,11 @@ enum {
 };
 
 /* cd_report_error codes (the retail reporter is empty). player_update_frame
- * reports code 3 when Start is pressed. */
+ * reports PAD_BUTTON while the pad button in DAT_8006e578 is held. */
 enum {
     KF_CD_ERROR_SEARCH = 0,
     KF_CD_ERROR_READ = 1,
-    KF_CD_ERROR_3 = 3
+    KF_CD_ERROR_PAD_BUTTON = 3
 };
 
 /* Location and byte size of a file, the leading fields of CdlFILE. */

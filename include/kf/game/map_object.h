@@ -19,8 +19,7 @@
  * only and runtime-only operations therefore share one namespace. Names
  * follow the update/interaction code (and KF1's numbering where it agrees:
  * lift door 2, hinged container 8, item container 9, screen image 13, save
- * point 14, item pickup 64); members without behavioural evidence keep
- * their decimal encoding as a WIP name.
+ * point 14, item pickup 64).
  *
  * Sockets show an item used on them: items 114..116 placed in a recall
  * socket are the destinations of items 111..113, and item 103 placed in a
@@ -31,16 +30,18 @@
  * otherwise identical item socket. No JP/US/EU template uses 0, 11 or 80,
  * the only operation-33 template (object 239) is never placed, dropped or
  * spawned, and no code or map callback stores any of the four in the action
- * byte; only their GAME dispatch hooks remain. */
+ * byte; only their GAME dispatch hooks remain, and those hooks name them:
+ * 0 and 80 are saved, 80 also latches a marker signal, 11 is hidden on load
+ * like 20, and 33 does nothing, like 255. */
 KF_ENUM_BEGIN(KfMapObjectOperation, u8)
-    KF_MAP_OBJECT_OP_0 = 0,
+    KF_MAP_OBJECT_OP_SAVED_INERT = 0,
     KF_MAP_OBJECT_OP_LIFT_DOOR = 2,
     KF_MAP_OBJECT_OP_SIGNAL_DOOR = 3,
     KF_MAP_OBJECT_OP_HINGE = 4,
     KF_MAP_OBJECT_OP_ANIMATED_CONTAINER = 5,
     KF_MAP_OBJECT_OP_HINGED_CONTAINER = 8,
     KF_MAP_OBJECT_OP_ITEM_CONTAINER = 9,
-    KF_MAP_OBJECT_OP_11 = 11,
+    KF_MAP_OBJECT_OP_HIDDEN_ON_LOAD = 11,
     KF_MAP_OBJECT_OP_SCREEN_IMAGE = 13,
     KF_MAP_OBJECT_OP_SAVE_POINT = 14,
     KF_MAP_OBJECT_OP_RECALL_SOCKET = 15,
@@ -53,11 +54,11 @@ KF_ENUM_BEGIN(KfMapObjectOperation, u8)
     KF_MAP_OBJECT_OP_SLIDING_CONTAINER = 22,
     KF_MAP_OBJECT_OP_AMBIENT_SOUND = 31,
     KF_MAP_OBJECT_OP_PLAYER_REACTION = 32,
-    KF_MAP_OBJECT_OP_33 = 33,
+    KF_MAP_OBJECT_OP_INERT = 33,
     KF_MAP_OBJECT_OP_WARP = 34,
     KF_MAP_OBJECT_OP_RAISED_ADDITIVE = 48,
     KF_MAP_OBJECT_OP_ITEM_PICKUP = 64,
-    KF_MAP_OBJECT_OP_80 = 80,
+    KF_MAP_OBJECT_OP_MARKER_LATCH = 80,
     KF_MAP_OBJECT_OP_ANIMATED_HAZARD = 81,
     KF_MAP_OBJECT_OP_SWITCH = 83,
     KF_MAP_OBJECT_OP_PATTERN_GATE = 84,
@@ -216,19 +217,21 @@ enum {
 
 /* Template byte 1, the pickup category of a dropped or placed object: a drop
  * tips over (0x10/0x13/0x16), spins (0x17) or bounces (the rest); GOLD is a
- * gold pile whose pickup adds its amount. Clearing a 0x10 object's layer
- * stands it up. Other members keep their encoding as a WIP name. */
+ * gold pile whose pickup adds its amount. Clearing a WEAPON object's layer
+ * stands it up. The FDAT 48 templates give each category a run of object
+ * IDs, and a member is named after most of its run: 0x16 holds the potions,
+ * stones and crystals, 0x19 the pick and flute. */
 KF_ENUM_BEGIN(KfMapObjectKind, u8)
-    KF_MAP_OBJECT_KIND_10 = 0x10,
-    KF_MAP_OBJECT_KIND_11 = 0x11,
-    KF_MAP_OBJECT_KIND_12 = 0x12,
-    KF_MAP_OBJECT_KIND_13 = 0x13,
-    KF_MAP_OBJECT_KIND_14 = 0x14,
-    KF_MAP_OBJECT_KIND_15 = 0x15,
-    KF_MAP_OBJECT_KIND_16 = 0x16,
-    KF_MAP_OBJECT_KIND_17 = 0x17,
-    KF_MAP_OBJECT_KIND_18 = 0x18,
-    KF_MAP_OBJECT_KIND_19 = 0x19,
+    KF_MAP_OBJECT_KIND_WEAPON = 0x10,
+    KF_MAP_OBJECT_KIND_HELM = 0x11,
+    KF_MAP_OBJECT_KIND_SHIELD = 0x12,
+    KF_MAP_OBJECT_KIND_GLOVES = 0x13,
+    KF_MAP_OBJECT_KIND_ACCESSORY = 0x14,
+    KF_MAP_OBJECT_KIND_MAP = 0x15,
+    KF_MAP_OBJECT_KIND_CONSUMABLE = 0x16,
+    KF_MAP_OBJECT_KIND_HERB = 0x17,
+    KF_MAP_OBJECT_KIND_KEY = 0x18,
+    KF_MAP_OBJECT_KIND_TOOL = 0x19,
     KF_MAP_OBJECT_KIND_GOLD = 0x20
 KF_ENUM_END(KfMapObjectKind)
 

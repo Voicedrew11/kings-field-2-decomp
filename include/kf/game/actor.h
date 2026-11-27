@@ -126,10 +126,11 @@ KF_ENUM_END(KfActorVerticalState)
 /*
  * Slot policy byte of a placed or spawned actor (KF1 KfActorSlotState). The
  * loader copies it from KfActorLoadRecord; 0xff frees the slot and ends the
- * placement stream. Slot 0 is the placement default and keeps a WIP name.
+ * placement stream. Slot 0, the placement default, wakes a dormant actor
+ * only when its spawn_chance roll succeeds.
  */
 KF_ENUM_BEGIN(KfActorSlotState, u8)
-    KF_ACTOR_SLOT_0 = 0,
+    KF_ACTOR_SLOT_CHANCE_SPAWN = 0,
     KF_ACTOR_SLOT_PERSISTENT = 1,
     KF_ACTOR_SLOT_RESPAWNING = 2,
     KF_ACTOR_SLOT_HOMEBOUND = 3,
@@ -143,9 +144,9 @@ KF_ENUM_END(KfActorSlotState)
  * the actor's current target type, actor_find_target_of_type matches it, and
  * actor_update_behavior / actor_score_target_candidate dispatch on it. Types
  * from 128 are scored by the active map's callback; 0xff is no target (and a
- * disabled candidate row). Types 6-8 keep decimal WIP names: their update is
- * the map's active_table[17] callback and nothing in the executables tells
- * them apart.
+ * disabled candidate row). The three MAP_DEFINED types are updated by the
+ * map's active_table[17] callback and nothing in the executables tells
+ * them apart, so they are named by their order.
  */
 KF_ENUM_BEGIN(KfActorTargetType, u8)
     KF_ACTOR_TARGET_IDLE = 0,
@@ -154,9 +155,9 @@ KF_ENUM_BEGIN(KfActorTargetType, u8)
     KF_ACTOR_TARGET_DEATH = 3,
     KF_ACTOR_TARGET_ATTACK = 4,
     KF_ACTOR_TARGET_KEEP_RANGE = 5,
-    KF_ACTOR_TARGET_6 = 6,
-    KF_ACTOR_TARGET_7 = 7,
-    KF_ACTOR_TARGET_8 = 8,
+    KF_ACTOR_TARGET_MAP_DEFINED_FIRST = 6,
+    KF_ACTOR_TARGET_MAP_DEFINED_SECOND = 7,
+    KF_ACTOR_TARGET_MAP_DEFINED_THIRD = 8,
     KF_ACTOR_TARGET_JUMP_ATTACK = 9,
     KF_ACTOR_TARGET_DRIFT = 10,
     KF_ACTOR_TARGET_LUNGE = 11,

@@ -80,18 +80,19 @@ KF_ENUM_END(KfRenderQueueMode)
 /* Row of scene_display_sys.collision_rows (colour matrix, light matrix,
  * fog and back colour). Map-cell layers select rows 0..0x3f through their low
  * six bits; the fixed rows from 0x40 light HUD models, effects, actors and
- * map-placed models. NONE disables an object's override blend. Rows without a
- * distinctive consumer keep their encoding as a WIP name. */
+ * map-placed models. NONE disables an object's override blend. UNLIT_ADDITIVE
+ * (zero light and colour matrices) is used with additive blending; the
+ * HUD gauge row and the relay-seeker row each have one consumer. */
 KF_ENUM_BEGIN(KfLightingIndex, u8)
     KF_LIGHTING_HUD_COMPASS = 0x40,
     KF_LIGHTING_HUD = 0x41,
-    KF_LIGHTING_PRESET_42 = 0x42,
+    KF_LIGHTING_UNLIT_ADDITIVE = 0x42,
     KF_LIGHTING_SCALED_EFFECT = 0x43,
     KF_LIGHTING_EFFECT = 0x44,
     KF_LIGHTING_MAP_PLACED = 0x46,
     KF_LIGHTING_ACTOR_DEFAULT = 0x47,
-    KF_LIGHTING_PRESET_48 = 0x48,
-    KF_LIGHTING_PRESET_49 = 0x49,
+    KF_LIGHTING_HUD_GAUGE_BRIGHT = 0x48,
+    KF_LIGHTING_RELAY_SEEKER = 0x49,
     KF_LIGHTING_NONE = 0xff
 KF_ENUM_END(KfLightingIndex)
 

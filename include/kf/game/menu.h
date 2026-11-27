@@ -70,9 +70,9 @@ KF_ENUM_BEGIN(KfMenuListMode, s32)
 KF_ENUM_END(KfMenuListMode)
 
 /* Accept label of menu_preview_choice's two-option footer (KF1 order:
- * use, discard, yes/no, buy, sell, equip), then load and save; kinds 8 and 9
- * have their own labels and later kinds share the default label. Only
- * YES_NO also replaces the decline label. */
+ * use, discard, yes/no, buy, sell, equip), then load and save, then the
+ * inventory, trade and copy prompts named by their callers. The US
+ * menu_preview_choice never reads the kind and always draws YES and NO. */
 KF_ENUM_BEGIN(KfMenuConfirmKind, s32)
     KF_MENU_CONFIRM_USE = 0,
     KF_MENU_CONFIRM_DROP = 1,
@@ -82,9 +82,9 @@ KF_ENUM_BEGIN(KfMenuConfirmKind, s32)
     KF_MENU_CONFIRM_EQUIP = 5,
     KF_MENU_CONFIRM_LOAD = 6,
     KF_MENU_CONFIRM_SAVE = 7,
-    KF_MENU_CONFIRM_LABEL_8 = 8,
-    KF_MENU_CONFIRM_LABEL_9 = 9,
-    KF_MENU_CONFIRM_LABEL_10 = 10
+    KF_MENU_CONFIRM_INVENTORY = 8,
+    KF_MENU_CONFIRM_TRADE = 9,
+    KF_MENU_CONFIRM_COPY = 10
 KF_ENUM_END(KfMenuConfirmKind)
 
 /* menu_format_number pads with the blank glyph or with zero digits. */
@@ -134,14 +134,14 @@ enum {
     KF_MENU_SYSTEM_UNTITLED = 9
 };
 
-/* SHOP (buy/sell) and STOCK window rows; STOCK's second row is undecoded. */
+/* SHOP (buy/sell) and STOCK (locksmith: buy/copy) window rows. */
 enum {
     KF_MENU_SHOP_BUY_ROW = 0,
     KF_MENU_SHOP_SELL_ROW = 1,
     KF_MENU_SHOP_RETURN_ROW = 2,
     KF_MENU_SHOP_ROW_COUNT = KF_MENU_SHOP_RETURN_ROW + 1,
     KF_MENU_STOCK_BUY_ROW = 0,
-    KF_MENU_STOCK_ROW_1 = 1,
+    KF_MENU_STOCK_COPY_ROW = 1,
     KF_MENU_STOCK_RETURN_ROW = 2,
     KF_MENU_STOCK_ROW_COUNT = KF_MENU_STOCK_RETURN_ROW + 1
 };

@@ -145,9 +145,9 @@ void map_cell_copy_rotated_fields(KfMapLayerMask layer_select, s32 source_x, s32
                 }
                 if (field_mask & KF_MAP_CELL_COPY_LIGHTING_BIT_40) {
                     destination->layer[0].lighting_index =
-                        (source->layer[0].lighting_index & KF_MAP_CELL_LAYER_COLLISION_FLAG_40) |
+                        (source->layer[0].lighting_index & KF_MAP_CELL_LAYER_FORCES_AXIS_HIT) |
                         (destination->layer[0].lighting_index
-                         & (u8)~KF_MAP_CELL_LAYER_COLLISION_FLAG_40);
+                         & (u8)~KF_MAP_CELL_LAYER_FORCES_AXIS_HIT);
                 }
                 if (field_mask & KF_MAP_CELL_COPY_LIGHTING_BIT_80) {
                     destination->layer[0].lighting_index =
@@ -180,9 +180,9 @@ void map_cell_copy_rotated_fields(KfMapLayerMask layer_select, s32 source_x, s32
                 }
                 if (field_mask & KF_MAP_CELL_COPY_LIGHTING_BIT_40) {
                     destination->layer[1].lighting_index =
-                        (source->layer[1].lighting_index & KF_MAP_CELL_LAYER_COLLISION_FLAG_40) |
+                        (source->layer[1].lighting_index & KF_MAP_CELL_LAYER_FORCES_AXIS_HIT) |
                         (destination->layer[1].lighting_index
-                         & (u8)~KF_MAP_CELL_LAYER_COLLISION_FLAG_40);
+                         & (u8)~KF_MAP_CELL_LAYER_FORCES_AXIS_HIT);
                 }
                 if (field_mask & KF_MAP_CELL_COPY_LIGHTING_BIT_80) {
                     destination->layer[1].lighting_index =

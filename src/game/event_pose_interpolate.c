@@ -381,15 +381,15 @@ void event_scene_command_dispatch(const VECTOR *position,
 
     cur_evt_state.interaction_handled = KF_FALSE;
     switch (command) {
-    case KF_OBJECT_99:
-    case KF_OBJECT_100:
-    case KF_OBJECT_101:
-    case KF_OBJECT_102:
-    case KF_OBJECT_104:
-    case KF_OBJECT_106:
-    case KF_OBJECT_107:
-    case KF_OBJECT_108:
-    case KF_OBJECT_109:
+    case KF_ITEM_ELFS_KEY:
+    case KF_ITEM_PIRATES_KEY:
+    case KF_ITEM_SKULL_KEY:
+    case KF_ITEM_JAIL_KEY:
+    case KF_ITEM_HARVINES_KEY:
+    case KF_ITEM_MAGICIANS_KEY:
+    case KF_ITEM_SILVER_KEY:
+    case KF_ITEM_GOLD_KEY:
+    case KF_ITEM_SHRINE_KEY:
         index = 0;
         for (;;) {
             KfMapObject *object;
@@ -412,7 +412,7 @@ void event_scene_command_dispatch(const VECTOR *position,
                 cur_evt_state.interaction_handled = KF_TRUE;
                 break;
             case KF_MAP_OBJECT_MARKER_REFUSED:
-                notify_enqueue(KF_NOTIFICATION_4);
+                notify_enqueue(KF_NOTIFICATION_SOCKET_REFUSED);
                 cur_evt_state.interaction_handled = KF_TRUE;
                 break;
             case KF_MAP_OBJECT_MARKER_NOT_APPLICABLE:
@@ -423,13 +423,13 @@ void event_scene_command_dispatch(const VECTOR *position,
             break;
         }
         break;
-    case KF_OBJECT_114:
+    case KF_ITEM_MOON_KEY:
         object_control_offset = offsetof(KfEventControlFields, object_slots[0]);
         goto object_control_action;
-    case KF_OBJECT_115:
+    case KF_ITEM_STAR_KEY:
         object_control_offset = offsetof(KfEventControlFields, object_slots[1]);
         goto object_control_action;
-    case KF_OBJECT_116:
+    case KF_ITEM_SUN_KEY:
         object_control_offset = offsetof(KfEventControlFields, object_slots[2]);
 object_control_action:
         index = map_object_find_interaction_target(0, position, 800, 1700,
@@ -457,13 +457,13 @@ object_control_action:
             }
         }
         break;
-    case KF_OBJECT_111:
+    case KF_ITEM_MOON_GATE:
         object_control_offset = offsetof(KfEventControlFields, object_slots[0]);
         goto transition_action;
-    case KF_OBJECT_112:
+    case KF_ITEM_STAR_GATE:
         object_control_offset = offsetof(KfEventControlFields, object_slots[1]);
         goto transition_action;
-    case KF_OBJECT_113:
+    case KF_ITEM_SUN_GATE:
         object_control_offset = offsetof(KfEventControlFields, object_slots[2]);
 transition_action: {
         u8 previous_value;
@@ -525,7 +525,7 @@ transition_action: {
                       KF_RESOURCE_OFFSET_NO_SHIFT, KF_RESOURCE_OFFSET_NO_SHIFT, KF_RESOURCE_OFFSET_NO_SHIFT);
         break;
     }
-    case KF_OBJECT_103:
+    case KF_ITEM_RHOMBUS_KEY:
         index = map_object_find_interaction_target(0, position, 800, 1700,
                                rotation->angles[1], 512);
         if (index != -1) {
@@ -578,10 +578,10 @@ transition_action: {
                 continue;
             }
             if (object_id >= KF_ITEM_MAP_MARKER_EFFECT) {
-                if (object_id >= KF_OBJECT_97) {
+                if (object_id >= KF_ITEM_CRYSTAL_SHARD) {
                     continue;
                 }
-                if (object_id < KF_OBJECT_90) {
+                if (object_id < KF_ITEM_FIRE_CRYSTAL) {
                     continue;
                 }
             }
@@ -606,19 +606,19 @@ transition_action: {
         }
         break;
     }
-    case KF_OBJECT_90:
+    case KF_ITEM_FIRE_CRYSTAL:
         magic_ids = event_magic_unlock_ids_5a;
         goto magic_action;
-    case KF_OBJECT_91:
+    case KF_ITEM_WATER_CRYSTAL:
         magic_ids = event_magic_unlock_ids_5b;
         goto magic_action;
-    case KF_OBJECT_92:
+    case KF_ITEM_EARTH_CRYSTAL:
         magic_ids = event_magic_unlock_ids_5c;
         goto magic_action;
-    case KF_OBJECT_93:
+    case KF_ITEM_WIND_CRYSTAL:
         magic_ids = event_magic_unlock_ids_5d;
         goto magic_action;
-    case KF_OBJECT_94:
+    case KF_ITEM_LIGHT_CRYSTAL:
         magic_ids = event_magic_unlock_ids_5e;
 magic_action: {
         KfMapObject *object;
@@ -649,7 +649,7 @@ magic_action: {
         object->render_queue_mode = KF_RENDER_QUEUE_BLEND_ADD;
         object->layer_mask = KF_MAP_LAYER_BOTH;
         object->action = KF_MAP_OBJECT_OP_NONE;
-        object->lighting_override_index = KF_LIGHTING_PRESET_42;
+        object->lighting_override_index = KF_LIGHTING_UNLIT_ADDITIVE;
         object->rotation.vz = 0;
         object->rotation.vy = 0;
         object->rotation.vx = 0;
@@ -698,7 +698,7 @@ decay_update:
             render_game_frame(NULL, NULL);
         }
         object->object_id = KF_OBJECT_NONE;
-        notify_enqueue(KF_NOTIFICATION_1);
+        notify_enqueue(KF_NOTIFICATION_MAGIC_LEARNED);
         cur_evt_state.interaction_handled = KF_TRUE;
         break;
     }
@@ -715,7 +715,7 @@ decay_update:
             }
         }
         if (!game_counter_increment(KF_ITEM_RESTORE_HP_100)) {
-            notify_enqueue(KF_NOTIFICATION_22);
+            notify_enqueue(KF_NOTIFICATION_REFILL_REFUSED);
             game_counter_decrement(KF_ITEM_EMPTY_CONTAINER);
         }
         cur_evt_state.interaction_handled = KF_TRUE;
@@ -896,7 +896,7 @@ void event_map_object_interact(KfMapObject *object, ...)
         return;
     }
 
-    if (object->action == KF_MAP_OBJECT_OP_OFFSET_MOTION && object->object_id == KF_OBJECT_103) {
+    if (object->action == KF_MAP_OBJECT_OP_OFFSET_MOTION && object->object_id == KF_ITEM_RHOMBUS_KEY) {
         KfMapObject *child = &map_objects_slots.objects[object->extra_40.object_index];
         KfMapObject *next = &map_objects_slots.objects[
             child->tail.params.fields.unknown_3a.bytes.high];
@@ -904,7 +904,7 @@ void event_map_object_interact(KfMapObject *object, ...)
             return;
         }
     }
-    if (object->object_id == KF_OBJECT_18) {
+    if (object->object_id == KF_OBJECT_GUARDING_WEAPON_PLACED) {
         object->object_id = KF_ITEM_GUARDING_WEAPON;
     }
 
@@ -973,20 +973,20 @@ button_pressed:
     }
     if (!game_counter_increment(object->object_id)) {
         switch (object->object_id) {
-        case KF_OBJECT_117: {
+        case KF_ITEM_ARROW_FOR_THE_BOW: {
             s32 amount = ((rand() * 6) >> 15) + 4;
-            if (event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_117)] < 99 - amount) {
-                event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_117)] += amount;
+            if (event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_ARROW_FOR_THE_BOW)] < 99 - amount) {
+                event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_ARROW_FOR_THE_BOW)] += amount;
             } else {
-                event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_117)] = 99;
+                event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_ARROW_FOR_THE_BOW)] = 99;
             }
             break;
         }
-        case KF_OBJECT_118:
-            if (event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_118)] < 95) {
-                event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_118)] += 4;
+        case KF_ITEM_ELFS_BOLT:
+            if (event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_ELFS_BOLT)] < 95) {
+                event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_ELFS_BOLT)] += 4;
             } else {
-                event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_118)] = 99;
+                event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_ELFS_BOLT)] = 99;
             }
             break;
         default:
@@ -1031,7 +1031,7 @@ interpolate_back:
     if (buttons) {
         object->object_id = KF_OBJECT_NONE;
     } else if (object->object_id == KF_ITEM_GUARDING_WEAPON) {
-        object->object_id = KF_OBJECT_18;
+        object->object_id = KF_OBJECT_GUARDING_WEAPON_PLACED;
     }
 finish:
     player_clear_motion();
@@ -1165,8 +1165,8 @@ void event_world_dispatch_interaction(const VECTOR *position,
                     object->action_timer = 1;
                     break;
                 }
-                if (object->tail.params.marker.marker_id == KF_ENUM_ENCODE(u8, KF_OBJECT_15)
-                    && event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_15)] != 0) {
+                if (object->tail.params.marker.marker_id == KF_ENUM_ENCODE(u8, KF_ITEM_DARK_SLAYER)
+                    && event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_DARK_SLAYER)] != 0) {
                     object->action_timer = 1;
                     break;
                 }
@@ -1194,7 +1194,7 @@ void event_world_dispatch_interaction(const VECTOR *position,
                     goto check_linked_object;
                 }
             notify_six:
-                notify_enqueue(KF_NOTIFICATION_6);
+                notify_enqueue(KF_NOTIFICATION_CONTAINER_ALREADY_OPENED);
                 break;
             check_linked_object:
                 if (objects[linked_index].object_id == KF_OBJECT_NONE) {
@@ -1212,7 +1212,7 @@ void event_world_dispatch_interaction(const VECTOR *position,
             break;
         case KF_MAP_OBJECT_OP_RECALL_SOCKET:
             if (object->tail.params.event_effect.pending_event_command == KF_OBJECT_NONE) {
-                notify_enqueue(KF_NOTIFICATION_16);
+                notify_enqueue(KF_NOTIFICATION_RECALL_SOCKET_EMPTY);
             }
             break;
         case KF_MAP_OBJECT_OP_PLAYER_REACTION:
@@ -1473,14 +1473,14 @@ void event_world_state_save_slot(s32 save_slot)
             if (object->tail.params.action_83.transition_mode < KF_MAP_OBJECT_TRANSITION_TOGGLE_CLOSED) {
                 break;
             }
-        case KF_MAP_OBJECT_OP_0:
+        case KF_MAP_OBJECT_OP_SAVED_INERT:
         case KF_MAP_OBJECT_OP_LIFT_DOOR:
         case KF_MAP_OBJECT_OP_SIGNAL_DOOR:
         case KF_MAP_OBJECT_OP_HINGE:
         case KF_MAP_OBJECT_OP_ANIMATED_CONTAINER:
         case KF_MAP_OBJECT_OP_HINGED_CONTAINER:
         case KF_MAP_OBJECT_OP_SLIDING_CONTAINER:
-        case KF_MAP_OBJECT_OP_80:
+        case KF_MAP_OBJECT_OP_MARKER_LATCH:
         case KF_MAP_OBJECT_OP_ANIMATED_HAZARD:
         case KF_MAP_OBJECT_OP_PATTERN_GATE:
         case KF_MAP_OBJECT_OP_CELL_COPY_TOGGLE:
@@ -1632,7 +1632,7 @@ apply_position:
             y |= *stream++ << 8;
             object->tail.params.fields.unknown_3a.value = (*stream << 2) + (rand() >> 13);
             stream++;
-            if (object->object_id == KF_OBJECT_103) {
+            if (object->object_id == KF_ITEM_RHOMBUS_KEY) {
                 object->rotation.vx = KF_ANGLE_QUARTER_TURN;
             }
             goto apply_position;

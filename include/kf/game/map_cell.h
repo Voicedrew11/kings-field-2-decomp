@@ -23,7 +23,7 @@ enum {
  * Flag 0x80 reveals the other layer to the camera mask when this layer's map
  * object is present. Pattern copies move each bit separately. */
 enum {
-    KF_MAP_CELL_LAYER_COLLISION_FLAG_40 = 0x40,
+    KF_MAP_CELL_LAYER_FORCES_AXIS_HIT = 0x40,
     KF_MAP_CELL_LAYER_REVEALS_OTHER_LAYER = 0x80
 };
 

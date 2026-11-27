@@ -1170,13 +1170,13 @@ void menu_item_magic_controller(void)
     }
 
     saved_count_60 = event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_TRADE_CURRENCY)];
-    saved_count_61 = event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_97)];
+    saved_count_61 = event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_CRYSTAL_SHARD)];
     event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_TRADE_CURRENCY)] = 0;
-    event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_97)] = 0;
+    event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_CRYSTAL_SHARD)] = 0;
     count = menu_collect_masked_item_rows(event_item_counters_table, rows, counts, item_ids, KF_ITEM_USABLE_FIRST,
         KF_ITEM_USABLE_LAST);
     event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_TRADE_CURRENCY)] = saved_count_60;
-    event_item_counters_table[KF_ENUM_ENCODE(u8, KF_OBJECT_97)] = saved_count_61;
+    event_item_counters_table[KF_ENUM_ENCODE(u8, KF_ITEM_CRYSTAL_SHARD)] = saved_count_61;
 
     count += menu_collect_available_magic_rows(effect_status.magic_records, &rows[count],
         &numbers[count], &magic_ids[count], 0, 19);
@@ -2788,10 +2788,10 @@ void menu_item_buy_controller(s32 kind)
     u8 selected_item;
     u8 *counters = event_item_counters_table;
 
-    if (counters[KF_ENUM_ENCODE(u8, KF_OBJECT_51)] == 0) {
-        menu_item_mask_pages[3][KF_ENUM_ENCODE(u8, KF_OBJECT_51)] = 1;
+    if (counters[KF_ENUM_ENCODE(u8, KF_ITEM_RUINOUS_BOOTS)] == 0) {
+        menu_item_mask_pages[3][KF_ENUM_ENCODE(u8, KF_ITEM_RUINOUS_BOOTS)] = 1;
     } else {
-        menu_item_mask_pages[3][KF_ENUM_ENCODE(u8, KF_OBJECT_51)] = 0;
+        menu_item_mask_pages[3][KF_ENUM_ENCODE(u8, KF_ITEM_RUINOUS_BOOTS)] = 0;
     }
     count = menu_collect_masked_item_rows(menu_item_mask_pages[kind], rows, values, indices,
         0, KF_ITEM_ID_LAST);
@@ -3004,7 +3004,7 @@ s32 menu_choose_inventory_item(void)
         }
 
         if (confirmed == KF_TRUE) {
-            result = menu_preview_choice(&menu.list, KF_MENU_CONFIRM_LABEL_8, KF_MENU_LIST_INVENTORY, selected_item);
+            result = menu_preview_choice(&menu.list, KF_MENU_CONFIRM_INVENTORY, KF_MENU_LIST_INVENTORY, selected_item);
             if (result == KF_MENU_RESULT_CANCELLED) {
                 result = KF_MENU_RESULT_PENDING;
             } else {
@@ -3083,7 +3083,7 @@ void menu_item_trade_controller(void)
         }
 
         if (confirmed == KF_TRUE) {
-            result = menu_preview_choice(&menu.list, KF_MENU_CONFIRM_LABEL_9, KF_MENU_LIST_TRADE, selected_item);
+            result = menu_preview_choice(&menu.list, KF_MENU_CONFIRM_TRADE, KF_MENU_LIST_TRADE, selected_item);
             if (result == KF_MENU_RESULT_CANCELLED) {
                 result = KF_MENU_RESULT_PENDING;
             } else {
@@ -3100,7 +3100,7 @@ void menu_item_trade_controller(void)
             cost = menu.prices[menu.list.selected_index] * menu_item_quantity;
             if (counters[KF_ENUM_ENCODE(u8, KF_ITEM_TRADE_CURRENCY)] < cost
                     || (selected_item == 117
-                        ? counters[KF_ENUM_ENCODE(u8, KF_OBJECT_117)] + menu_item_quantity * 10 >= 100
+                        ? counters[KF_ENUM_ENCODE(u8, KF_ITEM_ARROW_FOR_THE_BOW)] + menu_item_quantity * 10 >= 100
                         : counters[selected_item] + menu_item_quantity >= 100)) {
                 menu_play_sound_cue(KF_MENU_SOUND_CANCEL);
                 confirmed = KF_FALSE;
@@ -3123,8 +3123,8 @@ void menu_item_trade_controller(void)
     if (result != KF_MENU_RESULT_CANCELLED) {
         cost = menu.prices[menu.list.selected_index] * menu_item_quantity;
         counters[KF_ENUM_ENCODE(u8, KF_ITEM_TRADE_CURRENCY)] -= cost;
-        if (result == KF_ENUM_ENCODE(s32, KF_OBJECT_117)) {
-            counters[KF_ENUM_ENCODE(u8, KF_OBJECT_117)] += menu_item_quantity * 10;
+        if (result == KF_ENUM_ENCODE(s32, KF_ITEM_ARROW_FOR_THE_BOW)) {
+            counters[KF_ENUM_ENCODE(u8, KF_ITEM_ARROW_FOR_THE_BOW)] += menu_item_quantity * 10;
         } else {
             counters[result] += (u8)menu_item_quantity;
         }
@@ -3157,7 +3157,7 @@ void menu_item_stock_choice_controller(void)
         case KF_MENU_STOCK_BUY_ROW:
             menu_buy_masked_stock_items();
             break;
-        case KF_MENU_STOCK_ROW_1:
+        case KF_MENU_STOCK_COPY_ROW:
             menu_buy_owned_items();
             break;
         }
@@ -3291,7 +3291,7 @@ void menu_buy_owned_items(void)
         }
 
         if (confirmed == KF_TRUE) {
-            result = menu_preview_choice(&menu.list, KF_MENU_CONFIRM_LABEL_10, KF_MENU_LIST_STOCK_OWNED, selected_item);
+            result = menu_preview_choice(&menu.list, KF_MENU_CONFIRM_COPY, KF_MENU_LIST_STOCK_OWNED, selected_item);
             if (result == KF_MENU_RESULT_CANCELLED) {
                 result = KF_MENU_RESULT_PENDING;
             } else {

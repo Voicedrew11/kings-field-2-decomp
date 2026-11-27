@@ -76,7 +76,7 @@ void map_object_set_property(s32 index, KfMapObjectProperty property, ...)
     case KF_MAP_OBJECT_PROPERTY_CLEAR_LAYER_AND_STATE:
         object->layer_mask = KF_MAP_LAYER_NONE;
         object->tail.params.fields.event_mask = KF_MAP_OBJECT_EVENT_DISARMED;
-        if (object_template->kind == KF_MAP_OBJECT_KIND_10) {
+        if (object_template->kind == KF_MAP_OBJECT_KIND_WEAPON) {
             object->rotation.vz = KF_ANGLE_QUARTER_TURN;
         }
         break;
@@ -383,7 +383,7 @@ void map_object_initialize_from_placements(const KfMapObjectPlacement *placement
 
             object->action = KF_MAP_OBJECT_OP_LAYER_FADE;
             object->render_queue_mode = KF_RENDER_QUEUE_BLEND_ADD;
-            object->lighting_override_index = KF_LIGHTING_PRESET_42;
+            object->lighting_override_index = KF_LIGHTING_UNLIT_ADDITIVE;
             object->lighting_blend_q12 = KF_FIXED12_ONE;
             object->position.vy += KF_MAP_OBJECT_RAISE_STEP;
             kind59_row = pl_ext_7540.map_cells[object->position.vz >> KF_MAP_CELL_POSITION_SHIFT];
@@ -397,7 +397,7 @@ void map_object_initialize_from_placements(const KfMapObjectPlacement *placement
             object->layer_mask = KF_MAP_LAYER_NONE;
             break;
         }
-        case KF_MAP_OBJECT_OP_11:
+        case KF_MAP_OBJECT_OP_HIDDEN_ON_LOAD:
         case KF_MAP_OBJECT_OP_HIDDEN_SCREEN_IMAGE:
             object->layer_mask = KF_MAP_LAYER_NONE;
             break;
@@ -435,11 +435,11 @@ void map_object_initialize_from_placements(const KfMapObjectPlacement *placement
             ((void (*)(KfMapObject *, const KfMapObjectTemplate *))
                  asset_status.active_table[8])(object, object_template);
             break;
-        case KF_MAP_OBJECT_OP_33:
+        case KF_MAP_OBJECT_OP_INERT:
         case KF_MAP_OBJECT_OP_NONE:
             break;
         }
-        if (object->object_id == KF_OBJECT_163) {
+        if (object->object_id == KF_OBJECT_QUARTER_ADD_BLEND) {
             object->render_queue_mode = KF_RENDER_QUEUE_BLEND_ADD_QUARTER;
         }
     }
@@ -599,23 +599,23 @@ void map_object_spawn_effect(KfMapObjectDropSource source, KF_ENUM_PARAM(KfObjec
     object->rotation.vy = rand() >> KF_RANDOM_ANGLE_SHIFT;
 
     switch (object_template->kind) {
-    case KF_MAP_OBJECT_KIND_10:
-    case KF_MAP_OBJECT_KIND_13:
-    case KF_MAP_OBJECT_KIND_16:
+    case KF_MAP_OBJECT_KIND_WEAPON:
+    case KF_MAP_OBJECT_KIND_GLOVES:
+    case KF_MAP_OBJECT_KIND_CONSUMABLE:
         map_object_start_action_if_idle(object, KF_MAP_OBJECT_OP_FALL_AND_TIP);
         break;
-    case KF_MAP_OBJECT_KIND_17:
+    case KF_MAP_OBJECT_KIND_HERB:
         map_object_start_action_if_idle(object, KF_MAP_OBJECT_OP_FALL_AND_SPIN);
         break;
-    case KF_MAP_OBJECT_KIND_11:
-    case KF_MAP_OBJECT_KIND_12:
-    case KF_MAP_OBJECT_KIND_14:
-    case KF_MAP_OBJECT_KIND_15:
-    case KF_MAP_OBJECT_KIND_18:
-    case KF_MAP_OBJECT_KIND_19:
+    case KF_MAP_OBJECT_KIND_HELM:
+    case KF_MAP_OBJECT_KIND_SHIELD:
+    case KF_MAP_OBJECT_KIND_ACCESSORY:
+    case KF_MAP_OBJECT_KIND_MAP:
+    case KF_MAP_OBJECT_KIND_KEY:
+    case KF_MAP_OBJECT_KIND_TOOL:
     case KF_MAP_OBJECT_KIND_GOLD:
         map_object_start_action_if_idle(object, KF_MAP_OBJECT_OP_BOUNCE);
-        if (object_id == KF_OBJECT_103) {
+        if (object_id == KF_ITEM_RHOMBUS_KEY) {
             object->rotation.pad = KF_ANGLE_QUARTER_TURN;
         } else {
             object->rotation.pad = 0;
@@ -668,7 +668,7 @@ void map_object_apply_marker_signal(u8 identifier)
     remaining = KF_MAP_OBJECT_CAPACITY - 1;
     do {
         switch (object->action) {
-        case KF_MAP_OBJECT_OP_80:
+        case KF_MAP_OBJECT_OP_MARKER_LATCH:
         case KF_MAP_OBJECT_OP_PATTERN_GATE:
         case KF_MAP_OBJECT_OP_SIGNAL_CELL_COPY:
         case KF_MAP_OBJECT_OP_SIGNAL_EVENT_BIT:

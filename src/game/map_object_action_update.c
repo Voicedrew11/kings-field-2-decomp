@@ -916,13 +916,13 @@ void map_object_update_actions(void)
                 if (object->action_timer != 0 && target->object_id == KF_OBJECT_NONE) {
                     u32 sentinel_offset;
                     switch (object->tail.params.event_effect.pending_event_command) {
-                    case KF_OBJECT_114:
+                    case KF_ITEM_MOON_KEY:
                         sentinel_offset = offsetof(KfEventControlFields, object_slots[0].object_index);
                         break;
-                    case KF_OBJECT_115:
+                    case KF_ITEM_STAR_KEY:
                         sentinel_offset = offsetof(KfEventControlFields, object_slots[1].object_index);
                         break;
-                    case KF_OBJECT_116:
+                    case KF_ITEM_SUN_KEY:
                         sentinel_offset = offsetof(KfEventControlFields, object_slots[2].object_index);
                         break;
                     default:

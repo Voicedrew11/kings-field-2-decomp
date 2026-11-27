@@ -245,7 +245,7 @@ adopts them in `map_object.h`, `menu.h` and the card dialogs after lane A lands.
 | 0x58 / 88 | `KF_MAP_OBJECT_OP_CELL_COPY_TOGGLE`; item/command `0x58` in `event_scene_command_dispatch` | retain: no flow; different switch subjects |
 | 0xff | `KF_MAP_OBJECT_OP_NONE`, `KF_MAP_OBJECT_ID_NONE`, `KF_MAP_OBJECT_RENDER_TEXTURED`, `KF_MAP_OBJECT_LIGHTING_OVERRIDE_NONE`, `KF_MEMORY_BLOCK_END` | retain: idle action, free object, textured render, no lighting override and list end are different fields |
 | 4 | `KF_MAP_OBJECT_OP_HINGE`; `KF_MAP_OBJECT_INTERACTION_ANY_ANGLE` | retain: an operation versus a `collision_flags` bit; they shared one anonymous enum before |
-| 0 | `KF_MAP_OBJECT_OP_0`; `KF_MAP_OBJECT_ACTION_TIMER_INIT` | retain: operation versus action-timer phase |
+| 0 | `KF_MAP_OBJECT_OP_SAVED_INERT`; `KF_MAP_OBJECT_ACTION_TIMER_INIT` | retain: operation versus action-timer phase |
 | 0x10..0x20 | `KfMapObjectOperation`; `KfMapObjectTemplate.kind` | retain: template bytes 0 and 1; byte 1 never flows into the action |
 | 3 | actor slot `KF_ACTOR_SLOT_HOMEBOUND`; target type 3 | linked: `actor_update_behavior` compares `other->target_type` with the homebound `slot_state` local (`actor_runtime.c` near `KF_ACTOR_TARGET_ACTION_RETARGET_BLOCKED`). Retail reuses the register; keep the source reuse until a typed form is byte-identical |
 | 0/1 | `map_object_set_property` property; `map_object_set_cell_marker` mode | linked: `map_object_refresh_cell_markers(mode)` passes one value to both (0 hides and places the marker, clearing layer and state; 1 restores the layer mask and clears the marker) |

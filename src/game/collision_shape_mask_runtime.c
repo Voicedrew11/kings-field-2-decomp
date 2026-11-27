@@ -507,7 +507,7 @@ KF_ENUM_PARAM(KfCollisionHitFlags, s32) collision_query_world(s32 x, s32 y, s32 
     if ((mode & KF_COLLISION_QUERY_SHAPES) != KF_COLLISION_QUERY_NONE) {
         result = collision_query_shapes_with_layer_sample(x, y, z, radius, height);
         if ((mode & KF_COLLISION_QUERY_LAYER_FLAG_40) != KF_COLLISION_QUERY_NONE &&
-            (KF_COLLISION_CACHE_SHAPE->lighting_index & KF_MAP_CELL_LAYER_COLLISION_FLAG_40)) {
+            (KF_COLLISION_CACHE_SHAPE->lighting_index & KF_MAP_CELL_LAYER_FORCES_AXIS_HIT)) {
             KF_COLLISION_CACHE_RESULT = -100000;
             result |= KF_COLLISION_HIT_AXIS;
         }

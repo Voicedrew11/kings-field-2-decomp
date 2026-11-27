@@ -303,11 +303,11 @@ void player_recalculate_combat_stats(void)
         cur_avatar_status.magic += PLAYER_STATUS_POWER_BONUS;
     }
 
-    if (cur_avatar_status.equipped_weapon_id == KF_OBJECT_10) {
+    if (cur_avatar_status.equipped_weapon_id == KF_ITEM_SHIDEN) {
         cur_avatar_status.combat_components[1] -= PLAYER_WEAPON_ATTACK_PENALTY;
         cur_avatar_status.combat_components[2] -= PLAYER_WEAPON_ATTACK_PENALTY;
     }
-    if (cur_avatar_status.equipped_weapon_id == KF_OBJECT_11) {
+    if (cur_avatar_status.equipped_weapon_id == KF_ITEM_SPIDER) {
         cur_avatar_status.combat_components[4] -= PLAYER_WEAPON_ATTACK_PENALTY;
         cur_avatar_status.combat_components[5] -= PLAYER_WEAPON_ATTACK_PENALTY;
         cur_avatar_status.combat_components[7] -= PLAYER_WEAPON_ATTACK_PENALTY;
@@ -1281,7 +1281,7 @@ void player_dispatch_magic_effect(KF_ENUM_PARAM(KfEffectKind, s32) effect_id, ..
     arguments = (char *)&effect_id;
 
     switch (effect_id) {
-    case KF_EFFECT_KIND_7:
+    case KF_EFFECT_KIND_GROUND_GROWTH_SCATTER:
         simple_scale = 1000;
 simple_probe:
         player_probe_view_target_and_vectors(simple_scale, &position, &direction, &distance);
@@ -1344,7 +1344,7 @@ case3_emit:
         effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS, KF_EFFECT_KIND_FALLING_DROP_EMITTER,
                                 &position, NULL, kind);
         break;
-    case KF_EFFECT_KIND_13: {
+    case KF_EFFECT_KIND_GROUND_GROWTH: {
         const SVECTOR *sequence = player_magic_square_offsets;
         for (i = 3; i != -1; i--) {
             cur_avatar_status.magic_origin_offset = *sequence;
@@ -1358,13 +1358,13 @@ case3_emit:
         }
         break;
     }
-    case KF_EFFECT_KIND_51:
-        effect_id = KF_EFFECT_KIND_118;
+    case KF_EFFECT_KIND_RADIAL_GROWTH_SMALL:
+        effect_id = KF_EFFECT_KIND_IMPACT_BURST_SMALL;
         goto simple_effect;
-    case KF_EFFECT_KIND_52:
-        effect_id = KF_EFFECT_KIND_119;
+    case KF_EFFECT_KIND_RADIAL_GROWTH_LARGE:
+        effect_id = KF_EFFECT_KIND_IMPACT_BURST_LARGE;
         /* fall through */
-    case KF_EFFECT_KIND_4:
+    case KF_EFFECT_KIND_SPINNING_PROJECTILE:
 simple_effect:
         rotation_scale = 700;
 probe_rotation_effect:
@@ -1374,7 +1374,7 @@ emit_rotation_effect:
                                 &position, &direction,
                        &cur_avatar_status.camera_rotation);
         break;
-    case KF_EFFECT_KIND_11:
+    case KF_EFFECT_KIND_GROWING_SHOCK:
         player_probe_view_target_and_vectors(600, &position, &direction, &adjusted_distance);
         if (adjusted_distance != -1) {
             adjusted_distance = adjusted_distance / 600 - 8;
@@ -1385,7 +1385,7 @@ emit_rotation_effect:
             adjusted_distance = 10;
         }
         direction.vy = 0;
-        effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS, KF_EFFECT_KIND_103,
+        effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS, KF_EFFECT_KIND_DROP_THEN_SHRINK,
                                 &position, &direction, adjusted_distance);
         break;
     case KF_EFFECT_KIND_VERTEX_SWARM:
@@ -1415,7 +1415,7 @@ select_actor_effect:
     case KF_EFFECT_KIND_HOLDING_TRAIL:
         rotation_scale = 250;
         goto probe_rotation_effect;
-    case KF_EFFECT_KIND_12: {
+    case KF_EFFECT_KIND_RELAY_SEEKER: {
         s16 old_yaw = cur_avatar_status.camera_rotation.angles[1];
         cur_avatar_status.camera_rotation.angles[1] -=
             (u16)cur_avatar_status.magic_origin_offset.vx * 2;
@@ -1427,14 +1427,14 @@ select_actor_effect:
                        &cur_avatar_status.camera_rotation, 600, 60, 128, 140, 160);
         break;
     }
-    case KF_EFFECT_KIND_1:
+    case KF_EFFECT_KIND_BOUNCE_FADE:
         simple_scale = 500;
         goto simple_probe;
-    case KF_EFFECT_KIND_43:
-        effect_id = KF_EFFECT_KIND_115;
+    case KF_EFFECT_KIND_TRIPLE_BURST_SEEKER_SEQUENCE:
+        effect_id = KF_EFFECT_KIND_TRIPLE_BURST_SEEKER;
         goto sequence_effect;
     case KF_EFFECT_KIND_DELAYED_BURST:
-        effect_id = KF_EFFECT_KIND_113;
+        effect_id = KF_EFFECT_KIND_TRIPLE_BURST_LINEAR;
 sequence_effect: {
         const KfPlayerMagicSpawnRecord *record = player_magic_spawn_records;
         cur_avatar_status.magic_origin_offset = record->offset;
@@ -1455,23 +1455,23 @@ sequence_effect: {
         }
         break;
     }
-    case KF_EFFECT_KIND_44:
+    case KF_EFFECT_KIND_ACTOR_SEEK_GROWTH_CAST:
         player_probe_view_target_and_vectors(1000, &position, &direction, &distance);
-        effect_id = KF_EFFECT_KIND_117;
+        effect_id = KF_EFFECT_KIND_ACTOR_SEEK_GROWTH;
         goto emit_rotation_effect;
-    case KF_EFFECT_KIND_45:
+    case KF_EFFECT_KIND_RADIAL_GROWTH:
         player_probe_view_target_and_vectors(1000, &position, &direction, &distance);
-        effect_id = KF_EFFECT_KIND_116;
+        effect_id = KF_EFFECT_KIND_HIDDEN_GROWTH_TRAIL;
         goto emit_simple_effect;
-    case KF_EFFECT_KIND_40:
+    case KF_EFFECT_KIND_FLAT_SHOT:
         rotation_scale = 1000;
         goto probe_rotation_effect;
-    case KF_EFFECT_KIND_39:
+    case KF_EFFECT_KIND_SPRAY_SEEKER:
         player_probe_view_target_and_vectors(50, NULL, &direction, &distance);
         override_position = *(const VECTOR **)(arguments += 4);
         position = *override_position;
         goto emit_rotation_effect;
-    case KF_EFFECT_KIND_49: {
+    case KF_EFFECT_KIND_GROUND_GROWTH_SCATTER_WEAPON: {
         const VECTOR *override_position;
         /* Cases 49 and 50 omit the rotation argument. */
         player_probe_view_target_and_vectors(550, NULL, &direction, &distance);
@@ -1485,9 +1485,9 @@ sequence_effect: {
         position = *override_position;
         goto emit_simple_effect;
     }
-    case KF_EFFECT_KIND_34:
-    case KF_EFFECT_KIND_35:
-    case KF_EFFECT_KIND_38:
+    case KF_EFFECT_KIND_SPINNING_LEVEL:
+    case KF_EFFECT_KIND_SPINNING_LEVEL_ALT_MODEL:
+    case KF_EFFECT_KIND_SPRAY_BURST:
         player_probe_view_target_and_vectors(900, &position, &direction, &distance);
         effect_construct_record(10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS, effect_id,
                                 &position, &direction,
@@ -1593,23 +1593,23 @@ void player_dispatch_weapon_magic(KF_ENUM_PARAM(KfEffectKind, s32) magic_id, b32
     }
 
     switch (magic_id) {
-    case KF_EFFECT_KIND_39:
+    case KF_EFFECT_KIND_SPRAY_SEEKER:
         player_sample_weapon_world_vertex(player_magic_id_sequence.effect_ids[effect_parameter], &position);
         player_dispatch_magic_effect(magic_id, &position);
         break;
-    case KF_EFFECT_KIND_49:
+    case KF_EFFECT_KIND_GROUND_GROWTH_SCATTER_WEAPON:
     case KF_EFFECT_KIND_CHARGED_BURST:
         player_sample_weapon_world_vertex(0, &position);
         player_dispatch_magic_effect(magic_id, &position);
         break;
-    case KF_EFFECT_KIND_40:
+    case KF_EFFECT_KIND_FLAT_SHOT:
         effect_parameter <<= 9;
         cur_avatar_status.magic_origin_offset.vx = rcos(effect_parameter) >> 3;
         cur_avatar_status.magic_origin_offset.vy = rsin(effect_parameter) >> 3;
         cur_avatar_status.magic_origin_offset.vz = 600;
         player_dispatch_magic_effect(magic_id);
         break;
-    case KF_EFFECT_KIND_38:
+    case KF_EFFECT_KIND_SPRAY_BURST:
         for (effect_parameter = 0; effect_parameter < KF_ANGLE_WRAP_MASK; effect_parameter += 684) {
             cur_avatar_status.magic_origin_offset.vx = rcos(effect_parameter) >> 3;
             cur_avatar_status.magic_origin_offset.vy = rsin(effect_parameter) >> 3;
@@ -1650,8 +1650,8 @@ void player_update_weapon_attack(void)
     s32 i;
 
     switch (weapon_id) {
-    case KF_OBJECT_16:
-    case KF_OBJECT_17:
+    case KF_ITEM_BOW:
+    case KF_ITEM_ARBALEST:
         phase = cur_avatar_status.weapon_attack_phase;
         if (phase == KF_WEAPON_ATTACK_INACTIVE) {
             goto special_idle;
@@ -1663,13 +1663,13 @@ void player_update_weapon_attack(void)
                 KF_ENUM_PROMOTED(KfObjectId) counter;
 
                 switch (weapon_id) {
-                case KF_OBJECT_16:
-                    effect_kind = KF_EFFECT_KIND_31;
-                    counter = KF_OBJECT_117;
+                case KF_ITEM_BOW:
+                    effect_kind = KF_EFFECT_KIND_ARROW;
+                    counter = KF_ITEM_ARROW_FOR_THE_BOW;
                     break;
-                case KF_OBJECT_17:
-                    effect_kind = KF_EFFECT_KIND_30;
-                    counter = KF_OBJECT_118;
+                case KF_ITEM_ARBALEST:
+                    effect_kind = KF_EFFECT_KIND_BOLT;
+                    counter = KF_ITEM_ELFS_BOLT;
                     break;
                 default:
                     break;
@@ -1701,7 +1701,7 @@ void player_update_weapon_attack(void)
             }
             if (cur_avatar_status.weapon_attack_phase >= weapon->normal_attack_end_phase) {
                 if (cur_avatar_status.attack_charge_current == 0
-                    && cur_avatar_status.equipped_weapon_id == KF_OBJECT_16) {
+                    && cur_avatar_status.equipped_weapon_id == KF_ITEM_BOW) {
                     audio_play_sound(3, 110);
                 }
                 cur_avatar_status.attack_charge_current =
@@ -1952,17 +1952,17 @@ void player_select_magic_action(KF_ENUM_PARAM(KfEffectKind, s32) magic_id)
         return;
     }
 
-    if (cur_avatar_status.equipped_weapon_id == KF_OBJECT_12 && magic_id < KF_EFFECT_KIND_11) {
-        if (magic_id >= KF_EFFECT_KIND_7) {
+    if (cur_avatar_status.equipped_weapon_id == KF_ITEM_ICE_BLADE && magic_id < KF_EFFECT_KIND_GROWING_SHOCK) {
+        if (magic_id >= KF_EFFECT_KIND_GROUND_GROWTH_SCATTER) {
             return;
         }
     }
-    if (cur_avatar_status.equipped_body_id == KF_ITEM_MAGIC_LIMITING_BODY && magic_id >= KF_EFFECT_KIND_11) {
-        if (magic_id < KF_EFFECT_KIND_13) {
+    if (cur_avatar_status.equipped_body_id == KF_ITEM_MAGIC_LIMITING_BODY && magic_id >= KF_EFFECT_KIND_GROWING_SHOCK) {
+        if (magic_id < KF_EFFECT_KIND_GROUND_GROWTH) {
             return;
         }
-        if (magic_id < KF_EFFECT_KIND_20) {
-            if (magic_id >= KF_EFFECT_KIND_18) {
+        if (magic_id < KF_EFFECT_KIND_SPINNING_SCALE_BURST) {
+            if (magic_id >= KF_EFFECT_KIND_SCREEN_TINT) {
                 return;
             }
         }
@@ -1983,7 +1983,7 @@ void player_select_magic_action(KF_ENUM_PARAM(KfEffectKind, s32) magic_id)
             return;
         }
         break;
-    case KF_EFFECT_KIND_18:
+    case KF_EFFECT_KIND_SCREEN_TINT:
         cur_avatar_status.magic_tint_phase_limit = 900;
         cur_avatar_status.vitals.current_mp -= record->mp_cost;
         return;
@@ -2012,18 +2012,18 @@ charge_gate:
         cur_avatar_status.magic_origin_offset.vy = -512;
         cur_avatar_status.magic_origin_offset.vz = 2000;
         /* Retail falls through to the shared action-byte stores. */
-    case KF_EFFECT_KIND_1:
-    case KF_EFFECT_KIND_4:
+    case KF_EFFECT_KIND_BOUNCE_FADE:
+    case KF_EFFECT_KIND_SPINNING_PROJECTILE:
     case KF_EFFECT_KIND_VERTEX_SWARM:
     case KF_EFFECT_KIND_HOLDING_TRAIL:
-    case KF_EFFECT_KIND_7:
+    case KF_EFFECT_KIND_GROUND_GROWTH_SCATTER:
     case KF_EFFECT_KIND_RING_WAVE:
-    case KF_EFFECT_KIND_11:
-    case KF_EFFECT_KIND_18:
+    case KF_EFFECT_KIND_GROWING_SHOCK:
+    case KF_EFFECT_KIND_SCREEN_TINT:
         cur_avatar_status.queued_magic_action.casts_remaining = 1;
         cur_avatar_status.queued_magic_action.repeat_interval = 1;
         break;
-    case KF_EFFECT_KIND_12:
+    case KF_EFFECT_KIND_RELAY_SEEKER:
         cur_avatar_status.magic_origin_offset.vx = -200;
         cur_avatar_status.queued_magic_action.casts_remaining = 5;
         cur_avatar_status.queued_magic_action.repeat_interval = 2;
@@ -2040,7 +2040,7 @@ charge_gate:
         cur_avatar_status.magic_origin_offset.vy = 0;
         cur_avatar_status.magic_origin_offset.vx = 0;
         break;
-    case KF_EFFECT_KIND_13:
+    case KF_EFFECT_KIND_GROUND_GROWTH:
         cur_avatar_status.queued_magic_action.casts_remaining = 7;
         cur_avatar_status.queued_magic_action.repeat_interval = 1;
         break;
@@ -2679,7 +2679,7 @@ void player_update_horizontal_motion(void)
 ADDRESS(0x80029560, 0x1c)
 b32 item_id_is_menu_effect(KF_ENUM_PARAM(KfObjectId, s32) value)
 {
-    if (value < KF_OBJECT_81) {
+    if (value < KF_OBJECT_MENU_EFFECT_END) {
         if (value >= KF_ITEM_RELIEVE_AILMENTS) {
             return KF_TRUE;
         }
@@ -3146,7 +3146,7 @@ void player_update_frame(void)
 
     cur_avatar_status.pad_buttons.current = PadRead(1);
     if (cur_avatar_status.pad_buttons.current & DAT_8006e578) {
-        cd_report_error(KF_CD_ERROR_3);
+        cd_report_error(KF_CD_ERROR_PAD_BUTTON);
     }
     if (cur_avatar_status.pad_buttons.current & DAT_8006e57c) {
         cur_avatar_status.pad_buttons.current = DAT_8006e56c;
@@ -3498,7 +3498,7 @@ update_reaction_pose:
         cur_avatar_status.magic_origin_offset.vx = 0;
         cur_avatar_status.magic_origin_offset.vy = -300;
         cur_avatar_status.magic_origin_offset.vz = 400;
-        player_dispatch_magic_effect(KF_EFFECT_KIND_11);
+        player_dispatch_magic_effect(KF_EFFECT_KIND_GROWING_SHOCK);
     }
     if (cur_avatar_status.equipped_body_id == KF_ITEM_MAGIC_LIMITING_BODY) {
         interpolate_collision_filter_rows(20, 20, 20, 5000, PLAYER_MAGIC_LIMITING_BODY_FILTER_AMOUNT);

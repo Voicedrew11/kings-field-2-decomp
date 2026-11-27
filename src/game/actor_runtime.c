@@ -546,7 +546,7 @@ void actor_update_lifecycle_for_player_range(void)
                 goto set_dormant;
             }
             if (slot_state != KF_ACTOR_SLOT_PERSISTENT) {
-                if (slot_state != KF_ACTOR_SLOT_0) {
+                if (slot_state != KF_ACTOR_SLOT_CHANCE_SPAWN) {
                     goto set_dormant;
                 }
                 if (actor->spawn_chance == 0 ||
@@ -1871,7 +1871,7 @@ enum {
     ACTOR_SCRIPT_TWO_VERTEX_EFFECT = 0x8004
 };
 
-/* record->phase of the KF_EFFECT_KIND_29 and KF_EFFECT_KIND_31 records spawned here. */
+/* record->phase of the KF_EFFECT_KIND_BALLISTIC_ARC and KF_EFFECT_KIND_ARROW records spawned here. */
 enum {
     ACTOR_AIMED_EFFECT_PHASE_INITIAL = 0,
 };
@@ -1950,14 +1950,14 @@ void actor_dispatch_group_effect(KF_ENUM_PARAM(KfEffectKind, s32) kind, s32 dama
     position.vz = current->position.vz + offset.vz;
 
     switch (kind) {
-    case KF_EFFECT_KIND_123:
-        kind = KF_EFFECT_KIND_32;
+    case KF_EFFECT_KIND_ACTOR_GROUND_GROWTH_LARGE:
+        kind = KF_EFFECT_KIND_GROUND_GROWTH_LARGE;
         if (arguments[2] != 0) {
             goto target_effect;
         }
         /* fall through */
-    case KF_EFFECT_KIND_7:
-    case KF_EFFECT_KIND_32:
+    case KF_EFFECT_KIND_GROUND_GROWTH_SCATTER:
+    case KF_EFFECT_KIND_GROUND_GROWTH_LARGE:
         audio_play_spatial_default_range(ACTOR_HAZARD_SOUND_ID, &position, ACTOR_SOUND_DEFAULT_VOLUME, 0);
     target_effect:
         actor_compute_target_direction(current, player, 500, &position, &direction,
@@ -1969,7 +1969,7 @@ void actor_dispatch_group_effect(KF_ENUM_PARAM(KfEffectKind, s32) kind, s32 dama
             effect->cooldown = 3;
         }
         break;
-    case KF_EFFECT_KIND_121:
+    case KF_EFFECT_KIND_DROP_THEN_SHRINK_ALT_MODEL:
         actor_compute_target_direction(current, player, 600, &position, &direction,
             KF_ACTOR_PITCH_TRACK_TARGET, KF_ANGLE_QUARTER_TURN, 1);
         distance = fixed_vector3_length(position.vx - player->vx,
@@ -1983,7 +1983,7 @@ void actor_dispatch_group_effect(KF_ENUM_PARAM(KfEffectKind, s32) kind, s32 dama
                                 KF_EFFECT_SOURCE_HAZARD | KF_EFFECT_TARGET_ACTORS_AND_PLAYER, kind, &position, &direction,
                       distance);
         break;
-    case KF_EFFECT_KIND_4:
+    case KF_EFFECT_KIND_SPINNING_PROJECTILE:
         /* Five-argument effect calls leave the optional words that the steering
          * call stored in the outgoing argument area. */
         actor_compute_target_direction(current, player, 800, &position, &direction,
@@ -1992,7 +1992,7 @@ void actor_dispatch_group_effect(KF_ENUM_PARAM(KfEffectKind, s32) kind, s32 dama
                                 KF_EFFECT_SOURCE_HAZARD | KF_EFFECT_TARGET_ACTORS_AND_PLAYER, kind,
                                 &position, &direction);
         break;
-    case KF_EFFECT_KIND_40: {
+    case KF_EFFECT_KIND_FLAT_SHOT: {
         s32 raised_y = position.vy + 1600;
         vector_displacement_to_pitch_yaw(player->vx - position.vx,
                       player->vy - raised_y,
@@ -2028,7 +2028,7 @@ void actor_dispatch_group_effect(KF_ENUM_PARAM(KfEffectKind, s32) kind, s32 dama
                                 KF_EFFECT_SOURCE_HAZARD | KF_EFFECT_TARGET_ACTORS_AND_PLAYER, kind, &position, &direction,
                       KF_FIXED12_ONE, ACTOR_HAZARD_RING_SCALE_STEP, KF_FIXED12_ONE);
         break;
-    case KF_EFFECT_KIND_22:
+    case KF_EFFECT_KIND_GRAVITY_SHOT:
         actor_compute_target_direction(current, player, 400, &position, &direction,
             KF_ACTOR_PITCH_TRACK_TARGET, KF_ANGLE_QUARTER_TURN, 1);
         effect_construct_record(damage_multiplier_tenths,
@@ -2046,28 +2046,28 @@ void actor_dispatch_group_effect(KF_ENUM_PARAM(KfEffectKind, s32) kind, s32 dama
         vector3s_scale_shift12(550, &direction);
         effect = effect_construct_record(damage_multiplier_tenths,
                                          KF_EFFECT_SOURCE_HAZARD | KF_EFFECT_TARGET_ACTORS_AND_PLAYER,
-                                         KF_EFFECT_KIND_7, &position, &direction);
+                                         KF_EFFECT_KIND_GROUND_GROWTH_SCATTER, &position, &direction);
         if (effect != NULL) {
             effect->cooldown = 5;
         }
         break;
-    case KF_EFFECT_KIND_1:
-    case KF_EFFECT_KIND_28:
+    case KF_EFFECT_KIND_BOUNCE_FADE:
+    case KF_EFFECT_KIND_BOUNCE_FADE_SMALL:
         actor_compute_target_direction(current, player, 500, &position, &direction,
             KF_ACTOR_PITCH_TRACK_TARGET, KF_ANGLE_QUARTER_TURN, 1);
         effect_construct_record(damage_multiplier_tenths,
                                 KF_EFFECT_SOURCE_HAZARD | KF_EFFECT_TARGET_ACTORS_AND_PLAYER, kind,
                                 &position, &direction);
         break;
-    case KF_EFFECT_KIND_26:
-    case KF_EFFECT_KIND_27:
+    case KF_EFFECT_KIND_RADIAL_HAZARD:
+    case KF_EFFECT_KIND_RADIAL_HAZARD_ZERO_SCALE:
         actor_compute_target_direction(current, player, 300, &position, &direction,
             KF_ACTOR_PITCH_TRACK_TARGET, KF_ANGLE_QUARTER_TURN, 1);
         effect_construct_record(damage_multiplier_tenths,
                                 KF_EFFECT_SOURCE_HAZARD | KF_EFFECT_TARGET_ACTORS_AND_PLAYER, kind,
                                 &position, &direction);
         break;
-    case KF_EFFECT_KIND_12:
+    case KF_EFFECT_KIND_RELAY_SEEKER:
         /* Retail aims at the two-vertex prediction even for other position modes. */
         vector_displacement_to_pitch_yaw(predicted.vx - position.vx,
                       predicted.vy - position.vy,
@@ -2079,7 +2079,7 @@ void actor_dispatch_group_effect(KF_ENUM_PARAM(KfEffectKind, s32) kind, s32 dama
                                 KF_EFFECT_SOURCE_HAZARD | KF_EFFECT_TARGET_ACTORS_AND_PLAYER, kind, &position, &direction,
                       &orientation.angles, 500, ACTOR_AIM_EFFECT_SCALE, ACTOR_AIM_EFFECT_TURN_STEP, ACTOR_AIM_EFFECT_CLOSE_SCALE, ACTOR_AIM_EFFECT_UPDATE_COUNT);
         break;
-    case KF_EFFECT_KIND_120:
+    case KF_EFFECT_KIND_FALLING_DROP_BURST:
         position.vx = (rand() >> 2) + cur_avatar_status.camera_position.vx - 4096;
         position.vz = (rand() >> 2) + cur_avatar_status.camera_position.vz - 4096;
         position.vy = cur_avatar_status.camera_position.vy - 5000;
@@ -2144,8 +2144,8 @@ void actor_dispatch_group_effect(KF_ENUM_PARAM(KfEffectKind, s32) kind, s32 dama
             actor_select_target_type_in_own_group(spawned, KF_ACTOR_TARGET_COLLISION_MOVE);
         }
         break;
-    case KF_EFFECT_KIND_29:
-    case KF_EFFECT_KIND_31:
+    case KF_EFFECT_KIND_BALLISTIC_ARC:
+    case KF_EFFECT_KIND_ARROW:
         trajectory_target = *player;
         count = 6;
         do {
@@ -2377,7 +2377,7 @@ void actor_update_behavior(void)
                     map_object_spawn_scattered_effect(effect_id, &actor->position,
                                    -(actor->collision_height >> 1));
                 }
-                if (actor->slot_state == KF_ACTOR_SLOT_0
+                if (actor->slot_state == KF_ACTOR_SLOT_CHANCE_SPAWN
                     || actor->slot_state == KF_ACTOR_SLOT_LINKED_COMPANION) {
                     if (target->params.death_drop.object_id != KF_OBJECT_NONE &&
                         (rand() >> 7) < target->params.death_drop.chance) {
@@ -2411,7 +2411,7 @@ void actor_update_behavior(void)
                 break;
             }
             if (old_state == 20) {
-                actor->lighting_override = KF_LIGHTING_PRESET_42;
+                actor->lighting_override = KF_LIGHTING_UNLIT_ADDITIVE;
                 actor->lighting_blend = KF_FIXED12_ONE / 4;
                 actor->render_mode = KF_RENDER_QUEUE_BLEND_ADD;
             } else if (old_state < 38) {
@@ -3396,9 +3396,9 @@ void actor_update_behavior(void)
     case KF_ACTOR_TARGET_SUSPEND_VERTICAL_MOTION:
         actor_suspend_vertical_motion();
         break;
-    case KF_ACTOR_TARGET_6:
-    case KF_ACTOR_TARGET_7:
-    case KF_ACTOR_TARGET_8:
+    case KF_ACTOR_TARGET_MAP_DEFINED_FIRST:
+    case KF_ACTOR_TARGET_MAP_DEFINED_SECOND:
+    case KF_ACTOR_TARGET_MAP_DEFINED_THIRD:
     default:
         asset_status.active_table[17]();
         break;
