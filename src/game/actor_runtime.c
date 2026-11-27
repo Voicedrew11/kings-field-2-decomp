@@ -3035,7 +3035,6 @@ void actor_update_behavior(void)
             }
             break;
         case ACTOR_WEAPON_REACT_STATE_FINISH:
-        case19_clamped:
             actor_advance_animation_clamped(actor, target->animation_step);
             if (actor->animation_phase >= KF_ACTOR_ANIMATION_PHASE_MAX) {
                 actor_reset_target_and_reselect();
@@ -3070,7 +3069,12 @@ void actor_update_behavior(void)
             actor->target_action_state = KF_ACTOR_TARGET_ACTION_RETARGET_BLOCKED;
             actor_set_animation(target->animation_id);
         }
-        goto case19_clamped;
+        actor_advance_animation_clamped(actor, target->animation_step);
+        if (actor->animation_phase >= KF_ACTOR_ANIMATION_PHASE_MAX) {
+            actor_reset_target_and_reselect();
+        }
+        actor_damp_horizontal_motion(group->movement_step, KF_ACTOR_MOVE_STORE_MOTION | KF_ACTOR_MOVE_SLIDE);
+        break;
     case KF_ACTOR_TARGET_AMBUSH:
         if (actor->target_action_state == KF_ACTOR_TARGET_ACTION_ENTRY) {
             actor->target_action_state = KF_ACTOR_TARGET_ACTION_RETARGET_BLOCKED;

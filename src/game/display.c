@@ -3689,7 +3689,7 @@ void tim_upload_images(u8 *tim_data)
     scene_display_sys.display_state.primitive_buffer->cursor += sizeof(POLY_FT4); \
     if (scene_display_sys.display_state.primitive_buffer->cursor > \
         scene_display_sys.display_state.primitive_buffer->end) \
-        goto present; \
+        break; \
     SetPolyFT4(quad); \
 }
 
@@ -3711,43 +3711,44 @@ s32 menu_fade_transition(s32 level, s32 step)
         display_begin_frame();
         shade = KF_MENU_FADE_NEUTRAL_SHADE - (level >> 1);
 
-        MENU_FADE_NEXT_QUAD();
-        setXYWH(quad, 0, 0, KF_MENU_FADE_FIRST_VRAM_SLICE_WIDTH, KF_DISPLAY_HEIGHT);
-        setUVWH(quad, 0, 0, KF_MENU_FADE_FIRST_VRAM_SLICE_WIDTH, KF_DISPLAY_HEIGHT);
-        quad->clut = 0;
-        setTPage(quad, 2, 0, 320, 0);
-        setRGB0(quad, shade, shade, shade);
-        AddPrim((void *)(scene_display_sys.display_state.ordering_table + 2), (void *)quad);
+        do {
+            MENU_FADE_NEXT_QUAD();
+            setXYWH(quad, 0, 0, KF_MENU_FADE_FIRST_VRAM_SLICE_WIDTH, KF_DISPLAY_HEIGHT);
+            setUVWH(quad, 0, 0, KF_MENU_FADE_FIRST_VRAM_SLICE_WIDTH, KF_DISPLAY_HEIGHT);
+            quad->clut = 0;
+            setTPage(quad, 2, 0, 320, 0);
+            setRGB0(quad, shade, shade, shade);
+            AddPrim((void *)(scene_display_sys.display_state.ordering_table + 2), (void *)quad);
 
-        MENU_FADE_NEXT_QUAD();
-        setXYWH(quad, KF_MENU_FADE_FIRST_VRAM_SLICE_WIDTH, 0,
-            KF_DISPLAY_WIDTH - KF_MENU_FADE_FIRST_VRAM_SLICE_WIDTH, KF_DISPLAY_HEIGHT);
-        setUVWH(quad, 0, 0,
-            KF_DISPLAY_WIDTH - KF_MENU_FADE_FIRST_VRAM_SLICE_WIDTH, KF_DISPLAY_HEIGHT);
-        quad->clut = 0;
-        setTPage(quad, 2, 0, 512, 0);
-        setRGB0(quad, shade, shade, shade);
-        AddPrim((void *)(scene_display_sys.display_state.ordering_table + 2), (void *)quad);
+            MENU_FADE_NEXT_QUAD();
+            setXYWH(quad, KF_MENU_FADE_FIRST_VRAM_SLICE_WIDTH, 0,
+                KF_DISPLAY_WIDTH - KF_MENU_FADE_FIRST_VRAM_SLICE_WIDTH, KF_DISPLAY_HEIGHT);
+            setUVWH(quad, 0, 0,
+                KF_DISPLAY_WIDTH - KF_MENU_FADE_FIRST_VRAM_SLICE_WIDTH, KF_DISPLAY_HEIGHT);
+            quad->clut = 0;
+            setTPage(quad, 2, 0, 512, 0);
+            setRGB0(quad, shade, shade, shade);
+            AddPrim((void *)(scene_display_sys.display_state.ordering_table + 2), (void *)quad);
 
-        MENU_FADE_NEXT_QUAD();
-        SetSemiTrans((void *)quad, 1);
-        setXYWH(quad, 32, 10, 255, 255);
-        setUVWH(quad, 0, 0, 255, 255);
-        setClut(quad, 576, 511);
-        setTPage(quad, 0, 1, 960, 256);
-        setRGB0(quad, level, level, level);
-        AddPrim((void *)scene_display_sys.display_state.ordering_table, (void *)quad);
+            MENU_FADE_NEXT_QUAD();
+            SetSemiTrans((void *)quad, 1);
+            setXYWH(quad, 32, 10, 255, 255);
+            setUVWH(quad, 0, 0, 255, 255);
+            setClut(quad, 576, 511);
+            setTPage(quad, 0, 1, 960, 256);
+            setRGB0(quad, level, level, level);
+            AddPrim((void *)scene_display_sys.display_state.ordering_table, (void *)quad);
 
-        MENU_FADE_NEXT_QUAD();
-        SetSemiTrans((void *)quad, 1);
-        setXYWH(quad, 32, 10, 255, 255);
-        setUVWH(quad, 0, 0, 255, 255);
-        setClut(quad, 576, 511);
-        setTPage(quad, 0, 2, 960, 256);
-        setRGB0(quad, level, level, level);
-        AddPrim((void *)(scene_display_sys.display_state.ordering_table + 1), (void *)quad);
+            MENU_FADE_NEXT_QUAD();
+            SetSemiTrans((void *)quad, 1);
+            setXYWH(quad, 32, 10, 255, 255);
+            setUVWH(quad, 0, 0, 255, 255);
+            setClut(quad, 576, 511);
+            setTPage(quad, 0, 2, 960, 256);
+            setRGB0(quad, level, level, level);
+            AddPrim((void *)(scene_display_sys.display_state.ordering_table + 1), (void *)quad);
+        } while (0);
 
-present:
         DrawSync(0);
         display_present_frame();
         level += step;

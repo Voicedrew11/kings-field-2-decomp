@@ -377,9 +377,7 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
 
     record = effect_pool_find_free();
 
-    if (record == NULL) {
-        goto finish;
-    }
+    if (record != NULL) {
     record->type = type;
     record->kind = kind;
     if (position != NULL) {
@@ -562,14 +560,23 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
         effect_play_spatial_sound(record, EFFECT_SOUND_KIND_9);
         break;
     }
-    case KF_EFFECT_KIND_PLAYER_HOMING_FAST:
-        effect_pool_initialize_scaled(record, KF_EFFECT_MODEL_PLAYER_HOMING, EFFECT_SCALE_DOUBLE);
-        goto randomize_33_53;
-    case KF_EFFECT_KIND_PLAYER_HOMING:
-        effect_pool_initialize_scaled(record, KF_EFFECT_MODEL_PLAYER_HOMING, KF_FIXED12_ONE);
-    randomize_33_53: {
+    case KF_EFFECT_KIND_PLAYER_HOMING_FAST: {
         s32 random_z;
 
+        effect_pool_initialize_scaled(record, KF_EFFECT_MODEL_PLAYER_HOMING, EFFECT_SCALE_DOUBLE);
+        record->direction.vx += (rand() >> 8) - 64;
+        record->direction.vy += (rand() >> 8) - 64;
+        random_z = rand();
+        record->updates_remaining = 100;
+        record->cooldown = 3;
+        record->direction.vz += (random_z >> 8) - 64;
+        effect_play_spatial_sound(record, EFFECT_SOUND_KIND_33_53);
+        break;
+    }
+    case KF_EFFECT_KIND_PLAYER_HOMING: {
+        s32 random_z;
+
+        effect_pool_initialize_scaled(record, KF_EFFECT_MODEL_PLAYER_HOMING, KF_FIXED12_ONE);
         record->direction.vx += (rand() >> 8) - 64;
         record->direction.vy += (rand() >> 8) - 64;
         random_z = rand();
@@ -692,11 +699,25 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
         KF_ENUM_PROMOTED(KfEffectRenderId) render_id;
 
         render_id = KF_EFFECT_MODEL_STEPPED_BURST_ALT;
-        goto initialize_11_54;
-    case KF_EFFECT_KIND_GROWING_SHOCK:
-        render_id = KF_EFFECT_MODEL_STEPPED_BURST;
-    initialize_11_54:
+        record->base_render_id = render_id;
+        record->render_id = render_id;
+        record->render_flags = KF_EFFECT_RENDER_VISIBLE;
+        record->animation_clip = KF_ANIMATION_CLIP_STATIC_OBJECT_FIRST;
+        record->render_queue_mode = KF_RENDER_QUEUE_BLEND_ADD;
+        record->lighting_override_index = KF_LIGHTING_EFFECT;
+        record->lighting_blend_q12 = KF_FIXED12_ONE;
+        record->scale_z = 0;
+        record->scale_y = 0;
+        record->scale_x = 0;
+        value = va[1];
+        record->cache_tail.payload.scale_step_argument.scale_step = value / 4;
+        break;
+    }
+    case KF_EFFECT_KIND_GROWING_SHOCK: {
+        s32 value;
+        KF_ENUM_PROMOTED(KfEffectRenderId) render_id;
 
+        render_id = KF_EFFECT_MODEL_STEPPED_BURST;
         record->base_render_id = render_id;
         record->render_id = render_id;
         record->render_flags = KF_EFFECT_RENDER_VISIBLE;
@@ -879,7 +900,15 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
         record->lighting_override_index = KF_LIGHTING_EFFECT;
         record->lighting_blend_q12 = KF_FIXED12_ONE;
         record->updates_remaining = 50;
-        goto initialize_angles_34_35_117;
+        {
+            const SVECTOR *angles;
+
+            angles = (const SVECTOR *)va[1];
+            record->rotation = *angles;
+            record->cache_tail.payload.collision_latch.impact_handled = 0;
+            effect_play_spatial_sound(record, EFFECT_SOUND_KIND_34);
+        }
+        break;
     case KF_EFFECT_KIND_FLAT_SHOT: {
         const SVECTOR *angles;
 
@@ -924,10 +953,6 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
         KF_ENUM_PROMOTED(KfEffectRenderId) render_id;
 
         render_id = KF_EFFECT_MODEL_SPINNING_LEVEL;
-        goto initialize_34_35;
-    case KF_EFFECT_KIND_SPINNING_LEVEL_ALT_MODEL:
-        render_id = KF_EFFECT_MODEL_SPINNING_LEVEL_ALT;
-    initialize_34_35:
         record->base_render_id = render_id;
         record->render_id = render_id;
         record->render_flags = KF_EFFECT_RENDER_VISIBLE;
@@ -936,7 +961,25 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
         record->lighting_override_index = KF_LIGHTING_EFFECT;
         record->lighting_blend_q12 = KF_FIXED12_ONE;
         record->updates_remaining = 45;
-    initialize_angles_34_35_117:
+        angles = (const SVECTOR *)va[1];
+        record->rotation = *angles;
+        record->cache_tail.payload.collision_latch.impact_handled = 0;
+        effect_play_spatial_sound(record, EFFECT_SOUND_KIND_34);
+        break;
+    }
+    case KF_EFFECT_KIND_SPINNING_LEVEL_ALT_MODEL: {
+        const SVECTOR *angles;
+        KF_ENUM_PROMOTED(KfEffectRenderId) render_id;
+
+        render_id = KF_EFFECT_MODEL_SPINNING_LEVEL_ALT;
+        record->base_render_id = render_id;
+        record->render_id = render_id;
+        record->render_flags = KF_EFFECT_RENDER_VISIBLE;
+        record->animation_clip = KF_ANIMATION_CLIP_STATIC_OBJECT_FIRST;
+        record->render_queue_mode = KF_RENDER_QUEUE_BLEND_ADD;
+        record->lighting_override_index = KF_LIGHTING_EFFECT;
+        record->lighting_blend_q12 = KF_FIXED12_ONE;
+        record->updates_remaining = 45;
         angles = (const SVECTOR *)va[1];
         record->rotation = *angles;
         record->cache_tail.payload.collision_latch.impact_handled = 0;
@@ -1077,17 +1120,55 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
         KF_ENUM_PROMOTED(KfEffectRenderId) render_id;
 
         render_id = KF_EFFECT_MODEL_ARROW_VARIANT;
-        goto setup_render_id;
-    case KF_EFFECT_KIND_BOLT_VARIANT:
+        record->base_render_id = render_id;
+        record->render_flags = KF_EFFECT_RENDER_VISIBLE;
+        record->animation_clip = KF_ANIMATION_CLIP_STATIC_OBJECT_FIRST;
+        record->lighting_override_index = KF_LIGHTING_NONE;
+        record->render_id = record->base_render_id;
+        angles = (const SVECTOR *)va[1];
+        record->rotation = *angles;
+        record->rotation.vz = 0;
+        record->cache_tail.payload.ballistic.age = 0;
+        break;
+    }
+    case KF_EFFECT_KIND_BOLT_VARIANT: {
+        const SVECTOR *angles;
+        KF_ENUM_PROMOTED(KfEffectRenderId) render_id;
+
         render_id = KF_EFFECT_MODEL_BOLT_VARIANT;
-        goto setup_render_id;
-    case KF_EFFECT_KIND_BOLT:
+        record->base_render_id = render_id;
+        record->render_flags = KF_EFFECT_RENDER_VISIBLE;
+        record->animation_clip = KF_ANIMATION_CLIP_STATIC_OBJECT_FIRST;
+        record->lighting_override_index = KF_LIGHTING_NONE;
+        record->render_id = record->base_render_id;
+        angles = (const SVECTOR *)va[1];
+        record->rotation = *angles;
+        record->rotation.vz = 0;
+        record->cache_tail.payload.ballistic.age = 0;
+        break;
+    }
+    case KF_EFFECT_KIND_BOLT: {
+        const SVECTOR *angles;
+        KF_ENUM_PROMOTED(KfEffectRenderId) render_id;
+
         render_id = KF_EFFECT_MODEL_BOLT;
-        goto setup_render_id;
+        record->base_render_id = render_id;
+        record->render_flags = KF_EFFECT_RENDER_VISIBLE;
+        record->animation_clip = KF_ANIMATION_CLIP_STATIC_OBJECT_FIRST;
+        record->lighting_override_index = KF_LIGHTING_NONE;
+        record->render_id = record->base_render_id;
+        angles = (const SVECTOR *)va[1];
+        record->rotation = *angles;
+        record->rotation.vz = 0;
+        record->cache_tail.payload.ballistic.age = 0;
+        break;
+    }
     case KF_EFFECT_KIND_BALLISTIC_ARC:
-    case KF_EFFECT_KIND_ARROW:
+    case KF_EFFECT_KIND_ARROW: {
+        const SVECTOR *angles;
+        KF_ENUM_PROMOTED(KfEffectRenderId) render_id;
+
         render_id = KF_EFFECT_MODEL_ARROW;
-    setup_render_id:
         record->base_render_id = render_id;
         record->render_flags = KF_EFFECT_RENDER_VISIBLE;
         record->animation_clip = KF_ANIMATION_CLIP_STATIC_OBJECT_FIRST;
@@ -1140,7 +1221,7 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
         record->type = KF_EFFECT_SLOT_FREE;
         break;
     }
-finish:
+    }
     return record;
 }
 
@@ -1369,7 +1450,10 @@ void effect_spawn_motion(KfEffectRecord *record, s32 position_mode,
         motion.vx = (rand() * args[1] >> 15) + (u16)args[2];
         motion.vy = (rand() * args[3] >> 15) + (u16)args[4];
         motion.vz = (rand() * args[5] >> 15) + (u16)args[6];
-        goto spawn;
+        addVector(&position_delta, &record->position);
+        effect_construct_record(10, KF_EFFECT_TYPE_NONE, KF_EFFECT_KIND_PARTICLE, &position_delta, &motion,
+                      scale, scale_step, updates_remaining, render_id, vertical_step);
+        return;
     case EFFECT_MOTION_STATIONARY:
         motion.vx = motion.vy = motion.vz = 0;
         motion_mode = args[1];
@@ -1388,7 +1472,6 @@ void effect_spawn_motion(KfEffectRecord *record, s32 position_mode,
     motion.vy += ((record->direction.vy * motion_mode) >> 12);
     motion.vz += ((record->direction.vz * motion_mode) >> 12);
 
-spawn:
     addVector(&position_delta, &record->position);
     effect_construct_record(10, KF_EFFECT_TYPE_NONE, KF_EFFECT_KIND_PARTICLE, &position_delta, &motion,
                   scale, scale_step, updates_remaining, render_id, vertical_step);

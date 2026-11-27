@@ -16,7 +16,6 @@ src/game/actor_runtime.c	actor_update_vertical_motion	reset_vertical_motion_stat
 src/game/actor_runtime.c	actor_dispatch_group_effect	target_effect	1	shared case tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/actor_runtime.c	actor_update_behavior	case5_advance	2	shared tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/actor_runtime.c	actor_update_behavior	case11_turn	2	shared case tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
-src/game/actor_runtime.c	actor_update_behavior	case19_clamped	1	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target
 src/game/actor_runtime.c	actor_update_behavior	case29_shared_motion	1	shared case tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/actor_runtime.c	actor_update_behavior	case30_position	1	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target
 src/game/actor_runtime.c	actor_update_behavior	behavior_done	3	shared tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
@@ -45,16 +44,9 @@ src/game/display.c	animation_select_keyframe	selected	1	forward jump	copied tail
 src/game/display.c	animation_prepare_asset_vertices	allocate_vertices	1	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target
 src/game/display.c	animation_sample_vertex	copy_object_vertex	1	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target
 src/game/display.c	animation_sample_vertex	finished	1	forward jump	copied tail at each jump 91.4%
-src/game/effect_runtime.c	effect_construct_record	randomize_33_53	1	shared case tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
-src/game/effect_runtime.c	effect_construct_record	initialize_11_54	1	shared case tail	copied tail at each jump 93.9%
-src/game/effect_runtime.c	effect_construct_record	initialize_34_35	1	shared case tail	copied tail at each jump 99.4%
-src/game/effect_runtime.c	effect_construct_record	initialize_angles_34_35_117	1	shared case tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
-src/game/effect_runtime.c	effect_construct_record	setup_render_id	3	shared case tail	copied tail at each jump 99.3%
-src/game/effect_runtime.c	effect_construct_record	finish	1	shared case tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/effect_runtime.c	effect_aim_and_move	aim	1	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target
 src/game/effect_runtime.c	effect_aim_and_move	player_target	1	forward jump	copied tail at each jump 62.0%
 src/game/effect_runtime.c	effect_aim_and_move	move	2	shared tail	copied tail at each jump 81.5%
-src/game/effect_runtime.c	effect_spawn_motion	spawn	1	shared case tail	motion_mode != -2 test 95.8%, random case before the switch 85.2%
 src/game/effect_runtime.c	effect_update_dispatch	ballistic_update	1	shared case tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/effect_runtime.c	effect_update_dispatch	shared_growth_entry	1	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target
 src/game/effect_runtime.c	effect_update_dispatch	kind13_no_collision	1	forward jump	copied tail at each jump 99.8%
@@ -98,7 +90,6 @@ src/game/event_pose_interpolate.c	event_scene_command_dispatch	transition_action
 src/game/event_pose_interpolate.c	event_scene_command_dispatch	magic_action	4	shared case tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/event_pose_interpolate.c	event_scene_command_dispatch	decay_update	1	forward jump	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/event_pose_interpolate.c	event_scene_command_dispatch	invoke_callback	1	shared case tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
-src/game/event_pose_interpolate.c	event_map_object_interact	button_pressed	1	forward jump	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/event_pose_interpolate.c	event_map_object_interact	return_pose	1	shared case tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/event_pose_interpolate.c	event_map_object_interact	interpolate_back	1	forward jump	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/event_pose_interpolate.c	event_map_object_interact	finish	1	forward jump	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
@@ -113,9 +104,6 @@ src/game/map_object_action_update.c	map_object_update_actions	start_action_19	2	
 src/game/map_object_action_update.c	map_object_update_actions	clear_action_trigger	1	shared case tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/matrix_rotation.c	vector_distance_to_point	reject	2	shared tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/memory_card_events.c	memory_card_read_slot	retry	1	retry loop	do/while 84.2%, for (;;) 85.7%: a structured loop enables loop.c
-src/game/menu_root.c	menu_card_save_slot	done	2	forward jump	do/while (0) with break 96.6%: the loop weights slot's references and swaps its saved register with the 0xb2 width constant
-src/game/menu_root.c	menu_preview_choice	finished	1	shared body before the jump	break and exit after the loop 91.4%: retail keeps the exit before the loop
-src/game/menu_root.c	menu_preview_choice	labels_ready	1	forward jump	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/player_runtime.c	player_dispatch_magic_effect	simple_probe	1	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target
 src/game/player_runtime.c	player_dispatch_magic_effect	emit_simple_effect	3	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target
 src/game/player_runtime.c	player_dispatch_magic_effect	case3_store_z	2	shared tail	natural if/else 89.2%
@@ -125,26 +113,20 @@ src/game/player_runtime.c	player_dispatch_magic_effect	probe_rotation_effect	3	s
 src/game/player_runtime.c	player_dispatch_magic_effect	emit_rotation_effect	2	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target
 src/game/player_runtime.c	player_dispatch_magic_effect	select_actor_effect	1	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target
 src/game/player_runtime.c	player_dispatch_magic_effect	sequence_effect	1	shared case tail	copied tail at each jump 90.6%
-src/game/player_runtime.c	player_update_weapon_attack	special_idle	1	shared case tail	copied tail at each jump 96.1%
 src/game/player_runtime.c	player_select_magic_action	charge_gate	1	forward jump	stores repeated in each case 87.7%
 src/game/player_runtime.c	player_move_horizontal	retry	4	retry loop	backward goto: no loop notes, so loop.c leaves the body alone
 src/game/player_runtime.c	player_move_horizontal	accept_position	1	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target
 src/game/player_runtime.c	player_move_horizontal	axis_retry	1	retry loop	backward goto: no loop notes, so loop.c leaves the body alone
 src/game/player_runtime.c	player_move_horizontal	done	2	shared tail	copied tail at each jump 86.2%
-src/game/player_runtime.c	player_update_vertical_motion	finish	11	shared case tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
+src/game/player_runtime.c	player_update_vertical_motion	finish	5	shared case tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/player_runtime.c	player_move_reaction_with_collision	accept	1	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target
 src/game/player_runtime.c	player_move_reaction_with_collision	scale_motion	1	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target
 src/game/player_runtime.c	player_move_reaction_with_collision	exhausted	1	forward jump	copied tail at each jump 92.8%
 src/game/player_runtime.c	player_move_reaction_with_collision	accepted	1	forward jump	copied tail at each jump 89.8%
-src/game/player_runtime.c	player_update_actions_and_charge	cancel_weapon_attack	3	shared tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
-src/game/player_runtime.c	player_update_actions_and_charge	after_weapon_attack	1	forward jump	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
-src/game/player_runtime.c	player_update_frame	update_reaction_view	4	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target
-src/game/player_runtime.c	player_update_frame	update_reaction_pose	1	shared case tail	copied tail at each jump 99.1%
 src/game/resource_startup.c	resource_request_transition	apply	1	retry loop	backward goto: no loop notes, so loop.c leaves the body alone
 src/game/resource_startup.c	resource_request_transition	handle_active	1	forward jump	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/resource_startup.c	resource_advance_transition	phase_three	1	shared case tail	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
 src/game/resource_startup.c	resource_advance_transition	complete	2	shared body before the jump	jump2 keeps the later of two identical tails, so a body before its jumps was a goto target
 src/game/resource_startup.c	resource_advance_transition	begin_phase_five	1	forward jump	no structured rewrite found: if/else, early-exit, break/continue and copied-tail scans
-src/open/main.c	main	restart	1	retry loop	backward goto: no loop notes, so loop.c leaves the body alone
 src/game/memory_card_events.c	memory_card_write_slot	retry	1	retry loop	for (;;) around the body from retry: to the attempt check: game 523/524 (the unit itself fell below exact), reverted
 src/open/main.c	main	play_movies	1	retry loop	do the movie chain in an outer for (;;) with a play_movies flag set by the idle restart: open 25/26 (88.6%), reverted

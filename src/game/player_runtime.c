@@ -1653,120 +1653,118 @@ void player_update_weapon_attack(void)
     case KF_ITEM_BOW:
     case KF_ITEM_ARBALEST:
         phase = cur_avatar_status.weapon_attack_phase;
-        if (phase == KF_WEAPON_ATTACK_INACTIVE) {
-            goto special_idle;
-        }
-        switch (cur_avatar_status.weapon_attack_mode) {
-        case KF_ANIMATION_CLIP_FIRST:
-            if (phase == 0) {
-                KF_ENUM_PROMOTED(KfEffectKind) effect_kind;
-                KF_ENUM_PROMOTED(KfObjectId) counter;
+        if (phase != KF_WEAPON_ATTACK_INACTIVE) {
+            switch (cur_avatar_status.weapon_attack_mode) {
+            case KF_ANIMATION_CLIP_FIRST:
+                if (phase == 0) {
+                    KF_ENUM_PROMOTED(KfEffectKind) effect_kind;
+                    KF_ENUM_PROMOTED(KfObjectId) counter;
 
-                switch (weapon_id) {
-                case KF_ITEM_BOW:
-                    effect_kind = KF_EFFECT_KIND_ARROW;
-                    counter = KF_ITEM_ARROW_FOR_THE_BOW;
-                    break;
-                case KF_ITEM_ARBALEST:
-                    effect_kind = KF_EFFECT_KIND_BOLT;
-                    counter = KF_ITEM_ELFS_BOLT;
-                    break;
-                default:
-                    break;
-                }
-
-                if (cur_avatar_status.equipped_accessory_id == KF_ITEM_BALLISTIC_VARIANT_ACCESSORY
-                    || cur_avatar_status.equipped_extra_id == KF_ITEM_BALLISTIC_VARIANT_ACCESSORY) {
-                    /* Selects the paired ballistic kind 47 or 48. */
-                    effect_kind = KF_ENUM_DECODE(KF_ENUM_PROMOTED(KfEffectKind),
-                                                 KF_ENUM_ENCODE(s32, effect_kind) + 17);
-                }
-                if (event_item_counters_table[KF_ENUM_ENCODE(s32, counter)] != 0) {
-                    event_item_counters_table[KF_ENUM_ENCODE(s32, counter)]--;
-                    cur_avatar_status.weapon_effect = effect_construct_record(
-                        10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS, effect_kind, &cur_avatar_status.camera_position,
-                        NULL, &cur_avatar_status.camera_rotation);
-                    effect = cur_avatar_status.weapon_effect;
-                    if (effect != NULL) {
-                        effect->phase = WEAPON_EFFECT_HELD_PHASE;
+                    switch (weapon_id) {
+                    case KF_ITEM_BOW:
+                        effect_kind = KF_EFFECT_KIND_ARROW;
+                        counter = KF_ITEM_ARROW_FOR_THE_BOW;
+                        break;
+                    case KF_ITEM_ARBALEST:
+                        effect_kind = KF_EFFECT_KIND_BOLT;
+                        counter = KF_ITEM_ELFS_BOLT;
+                        break;
+                    default:
+                        break;
                     }
+
+                    if (cur_avatar_status.equipped_accessory_id == KF_ITEM_BALLISTIC_VARIANT_ACCESSORY
+                        || cur_avatar_status.equipped_extra_id == KF_ITEM_BALLISTIC_VARIANT_ACCESSORY) {
+                        /* Selects the paired ballistic kind 47 or 48. */
+                        effect_kind = KF_ENUM_DECODE(KF_ENUM_PROMOTED(KfEffectKind),
+                                                     KF_ENUM_ENCODE(s32, effect_kind) + 17);
+                    }
+                    if (event_item_counters_table[KF_ENUM_ENCODE(s32, counter)] != 0) {
+                        event_item_counters_table[KF_ENUM_ENCODE(s32, counter)]--;
+                        cur_avatar_status.weapon_effect = effect_construct_record(
+                            10, KF_EFFECT_USE_PLAYER_MAGIC | KF_EFFECT_TARGET_ACTORS, effect_kind, &cur_avatar_status.camera_position,
+                            NULL, &cur_avatar_status.camera_rotation);
+                        effect = cur_avatar_status.weapon_effect;
+                        if (effect != NULL) {
+                            effect->phase = WEAPON_EFFECT_HELD_PHASE;
+                        }
+                    } else {
+                        cur_avatar_status.weapon_effect = NULL;
+                    }
+                }
+
+                cur_avatar_status.weapon_attack_phase += weapon->attack_phase_step;
+                if (cur_avatar_status.weapon_attack_phase >= KF_ANGLE_WRAP_MASK) {
+                    cur_avatar_status.weapon_attack_phase = KF_ANGLE_WRAP_MASK;
+                }
+                if (cur_avatar_status.weapon_attack_phase >= weapon->normal_attack_end_phase) {
+                    if (cur_avatar_status.attack_charge_current == 0
+                        && cur_avatar_status.equipped_weapon_id == KF_ITEM_BOW) {
+                        audio_play_sound(3, 110);
+                    }
+                    cur_avatar_status.attack_charge_current =
+                        ((cur_avatar_status.weapon_attack_phase - weapon->normal_attack_end_phase) * KF_PLAYER_CHARGE_FULL)
+                        / (KF_ANGLE_WRAP_MASK - weapon->normal_attack_end_phase);
                 } else {
-                    cur_avatar_status.weapon_effect = NULL;
+                    cur_avatar_status.attack_charge_current = 0;
                 }
-            }
 
-            cur_avatar_status.weapon_attack_phase += weapon->attack_phase_step;
-            if (cur_avatar_status.weapon_attack_phase >= KF_ANGLE_WRAP_MASK) {
-                cur_avatar_status.weapon_attack_phase = KF_ANGLE_WRAP_MASK;
-            }
-            if (cur_avatar_status.weapon_attack_phase >= weapon->normal_attack_end_phase) {
-                if (cur_avatar_status.attack_charge_current == 0
-                    && cur_avatar_status.equipped_weapon_id == KF_ITEM_BOW) {
-                    audio_play_sound(3, 110);
+                effect = cur_avatar_status.weapon_effect;
+                if (effect != NULL) {
+                    rotation.x = cur_avatar_status.camera_rotation.angles[0] - weapon->rotation_offset_x;
+                    rotation.y = cur_avatar_status.camera_rotation.angles[1] - weapon->rotation_offset_y;
+                    rotation.z = cur_avatar_status.camera_rotation.angles[2] + weapon->rotation_offset_z;
+                    animation_sample_vertex(32, cur_avatar_status.weapon_attack_mode,
+                                   cur_avatar_status.weapon_attack_phase,
+                                   weapon->initial_vertex_index, &initial_vertex);
+                    initial_vertex.vx -= weapon->position_offset_x;
+                    initial_vertex.vy += weapon->position_offset_y;
+                    initial_vertex.vz -= weapon->position_offset_z;
+                    vector_rotate_yxz(&rotation, &initial_vertex, &world_position);
+                    effect->position.vx = cur_avatar_status.camera_position.vx + world_position.vx;
+                    effect->position.vz = cur_avatar_status.camera_position.vz + world_position.vz;
+                    effect->position.vy = cur_avatar_status.camera_position.vy + world_position.vy
+                                        + cur_avatar_status.camera_vertical_offset + cur_avatar_status.landing_vertical_offset
+                                        - KF_PLAYER_CAMERA_EYE_OFFSET;
+
+                    animation_sample_vertex(32, cur_avatar_status.weapon_attack_mode,
+                                   cur_avatar_status.weapon_attack_phase,
+                                   weapon->final_vertex_index, &initial_vertex);
+                    initial_vertex.vx -= weapon->position_offset_x;
+                    initial_vertex.vy += weapon->position_offset_y;
+                    initial_vertex.vz -= weapon->position_offset_z;
+                    vector_rotate_yxz(&rotation, &initial_vertex, &last_world);
+                    vector_displacement_to_pitch_yaw(world_position.vx - last_world.vx,
+                                  world_position.vy - last_world.vy,
+                                  world_position.vz - last_world.vz,
+                                  (struct KfEulerAngles *)&effect->rotation);
                 }
-                cur_avatar_status.attack_charge_current =
-                    ((cur_avatar_status.weapon_attack_phase - weapon->normal_attack_end_phase) * KF_PLAYER_CHARGE_FULL)
-                    / (KF_ANGLE_WRAP_MASK - weapon->normal_attack_end_phase);
-            } else {
-                cur_avatar_status.attack_charge_current = 0;
-            }
-
-            effect = cur_avatar_status.weapon_effect;
-            if (effect != NULL) {
-                rotation.x = cur_avatar_status.camera_rotation.angles[0] - weapon->rotation_offset_x;
-                rotation.y = cur_avatar_status.camera_rotation.angles[1] - weapon->rotation_offset_y;
-                rotation.z = cur_avatar_status.camera_rotation.angles[2] + weapon->rotation_offset_z;
-                animation_sample_vertex(32, cur_avatar_status.weapon_attack_mode,
-                               cur_avatar_status.weapon_attack_phase,
-                               weapon->initial_vertex_index, &initial_vertex);
-                initial_vertex.vx -= weapon->position_offset_x;
-                initial_vertex.vy += weapon->position_offset_y;
-                initial_vertex.vz -= weapon->position_offset_z;
-                vector_rotate_yxz(&rotation, &initial_vertex, &world_position);
-                effect->position.vx = cur_avatar_status.camera_position.vx + world_position.vx;
-                effect->position.vz = cur_avatar_status.camera_position.vz + world_position.vz;
-                effect->position.vy = cur_avatar_status.camera_position.vy + world_position.vy
-                                    + cur_avatar_status.camera_vertical_offset + cur_avatar_status.landing_vertical_offset
-                                    - KF_PLAYER_CAMERA_EYE_OFFSET;
-
-                animation_sample_vertex(32, cur_avatar_status.weapon_attack_mode,
-                               cur_avatar_status.weapon_attack_phase,
-                               weapon->final_vertex_index, &initial_vertex);
-                initial_vertex.vx -= weapon->position_offset_x;
-                initial_vertex.vy += weapon->position_offset_y;
-                initial_vertex.vz -= weapon->position_offset_z;
-                vector_rotate_yxz(&rotation, &initial_vertex, &last_world);
-                vector_displacement_to_pitch_yaw(world_position.vx - last_world.vx,
-                              world_position.vy - last_world.vy,
-                              world_position.vz - last_world.vz,
-                              (struct KfEulerAngles *)&effect->rotation);
-            }
-            if ((cur_avatar_status.pad_buttons.current & DAT_8006e570) != 0) {
+                if ((cur_avatar_status.pad_buttons.current & DAT_8006e570) != 0) {
+                    return;
+                }
+                if (effect != NULL) {
+                    effect->phase = WEAPON_EFFECT_LAUNCHED_PHASE;
+                    pitch_yaw_to_forward_vector(
+                        (const struct KfEulerAngles *)&effect->rotation,
+                        &effect->direction);
+                    vector3s_scale_shift12((cur_avatar_status.attack_charge_current * 900) / KF_PLAYER_CHARGE_FULL,
+                                           &effect->direction);
+                    effect->updates_remaining = 50;
+                    effect->cache_tail.payload.ballistic.origin_y = effect->position.vy;
+                }
+                cur_avatar_status.weapon_attack_mode = KF_ANIMATION_CLIP_SECOND;
+                cur_avatar_status.weapon_attack_phase = KF_WEAPON_ATTACK_START;
                 return;
+            case KF_ANIMATION_CLIP_SECOND:
+                cur_avatar_status.weapon_attack_phase = phase + 400;
+                if (cur_avatar_status.weapon_attack_phase >= KF_ANGLE_WRAP_MASK) {
+                    cur_avatar_status.weapon_attack_phase = KF_WEAPON_ATTACK_INACTIVE;
+                    cur_avatar_status.attack_charge_current = 0;
+                }
+                break;
             }
-            if (effect != NULL) {
-                effect->phase = WEAPON_EFFECT_LAUNCHED_PHASE;
-                pitch_yaw_to_forward_vector(
-                    (const struct KfEulerAngles *)&effect->rotation,
-                    &effect->direction);
-                vector3s_scale_shift12((cur_avatar_status.attack_charge_current * 900) / KF_PLAYER_CHARGE_FULL,
-                                       &effect->direction);
-                effect->updates_remaining = 50;
-                effect->cache_tail.payload.ballistic.origin_y = effect->position.vy;
-            }
-            cur_avatar_status.weapon_attack_mode = KF_ANIMATION_CLIP_SECOND;
-            cur_avatar_status.weapon_attack_phase = KF_WEAPON_ATTACK_START;
             return;
-        case KF_ANIMATION_CLIP_SECOND:
-            cur_avatar_status.weapon_attack_phase = phase + 400;
-            if (cur_avatar_status.weapon_attack_phase >= KF_ANGLE_WRAP_MASK) {
-                cur_avatar_status.weapon_attack_phase = KF_WEAPON_ATTACK_INACTIVE;
-                cur_avatar_status.attack_charge_current = 0;
-            }
-            break;
         }
-        return;
-special_idle:
         cur_avatar_status.attack_charge_current = 0;
         cur_avatar_status.weapon_charge_delay = 0;
         return;
@@ -2359,44 +2357,38 @@ void player_update_vertical_motion(void)
             } else {
                 cur_avatar_status.camera_position.vy = *floor_result;
             }
-            goto finish;
-        }
-        if (height_difference >= -512) {
+        } else if (height_difference >= -512) {
             cur_avatar_status.camera_position.vy -= 256;
-            goto finish;
+        } else {
+            movement_speed = cur_avatar_status.movement_speed.signed_value;
+            cur_avatar_status.vertical_motion_state = KF_PLAYER_VERTICAL_STEP_UP;
+            cur_avatar_status.vertical_velocity = movement_speed > 200 ? -300 : -150;
+            cur_avatar_status.landing_vertical_offset = 0;
+            cur_avatar_status.vertical_motion_pitch_offset = 0;
         }
-        movement_speed = cur_avatar_status.movement_speed.signed_value;
-        cur_avatar_status.vertical_motion_state = KF_PLAYER_VERTICAL_STEP_UP;
-        cur_avatar_status.vertical_velocity = movement_speed > 200 ? -300 : -150;
-    } else {
-        if (height_difference <= 0) {
-            goto finish;
-        }
+    } else if (height_difference > 0) {
         collision_flags = collision_query_world(cur_avatar_status.camera_position.vx,
                            cur_avatar_status.camera_position.vy + 1,
                            cur_avatar_status.camera_position.vz, KF_PLAYER_COLLISION_RADIUS,
                            KF_PLAYER_HEIGHT, PLAYER_MOTION_COLLISION_MASK);
-        if (collision_flags != KF_COLLISION_HIT_NONE) {
-            goto finish;
-        }
-        if (height_difference <= 256) {
-            if (height_difference >= 129) {
-                cur_avatar_status.camera_position.vy += 128;
+        if (collision_flags == KF_COLLISION_HIT_NONE) {
+            if (height_difference <= 256) {
+                if (height_difference >= 129) {
+                    cur_avatar_status.camera_position.vy += 128;
+                } else {
+                    cur_avatar_status.camera_position.vy = *floor_result;
+                }
+            } else if (height_difference <= 512) {
+                cur_avatar_status.camera_position.vy += 256;
             } else {
-                cur_avatar_status.camera_position.vy = *floor_result;
+                cur_avatar_status.vertical_motion_state = height_difference > 1024
+                    ? KF_PLAYER_VERTICAL_DEEP_FALL : KF_PLAYER_VERTICAL_FALLING;
+                cur_avatar_status.vertical_velocity = 40;
+                cur_avatar_status.landing_vertical_offset = 0;
+                cur_avatar_status.vertical_motion_pitch_offset = 0;
             }
-            goto finish;
         }
-        if (height_difference <= 512) {
-            cur_avatar_status.camera_position.vy += 256;
-            goto finish;
-        }
-        cur_avatar_status.vertical_motion_state = height_difference > 1024
-            ? KF_PLAYER_VERTICAL_DEEP_FALL : KF_PLAYER_VERTICAL_FALLING;
-        cur_avatar_status.vertical_velocity = 40;
     }
-    cur_avatar_status.landing_vertical_offset = 0;
-    cur_avatar_status.vertical_motion_pitch_offset = 0;
 
 finish:
     if (cur_avatar_status.vertical_motion_state == KF_PLAYER_VERTICAL_GROUNDED) {
@@ -2792,30 +2784,26 @@ void player_update_actions_and_charge(void)
     if ((cur_avatar_status.pad_buttons.current & (DAT_8006e568 | DAT_8006e570 | DAT_8006e574)) != 0
         && (cur_avatar_status.pad_buttons.previous & (DAT_8006e568 | DAT_8006e570 | DAT_8006e574)) == 0
         && cur_avatar_status.equipped_weapon_record->alternate_attack_phase_step != 0) {
-        if (!player_meets_weapon_magic_power_requirement()) {
-            goto cancel_weapon_attack;
+        if (player_meets_weapon_magic_power_requirement()) {
+            attack_mask = cur_avatar_status.magic_attack_mask_cursor;
+            if ((cur_avatar_status.pad_buttons.current & attack_mask[0]) != 0
+                && !(attack_mask == &player_magic_attack_masks[0]
+                     && (cur_avatar_status.attack_charge_current != KF_PLAYER_CHARGE_FULL
+                         || cur_avatar_status.magic_charge != KF_PLAYER_CHARGE_FULL))) {
+                cur_avatar_status.magic_attack_mask_cursor = attack_mask + 1;
+                if (attack_mask[1] == PLAYER_MAGIC_ATTACK_MASK_FULL) {
+                    player_begin_weapon_attack(KF_ANIMATION_CLIP_SECOND);
+                    return;
+                }
+                cur_avatar_status.weapon_magic_shots_remaining = 20;
+            } else {
+                cur_avatar_status.weapon_magic_shots_remaining = 0;
+            }
+        } else {
+            cur_avatar_status.weapon_magic_shots_remaining = 0;
         }
-        attack_mask = cur_avatar_status.magic_attack_mask_cursor;
-        if ((cur_avatar_status.pad_buttons.current & attack_mask[0]) == 0) {
-            goto cancel_weapon_attack;
-        }
-        if (attack_mask == &player_magic_attack_masks[0]
-            && (cur_avatar_status.attack_charge_current != KF_PLAYER_CHARGE_FULL
-                || cur_avatar_status.magic_charge != KF_PLAYER_CHARGE_FULL)) {
-            goto cancel_weapon_attack;
-        }
-        cur_avatar_status.magic_attack_mask_cursor = attack_mask + 1;
-        if (attack_mask[1] == PLAYER_MAGIC_ATTACK_MASK_FULL) {
-            player_begin_weapon_attack(KF_ANIMATION_CLIP_SECOND);
-            return;
-        }
-        cur_avatar_status.weapon_magic_shots_remaining = 20;
-        goto after_weapon_attack;
-cancel_weapon_attack:
-        cur_avatar_status.weapon_magic_shots_remaining = 0;
     }
 
-after_weapon_attack:
     if (cur_avatar_status.weapon_charge_delay == 0
         && cur_avatar_status.weapon_magic_shots_remaining == 0
         && (cur_avatar_status.pad_buttons.current & DAT_8006e570)
@@ -3204,7 +3192,9 @@ void player_update_frame(void)
         player_update_actions_and_charge();
         player_update_camera_rotation();
         player_update_horizontal_motion();
-        goto update_reaction_pose;
+        player_update_vertical_motion();
+        player_handle_interaction_and_menu();
+        break;
     case KF_PLAYER_REACTION_MAP_OBJECT_FOLLOW: {
         KfMapObject *object;
 
@@ -3220,10 +3210,9 @@ void player_update_frame(void)
                                 - (s16)cur_avatar_status.camera_position.vz;
         cur_avatar_status.camera_position = object->position;
         cur_avatar_status.view_rotation_offset.vector = object->rotation;
-    }
-update_reaction_view:
         player_handle_interaction_and_menu();
         break;
+    }
     case KF_PLAYER_REACTION_MAP_OBJECT_APPROACH: {
         KfMapObject *object;
         s32 fraction;
@@ -3276,7 +3265,8 @@ update_reaction_view:
         if (player_move_reaction_with_collision()) {
             player_reset_reaction_state();
         }
-        goto update_reaction_view;
+        player_handle_interaction_and_menu();
+        break;
     case KF_PLAYER_REACTION_OVERLAP_BOB: {
         u16 angle_phase;
 
@@ -3294,7 +3284,8 @@ update_reaction_view:
             cur_avatar_status.view_rotation_offset.components[2] = 0;
             player_reset_reaction_state();
         }
-        goto update_reaction_view;
+        player_handle_interaction_and_menu();
+        break;
     }
     case KF_PLAYER_REACTION_MOVING_DAMAGE:
         player_update_actions_and_charge();
@@ -3308,9 +3299,9 @@ update_reaction_view:
             && cur_avatar_status.reaction_rotation_offset[2] == 0) {
             player_reset_reaction_state();
         }
-update_reaction_pose:
         player_update_vertical_motion();
-        goto update_reaction_view;
+        player_handle_interaction_and_menu();
+        break;
     case KF_PLAYER_REACTION_ROTATION_DAMAGE:
         player_update_reaction_rotation_offsets();
         if (cur_avatar_status.reaction_rotation_offset[0] == 0
@@ -3318,7 +3309,8 @@ update_reaction_pose:
             && cur_avatar_status.reaction_rotation_offset[2] == 0) {
             player_reset_reaction_state();
         }
-        goto update_reaction_view;
+        player_handle_interaction_and_menu();
+        break;
     case KF_PLAYER_REACTION_DEATH:
         cur_avatar_status.vitals.current_hp = 0;
         value = angle_velocity_step(-KF_ANGLE_QUARTER_TURN, cur_avatar_status.reaction_rotation_offset[0],

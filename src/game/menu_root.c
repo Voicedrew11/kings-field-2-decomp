@@ -1978,14 +1978,16 @@ void menu_card_save_slot(s32 slot)
         if (result != KF_CARD_PROBE_CREATE_FAILED) {
             menu_prepare_card_io_error_rows(rows);
             MENU_CARD_DIALOG_WAIT(rows, 2, 70, 178, 66, metric);
-            goto done;
+            input_wait_release();
+            return;
         }
         if (menu_confirm_card_format(KF_MENU_CARD_FORMAT_WITH_NOTICE) == KF_MENU_RESULT_ACCEPTED) {
             memory_card_format();
         } else {
             menu_prepare_card_format_declined_rows(rows);
             MENU_CARD_DIALOG_WAIT(rows, 2, 63, 192, 66, metric);
-            goto done;
+            input_wait_release();
+            return;
         }
     }
 
@@ -2005,7 +2007,6 @@ void menu_card_save_slot(s32 slot)
     input_wait_release();
     while (PadRead(1) == 0) {}
 
-done:
     input_wait_release();
 }
 
