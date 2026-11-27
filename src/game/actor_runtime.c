@@ -96,7 +96,7 @@ void actor_initialize_from_group(KfActor *actor)
     actor->lifecycle = KF_ACTOR_LIFECYCLE_ACTIVE;
     actor->animation_id = KF_ANIMATION_CLIP_FIRST;
     actor->animation_phase = 0;
-    actor->unknown_11 = 0;
+    actor->zeroed_on_group_init = 0;
     actor->vertical_motion_state = KF_ACTOR_VERTICAL_MOTION_NONE;
     actor->target_type = KF_ACTOR_TARGET_IDLE;
     actor->target_action_state = KF_ACTOR_TARGET_ACTION_UNSELECTED;
@@ -2101,7 +2101,7 @@ void actor_dispatch_group_effect(KF_ENUM_PARAM(KfEffectKind, s32) kind, s32 dama
             group = &actor_status.target_groups[group_index];
             spawned->slot_state = KF_ACTOR_SLOT_EFFECT_SPAWNED;
             spawned->group_index = group_index;
-            spawned->unknown_04 = 0;
+            spawned->zeroed_on_spawn = 0;
             spawned->placement_flags = 0;
             spawned->current_map_layer = current->home_map_layer;
             spawned->lifecycle = KF_ACTOR_LIFECYCLE_ACTIVE;
@@ -2128,7 +2128,7 @@ void actor_dispatch_group_effect(KF_ENUM_PARAM(KfEffectKind, s32) kind, s32 dama
             group = &actor_status.target_groups[group_index];
             spawned->slot_state = KF_ACTOR_SLOT_EFFECT_SPAWNED;
             spawned->group_index = group_index;
-            spawned->unknown_04 = 0;
+            spawned->zeroed_on_spawn = 0;
             spawned->placement_flags = 0;
             spawned->current_map_layer = current->home_map_layer;
             spawned->lifecycle = KF_ACTOR_LIFECYCLE_ACTIVE;
@@ -3570,7 +3570,7 @@ void actor_load_records(const KfActorLoadRecord *records)
             const KfTargetGroup *group;
 
             actor->group_index = records->group_index;
-            actor->unknown_04 = 0;
+            actor->zeroed_on_spawn = 0;
             actor->placement_flags = records->placement_flags;
             actor->home_map_layer = records->home_map_layer;
             actor->home_cell_z = records->cell_z;

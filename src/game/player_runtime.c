@@ -1210,7 +1210,7 @@ void player_begin_weapon_attack(KF_ENUM_PARAM(KfAnimationClip, s32) mode)
         cur_avatar_status.weapon_attack_fully_charged = KF_FALSE;
     }
     cur_avatar_status.attack_charge_current = 0;
-    cur_avatar_status.unknown_9c[0] = 0;
+    cur_avatar_status.zeroed_on_attack_start[0] = 0;
 }
 
 ADDRESS(0x800263ec, 0x1a0)

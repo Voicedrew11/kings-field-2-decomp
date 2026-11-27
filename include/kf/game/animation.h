@@ -11,7 +11,7 @@ enum { KF_PLAYER_WEAPON_ASSET_INDEX = 0x20 };
 
 typedef struct KfAnimClip {
     u16 keyframe_count;
-    u16 unknown_02;
+    u16 unused_02;
     u32 keyframe_offsets[1];
 } KfAnimClip;
 

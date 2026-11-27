@@ -320,7 +320,7 @@ typedef char kf_effect_kind109_target_size[sizeof(KfEffectKind109Target) == 1 ? 
 
 /* Kind 114 keeps its launch Y after the preceding four payload bytes. */
 typedef struct KfEffectKind114State {
-    u8 unknown_00[4];
+    u8 unused_40[4];
     s32 origin_y;
 } KfEffectKind114State;
 
@@ -409,7 +409,7 @@ typedef struct KfEffectRecord {
     KfEffectRenderId base_render_id;
     KfEffectRenderId render_id;
     KfAnimationClip animation_clip;
-    u8 unknown_05;
+    u8 zeroed_on_construct;
     u8 damage_multiplier_tenths;
     u8 phase;
     KfEffectRenderFlags render_flags;
@@ -452,11 +452,11 @@ typedef char kf_effect_trail_payload_offset[offsetof(KfEffectRecord, cache_tail.
 typedef struct KfMagicRecord {
     u8 menu_available;
     u8 charge_rate;
-    u8 unknown_02[2];
+    u8 unused_02[2];
     u8 player_status_flags;
     u16 damage_components[8];
     u16 mp_cost;
-    u8 unknown_18[2];
+    u8 unused_18[2];
 } KfMagicRecord;
 
 typedef char kf_magic_record_size[sizeof(KfMagicRecord) == 26 ? 1 : -1];

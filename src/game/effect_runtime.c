@@ -402,7 +402,7 @@ KfEffectRecord *effect_construct_record(u8 damage_multiplier_tenths, KfEffectTyp
     record->rotation.vy = 0;
     record->rotation.vx = 0;
     record->animation_phase_q12 = 0;
-    record->unknown_05 = 0;
+    record->zeroed_on_construct = 0;
     record->render_flags = KF_EFFECT_RENDER_VISIBLE;
     if ((record->type & KF_EFFECT_USE_PLAYER_MAGIC) != KF_EFFECT_TYPE_NONE &&
         cur_avatar_status.death_state == KF_PLAYER_REACTION_MAP_OBJECT_FOLLOW) {

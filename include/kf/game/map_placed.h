@@ -22,7 +22,7 @@ typedef struct KfMapPlacedSource {
     KfMapLayerMask layer_mask;
     u8 region_z;
     u8 region_x;
-    u8 unknown_07[2];
+    u8 unused_07[2];
     s16 local_z;
     s16 local_x;
     s16 height_offset;

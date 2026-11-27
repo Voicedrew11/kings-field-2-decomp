@@ -899,7 +899,7 @@ void event_map_object_interact(KfMapObject *object, ...)
     if (object->action == KF_MAP_OBJECT_OP_OFFSET_MOTION && object->object_id == KF_ITEM_RHOMBUS_KEY) {
         KfMapObject *child = &map_objects_slots.objects[object->extra_40.object_index];
         KfMapObject *next = &map_objects_slots.objects[
-            child->tail.params.fields.unknown_3a.bytes.high];
+            child->tail.params.fields.linked_object.bytes.high];
         if (next->action == KF_MAP_OBJECT_OP_SIGNAL_DOOR && next->action_timer != 0) {
             return;
         }
@@ -1456,7 +1456,7 @@ void event_world_state_save_slot(s32 save_slot)
                 *write++ = (u32)object->position.vz >> 10;
                 *write++ = object->position.vy;
                 *write++ = (u32)object->position.vy >> 8;
-                *write++ = object->tail.params.fields.unknown_3a.value >> 2;
+                *write++ = object->tail.params.fields.linked_object.value >> 2;
                 break;
             case KF_MAP_OBJECT_OP_OFFSET_MOTION:
                 *write++ = KF_EVENT_WORLD_SAVE_ACTION_70;
@@ -1630,7 +1630,7 @@ apply_position:
             z |= *stream++ << 8;
             y = *stream++;
             y |= *stream++ << 8;
-            object->tail.params.fields.unknown_3a.value = (*stream << 2) + (rand() >> 13);
+            object->tail.params.fields.linked_object.value = (*stream << 2) + (rand() >> 13);
             stream++;
             if (object->object_id == KF_ITEM_RHOMBUS_KEY) {
                 object->rotation.vx = KF_ANGLE_QUARTER_TURN;
@@ -1693,7 +1693,7 @@ void card_payload_capture_game_state(u8 *buffer)
     saved->full_mp_timer = cur_avatar_status.full_mp_timer;
     saved->magic_boost_timer = cur_avatar_status.magic_boost_timer;
     saved->level = cur_avatar_status.level;
-    saved->unknown_09 = cur_avatar_status.unknown_09;
+    saved->unused_09 = cur_avatar_status.unused_09;
     saved->equipped_ids[0] = cur_avatar_status.equipped_head_id;
     saved->equipped_ids[1] = cur_avatar_status.equipped_body_id;
     saved->equipped_ids[2] = cur_avatar_status.equipped_arm_id;
@@ -1773,7 +1773,7 @@ void card_payload_restore_game_state(const u8 *buffer)
     cur_avatar_status.full_mp_timer = saved->full_mp_timer;
     cur_avatar_status.magic_boost_timer = saved->magic_boost_timer;
     cur_avatar_status.level = saved->level;
-    cur_avatar_status.unknown_09 = saved->unknown_09;
+    cur_avatar_status.unused_09 = saved->unused_09;
     cur_avatar_status.equipped_head_id = saved->equipped_ids[0];
     cur_avatar_status.equipped_body_id = saved->equipped_ids[1];
     cur_avatar_status.equipped_arm_id = saved->equipped_ids[2];

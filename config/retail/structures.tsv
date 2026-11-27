@@ -114,7 +114,6 @@ KfMapObjectResourceOffsets	0x03	supported	game/map_object.h;map_object_initializ
 KfMapObjectSavedLayerState	0x1	supported	GAME 0x80037f38/0x8003801c lbu;map_object_initialize_from_placements;map_object_update_actions	saved layer mask passed to action 0x54 map-cell pattern updates
 KfMapObjectStateGame	0x8744	supported	asm;map_object_effect_pool_acquire;game_main_loop startup clear	layout from the reconstructed header
 KfMapObjectTail	0xc	supported	game/map_object.h;asm;map object reset;display.c animation cache address	animation cache word, then the per-operation view union
-KfMapObjectTailAction51MarkerView	0x8	supported	GAME 0x80036800 lbu;map_object_apply_marker_signal action 0x51	Action-0x51 marker identifier overlays the high spawn-sequence byte used by effect objects
 KfMapObjectTailAction83View	0x8	supported	GAME 0x80037ab0 lbu;map_object_apply_marker_signal	action 83 emits a marker after each opening or closing phase
 KfMapObjectTailAction84PatternView	0x8	supported	GAME 0x80037ee4..0x80037f84;map_cell_apply_rotated_pattern	action 84 checks camera region and chooses one of two map-cell patterns
 KfMapObjectTailAction88CellCopyView	0x8	supported	GAME 0x80037c34..0x80037c74;map_cell_copy_rotated_fields	action 88 carries rotated copy coordinates and dimensions at its own tail offsets
@@ -142,7 +141,6 @@ KfMapObjectTailResourceTriggerView	0x8	supported	game/map_object.h;map_object_up
 KfMapObjectTailScaleLinkView	0x8	supported	GAME 0x8003860c..0x800386dc;map_object_update_actions	action 19 controls a linked object's scale in 1/32 units
 KfMapObjectTailScatteredEffectView	0x8	supported	game/map_object.h	The scattered effect pool stores the selected effect ID beside its spawn sequence; the preceding state bytes have action-specific uses elsewhere.
 KfMapObjectTailSceneInspectView	0x8	supported	game/map_object.h	Scene command 0x55 checks this camera region and opens the selected image.
-KfMapObjectTailSpawnByteFields	0x8	supported	game/map_object.h;map_object_effect_pool_acquire;map_object_spawn_effect	tail view whose spawn sequence halfword is also addressed by byte
 KfMapObjectTailTransitionView	0x8	supported	game/map_object.h;map_object_update_actions action 34	Overlapping destination-cell and yaw-code view of the 12-byte tail; not a separate object
 KfMapObjectTemplate	0x18	supported	game/map_object.h;func_800355d8;func_80036190	24-byte map object template with action-specific parameters
 KfMapObjectTemplateCollisionParams	0xc	supported	GAME 0x80038324..0x80038350	collision-probe action interprets template halfwords +0x0c/+0x0e/+0x10 as vertex, reach, height

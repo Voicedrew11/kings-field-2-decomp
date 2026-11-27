@@ -103,7 +103,7 @@ typedef struct KfFloorItem {
     u16 row_offset;
     RECT rect;
     u_long *pixels;
-    u8 unknown_14[4];
+    u8 unused_14[4];
 } KfFloorItem;
 
 typedef struct KfRenderState {

@@ -110,11 +110,11 @@ typedef struct KfPlayerVitals {
 } KfPlayerVitals;
 
 typedef struct KfEquipmentRecord {
-    u8 unknown_00[2];
+    u8 unused_00[2];
     u16 bonus_components[9];
     u16 hp_regen_interval;
     u16 hp_drain_interval;
-    u8 unknown_18[8];
+    u8 unused_18[8];
 } KfEquipmentRecord;
 
 typedef char kf_equipment_record_size[sizeof(KfEquipmentRecord) == 0x20 ? 1 : -1];
@@ -131,7 +131,7 @@ enum { KF_PLAYER_COMBAT_POISON_RESISTANCE = 3 };
 typedef struct KfWeaponRecordGame {
     u8 sound_id;
     u8 charge_rank;
-    u8 unknown_02;
+    u8 unused_02;
     KfEffectKind initial_effect_id;
     KfEffectKind release_effect_id;
     u8 magic_shots;
@@ -176,7 +176,7 @@ typedef char kf_weapon_asset_buffer_size[sizeof(KfWeaponAssetBuffer) == 0xc000 ?
 
 typedef struct KfPlayerViewRotation {
     s16 angles[3];
-    u16 unknown_06;
+    u16 pad;
 } KfPlayerViewRotation;
 
 typedef union KfPlayerViewRotationOffset {
@@ -202,7 +202,7 @@ typedef struct KfPlayerViewReaction {
     u8 map_object_index;
     u8 approach_step;
     KfPlayerViewRotation rotation;
-    u8 unknown_0a[6];
+    u8 unused_0a[6];
 } KfPlayerViewReaction;
 
 typedef struct KfPlayerPositionReaction {
@@ -341,13 +341,13 @@ typedef char kf_collision_heights_size[sizeof(KfCollisionHeights) == 0x14 ? 1 : 
 typedef struct KfCollisionCache {
     KfMapOccupancyCell *cell;
     KfMapOccupancyLayer *shape;
-    u8 unknown_08[2];
+    u8 unused_08[2];
     u16 layer;
     KfCollisionHeights heights;
     KfCollisionHitFlags flags;
     s32 actor_index;
     s32 object_index;
-    u8 unknown_2c[4];
+    u8 unused_2c[4];
     VECTOR position;
     u16 radius;
     u16 interaction_height;
@@ -365,7 +365,7 @@ typedef char kf_collision_cache_radius_offset[
  * clears the complete BSS region, whose later storage remains partly opaque. */
 typedef struct KfBss801c7540 {
     KfMapOccupancyCell map_cells[KF_MAP_WORLD_GRID_SIDE][KF_MAP_WORLD_GRID_SIDE];
-    u8 unknown_fa00[0x600];
+    u8 unused_fa00[0x600];
     u8 shape_bank[0x1800];
     KfCollisionCache collision_cache;
 } KfBss801c7540;
@@ -405,10 +405,10 @@ typedef struct KfPlayerState {
     s32 experience;
     s32 next_level_experience;
     u8 level;
-    u8 unknown_09;
+    u8 unused_09;
     b8 force_actor_lifecycle_refresh;
     u8 weapon_charge_delay;
-    u8 unknown_0c;
+    u8 unused_0c;
     u8 movement_speed_adjustment_decay_latch;
     s16 movement_speed_adjustment_q12;
     s16 damage_scale;
@@ -424,7 +424,7 @@ typedef struct KfPlayerState {
     u16 magic;
     u32 gold;
     u16 attack_components[8];
-    u16 unknown_40;
+    u16 unused_40;
     u16 combat_components[9];
     s16 poison_timer;
     s16 curse_strength;
@@ -440,7 +440,7 @@ typedef struct KfPlayerState {
     s16 map_marker_visual_effect_timer;
     s16 full_mp_timer;
     s16 magic_boost_timer;
-    u8 unknown_70[4];
+    u8 unused_70[4];
     u32 equipment_effect_ticks;
     const u16 *magic_attack_mask_cursor;
     struct KfMagicRecord *selected_magic_record;
@@ -457,7 +457,7 @@ typedef struct KfPlayerState {
     KF_ENUM_STORAGE(KfObjectId, u8) secondary_item_shortcut_id;
     KfAnimationClip weapon_attack_mode;
     KF_ENUM_STORAGE(KfObjectId, u8) equipped_weapon_id;
-    u8 unknown_9c[2];
+    u8 zeroed_on_attack_start[2];
     u8 weapon_magic_shots_configured;
     b8 weapon_attack_fully_charged;
     b8 weapon_guard_active;
@@ -482,7 +482,7 @@ typedef struct KfPlayerState {
     KfPlayerOption item_preview_enabled;
     KfPlayerOption walking_bob_enabled;
     KfPlayerReaction death_state;
-    u8 unknown_ce[2];
+    u8 unused_ce[2];
     KfPlayerVerticalState vertical_motion_state;
     KfQueuedMagicAction queued_magic_action;
     b8 fatal_fall_latch;
@@ -495,7 +495,7 @@ typedef struct KfPlayerState {
     KfPlayerViewRotationOffset view_rotation_offset;
     s16 vertical_motion_pitch_offset;
     s16 camera_yaw_roll_offsets[2];
-    u8 unknown_116[2];
+    u8 unused_116[2];
     SVECTOR magic_origin_offset;
     s32 collision_lower_clearance;
     s32 collision_upper_clearance;

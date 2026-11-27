@@ -132,7 +132,7 @@ typedef struct KfCdState {
     u32 frame_count;
     long error_event;
     long complete_event;
-    u8 unknown_14[4];
+    u8 unused_14[4];
     long data_ready_event;
     KfCdRequest requests[KF_CD_REQUEST_CAPACITY];
     KfCdRequest *tail;

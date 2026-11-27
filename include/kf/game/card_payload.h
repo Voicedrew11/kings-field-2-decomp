@@ -35,7 +35,7 @@ typedef struct KfCardPlayerSnapshot {
     s16 magic_boost_timer;
     u8 unused_3a[8];
     u8 level;
-    u8 unknown_09;
+    u8 unused_09;
     KF_ENUM_STORAGE(KfObjectId, u8) equipped_ids[7];
     KfEffectKind primary_magic_shortcut_id;
     KfEffectKind secondary_magic_shortcut_id;

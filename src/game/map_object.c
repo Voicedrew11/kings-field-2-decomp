@@ -685,7 +685,7 @@ void map_object_apply_marker_signal(u8 identifier)
             }
             break;
         case KF_MAP_OBJECT_OP_ANIMATED_HAZARD:
-            if (object->tail.params.action_51_marker.marker_id == identifier) {
+            if (object->tail.params.collision_probe.marker_id == identifier) {
                 object->tail.params.collision_probe.marker_trigger_state =
                     object->tail.params.collision_probe.marker_trigger_state == KF_MAP_OBJECT_PROBE_STOPPED
                         ? KF_MAP_OBJECT_PROBE_RUNNING : KF_MAP_OBJECT_PROBE_STOPPED;

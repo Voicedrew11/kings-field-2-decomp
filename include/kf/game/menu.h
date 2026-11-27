@@ -314,7 +314,7 @@ typedef struct KfMenuList {
 typedef struct KfItemMenuList {
     KfMenuList list;
     KfMenuGlyphRow *rows;
-    u8 unknown_28[4];
+    u8 detail_rows_slot[4];
     u8 *values;
     s32 *prices;
 } KfItemMenuList;
@@ -327,7 +327,7 @@ typedef struct KfCardSlotGlyphRow {
 typedef struct KfCardMenuList {
     KfMenuList list;
     KfCardSlotGlyphRow *rows;
-    u8 unknown_28[4];
+    u8 detail_rows_slot[4];
     u8 *levels;
     s32 *experience_values;
 } KfCardMenuList;
@@ -336,7 +336,7 @@ typedef struct KfCardMenuList {
 typedef struct KfMagicMenuList {
     KfMenuList list;
     KfMenuGlyphRow *rows;
-    u8 unknown_28[8];
+    u8 detail_and_byte_value_slots[8];
     s32 *values;
 } KfMagicMenuList;
 

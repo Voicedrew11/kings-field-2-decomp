@@ -33,11 +33,11 @@ typedef char kf_event_control_object_slot_resource_offset[
 typedef struct KfEventControlFields {
     u8 highest_requested_map_region_id;
     u8 post_death_reload_flags;
-    u8 unknown_02[0x1a];
+    u8 script_control_before_fall[0x1a];
     u8 fall_survival_consumable_decreased;
-    u8 unknown_1d[0x0b];
+    u8 script_control_after_fall[0x0b];
     KfEventControlObjectSlot object_slots[3];
-    u8 unknown_34[0x0b];
+    u8 script_control_after_slots[0x0b];
     u8 stream_actor_definition_id;
 } KfEventControlFields;
 typedef char kf_event_control_fields_size[

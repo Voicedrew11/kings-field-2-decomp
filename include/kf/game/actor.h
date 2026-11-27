@@ -486,7 +486,7 @@ typedef struct KfTargetCandidate {
     KfAnimationClip animation_id;
     KfTargetCandidateWeights weights;
     u8 sound_code;
-    u8 unknown_05[2];
+    u8 unused_05[2];
     u8 start_vertical_motion_on_entry;
     u16 animation_step;
     KfTargetSoundTrigger sound_trigger;
@@ -558,7 +558,7 @@ typedef char kf_target_group_health_or_vertex_size[
 
 typedef struct KfTargetGroup {
     u8 definition_id;
-    u8 unknown_01;
+    u8 unused_01;
     u8 knockback_divisor;
     u8 movement_step;
     u8 turn_acceleration;
@@ -662,7 +662,7 @@ typedef char kf_actor_state_70_size[sizeof(KfActorState70) == 2 ? 1 : -1];
 
 typedef struct KfActorOrientation {
     struct KfEulerAngles rotation;
-    u8 unknown_46[2];
+    u8 unused_46[2];
 } KfActorOrientation;
 typedef char kf_actor_orientation_size[sizeof(KfActorOrientation) == 8 ? 1 : -1];
 
@@ -747,7 +747,7 @@ typedef struct KfActor {
     u8 definition_id;
     u8 group_index;
     KfMapLayerMask current_map_layer;
-    u8 unknown_04;
+    u8 zeroed_on_spawn;
     u8 placement_flags;
     KfMapLayerMask home_map_layer;
     u8 home_cell_z;
@@ -760,8 +760,8 @@ typedef struct KfActor {
     KfActorTargetType target_type;
     KfActorTargetActionState target_action_state;
     KfActorTargetType previous_target_type;
-    u8 unknown_11;
-    u8 unknown_12;
+    u8 zeroed_on_group_init;
+    u8 unused_12;
     KfRenderQueueMode render_mode;
     KfLightingIndex lighting_override;
     u8 render_depth;
@@ -776,11 +776,11 @@ typedef struct KfActor {
     VECTOR position;
     s32 ballistic_origin_y;
     struct KfEulerAngles rotation;
-    u8 unknown_46[2];
+    u8 unused_46[2];
     s16 model_scale_x;
     KfActorModelScaleY model_scale_y;
     s16 model_scale_z;
-    u8 unknown_4e[2];
+    u8 unused_4e[2];
     KfActorMotion motion;
     s16 turn_rate;
     struct KfPoolRecord *animation_cache;
@@ -790,7 +790,7 @@ typedef struct KfActor {
     s16 ballistic_horizontal_speed;
     s16 ballistic_launch_speed_y;
     s16 ballistic_acceleration;
-    u8 unknown_6e[2];
+    u8 unused_6e[2];
     KfActorState70 state_70;
     KfActorTail72 tail_72;
 } KfActor;

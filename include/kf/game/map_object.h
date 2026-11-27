@@ -287,15 +287,15 @@ typedef struct KfMapObjectTemplateMarkerParams {
     u8 cell_width;
     u8 cell_height;
     u8 sound_id;
-    u8 unknown_04[7];
+    u8 unused_10[7];
     u8 marker_action_51;
 } KfMapObjectTemplateMarkerParams;
 
 typedef struct KfMapObjectTemplatePoseParams {
     s16 height_offset;
     s16 depth_offset;
-    u16 unknown_04;
-    u8 unknown_06[6];
+    u16 unused_10;
+    u8 unused_12[6];
 } KfMapObjectTemplatePoseParams;
 
 typedef struct KfMapObjectTemplateCollisionParams {
@@ -308,9 +308,9 @@ typedef struct KfMapObjectTemplateCollisionParams {
 } KfMapObjectTemplateCollisionParams;
 
 typedef struct KfMapObjectTemplatePatternParams {
-    u8 unknown_00[2];
+    u8 unused_0c[2];
     u8 pattern_pair_index;
-    u8 unknown_03[9];
+    u8 unused_0f[9];
 } KfMapObjectTemplatePatternParams;
 
 typedef union KfMapObjectTemplateParams {
@@ -353,8 +353,8 @@ typedef char kf_map_object_template_sound_id_offset[
     offsetof(KfMapObjectTemplate, params.marker.sound_id) == 0x0f ? 1 : -1];
 typedef char kf_map_object_template_marker_action_51_offset[
     offsetof(KfMapObjectTemplate, params.marker.marker_action_51) == 0x17 ? 1 : -1];
-typedef char kf_map_object_template_pose_tail_offset[
-    offsetof(KfMapObjectTemplate, params.pose.unknown_04) == 0x10 ? 1 : -1];
+typedef char kf_map_object_template_pose_unused_offset[
+    offsetof(KfMapObjectTemplate, params.pose.unused_10) == 0x10 ? 1 : -1];
 typedef char kf_map_object_template_collision_magic_values_offset[
     offsetof(KfMapObjectTemplate, params.collision.impact_magic_values) == 0x12 ? 1 : -1];
 typedef char kf_map_object_template_collision_sound_offset[
@@ -403,28 +403,28 @@ typedef union KfMapObjectTailHalfword {
 
 typedef struct KfMapObjectTailFields {
     u8 event_mask;
-    u8 unknown_39;
-    KfMapObjectTailHalfword unknown_3a;
+    u8 unused_39;
+    KfMapObjectTailHalfword linked_object;
     u16 spawn_sequence;
-    KfMapObjectTailHalfword unknown_3e;
+    KfMapObjectTailHalfword motion_velocity;
 } KfMapObjectTailFields;
 
 /* Actions 0x60 and 0x62 reuse this halfword for vertical and angular motion. */
 typedef struct KfMapObjectTailMotionView {
-    u8 unknown_38;
-    u8 unknown_39;
-    KfMapObjectTailHalfword unknown_3a;
-    u16 unknown_3c;
+    u8 event_mask;
+    u8 unused_39;
+    KfMapObjectTailHalfword linked_object;
+    u16 unused_3c;
     KfMapObjectTailHalfword motion_velocity;
 } KfMapObjectTailMotionView;
 typedef char kf_map_object_tail_motion_velocity_offset[
     offsetof(KfMapObjectTailMotionView, motion_velocity) == 6 ? 1 : -1];
 
 typedef struct KfMapObjectTailNotificationView {
-    u8 unknown_38;
-    u8 unknown_39;
-    KfMapObjectTailHalfword unknown_3a;
-    u16 unknown_3c;
+    u8 marker_id;
+    u8 unused_39;
+    KfMapObjectTailHalfword linked_object;
+    u16 unused_3c;
     KfNotificationId linked_notification;
     KfNotificationId default_notification;
 } KfMapObjectTailNotificationView;
@@ -452,7 +452,7 @@ typedef struct KfMapObjectTailResourceTriggerView {
     u8 region_width;
     u8 region_depth;
     u8 resource_selectors[5];
-    u8 unknown_3f;
+    u8 unused_3f;
 } KfMapObjectTailResourceTriggerView;
 typedef char kf_map_object_tail_resource_trigger_size[
     sizeof(KfMapObjectTailResourceTriggerView) == 8 ? 1 : -1];
@@ -465,7 +465,7 @@ typedef struct KfMapObjectTailRegionActionView {
     u8 operation_flags;
     u8 operand;
     u8 assigned_value;
-    u8 unknown_3d[3];
+    u8 unused_3d[3];
 } KfMapObjectTailRegionActionView;
 typedef char kf_map_object_tail_region_action_size[
     sizeof(KfMapObjectTailRegionActionView) == 8 ? 1 : -1];
@@ -481,7 +481,7 @@ typedef struct KfMapObjectTailSceneInspectView {
     u8 region_width;
     u8 region_depth;
     u16 transition_image_id;
-    u8 unknown_3c[4];
+    u8 unused_3c[4];
 } KfMapObjectTailSceneInspectView;
 typedef char kf_map_object_tail_scene_inspect_size[
     sizeof(KfMapObjectTailSceneInspectView) == 8 ? 1 : -1];
@@ -490,9 +490,10 @@ typedef char kf_map_object_tail_scene_inspect_image_offset[
 
 /* Kind 0x20 gives the player this amount when its interaction completes. */
 typedef struct KfMapObjectTailGoldRewardView {
-    u8 unknown_38[2];
+    u8 event_mask;
+    u8 unused_39;
     u16 gold_amount;
-    u8 unknown_3c[4];
+    u8 unused_3c[4];
 } KfMapObjectTailGoldRewardView;
 typedef char kf_map_object_tail_gold_reward_size[
     sizeof(KfMapObjectTailGoldRewardView) == 8 ? 1 : -1];
@@ -505,8 +506,8 @@ typedef struct KfMapObjectTailAnimatedView {
     u8 depth_code;
     u8 lighting_flags;
     u8 blend_mode;
-    u8 unknown_3d;
-    u16 unknown_3e;
+    u8 unused_3d;
+    u16 unused_3e;
 } KfMapObjectTailAnimatedView;
 typedef char kf_map_object_tail_animated_size[
     sizeof(KfMapObjectTailAnimatedView) == 8 ? 1 : -1];
@@ -530,13 +531,13 @@ typedef char kf_map_object_tail_ambient_repeat_delay_offset[
 
 /* Actions 3 and 4 copy a rotated region between map-cell coordinates. */
 typedef struct KfMapObjectTailCellCopyView {
-    u8 unknown_38;
+    u8 marker_id;
     u8 destination_x;
     u8 destination_z;
     u8 source_x;
     u8 source_z;
     u8 linked_object_index;
-    u16 unknown_3e;
+    u16 unused_3e;
 } KfMapObjectTailCellCopyView;
 typedef char kf_map_object_tail_cell_copy_size[
     sizeof(KfMapObjectTailCellCopyView) == 8 ? 1 : -1];
@@ -572,9 +573,10 @@ typedef char kf_map_object_tail_action88_width_offset[
 /* Action 0x59 waits for a marker, then restores its layer for a timed fade. */
 typedef struct KfMapObjectTailAction89LayerFadeView {
     u8 marker_id;
-    u8 unknown_39;
+    u8 unused_39;
     u16 delay_frames;
-    u8 unknown_3c[4];
+    u16 spawn_sequence;
+    u8 unused_3e[2];
 } KfMapObjectTailAction89LayerFadeView;
 typedef char kf_map_object_tail_action89_layer_fade_size[
     sizeof(KfMapObjectTailAction89LayerFadeView) == 8 ? 1 : -1];
@@ -592,7 +594,7 @@ typedef struct KfMapObjectTailAction84PatternView {
     u8 region_depth;
     u8 depth_code;
     u8 pattern_flags;
-    u8 unknown_3f;
+    u8 unused_3f;
 } KfMapObjectTailAction84PatternView;
 typedef char kf_map_object_tail_action84_pattern_size[
     sizeof(KfMapObjectTailAction84PatternView) == 8 ? 1 : -1];
@@ -603,15 +605,17 @@ typedef char kf_map_object_tail_action84_region_width_offset[
 typedef char kf_map_object_tail_action84_pattern_flags_offset[
     offsetof(KfMapObjectTailAction84PatternView, pattern_flags) == 6 ? 1 : -1];
 
-/* Action 81 uses a camera gate and dispatches a magic impact on collision. */
+/* Action 81 uses a camera gate and dispatches a magic impact on collision;
+ * marker_id, the high byte of the spawn-sequence slot that effect objects
+ * use, is compared with incoming marker signals. */
 typedef struct KfMapObjectTailCollisionProbeView {
     u8 marker_trigger_state;
     u8 damage_multiplier_tenths;
     u8 phase_step_code;
     u8 camera_region_width;
     u8 camera_region_depth;
-    u8 unknown_3d;
-    u16 unknown_3e;
+    u8 marker_id;
+    u16 unused_3e;
 } KfMapObjectTailCollisionProbeView;
 typedef char kf_map_object_tail_collision_probe_size[
     sizeof(KfMapObjectTailCollisionProbeView) == 8 ? 1 : -1];
@@ -621,13 +625,16 @@ typedef char kf_map_object_tail_collision_damage_offset[
     offsetof(KfMapObjectTailCollisionProbeView, damage_multiplier_tenths) == 1 ? 1 : -1];
 typedef char kf_map_object_tail_collision_region_offset[
     offsetof(KfMapObjectTailCollisionProbeView, camera_region_width) == 3 ? 1 : -1];
+typedef char kf_map_object_tail_collision_marker_offset[
+    offsetof(KfMapObjectTailCollisionProbeView, marker_id) == 5 ? 1 : -1];
 
 /* Actions 5, 8, and 22 direct property changes to a linked map object. */
 typedef struct KfMapObjectTailLinkedPropertyView {
-    u8 unknown_38;
-    u8 unknown_39;
+    u8 marker_id;
+    u8 unused_39;
     u16 linked_object_index;
-    u32 unknown_3c;
+    u8 unused_3c[3];
+    KfNotificationId default_notification;
 } KfMapObjectTailLinkedPropertyView;
 typedef char kf_map_object_tail_linked_property_size[
     sizeof(KfMapObjectTailLinkedPropertyView) == 8 ? 1 : -1];
@@ -638,7 +645,7 @@ typedef char kf_map_object_tail_linked_property_index_offset[
 typedef struct KfMapObjectTailAction83View {
     KfMapObjectTransitionMode transition_mode;
     u8 completion_marker;
-    u8 unknown_3a[6];
+    u8 unused_3a[6];
 } KfMapObjectTailAction83View;
 typedef char kf_map_object_tail_action83_size[
     sizeof(KfMapObjectTailAction83View) == 8 ? 1 : -1];
@@ -650,9 +657,9 @@ typedef char kf_map_object_tail_action83_marker_offset[
 /* Action 19 grows and animates a linked map object in 1/32-scale steps. */
 typedef struct KfMapObjectTailScaleLinkView {
     u8 scale_step_code;
-    u8 unknown_39;
+    u8 unused_39;
     u16 linked_object_index;
-    u32 unknown_3c;
+    u32 unused_3c;
 } KfMapObjectTailScaleLinkView;
 typedef char kf_map_object_tail_scale_link_size[
     sizeof(KfMapObjectTailScaleLinkView) == 8 ? 1 : -1];
@@ -664,34 +671,19 @@ typedef char kf_map_object_tail_scale_link_index_offset[
 /* Event archive commands read the two state bytes at +0x38 as one halfword. */
 typedef struct KfMapObjectTailPair38View {
     u16 value_38;
-    u8 unknown_3a[6];
+    u8 unused_3a[6];
 } KfMapObjectTailPair38View;
 
 /* Marker-driven actions compare this byte with an incoming signal, then
  * consume or arm the action. Other actions give the byte different meanings. */
 typedef struct KfMapObjectTailMarkerView {
     u8 marker_id;
-    u8 unknown_39[7];
+    u8 action_specific_bytes[7];
 } KfMapObjectTailMarkerView;
 typedef char kf_map_object_tail_marker_size[
     sizeof(KfMapObjectTailMarkerView) == 8 ? 1 : -1];
 typedef char kf_map_object_tail_marker_id_offset[
     offsetof(KfMapObjectTailMarkerView, marker_id) == 0 ? 1 : -1];
-
-/* Action 0x51 uses the high byte of the effect spawn-sequence slot as its
- * incoming marker identifier. */
-typedef struct KfMapObjectTailAction51MarkerView {
-    u8 unknown_38;
-    u8 unknown_39;
-    KfMapObjectTailHalfword unknown_3a;
-    u8 unknown_3c;
-    u8 marker_id;
-    KfMapObjectTailHalfword unknown_3e;
-} KfMapObjectTailAction51MarkerView;
-typedef char kf_map_object_tail_action51_marker_size[
-    sizeof(KfMapObjectTailAction51MarkerView) == 8 ? 1 : -1];
-typedef char kf_map_object_tail_action51_marker_offset[
-    offsetof(KfMapObjectTailAction51MarkerView, marker_id) == 5 ? 1 : -1];
 
 /* Two placement kinds seed three object rotation axes from byte codes;
  * 0xff leaves an axis at its default value. The final code overlaps the
@@ -704,7 +696,7 @@ typedef struct KfMapObjectTailInitialRotationView {
     u8 rotation_x_code;
     u8 rotation_y_code;
     u8 rotation_z_code;
-    u8 unknown_3d[3];
+    u8 unused_3d[3];
 } KfMapObjectTailInitialRotationView;
 typedef char kf_map_object_tail_initial_rotation_size[
     sizeof(KfMapObjectTailInitialRotationView) == 8 ? 1 : -1];
@@ -718,7 +710,7 @@ typedef struct KfMapObjectTailEventEffectView {
     u8 effect_object_index;
     u8 linked_object_flag_mask;
     u8 linked_object_index;
-    u8 unknown_3c[4];
+    u8 unused_3c[4];
 } KfMapObjectTailEventEffectView;
 typedef char kf_map_object_tail_event_effect_size[
     sizeof(KfMapObjectTailEventEffectView) == 8 ? 1 : -1];
@@ -736,25 +728,14 @@ typedef char kf_map_object_tail_pair38_size[
 typedef char kf_map_object_tail_pair38_offset[
     offsetof(KfMapObjectTailPair38View, value_38) == 0 ? 1 : -1];
 
-typedef struct KfMapObjectTailSpawnByteFields {
-    u8 unknown_38;
-    u8 unknown_39;
-    KfMapObjectTailHalfword unknown_3a;
-    KfMapObjectTailHalfwordBytes spawn_sequence;
-    KfMapObjectTailHalfword unknown_3e;
-} KfMapObjectTailSpawnByteFields;
-typedef char kf_map_object_tail_spawn_byte_fields_size[
-    sizeof(KfMapObjectTailSpawnByteFields) == 8 ? 1 : -1];
-typedef char kf_map_object_tail_spawn_bytes_offset[
-    offsetof(KfMapObjectTailSpawnByteFields, spawn_sequence) == 4 ? 1 : -1];
-
 /* The scattered effect pool stores the selected effect ID beside its spawn
  * sequence; the preceding state bytes have action-specific uses elsewhere. */
 typedef struct KfMapObjectTailScatteredEffectView {
-    u8 unknown_38[2];
+    u8 event_mask;
+    u8 unused_39;
     u16 effect_id;
     u16 spawn_sequence;
-    u16 unknown_3e;
+    u16 motion_velocity;
 } KfMapObjectTailScatteredEffectView;
 typedef char kf_map_object_tail_scattered_effect_size[
     sizeof(KfMapObjectTailScatteredEffectView) == 8 ? 1 : -1];
@@ -789,10 +770,8 @@ typedef union KfMapObjectTailParams {
     KfMapObjectTailScaleLinkView scale_link;
     KfMapObjectTailPair38View pair_38;
     KfMapObjectTailMarkerView marker;
-    KfMapObjectTailAction51MarkerView action_51_marker;
     KfMapObjectTailInitialRotationView initial_rotation;
     KfMapObjectTailEventEffectView event_effect;
-    KfMapObjectTailSpawnByteFields spawn_bytes;
     KfMapObjectTailScatteredEffectView scattered_effect;
     u32 reset_words[2];
     KfMapObjectTailPlacement placement;
@@ -821,11 +800,11 @@ enum {
  * reaction action; other actions keep byte state there. Only this prefix is
  * observed, and the record's complete extent is unresolved. */
 typedef struct KfMapObjectRecord40 {
-    u8 unknown_00;
+    u8 unused_00;
     u8 reaction_mode;
-    u8 unknown_02[0x0a];
+    u8 unused_02[0x0a];
     SVECTOR reaction_rotation_vector;
-    u8 unknown_14[0x24];
+    u8 unused_14[0x24];
     s16 reaction_rotation_scale_q15;
 } KfMapObjectRecord40;
 typedef char kf_map_object_record40_reaction_mode_offset[
@@ -960,10 +939,10 @@ typedef char kf_map_object_layer_fade_mask_offset[
 typedef struct KfMapObjectStateGame {
     KfMapObjectTemplate templates[KF_MAP_OBJECT_TEMPLATE_CAPACITY];
     KfMapObject objects[KF_MAP_OBJECT_CAPACITY];
-    u8 unknown_8730[4];
+    u8 unused_8730[4];
     KfMapObjectTemplate *current_template;
     KfMapObject *current_collision_object;
-    u8 unknown_873c[2];
+    u8 unused_873c[2];
     u16 spawn_sequence_pool_15e;
     u16 definition_drop_sequence;
     u16 placement_drop_sequence;
